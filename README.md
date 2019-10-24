@@ -1,4 +1,4 @@
-# icesat2py
+# icepyx
 Python tools for obtaining and working with ICESat-2 data
 
 ## Origin and Purpose

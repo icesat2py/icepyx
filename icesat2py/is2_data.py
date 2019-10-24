@@ -10,8 +10,9 @@ class Icesat2Data():
     
     Parameters
     ----------
-    dataset : Index or array-like [list of dataset options here]
-        Some notes about the dataset input options.
+    dataset : string
+        ICESat-2 dataset ID, also known as "short name" (e.g. ATL03). 
+        Available datasets can be found at: https://nsidc.org/data/icesat-2/data-sets
     spatial_extent : ndarray
         Spatial extent of interest, provided as a bounding box or single, closed
         polygon geometry. Bounding box coordinates should be provided in decimal degrees as
@@ -43,9 +44,10 @@ class Icesat2Data():
     Examples
     --------
     Initializing Icesat2Data with a bounding box.
+    >>> sho
     >>> reg_a_bbox = [lllong, lllat, urlong, urlat]
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> region_a = icepyx.Icesat2Data(ATL06, reg_a_bbox, reg_a_dates)
+    >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
     >>> region_a
     [show output here after inputting above info and running it]
     """
@@ -55,7 +57,7 @@ class Icesat2Data():
 
     def __init__(
         self,
-#         dataset = None,
+        dataset = None,
 #         spatial_extent = None,
         date_range = None,
 #         start_time = None,
@@ -63,10 +65,17 @@ class Icesat2Data():
 #         version = None,
     ):
         
-       
-        #this will ultimately need to be changed/generalized based on whether or not all required inputs are entered and formatted correctly
-        if date_range is None:
-            raise ValueError("You must specify a date range of interest!")
+        if dataset is None or date_range is None:
+            raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
+
+            
+        if isinstance(dataset, str):
+            self.dset = str.upper(dataset)
+            assert self.dset in ['ATL02', 'ATL03', 'ATL04','ATL06', 'ATL07', 'ATL08', 'ATL09', 'ATL10', 'ATL12', 'ATL13'],\
+            "Please enter a valid dataset"
+        else:
+            raise ValueError("Please enter a dataset string")
+                    
             
         if isinstance(date_range, list):
             if len(date_range)==2:
@@ -92,6 +101,19 @@ class Icesat2Data():
     
     # ----------------------------------------------------------------------
     # Properties
+    
+    @property
+    def dataset(self):
+        """
+        Return the short name dataset ID string associated with the ICESat-2 data object.
+        
+        Example
+        --------
+        >>> region_a = [define that here]
+        >>> region_a.dataset
+        [put output here]
+        """
+        return self.dset
     
     @property
     def dates(self):

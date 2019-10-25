@@ -80,9 +80,9 @@ class Icesat2Data():
             
         if isinstance(date_range, list):
             if len(date_range)==2:
-                self.start_date = date_range[0]
-                self.end_date = date_range[1]
-                #TODO: check that dates are valid dates
+                self.start = dt.datetime.strptime(date_range[0], '%Y-%m-%d')
+                self.end = dt.datetime.strptime(date_range[1], '%Y-%m-%d')
+                #BestPractices: can the check that it's a valid date entry be implicit (e.g. by converting it to a datetime object, as done here?) or must it be more explicit?
                                
             else:
                 raise ValueError("Your date range list is the wrong length. It should have start and end dates only.")
@@ -95,22 +95,13 @@ class Icesat2Data():
 
 #         self.date_range = format_dates(start_date, end_date)
 #         when writing the format dates/times function, check with an assertion that the start date is before the end date
-        #convert date strings to date-time objects
-#                 self.start_date = dt.date(int(date_range[0][0:4]),int(date_range[0][5:7]),int(date_range[0][8:]))
-#                 self.end_date = dt.date(int(date_range[1][0:4]),int(date_range[1][5:7]),int(date_range[1][8:]))
                 
         
         if start_time is None:
-            self.start_tm = '00:00:00'
+            self.start = dt.datetime.strptime('00:00:00', '%H:%M:%S')
         else:
             if isinstance(start_time, str):
-                assert len(start_time) == 8, "Please format your start time correctly ('HH:mm:ss')1"
-                assert start_time[2] == ':', "Please format your start time correctly ('HH:mm:ss')2"
-                assert start_time[5] == ':', "Please format your start time correctly ('HH:mm:ss')3"
-                #TODO: check that times are valid times
-                #this list of assertions is incomplete for checking for valid input (e.g. HH must be between 0-24, etc.)
-                #working on this using either regexp and/or datetime objects
-                self.start_tm = start_time
+                self.start = dt.datetime.strptime(start_time, '%H:%M:%S')
             else:
                 raise ValueError("Please enter your start time as a string")
         
@@ -143,7 +134,7 @@ class Icesat2Data():
         >>> region_a.dates
         [put output here]
         """
-        return [self.start_date, self.end_date]
+        return [self.start.strftime('%Y-%m-%d'), self.end.strftime('%Y-%m-%d')]
     
     
     @property
@@ -157,7 +148,7 @@ class Icesat2Data():
         >>> region_a.dataset
         [put output here]
         """
-        return self.start_tm
+        return self.start.strftime('%H:%M:%S')
 
     # ----------------------------------------------------------------------
     # Static Methods

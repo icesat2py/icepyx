@@ -14,9 +14,9 @@ class Icesat2Data():
     dataset : string
         ICESat-2 dataset ID, also known as "short name" (e.g. ATL03). 
         Available datasets can be found at: https://nsidc.org/data/icesat-2/data-sets
-    spatial_extent : ndarray
-        Spatial extent of interest, provided as a bounding box or single, closed
-        polygon geometry. Bounding box coordinates should be provided in decimal degrees as
+    spatial_extent : list
+        Spatial extent of interest, provided as a bounding box. 
+        Bounding box coordinates should be provided in decimal degrees as
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
         DevGoal: allow broader input of polygons and polygon files (e.g. kml, shp) as bounding areas
     date_range : list of 'YYYY-MM-DD' strings
@@ -59,14 +59,14 @@ class Icesat2Data():
     def __init__(
         self,
         dataset = None,
-#         spatial_extent = None,
+        spatial_extent = None,
         date_range = None,
         start_time = None,
         end_time = None,
         version = None,
     ):
         
-        if dataset is None or date_range is None:
+        if dataset is None or spatial_extent is None or date_range is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
 
             
@@ -76,14 +76,28 @@ class Icesat2Data():
             "Please enter a valid dataset"
         else:
             raise ValueError("Please enter a dataset string")
-                    
+         
+        if isinstance(spatial_extent, list):
+            if len(spatial_extent)==4:
+                #BestPractices: move these assertions to a more general set of tests for valid geometries?
+                assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
+                assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
+                assert -180 <= spatial_extent[0] <= 360, "Invalid longitude value" #tighten these ranges depending on actual allowed inputs
+                assert -180 <= spatial_extent[2] <= 360, "Invalid longitude value"
+                assert spatial_extent[0] <= spatial_extent[2], "Invalid bounding box longitudes"
+                assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
+                self.spat_extent = spatial_extent
+                self.extent_type = 'bbox'
+            else:
+                raise ValueError('Your spatial extent bounding box needs to have four entries')
+                           
             
         if isinstance(date_range, list):
             if len(date_range)==2:
                 self.start = dt.datetime.strptime(date_range[0], '%Y-%m-%d')
                 self.end = dt.datetime.strptime(date_range[1], '%Y-%m-%d')
                 #BestPractices: can the check that it's a valid date entry be implicit (e.g. by converting it to a datetime object, as done here?) or must it be more explicit?
-                               
+                assert self.start.date() <= self.end.date(), "Your date range is invalid"               
             else:
                 raise ValueError("Your date range list is the wrong length. It should have start and end dates only.")
             
@@ -91,11 +105,7 @@ class Icesat2Data():
 #             print('it is a date-time object')
 #         elif isinstance(date_range, dict):
 #             print('it is a dictionary. now check the keys for start and end dates')
-        
-
-#         self.date_range = format_dates(start_date, end_date)
-#         when writing the format dates/times function, check with an assertion that the start date is before the end date
-                
+                        
         
         if start_time is None:
             self.start = self.start.combine(self.start.date(),dt.datetime.strptime('00:00:00', '%H:%M:%S').time())
@@ -142,6 +152,26 @@ class Icesat2Data():
         """
         return self.dset
     
+    @property
+    def spatial_extent(self):
+        """
+        Return an array showing the spatial extent of the ICESat-2 data object.
+        Spatial extent is returned as an input type followed by the geometry data.
+        Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+
+        Examples
+        --------
+        >>> region_a = [define that here]
+        >>> region_a.spatial_extent
+        [put output here]
+        """
+        
+        if self.extent_type is 'bbox':
+            return ['bounding box', self.spat_extent]
+        else:
+            return ['unknown spatial type', self.spat_extent]
+         
+        
     @property
     def dates(self):
         """
@@ -201,6 +231,10 @@ class Icesat2Data():
     # ----------------------------------------------------------------------
     # Static Methods
 
+#     @staticmethod
+#     def earthdata_login(self):
+        
+    
 #     @staticmethod
 #     def time_range_params(time_range): #initial version copied from topohack; ultimately will be modified heavily
 #         """

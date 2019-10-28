@@ -1,6 +1,6 @@
 #import numpy as np
 import datetime as dt
-import re
+#import re
 
 class Icesat2Data():
     """
@@ -24,13 +24,13 @@ class Icesat2Data():
         The required date format is 'YYYY-MM-DD' strings, where
         YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
         Currently, a list of specific dates (rather than a range) is not accepted.
-        DevGoal: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs.
+        DevGoal: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
         DevGoal: allow searches with a list of dates, rather than a range.
     start_time : HH:mm:ss, default 00:00:00
-        Start time in UTC/Zulu. If None, use default.
+        Start time in UTC/Zulu (24 hour clock). If None, use default.
         DevGoal: check for time in date-range date-time object, if that's used for input.
     end_time : HH:mm:ss, default 23:59:59
-        End time in UTC/Zulu. If None, use default.
+        End time in UTC/Zulu (24 hour clock). If None, use default.
         DevGoal: check for time in date-range date-time object, if that's used for input.
     version : string, default most recent version
         Dataset version, given as a 3 digit string. If no version is given, the current
@@ -62,8 +62,8 @@ class Icesat2Data():
 #         spatial_extent = None,
         date_range = None,
         start_time = None,
-#         end_time = None,
-#         version = None,
+        end_time = None,
+        version = None,
     ):
         
         if dataset is None or date_range is None:
@@ -87,7 +87,7 @@ class Icesat2Data():
             else:
                 raise ValueError("Your date range list is the wrong length. It should have start and end dates only.")
             
-#         elif istype(date_range, date-time object):
+#         elif isinstance(date_range, date-time object):
 #             print('it is a date-time object')
 #         elif isinstance(date_range, dict):
 #             print('it is a dictionary. now check the keys for start and end dates')
@@ -98,13 +98,33 @@ class Icesat2Data():
                 
         
         if start_time is None:
-            self.start = dt.datetime.strptime('00:00:00', '%H:%M:%S')
+            self.start = self.start.combine(self.start.date(),dt.datetime.strptime('00:00:00', '%H:%M:%S').time())
         else:
             if isinstance(start_time, str):
-                self.start = dt.datetime.strptime(start_time, '%H:%M:%S')
+                self.start = self.start.combine(self.start.date(),dt.datetime.strptime(start_time, '%H:%M:%S').time())
             else:
                 raise ValueError("Please enter your start time as a string")
         
+        if end_time is None:
+            self.end = self.start.combine(self.end.date(),dt.datetime.strptime('23:59:59', '%H:%M:%S').time())
+        else:
+            if isinstance(end_time, str):
+                self.end = self.start.combine(self.end.date(),dt.datetime.strptime(end_time, '%H:%M:%S').time())
+            else:
+                raise ValueError("Please enter your end time as a string")
+                
+        if version is None:
+            self.version = '001'
+            #DevGoal: query data for what's available and get most recent version
+        else:
+            if isinstance(version, str):
+                assert int(version)>0, "Version number must be positive"
+                vers_length = 3
+                self.version = version.zfill(vers_length)
+            else:
+                raise ValueError("Please enter the version number as a string")
+
+           
     
     # ----------------------------------------------------------------------
     # Properties
@@ -134,7 +154,7 @@ class Icesat2Data():
         >>> region_a.dates
         [put output here]
         """
-        return [self.start.strftime('%Y-%m-%d'), self.end.strftime('%Y-%m-%d')]
+        return [self.start.strftime('%Y-%m-%d'), self.end.strftime('%Y-%m-%d')] #could also use self.start.date()
     
     
     @property
@@ -145,11 +165,39 @@ class Icesat2Data():
         Example
         --------
         >>> region_a = [define that here]
-        >>> region_a.dataset
+        >>> region_a.start_time
         [put output here]
         """
         return self.start.strftime('%H:%M:%S')
 
+    @property
+    def end_time(self):
+        """
+        Return the end time specified for the end date.
+        
+        Example
+        --------
+        >>> region_a = [define that here]
+        >>> region_a.end_time
+        [put output here]
+        """
+        return self.end.strftime('%H:%M:%S')
+    
+    @property
+    def dataset_version(self):
+        """
+        Return the dataset version of the data object.
+        
+        Example
+        --------
+        >>> region_a = [define that here]
+        >>> region_a.dataset_version
+        [put output here]
+        """
+        return self.version
+
+    #Note: Would it be helpful to also have start and end properties that give the start/end date+time?
+    
     # ----------------------------------------------------------------------
     # Static Methods
 

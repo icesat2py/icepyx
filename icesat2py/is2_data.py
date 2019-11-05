@@ -1,6 +1,26 @@
 #import numpy as np
 import datetime as dt
-#import re
+import re
+import getpass
+import socket
+import requests
+import json
+import warnings
+
+
+def validate_dataset(dataset):
+    """
+    Confirm a valid ICESat-2 dataset was specified
+    """
+    if isinstance(dataset, str):
+        dataset = str.upper(dataset)
+        assert dataset in ['ATL02', 'ATL03', 'ATL04','ATL06', 'ATL07', 'ATL08', 'ATL09', 'ATL10', 'ATL12', 'ATL13'],\
+        "Please enter a valid dataset"
+    else:
+        raise ValueError("Please enter a dataset string")
+    return dataset
+#DevQuestion: since this function is validating an entry, does it also make sense to have a test for it?
+
 
 class Icesat2Data():
     """
@@ -45,8 +65,7 @@ class Icesat2Data():
     Examples
     --------
     Initializing Icesat2Data with a bounding box.
-    >>> sho
-    >>> reg_a_bbox = [lllong, lllat, urlong, urlat]
+    >>> reg_a_bbox = [-64, 66, -55, 72]
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
     >>> region_a
@@ -70,12 +89,7 @@ class Icesat2Data():
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
 
             
-        if isinstance(dataset, str):
-            self.dset = str.upper(dataset)
-            assert self.dset in ['ATL02', 'ATL03', 'ATL04','ATL06', 'ATL07', 'ATL08', 'ATL09', 'ATL10', 'ATL12', 'ATL13'],\
-            "Please enter a valid dataset"
-        else:
-            raise ValueError("Please enter a dataset string")
+        self.dset = validate_dataset(dataset)
          
         if isinstance(spatial_extent, list):
             if len(spatial_extent)==4:
@@ -123,9 +137,9 @@ class Icesat2Data():
             else:
                 raise ValueError("Please enter your end time as a string")
                 
+        latest_vers = self.latest_version()
         if version is None:
-            self.version = '001'
-            #DevGoal: query data for what's available and get most recent version
+            self.version = latest_vers
         else:
             if isinstance(version, str):
                 assert int(version)>0, "Version number must be positive"
@@ -133,6 +147,10 @@ class Icesat2Data():
                 self.version = version.zfill(vers_length)
             else:
                 raise ValueError("Please enter the version number as a string")
+            
+            if int(self.version) < int(latest_vers):
+                warnings.filterwarnings("always")
+                warnings.warn("You are using an old version of this dataset")
 
            
     
@@ -146,9 +164,9 @@ class Icesat2Data():
         
         Example
         --------
-        >>> region_a = [define that here]
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.dataset
-        [put output here]
+        ATL06
         """
         return self.dset
     
@@ -161,9 +179,9 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = [define that here]
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.spatial_extent
-        [put output here]
+        ['bounding box', [-64, 66, -55, 72]]
         """
         
         if self.extent_type is 'bbox':
@@ -180,9 +198,9 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = [define that here]
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.dates
-        [put output here]
+        ['2019-02-22', '2019-02-28']
         """
         return [self.start.strftime('%Y-%m-%d'), self.end.strftime('%Y-%m-%d')] #could also use self.start.date()
     
@@ -192,11 +210,15 @@ class Icesat2Data():
         """
         Return the start time specified for the start date.
         
-        Example
+        Examples
         --------
-        >>> region_a = [define that here]
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.start_time
-        [put output here]
+        00:00:00
+        
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], start_time='12:30:30')
+        >>> region_a.start_time
+        12:30:30
         """
         return self.start.strftime('%H:%M:%S')
 
@@ -207,9 +229,13 @@ class Icesat2Data():
         
         Example
         --------
-        >>> region_a = [define that here]
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.end_time
-        [put output here]
+        23:59:59
+        
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], end_time='10:20:20')
+        >>> region_a.end_time
+        10:20:20
         """
         return self.end.strftime('%H:%M:%S')
     
@@ -220,9 +246,13 @@ class Icesat2Data():
         
         Example
         --------
-        >>> region_a = [define that here]
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.dataset_version
-        [put output here]
+        002
+        
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], version='1')
+        >>> region_a.dataset_version
+        001
         """
         return self.version
 
@@ -231,10 +261,35 @@ class Icesat2Data():
     # ----------------------------------------------------------------------
     # Static Methods
 
-#     @staticmethod
-#     def earthdata_login(self):
+    @staticmethod
+    def earthdata_login(uid,email):
+        """
+        Initiate an Earthdata session and create a token for interacting
+        with the NSIDC DAAC. This function will prompt the user for
+        their Earthdata password, but will only store that information
+        within the active session.
         
-    
+        Parameters
+        ----------
+        uid : string
+            Earthdata Login user name.
+        email : string
+            Complete email address, provided as a string.
+
+        Example
+        --------
+        >>> region_a = [define that here]
+        >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
+        Earthdata Login password:  ········
+        """
+
+        assert isinstance(uid, str), "Enter your login user id as a string"
+        assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
+        
+        pswd = getpass.getpass('Earthdata Login password: ')
+        
+
+
 #     @staticmethod
 #     def time_range_params(time_range): #initial version copied from topohack; ultimately will be modified heavily
 #         """
@@ -255,3 +310,34 @@ class Icesat2Data():
 
 #         return f"{time_range['start_date']}T{start_time}Z," \
 #             f"{time_range['end_date']}T{end_time}Z"
+
+
+    # ----------------------------------------------------------------------
+    # Methods
+
+    def about_dataset(self): 
+        """
+        Return metadata about the dataset of interest.
+        """
+        
+        cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
+        response = requests.get(cmr_collections_url, params={'short_name': self.dset})
+        results = json.loads(response.content)
+        return results
+        #DevGoal: provide a more readable data format if the user prints the data (look into pprint, per Amy's tutorial)
+    
+    def latest_version(self):
+        """
+        Determine the most recent version available for the given dataset.
+        """
+        dset_info = self.about_dataset()
+        return max([entry['version_id'] for entry in dset_info['feed']['entry']])
+        
+    
+#      def query_avail_granules(self):
+        
+        
+    
+
+
+

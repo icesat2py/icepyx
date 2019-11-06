@@ -14,12 +14,14 @@ def validate_dataset(dataset):
     """
     if isinstance(dataset, str):
         dataset = str.upper(dataset)
-        assert dataset in ['ATL02', 'ATL03', 'ATL04','ATL06', 'ATL07', 'ATL08', 'ATL09', 'ATL10', 'ATL12', 'ATL13'],\
+        assert dataset in ['ATL01','ATL02', 'ATL03', 'ATL04','ATL06', 'ATL07', 'ATL08', 'ATL09', 'ATL10', \
+                           'ATL12', 'ATL13'],\
         "Please enter a valid dataset"
     else:
         raise ValueError("Please enter a dataset string")
     return dataset
 #DevQuestion: since this function is validating an entry, does it also make sense to have a test for it?
+#DevGoal: See if there's a way to dynamically get this list so it's automatically updated
 
 
 class Icesat2Data():
@@ -55,7 +57,6 @@ class Icesat2Data():
     version : string, default most recent version
         Dataset version, given as a 3 digit string. If no version is given, the current
         version is used.
-        Current version (Oct 2019): 001
     
         
     See Also
@@ -101,7 +102,7 @@ class Icesat2Data():
                 assert spatial_extent[0] <= spatial_extent[2], "Invalid bounding box longitudes"
                 assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
                 self.spat_extent = spatial_extent
-                self.extent_type = 'bbox'
+                self.extent_type = 'bounding_box'
             else:
                 raise ValueError('Your spatial extent bounding box needs to have four entries')
                            
@@ -152,7 +153,7 @@ class Icesat2Data():
                 warnings.filterwarnings("always")
                 warnings.warn("You are using an old version of this dataset")
 
-           
+        self.params={}
     
     # ----------------------------------------------------------------------
     # Properties
@@ -184,7 +185,7 @@ class Icesat2Data():
         ['bounding box', [-64, 66, -55, 72]]
         """
         
-        if self.extent_type is 'bbox':
+        if self.extent_type is 'bounding_box':
             return ['bounding box', self.spat_extent]
         else:
             return ['unknown spatial type', self.spat_extent]
@@ -288,36 +289,55 @@ class Icesat2Data():
         
         pswd = getpass.getpass('Earthdata Login password: ')
         
-
-
-#     @staticmethod
-#     def time_range_params(time_range): #initial version copied from topohack; ultimately will be modified heavily
-#         """
-#         Construct 'temporal' parameter for API call.
-
-#         :param time_range: dictionary with specific time range
-#                            *Required_keys* - 'start_date', 'end_date'
-#                            *Format* - 'yyyy-mm-dd'
-
-#         :return: Time string for request parameter or None if required keys are
-#                  missing.
-#         """
-#         start_time = '00:00:00'  # Start time in HH:mm:ss format
-#         end_time = '23:59:59'    # End time in HH:mm:ss format
-
-#         if 'start_date' not in time_range or 'end_date' not in time_range:
-#             return None
-
-#         return f"{time_range['start_date']}T{start_time}Z," \
-#             f"{time_range['end_date']}T{end_time}Z"
-
+    @staticmethod
+    def cmr_fmt_temporal(start,end):
+        """
+        Format the start and end dates and times into a temporal CMR search key.
+        
+        Parameters
+        ----------
+        start : date time object
+            Start date and time for the period of interest.
+        end : date time object
+            End date and time for the period of interest.
+        """
+        
+        assert isinstance(start, dt.datetime)
+        assert isinstance(end, dt.datetime)
+        fmt_timerange = [start.strftime('%Y-%m-%dT%H:%M:%SZ'),end.strftime('%Y-%m-%dT%H:%M:%S')]
+        
+        return {'temporal':fmt_timerange}
+        
+    @staticmethod
+    def cmr_fmt_spatial(ext_type,extent):
+        """
+        Format the spatial extent input into a spatial CMR search key.
+        
+        Parameters
+        ----------
+        extent_type : string
+            Spatial extent type. Must be one of ['bounding_box'].
+        extent : list
+            Spatial extent, with input format dependent on the extent type.
+            Bounding box coordinates should be provided in decimal degrees as
+            [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+        """
+        
+        assert ext_type in ['bounding_box'], "Invalid spatial extent type."
+        
+        if ext_type=='bounding_box':
+            fmt_extent = ','.join(map(str, extent))
+             
+        return {ext_type: fmt_extent}
+        
+        
 
     # ----------------------------------------------------------------------
     # Methods
 
     def about_dataset(self): 
         """
-        Return metadata about the dataset of interest.
+        Return metadata about the dataset of interest (the collection).
         """
         
         cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
@@ -333,8 +353,63 @@ class Icesat2Data():
         dset_info = self.about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
         
+    def build_CMR_params(self):
+        """
+        Build a dictionary of CMR parameter keys to submit for granule searches and download.
+        """
+        
+        CMR_solo_keys = ['short_name','version','temporal','page_size','page_num']
+        CMR_spat_keys = ['bounding_box','polygon']
+        #check to see if the parameter list is already built
+        if all(keys in self.params for keys in CMR_solo_keys) and any(keys in self.params for keys in CMR_spat_keys):
+            pass
+        #if not, see which fields need to be added and add them
+        else:
+            for key in CMR_solo_keys:
+                if key in self.params:
+                    pass
+                else:
+                    if key is 'short_name':
+                        self.params.update({key:self.dataset})    
+                    elif key=='version':
+                        self.params.update({key:self.version})
+                    elif key=='temporal':
+                        self.params.update({key:self.cmr_fmt_temporal(self.start,self.end)})
+                    elif key=='page_size':
+                        self.params.update({key:100})
+                    elif key=='page_num':
+                         self.params.update({key:1})
+            if any(keys in self.params for keys in CMR_spat_keys):
+                pass
+            else:
+                self.params.update(self.cmr_fmt_spatial(self.extent_type,self.spat_extent))
+        
+#         return self.params
     
-#      def query_avail_granules(self):
+    
+#     def avail_granules(self):
+#         """
+#         Get a list of available granules for the ICESat-2 data object's parameters
+#         """
+        
+#         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
+
+#         self.granules = []
+#         while True:
+#             response = requests.get(granule_search_url, params=self.build_CMR_params(), headers=self.headers)
+#             results = json.loads(response.content)
+
+#             if len(results['feed']['entry']) == 0:
+#                 # Out of results, so break out of loop
+#                 break
+
+#             # Collect results and increment page_num
+#             self.granules.extend(results['feed']['entry'])
+#             self.params['page_num'] += 1
+                    
+# #         return self.granules
+        
+
         
         
     

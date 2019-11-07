@@ -1,4 +1,4 @@
-#import numpy as np
+import numpy as np
 import datetime as dt
 import re
 import getpass
@@ -153,7 +153,6 @@ class Icesat2Data():
                 warnings.filterwarnings("always")
                 warnings.warn("You are using an old version of this dataset")
 
-        self.params={}
     
     # ----------------------------------------------------------------------
     # Properties
@@ -259,6 +258,25 @@ class Icesat2Data():
 
     #Note: Would it be helpful to also have start and end properties that give the start/end date+time?
     
+    @property
+    def granule_info(self):
+        """
+        Return some basic information about the granules available for the given ICESat-2 data object.
+        
+        Example
+        --------
+        >>>
+        """
+        gran_info = {}
+        gran_info.update({'Number of available granules': len(self.granules)})
+        
+        gran_sizes = [float(gran['granule_size']) for gran in self.granules]
+        gran_info.update({'Average size of granules (MB)': np.mean(gran_sizes)})
+        gran_info.update({'Total size of all granules (MB)': sum(gran_sizes)})
+        
+        return gran_info
+        
+    
     # ----------------------------------------------------------------------
     # Static Methods
 
@@ -289,6 +307,8 @@ class Icesat2Data():
         
         pswd = getpass.getpass('Earthdata Login password: ')
         
+        #Note: enter this info into the reqparams
+        
     @staticmethod
     def cmr_fmt_temporal(start,end):
         """
@@ -304,7 +324,7 @@ class Icesat2Data():
         
         assert isinstance(start, dt.datetime)
         assert isinstance(end, dt.datetime)
-        fmt_timerange = [start.strftime('%Y-%m-%dT%H:%M:%SZ'),end.strftime('%Y-%m-%dT%H:%M:%S')]
+        fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +', ' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
         
         return {'temporal':fmt_timerange}
         
@@ -330,7 +350,14 @@ class Icesat2Data():
              
         return {ext_type: fmt_extent}
         
-        
+    @staticmethod
+    def combine_params(*param_dicts):
+        params={}
+        for dictionary in param_dicts:
+            params.update(dictionary)
+        return params
+
+    
 
     # ----------------------------------------------------------------------
     # Methods
@@ -346,6 +373,7 @@ class Icesat2Data():
         return results
         #DevGoal: provide a more readable data format if the user prints the data (look into pprint, per Amy's tutorial)
     
+    
     def latest_version(self):
         """
         Determine the most recent version available for the given dataset.
@@ -353,66 +381,184 @@ class Icesat2Data():
         dset_info = self.about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
         
+        
     def build_CMR_params(self):
         """
         Build a dictionary of CMR parameter keys to submit for granule searches and download.
         """
         
-        CMR_solo_keys = ['short_name','version','temporal','page_size','page_num']
+        if not hasattr(self,'CMRparams'):
+            self.CMRparams={}
+        
+        CMR_solo_keys = ['short_name','version','temporal']
         CMR_spat_keys = ['bounding_box','polygon']
         #check to see if the parameter list is already built
-        if all(keys in self.params for keys in CMR_solo_keys) and any(keys in self.params for keys in CMR_spat_keys):
+        if all(keys in self.CMRparams for keys in CMR_solo_keys) and any(keys in self.CMRparams for keys in CMR_spat_keys):
             pass
         #if not, see which fields need to be added and add them
         else:
             for key in CMR_solo_keys:
-                if key in self.params:
+                if key in self.CMRparams:
                     pass
                 else:
                     if key is 'short_name':
-                        self.params.update({key:self.dataset})    
+                        self.CMRparams.update({key:self.dataset})    
                     elif key=='version':
-                        self.params.update({key:self.version})
+                        self.CMRparams.update({key:self.version})
                     elif key=='temporal':
-                        self.params.update({key:self.cmr_fmt_temporal(self.start,self.end)})
-                    elif key=='page_size':
-                        self.params.update({key:100})
-                    elif key=='page_num':
-                         self.params.update({key:1})
-            if any(keys in self.params for keys in CMR_spat_keys):
+                        self.CMRparams.update(self.cmr_fmt_temporal(self.start,self.end))
+            if any(keys in self.CMRparams for keys in CMR_spat_keys):
                 pass
             else:
-                self.params.update(self.cmr_fmt_spatial(self.extent_type,self.spat_extent))
-        
-#         return self.params
+                self.CMRparams.update(self.cmr_fmt_spatial(self.extent_type,self.spat_extent))
     
     
-#     def avail_granules(self):
-#         """
-#         Get a list of available granules for the ICESat-2 data object's parameters
-#         """
+    def build_reqconfig_params(self,reqtype, **kwargs):
+        """
+        Build a dictionary of request configuration parameters.
+        #DevGoal: Allow updating of the request configuration parameters (right now they must be manually deleted to be modified)
+        """
         
-#         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
+        if not hasattr(self,'reqparams'):
+            self.reqparams={}
+        
+        if reqtype is 'search':
+            reqkeys = ['page_size','page_num']
+        elif reqtype is 'download':
+            reqkeys = ['page_size','page_num','request_mode','token','email']   
+        else:
+            raise ValueError("Invalid request type")
+        
+        if all(keys in self.reqparams for keys in reqkeys):
+            pass
+        else:
+            defaults={'page_size':100,'page_num':1,'request_mode':'async','token':'','email':''}
+            for key in reqkeys:
+                if key in kwargs:
+                    self.reqparams.update({key:kwargs[key]})
+                else:
+                    self.reqparams.update({key:defaults[key]})
+        
+        
+    def avail_granules(self):
+        """
+        Get a list of available granules for the ICESat-2 data object's parameters
+        """
+        
+        granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
 
-#         self.granules = []
-#         while True:
-#             response = requests.get(granule_search_url, params=self.build_CMR_params(), headers=self.headers)
-#             results = json.loads(response.content)
+        self.granules = []
+        self.build_CMR_params()
+        self.build_reqconfig_params('search')
+        headers={'Accept': 'application/json'}
+        while True:
+            response = requests.get(granule_search_url, params=self.combine_params(self.CMRparams, self.reqparams), headers=headers)
+            results = json.loads(response.content)
 
-#             if len(results['feed']['entry']) == 0:
-#                 # Out of results, so break out of loop
-#                 break
+            if len(results['feed']['entry']) == 0:
+                # Out of results, so break out of loop
+                break
 
-#             # Collect results and increment page_num
-#             self.granules.extend(results['feed']['entry'])
-#             self.params['page_num'] += 1
+            # Collect results and increment page_num
+            self.granules.extend(results['feed']['entry'])
+            self.reqparams['page_num'] += 1
                     
-# #         return self.granules
-        
-
-        
-        
+        return self.granule_info
     
+
+#     def download_granules(self):
+#         """
+#         Download the available granules for the ICESat-2 data object.
+#         DevGoal: add additional kwargs to allow subsetting and more control over download options.
+#         Note: This currently uses paging to download data - this may not be the best method
+#         """
+        
+#         # Request data service for each page number, and unzip outputs
+
+#         for i in range(page_num):
+#             page_val = i + 1
+#             print('Order: ', page_val)
+#             request_params.update( {'page_num': page_val} )
+
+#         # For all requests other than spatial file upload, use get function
+#             request = session.get(base_url, params=request_params)
+
+#             print('Request HTTP response: ', request.status_code)
+
+#         # Raise bad request: Loop will stop for bad response code.
+#             request.raise_for_status()
+#             print('Order request URL: ', request.url)
+#             esir_root = ET.fromstring(request.content)
+#             print('Order request response XML content: ', request.content)
+
+#         #Look up order ID
+#             orderlist = []   
+#             for order in esir_root.findall("./order/"):
+#                 orderlist.append(order.text)
+#             orderID = orderlist[0]
+#             print('order ID: ', orderID)
+
+#         #Create status URL
+#             statusURL = base_url + '/' + orderID
+#             print('status URL: ', statusURL)
+
+#         #Find order status
+#             request_response = session.get(statusURL)    
+#             print('HTTP response from order response URL: ', request_response.status_code)
+
+#         # Raise bad request: Loop will stop for bad response code.
+#             request_response.raise_for_status()
+#             request_root = ET.fromstring(request_response.content)
+#             statuslist = []
+#             for status in request_root.findall("./requestStatus/"):
+#                 statuslist.append(status.text)
+#             status = statuslist[0]
+#             print('Data request ', page_val, ' is submitting...')
+#             print('Initial request status is ', status)
+
+#         #Continue loop while request is still processing
+#             while status == 'pending' or status == 'processing': 
+#                 print('Status is not complete. Trying again.')
+#                 time.sleep(10)
+#                 loop_response = session.get(statusURL)
+
+#         # Raise bad request: Loop will stop for bad response code.
+#                 loop_response.raise_for_status()
+#                 loop_root = ET.fromstring(loop_response.content)
+
+#         #find status
+#                 statuslist = []
+#                 for status in loop_root.findall("./requestStatus/"):
+#                     statuslist.append(status.text)
+#                 status = statuslist[0]
+#                 print('Retry request status is: ', status)
+#                 if status == 'pending' or status == 'processing':
+#                     continue
+
+#         #Order can either complete, complete_with_errors, or fail:
+#         # Provide complete_with_errors error message:
+#             if status == 'complete_with_errors' or status == 'failed':
+#                 messagelist = []
+#                 for message in loop_root.findall("./processInfo/"):
+#                     messagelist.append(message.text)
+#                 print('error messages:')
+#                 pprint.pprint(messagelist)
+
+#         # Download zipped order if status is complete or complete_with_errors
+#             if status == 'complete' or status == 'complete_with_errors':
+#                 downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + orderID + '.zip'
+#                 print('Zip download URL: ', downloadURL)
+#                 print('Beginning download of zipped output...')
+#                 zip_response = session.get(downloadURL)
+#                 # Raise bad request: Loop will stop for bad response code.
+#                 zip_response.raise_for_status()
+#                 with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
+#                     z.extractall(path)
+#                 print('Data request', page_val, 'is complete.')
+#             else: print('Request failed.')
+
+    
+
 
 
 

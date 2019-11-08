@@ -6,6 +6,7 @@ import socket
 import requests
 import json
 import warnings
+from xml.etree import ElementTree as ET
 
 
 def validate_dataset(dataset):
@@ -279,35 +280,6 @@ class Icesat2Data():
     
     # ----------------------------------------------------------------------
     # Static Methods
-
-    @staticmethod
-    def earthdata_login(uid,email):
-        """
-        Initiate an Earthdata session and create a token for interacting
-        with the NSIDC DAAC. This function will prompt the user for
-        their Earthdata password, but will only store that information
-        within the active session.
-        
-        Parameters
-        ----------
-        uid : string
-            Earthdata Login user name.
-        email : string
-            Complete email address, provided as a string.
-
-        Example
-        --------
-        >>> region_a = [define that here]
-        >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
-        Earthdata Login password:  ········
-        """
-
-        assert isinstance(uid, str), "Enter your login user id as a string"
-        assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
-        
-        pswd = getpass.getpass('Earthdata Login password: ')
-        
-        #Note: enter this info into the reqparams
         
     @staticmethod
     def cmr_fmt_temporal(start,end):
@@ -465,97 +437,170 @@ class Icesat2Data():
                     
         return self.granule_info
     
-
-#     def download_granules(self):
-#         """
-#         Download the available granules for the ICESat-2 data object.
-#         DevGoal: add additional kwargs to allow subsetting and more control over download options.
-#         Note: This currently uses paging to download data - this may not be the best method
-#         """
+    
+    def earthdata_login(self,uid,email):
+        """
+        Initiate an Earthdata session and create a token for interacting
+        with the NSIDC DAAC. This function will prompt the user for
+        their Earthdata password, but will only store that information
+        within the active session.
         
-#         # Request data service for each page number, and unzip outputs
+        Parameters
+        ----------
+        uid : string
+            Earthdata Login user name.
+        email : string
+            Complete email address, provided as a string.
 
-#         for i in range(page_num):
-#             page_val = i + 1
-#             print('Order: ', page_val)
-#             request_params.update( {'page_num': page_val} )
+        Example
+        --------
+        >>> region_a = [define that here]
+        >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
+        Earthdata Login password:  ········
+        """
 
-#         # For all requests other than spatial file upload, use get function
-#             request = session.get(base_url, params=request_params)
+        if not hasattr(self,'reqparams'):
+            self.reqparams={}
+        
+        assert isinstance(uid, str), "Enter your login user id as a string"
+        assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
+        
+        pswd = getpass.getpass('Earthdata Login password: ')
+        
+#         #Request CMR token using Earthdata credentials
+#         token_api_url = 'https://cmr.earthdata.nasa.gov/legacy-services/rest/tokens'
+#         hostname = socket.gethostname()
+#         ip = socket.gethostbyname(hostname)
 
-#             print('Request HTTP response: ', request.status_code)
+#         data = {'token': {'username': uid, 'password': pswd,\
+#                           'client_id': 'NSIDC_client_id','user_ip_address': ip}
+#         }
+#         response = requests.post(token_api_url, json=data, headers={'Accept': 'application/json'})
+#         token = json.loads(response.content)['token']['id']
+        
+        self.reqparams.update({'email': email})#, 'token': token})
+        
+        #Start a session
+        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self.version}.xml'
+        session = requests.session()
+        s = session.get(capability_url)
+        response = session.get(s.url,auth=(uid,pswd))
+        
+        return session
 
-#         # Raise bad request: Loop will stop for bad response code.
-#             request.raise_for_status()
-#             print('Order request URL: ', request.url)
-#             esir_root = ET.fromstring(request.content)
-#             print('Order request response XML content: ', request.content)
 
-#         #Look up order ID
-#             orderlist = []   
-#             for order in esir_root.findall("./order/"):
-#                 orderlist.append(order.text)
-#             orderID = orderlist[0]
-#             print('order ID: ', orderID)
+    def download_granules(self, session):
+        """
+        Download the available granules for the ICESat-2 data object.
+        DevGoal: add additional kwargs to allow subsetting and more control over download options.
+        Note: This currently uses paging to download data - this may not be the best method
+        
+        Parameters
+        ----------
+        session : requests.session object
+            A session object authenticating the user to download data using their Earthdata login information.
+            The session object can be obtained using is2_data.earthdata_login(uid, email) and entering your
+            Earthdata login password when prompted. You must have previously registered for an Earthdata account.
+            
+        verbose : boolean, default False
+            Print out all feedback available from the download process.
+            Progress information is automatically printed regardless of the value of verbose.
+        """
+        
+        if session is None:
+            raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
+            #DevGoal: make this a more robust check for an active session
+        
+        base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
+        #DevGoal: get the base_url from the granules
+        
+        self.build_CMR_params()
+        self.build_reqconfig_params('download')
+        request_params = self.combine_params(self.CMRparams, self.reqparams)
+        
+        # Request data service for each page number, and unzip outputs
+        for i in range(request_params['page_num']):
+            page_val = i + 1
+            print('Order: ', page_val)
+            request_params.update( {'page_num': page_val} )
 
-#         #Create status URL
-#             statusURL = base_url + '/' + orderID
-#             print('status URL: ', statusURL)
+        # For all requests other than spatial file upload, use get function
+            request = session.get(base_url, params=request_params)
 
-#         #Find order status
-#             request_response = session.get(statusURL)    
-#             print('HTTP response from order response URL: ', request_response.status_code)
+            print('Request HTTP response: ', request.status_code)
 
-#         # Raise bad request: Loop will stop for bad response code.
-#             request_response.raise_for_status()
-#             request_root = ET.fromstring(request_response.content)
-#             statuslist = []
-#             for status in request_root.findall("./requestStatus/"):
-#                 statuslist.append(status.text)
-#             status = statuslist[0]
-#             print('Data request ', page_val, ' is submitting...')
-#             print('Initial request status is ', status)
+        # Raise bad request: Loop will stop for bad response code.
+            request.raise_for_status()
+            print('Order request URL: ', request.url)
+            esir_root = ET.fromstring(request.content)
+            print('Order request response XML content: ', request.content)
 
-#         #Continue loop while request is still processing
-#             while status == 'pending' or status == 'processing': 
-#                 print('Status is not complete. Trying again.')
-#                 time.sleep(10)
-#                 loop_response = session.get(statusURL)
+        #Look up order ID
+            orderlist = []   
+            for order in esir_root.findall("./order/"):
+                print(order)
+                orderlist.append(order.text)
+            orderID = orderlist[0]
+            print('order ID: ', orderID)
 
-#         # Raise bad request: Loop will stop for bad response code.
-#                 loop_response.raise_for_status()
-#                 loop_root = ET.fromstring(loop_response.content)
+        #Create status URL
+            statusURL = base_url + '/' + orderID
+            print('status URL: ', statusURL)
 
-#         #find status
-#                 statuslist = []
-#                 for status in loop_root.findall("./requestStatus/"):
-#                     statuslist.append(status.text)
-#                 status = statuslist[0]
-#                 print('Retry request status is: ', status)
-#                 if status == 'pending' or status == 'processing':
-#                     continue
+        #Find order status
+            request_response = session.get(statusURL)    
+            print('HTTP response from order response URL: ', request_response.status_code)
 
-#         #Order can either complete, complete_with_errors, or fail:
-#         # Provide complete_with_errors error message:
-#             if status == 'complete_with_errors' or status == 'failed':
-#                 messagelist = []
-#                 for message in loop_root.findall("./processInfo/"):
-#                     messagelist.append(message.text)
-#                 print('error messages:')
-#                 pprint.pprint(messagelist)
+        # Raise bad request: Loop will stop for bad response code.
+            request_response.raise_for_status()
+            request_root = ET.fromstring(request_response.content)
+            statuslist = []
+            for status in request_root.findall("./requestStatus/"):
+                statuslist.append(status.text)
+            status = statuslist[0]
+            print('Data request ', page_val, ' is submitting...')
+            print('Initial request status is ', status)
 
-#         # Download zipped order if status is complete or complete_with_errors
-#             if status == 'complete' or status == 'complete_with_errors':
-#                 downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + orderID + '.zip'
-#                 print('Zip download URL: ', downloadURL)
-#                 print('Beginning download of zipped output...')
-#                 zip_response = session.get(downloadURL)
-#                 # Raise bad request: Loop will stop for bad response code.
-#                 zip_response.raise_for_status()
-#                 with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
-#                     z.extractall(path)
-#                 print('Data request', page_val, 'is complete.')
-#             else: print('Request failed.')
+        #Continue loop while request is still processing
+            while status == 'pending' or status == 'processing': 
+                print('Status is not complete. Trying again.')
+                time.sleep(10)
+                loop_response = session.get(statusURL)
+
+        # Raise bad request: Loop will stop for bad response code.
+                loop_response.raise_for_status()
+                loop_root = ET.fromstring(loop_response.content)
+
+        #find status
+                statuslist = []
+                for status in loop_root.findall("./requestStatus/"):
+                    statuslist.append(status.text)
+                status = statuslist[0]
+                print('Retry request status is: ', status)
+                if status == 'pending' or status == 'processing':
+                    continue
+
+        #Order can either complete, complete_with_errors, or fail:
+        # Provide complete_with_errors error message:
+            if status == 'complete_with_errors' or status == 'failed':
+                messagelist = []
+                for message in loop_root.findall("./processInfo/"):
+                    messagelist.append(message.text)
+                print('error messages:')
+                pprint.pprint(messagelist)
+
+        # Download zipped order if status is complete or complete_with_errors
+            if status == 'complete' or status == 'complete_with_errors':
+                downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + orderID + '.zip'
+                print('Zip download URL: ', downloadURL)
+                print('Beginning download of zipped output...')
+                zip_response = session.get(downloadURL)
+                # Raise bad request: Loop will stop for bad response code.
+                zip_response.raise_for_status()
+                with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
+                    z.extractall(path)
+                print('Data request', page_val, 'is complete.')
+            else: print('Request failed.')
 
     
 

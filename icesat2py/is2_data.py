@@ -1,6 +1,7 @@
 import numpy as np
 import datetime as dt
 import re
+import os
 import getpass
 import socket
 import requests
@@ -8,6 +9,7 @@ import json
 import warnings
 from xml.etree import ElementTree as ET
 import time
+import zipfile
 
 
 def validate_dataset(dataset):
@@ -405,7 +407,7 @@ class Icesat2Data():
         if all(keys in self.reqparams for keys in reqkeys):
             pass
         else:
-            defaults={'page_size':100,'page_num':1,'request_mode':'async','agent':'NO','include_meta':'Y'}
+            defaults={'page_size':10,'page_num':1,'request_mode':'async','agent':'NO','include_meta':'Y'}
             for key in reqkeys:
                 if key in kwargs:
                     self.reqparams.update({key:kwargs[key]})
@@ -494,10 +496,11 @@ class Icesat2Data():
         return session
 
 
-    def download_granules(self, session):
+    def order_granules(self, session):
         """
-        Download the available granules for the ICESat-2 data object.
-        DevGoal: add additional kwargs to allow subsetting and more control over download options.
+        Place an order for the available granules for the ICESat-2 data object.
+        Adds the list of zipped files (orders) to the data object.
+        DevGoal: add additional kwargs to allow subsetting and more control over request options.
         Note: This currently uses paging to download data - this may not be the best method
         
         Parameters
@@ -522,6 +525,8 @@ class Icesat2Data():
         self.build_CMR_params()
         self.build_reqconfig_params('download')
         request_params = self.combine_params(self.CMRparams, self.reqparams)
+        
+        granules=self.avail_granules() #this way the reqparams['page_num'] is updated
         
         # Request data service for each page number, and unzip outputs
         for i in range(request_params['page_num']):
@@ -594,19 +599,61 @@ class Icesat2Data():
                 print('error messages:')
                 pprint.pprint(messagelist)
         
-        #zipfile is not installed, so it fails at this step currently.
-        # Download zipped order if status is complete or complete_with_errors
             if status == 'complete' or status == 'complete_with_errors':
-                downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + orderID + '.zip'
-                print('Zip download URL: ', downloadURL)
-                print('Beginning download of zipped output...')
-                zip_response = session.get(downloadURL)
-                # Raise bad request: Loop will stop for bad response code.
-                zip_response.raise_for_status()
-                with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
-                    z.extractall(path)
-                print('Data request', page_val, 'is complete.')
+                if not hasattr(self,'orderIDs'):
+                    self.orderIDs=[]
+                
+                self.orderIDs.append(orderID)
             else: print('Request failed.')
+
+
+        
+    def download_granules(self, session, path, extract=False):
+        """
+        Downloads the data ordered using order_granules.
+        
+        Parameters
+        ----------
+        session : requests.session object
+            A session object authenticating the user to download data using their Earthdata login information.
+            The session object can be obtained using is2_data.earthdata_login(uid, email) and entering your
+            Earthdata login password when prompted. You must have previously registered for an Earthdata account.
+        path : string
+            String with complete path to desired download location.
+        extract : boolean, default False
+            Unzip the downloaded granules.
+        """
+
+        #Note: need to test these checks still
+        if session is None:
+            raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
+            #DevGoal: make this a more robust check for an active session
+
+        if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
+            try:
+                self.order_granules(session)    
+            except:
+                if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
+                    raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')   
+            
+        os.chdir(path)
+            
+        for order in self.orderIDs:
+            downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + order + '.zip'
+            #DevGoal: get the download_url from the granules
+
+            print('Zip download URL: ', downloadURL)
+            print('Beginning download of zipped output...')
+            zip_response = session.get(downloadURL)
+            # Raise bad request: Loop will stop for bad response code.
+            zip_response.raise_for_status()
+            print('Data request', order, 'of ', len(self.orderIDs), ' order(s) is complete.')
+            
+        #Note: I haven't tested this yet
+        if extract is True:            
+            with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
+                z.extractall(path)
+
 
     
 

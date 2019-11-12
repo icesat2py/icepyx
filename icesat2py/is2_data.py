@@ -7,6 +7,7 @@ import requests
 import json
 import warnings
 from xml.etree import ElementTree as ET
+import time
 
 
 def validate_dataset(dataset):
@@ -296,7 +297,7 @@ class Icesat2Data():
         
         assert isinstance(start, dt.datetime)
         assert isinstance(end, dt.datetime)
-        fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +', ' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
+        fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
         
         return {'temporal':fmt_timerange}
         
@@ -397,19 +398,21 @@ class Icesat2Data():
         if reqtype is 'search':
             reqkeys = ['page_size','page_num']
         elif reqtype is 'download':
-            reqkeys = ['page_size','page_num','request_mode','token','email']   
+            reqkeys = ['page_size','page_num','request_mode','token','email','agent','include_meta']   
         else:
             raise ValueError("Invalid request type")
         
         if all(keys in self.reqparams for keys in reqkeys):
             pass
         else:
-            defaults={'page_size':100,'page_num':1,'request_mode':'async','token':'','email':''}
+            defaults={'page_size':100,'page_num':1,'request_mode':'async','agent':'NO','include_meta':'Y'}
             for key in reqkeys:
                 if key in kwargs:
                     self.reqparams.update({key:kwargs[key]})
-                else:
+                elif key in defaults:
                     self.reqparams.update({key:defaults[key]})
+                else:
+                    pass
         
         
     def avail_granules(self):
@@ -424,7 +427,9 @@ class Icesat2Data():
         self.build_reqconfig_params('search')
         headers={'Accept': 'application/json'}
         while True:
-            response = requests.get(granule_search_url, params=self.combine_params(self.CMRparams, self.reqparams), headers=headers)
+            response = requests.get(granule_search_url, headers=headers,\
+                                    params=self.combine_params(self.CMRparams,\
+                                                               {k: self.reqparams[k] for k in ('page_size','page_num')}))
             results = json.loads(response.content)
 
             if len(results['feed']['entry']) == 0:
@@ -467,18 +472,18 @@ class Icesat2Data():
         
         pswd = getpass.getpass('Earthdata Login password: ')
         
-#         #Request CMR token using Earthdata credentials
-#         token_api_url = 'https://cmr.earthdata.nasa.gov/legacy-services/rest/tokens'
-#         hostname = socket.gethostname()
-#         ip = socket.gethostbyname(hostname)
+        #Request CMR token using Earthdata credentials
+        token_api_url = 'https://cmr.earthdata.nasa.gov/legacy-services/rest/tokens'
+        hostname = socket.gethostname()
+        ip = socket.gethostbyname(hostname)
 
-#         data = {'token': {'username': uid, 'password': pswd,\
-#                           'client_id': 'NSIDC_client_id','user_ip_address': ip}
-#         }
-#         response = requests.post(token_api_url, json=data, headers={'Accept': 'application/json'})
-#         token = json.loads(response.content)['token']['id']
+        data = {'token': {'username': uid, 'password': pswd,\
+                          'client_id': 'NSIDC_client_id','user_ip_address': ip}
+        }
+        response = requests.post(token_api_url, json=data, headers={'Accept': 'application/json'})
+        token = json.loads(response.content)['token']['id']
         
-        self.reqparams.update({'email': email})#, 'token': token})
+        self.reqparams.update({'email': email, 'token': token})
         
         #Start a session
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self.version}.xml'
@@ -588,7 +593,8 @@ class Icesat2Data():
                     messagelist.append(message.text)
                 print('error messages:')
                 pprint.pprint(messagelist)
-
+        
+        #zipfile is not installed, so it fails at this step currently.
         # Download zipped order if status is complete or complete_with_errors
             if status == 'complete' or status == 'complete_with_errors':
                 downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + orderID + '.zip'

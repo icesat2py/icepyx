@@ -10,6 +10,8 @@ import warnings
 from xml.etree import ElementTree as ET
 import time
 import zipfile
+import io
+import math
 
 
 def validate_dataset(dataset):
@@ -22,7 +24,7 @@ def validate_dataset(dataset):
                            'ATL12', 'ATL13'],\
         "Please enter a valid dataset"
     else:
-        raise ValueError("Please enter a dataset string")
+        raise TypeError("Please enter a dataset string")
     return dataset
 #DevQuestion: since this function is validating an entry, does it also make sense to have a test for it?
 #DevGoal: See if there's a way to dynamically get this list so it's automatically updated
@@ -132,7 +134,7 @@ class Icesat2Data():
             if isinstance(start_time, str):
                 self.start = self.start.combine(self.start.date(),dt.datetime.strptime(start_time, '%H:%M:%S').time())
             else:
-                raise ValueError("Please enter your start time as a string")
+                raise TypeError("Please enter your start time as a string")
         
         if end_time is None:
             self.end = self.start.combine(self.end.date(),dt.datetime.strptime('23:59:59', '%H:%M:%S').time())
@@ -140,7 +142,7 @@ class Icesat2Data():
             if isinstance(end_time, str):
                 self.end = self.start.combine(self.end.date(),dt.datetime.strptime(end_time, '%H:%M:%S').time())
             else:
-                raise ValueError("Please enter your end time as a string")
+                raise TypeError("Please enter your end time as a string")
                 
         latest_vers = self.latest_version()
         if version is None:
@@ -151,7 +153,7 @@ class Icesat2Data():
                 vers_length = 3
                 self.version = version.zfill(vers_length)
             else:
-                raise ValueError("Please enter the version number as a string")
+                raise TypeError("Please enter the version number as a string")
             
             if int(self.version) < int(latest_vers):
                 warnings.filterwarnings("always")
@@ -411,8 +413,15 @@ class Icesat2Data():
             for key in reqkeys:
                 if key in kwargs:
                     self.reqparams.update({key:kwargs[key]})
-                elif key in defaults:
-                    self.reqparams.update({key:defaults[key]})
+                elif key in defaults: 
+                    if key is 'page_num':
+                        pnum = math.ceil(len(self.granules)/self.reqparams['page_size'])
+                        if pnum > 0:
+                            self.reqparams.update({key:pnum})
+                        else:
+                            self.reqparams.update({key:defaults[key]})
+                    else:
+                        self.reqparams.update({key:defaults[key]})
                 else:
                     pass
         
@@ -434,6 +443,7 @@ class Icesat2Data():
                                                                {k: self.reqparams[k] for k in ('page_size','page_num')}))
             results = json.loads(response.content)
 
+            #DevGoal: check that there ARE results (ie not an empty search) and let the user know if that's the case
             if len(results['feed']['entry']) == 0:
                 # Out of results, so break out of loop
                 break
@@ -608,7 +618,7 @@ class Icesat2Data():
 
 
         
-    def download_granules(self, session, path, extract=False):
+    def download_granules(self, session, path): #, extract=False):
         """
         Downloads the data ordered using order_granules.
         
@@ -620,6 +630,8 @@ class Icesat2Data():
             Earthdata login password when prompted. You must have previously registered for an Earthdata account.
         path : string
             String with complete path to desired download location.
+        """
+        """
         extract : boolean, default False
             Unzip the downloaded granules.
         """
@@ -636,6 +648,9 @@ class Icesat2Data():
                 if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
                     raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')   
             
+        if not os.path.exists(path):
+            os.mkdir(path)
+
         os.chdir(path)
             
         for order in self.orderIDs:
@@ -649,8 +664,8 @@ class Icesat2Data():
             zip_response.raise_for_status()
             print('Data request', order, 'of ', len(self.orderIDs), ' order(s) is complete.')
             
-        #Note: I haven't tested this yet
-        if extract is True:            
+#         #Note: extract the dataset to save it locally
+#         if extract is True:            
             with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
                 z.extractall(path)
 

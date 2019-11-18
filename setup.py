@@ -8,10 +8,10 @@ setuptools.setup(
     version="0.0.1",
     author="Jessica Scheick",
     author_email="jbscheick@gmail.com",
-    description="Processing ICESat-2 Elevations...",
+    description="Python tools for obtaining and working with ICESat-2 data",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ICESAT-2HackWeek/icesat2py.git",
+    url="https://github.com/icesat2py/icepyx.git",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

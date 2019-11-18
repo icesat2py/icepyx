@@ -413,15 +413,15 @@ class Icesat2Data():
             for key in reqkeys:
                 if key in kwargs:
                     self.reqparams.update({key:kwargs[key]})
-                elif key in defaults: 
-                    if key is 'page_num':
-                        pnum = math.ceil(len(self.granules)/self.reqparams['page_size'])
-                        if pnum > 0:
-                            self.reqparams.update({key:pnum})
-                        else:
-                            self.reqparams.update({key:defaults[key]})
-                    else:
-                        self.reqparams.update({key:defaults[key]})
+#                 elif key in defaults: 
+#                     if key is 'page_num':
+#                         pnum = math.ceil(len(self.granules)/self.reqparams['page_size'])
+#                         if pnum > 0:
+#                             self.reqparams.update({key:pnum})
+#                         else:
+#                             self.reqparams.update({key:defaults[key]})
+                elif key in defaults:
+                    self.reqparams.update({key:defaults[key]})
                 else:
                     pass
         
@@ -506,7 +506,7 @@ class Icesat2Data():
         return session
 
 
-    def order_granules(self, session):
+    def order_granules(self, session, verbose=False):
         """
         Place an order for the available granules for the ICESat-2 data object.
         Adds the list of zipped files (orders) to the data object.
@@ -521,7 +521,7 @@ class Icesat2Data():
             Earthdata login password when prompted. You must have previously registered for an Earthdata account.
             
         verbose : boolean, default False
-            Print out all feedback available from the download process.
+            Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
         """
         
@@ -541,35 +541,41 @@ class Icesat2Data():
         # Request data service for each page number, and unzip outputs
         for i in range(request_params['page_num']):
             page_val = i + 1
-            print('Order: ', page_val)
+            if verbose is True:
+                print('Order: ', page_val)
             request_params.update( {'page_num': page_val} )
 
         # For all requests other than spatial file upload, use get function
             request = session.get(base_url, params=request_params)
 
-            print('Request HTTP response: ', request.status_code)
+            if verbose is True:
+                print('Request HTTP response: ', request.status_code)
 
         # Raise bad request: Loop will stop for bad response code.
-            request.raise_for_status()
-            print('Order request URL: ', request.url)
+            request.raise_for_status()   
             esir_root = ET.fromstring(request.content)
-            print('Order request response XML content: ', request.content)
+            if verbose is True:
+                print('Order request URL: ', request.url)
+                print('Order request response XML content: ', request.content)
 
         #Look up order ID
             orderlist = []   
             for order in esir_root.findall("./order/"):
-                print(order)
+                if verbose is True:
+                    print(order)
                 orderlist.append(order.text)
             orderID = orderlist[0]
             print('order ID: ', orderID)
 
         #Create status URL
             statusURL = base_url + '/' + orderID
-            print('status URL: ', statusURL)
+            if verbose is True:
+                print('status URL: ', statusURL)
 
         #Find order status
             request_response = session.get(statusURL)    
-            print('HTTP response from order response URL: ', request_response.status_code)
+            if verbose is True:
+                print('HTTP response from order response URL: ', request_response.status_code)
 
         # Raise bad request: Loop will stop for bad response code.
             request_response.raise_for_status()
@@ -618,7 +624,7 @@ class Icesat2Data():
 
 
         
-    def download_granules(self, session, path): #, extract=False):
+    def download_granules(self, session, path, verbose=False): #, extract=False):
         """
         Downloads the data ordered using order_granules.
         
@@ -630,6 +636,9 @@ class Icesat2Data():
             Earthdata login password when prompted. You must have previously registered for an Earthdata account.
         path : string
             String with complete path to desired download location.
+        verbose : boolean, default False
+            Print out all feedback available from the download process.
+            Progress information is automatically printed regardless of the value of verbose.
         """
         """
         extract : boolean, default False
@@ -643,7 +652,7 @@ class Icesat2Data():
 
         if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
             try:
-                self.order_granules(session)    
+                self.order_granules(session, verbose=verbose)    
             except:
                 if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
                     raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')   
@@ -657,7 +666,8 @@ class Icesat2Data():
             downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + order + '.zip'
             #DevGoal: get the download_url from the granules
 
-            print('Zip download URL: ', downloadURL)
+            if verbose is True:
+                print('Zip download URL: ', downloadURL)
             print('Beginning download of zipped output...')
             zip_response = session.get(downloadURL)
             # Raise bad request: Loop will stop for bad response code.

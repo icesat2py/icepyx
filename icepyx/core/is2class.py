@@ -96,7 +96,7 @@ class Icesat2Data():
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
 
             
-        self.dset = validate_dataset(dataset)
+        self._dset = validate_dataset(dataset)
          
         if isinstance(spatial_extent, list):
             if len(spatial_extent)==4:
@@ -107,7 +107,7 @@ class Icesat2Data():
                 assert -180 <= spatial_extent[2] <= 360, "Invalid longitude value"
                 assert spatial_extent[0] <= spatial_extent[2], "Invalid bounding box longitudes"
                 assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
-                self.spat_extent = spatial_extent
+                self._spat_extent = spatial_extent
                 self.extent_type = 'bounding_box'
             else:
                 raise ValueError('Your spatial extent bounding box needs to have four entries')
@@ -115,10 +115,10 @@ class Icesat2Data():
             
         if isinstance(date_range, list):
             if len(date_range)==2:
-                self.start = dt.datetime.strptime(date_range[0], '%Y-%m-%d')
-                self.end = dt.datetime.strptime(date_range[1], '%Y-%m-%d')
+                self._start = dt.datetime.strptime(date_range[0], '%Y-%m-%d')
+                self._end = dt.datetime.strptime(date_range[1], '%Y-%m-%d')
                 #BestPractices: can the check that it's a valid date entry be implicit (e.g. by converting it to a datetime object, as done here?) or must it be more explicit?
-                assert self.start.date() <= self.end.date(), "Your date range is invalid"               
+                assert self._start.date() <= self._end.date(), "Your date range is invalid"               
             else:
                 raise ValueError("Your date range list is the wrong length. It should have start and end dates only.")
             
@@ -129,33 +129,33 @@ class Icesat2Data():
                         
         
         if start_time is None:
-            self.start = self.start.combine(self.start.date(),dt.datetime.strptime('00:00:00', '%H:%M:%S').time())
+            self._start = self._start.combine(self._start.date(),dt.datetime.strptime('00:00:00', '%H:%M:%S').time())
         else:
             if isinstance(start_time, str):
-                self.start = self.start.combine(self.start.date(),dt.datetime.strptime(start_time, '%H:%M:%S').time())
+                self._start = self._start.combine(self._start.date(),dt.datetime.strptime(start_time, '%H:%M:%S').time())
             else:
                 raise TypeError("Please enter your start time as a string")
         
         if end_time is None:
-            self.end = self.start.combine(self.end.date(),dt.datetime.strptime('23:59:59', '%H:%M:%S').time())
+            self._end = self._start.combine(self._end.date(),dt.datetime.strptime('23:59:59', '%H:%M:%S').time())
         else:
             if isinstance(end_time, str):
-                self.end = self.start.combine(self.end.date(),dt.datetime.strptime(end_time, '%H:%M:%S').time())
+                self._end = self._start.combine(self._end.date(),dt.datetime.strptime(end_time, '%H:%M:%S').time())
             else:
                 raise TypeError("Please enter your end time as a string")
                 
         latest_vers = self.latest_version()
         if version is None:
-            self.version = latest_vers
+            self._version = latest_vers
         else:
             if isinstance(version, str):
                 assert int(version)>0, "Version number must be positive"
                 vers_length = 3
-                self.version = version.zfill(vers_length)
+                self._version = version.zfill(vers_length)
             else:
                 raise TypeError("Please enter the version number as a string")
             
-            if int(self.version) < int(latest_vers):
+            if int(self._version) < int(latest_vers):
                 warnings.filterwarnings("always")
                 warnings.warn("You are using an old version of this dataset")
 
@@ -174,7 +174,7 @@ class Icesat2Data():
         >>> region_a.dataset
         ATL06
         """
-        return self.dset
+        return self._dset
     
     @property
     def spatial_extent(self):
@@ -191,9 +191,9 @@ class Icesat2Data():
         """
         
         if self.extent_type is 'bounding_box':
-            return ['bounding box', self.spat_extent]
+            return ['bounding box', self._spat_extent]
         else:
-            return ['unknown spatial type', self.spat_extent]
+            return ['unknown spatial type', self._spat_extent]
          
         
     @property
@@ -208,7 +208,7 @@ class Icesat2Data():
         >>> region_a.dates
         ['2019-02-22', '2019-02-28']
         """
-        return [self.start.strftime('%Y-%m-%d'), self.end.strftime('%Y-%m-%d')] #could also use self.start.date()
+        return [self._start.strftime('%Y-%m-%d'), self._end.strftime('%Y-%m-%d')] #could also use self._start.date()
     
     
     @property
@@ -226,7 +226,7 @@ class Icesat2Data():
         >>> region_a.start_time
         12:30:30
         """
-        return self.start.strftime('%H:%M:%S')
+        return self._start.strftime('%H:%M:%S')
 
     @property
     def end_time(self):
@@ -243,7 +243,7 @@ class Icesat2Data():
         >>> region_a.end_time
         10:20:20
         """
-        return self.end.strftime('%H:%M:%S')
+        return self._end.strftime('%H:%M:%S')
     
     @property
     def dataset_version(self):
@@ -260,7 +260,7 @@ class Icesat2Data():
         >>> region_a.dataset_version
         001
         """
-        return self.version
+        return self._version
 
     #Note: Would it be helpful to also have start and end properties that give the start/end date+time?
     
@@ -345,7 +345,7 @@ class Icesat2Data():
         """
         
         cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
-        response = requests.get(cmr_collections_url, params={'short_name': self.dset})
+        response = requests.get(cmr_collections_url, params={'short_name': self._dset})
         results = json.loads(response.content)
         return results
         #DevGoal: provide a more readable data format if the user prints the data (look into pprint, per Amy's tutorial)
@@ -381,13 +381,13 @@ class Icesat2Data():
                     if key is 'short_name':
                         self.CMRparams.update({key:self.dataset})    
                     elif key=='version':
-                        self.CMRparams.update({key:self.version})
+                        self.CMRparams.update({key:self._version})
                     elif key=='temporal':
-                        self.CMRparams.update(self.cmr_fmt_temporal(self.start,self.end))
+                        self.CMRparams.update(self.cmr_fmt_temporal(self._start,self._end))
             if any(keys in self.CMRparams for keys in CMR_spat_keys):
                 pass
             else:
-                self.CMRparams.update(self.cmr_fmt_spatial(self.extent_type,self.spat_extent))
+                self.CMRparams.update(self.cmr_fmt_spatial(self.extent_type,self._spat_extent))
     
     
     def build_reqconfig_params(self,reqtype, **kwargs):
@@ -498,7 +498,7 @@ class Icesat2Data():
         self.reqparams.update({'email': email, 'token': token})
         
         #Start a session
-        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self.version}.xml'
+        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         session = requests.session()
         s = session.get(capability_url)
         response = session.get(s.url,auth=(uid,pswd))
@@ -681,7 +681,6 @@ class Icesat2Data():
 
 
     
-
 
 
 

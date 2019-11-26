@@ -1,8 +1,11 @@
-icepyx module
-===============
+.. _icepyx:
 
-.. currentmodule:: icepyx
+icepyx documentation
+====================
 
-.. automodule:: icepyx
-    :members:
-    :show-inheritance:
+
+.. toctree::
+   :maxdepth: 2
+   
+   is2class
+

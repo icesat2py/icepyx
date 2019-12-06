@@ -14,7 +14,7 @@ import io
 import math
 
 
-def validate_dataset(dataset):
+def _validate_dataset(dataset):
     """
     Confirm a valid ICESat-2 dataset was specified
     """
@@ -26,7 +26,6 @@ def validate_dataset(dataset):
     else:
         raise TypeError("Please enter a dataset string")
     return dataset
-#DevQuestion: since this function is validating an entry, does it also make sense to have a test for it?
 #DevGoal: See if there's a way to dynamically get this list so it's automatically updated
 
 
@@ -96,7 +95,7 @@ class Icesat2Data():
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
 
             
-        self._dset = validate_dataset(dataset)
+        self._dset = _validate_dataset(dataset)
          
         if isinstance(spatial_extent, list):
             if len(spatial_extent)==4:
@@ -168,7 +167,7 @@ class Icesat2Data():
         """
         Return the short name dataset ID string associated with the ICESat-2 data object.
         
-        Example
+        Examples
         --------
         >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.dataset
@@ -233,7 +232,7 @@ class Icesat2Data():
         """
         Return the end time specified for the end date.
         
-        Example
+        Examples
         --------
         >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.end_time
@@ -250,7 +249,7 @@ class Icesat2Data():
         """
         Return the dataset version of the data object.
         
-        Example
+        Examples
         --------
         >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> region_a.dataset_version
@@ -269,7 +268,7 @@ class Icesat2Data():
         """
         Return some basic information about the granules available for the given ICESat-2 data object.
         
-        Example
+        Examples
         --------
         >>>
         """
@@ -287,10 +286,10 @@ class Icesat2Data():
     # Static Methods
         
     @staticmethod
-    def cmr_fmt_temporal(start,end):
+    def _cmr_fmt_temporal(start,end):
         """
         Format the start and end dates and times into a temporal CMR search key.
-        
+
         Parameters
         ----------
         start : date time object
@@ -306,7 +305,7 @@ class Icesat2Data():
         return {'temporal':fmt_timerange}
         
     @staticmethod
-    def cmr_fmt_spatial(ext_type,extent):
+    def _cmr_fmt_spatial(ext_type,extent):
         """
         Format the spatial extent input into a spatial CMR search key.
         
@@ -469,7 +468,7 @@ class Icesat2Data():
         email : string
             Complete email address, provided as a string.
 
-        Example
+        Examples
         --------
         >>> region_a = [define that here]
         >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')

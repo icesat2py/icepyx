@@ -109,3 +109,6 @@ venv.bak/
 
 # directory files
 .DS_Store
+
+# test script:
+icepyx_collect.py

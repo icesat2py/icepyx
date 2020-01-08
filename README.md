@@ -18,6 +18,9 @@ Right now this library is only available as a github repo. To use icepyx, fork t
 
 We welcome and invite contributions from anyone at any career stage and with any amount of coding experience! To contribute to icepyx, simply fork this repo, make and commit your changes on your local branch, and then submit a pull request with a clear message indicating what your changes accomplish.
 
+Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code-of-conduct.md) 
+
 ## Examples
 
 Coming soon...

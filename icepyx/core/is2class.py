@@ -7,6 +7,7 @@ import socket
 import requests
 import json
 import warnings
+import pprint
 from xml.etree import ElementTree as ET
 import time
 import zipfile
@@ -362,16 +363,23 @@ class Icesat2Data():
             Start date and time for the period of interest.
         end : date time object
             End date and time for the period of interest.
+        key : string
+            Dictionary key, entered as a string, indicating which temporal format is needed.
+            Must be one of ['temporal','time']
         """
 
         assert isinstance(start, dt.datetime)
         assert isinstance(end, dt.datetime)
-        fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
+        #DevGoal: add test for proper keys
+        if key is 'temporal':
+            fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
+        elif key is 'time':
+            fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%S') +',' + end.strftime('%Y-%m-%dT%H:%M:%S')
 
-        return {'temporal':fmt_timerange}
+        return {key:fmt_timerange}
 
     @staticmethod
-    def _cmr_fmt_spatial(ext_type,extent):
+    def cmr_fmt_spatial(ext_type,extent): #make this more general in name b/c can be used to format for CMR or subset spatial
         """
         Format the spatial extent input into a spatial CMR search key.
 
@@ -423,6 +431,46 @@ class Icesat2Data():
         dset_info = self.about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
+    def get_custom_options(self, session):
+        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
+        response = session.get(capability_url)
+        root = ET.fromstring(response.content)
+
+        # collect lists with each service option
+        subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
+
+        # variable subsetting
+        variables = [SubsetVariable.attrib for SubsetVariable in root.iter('SubsetVariable')]
+        variables_raw = [variables[i]['value'] for i in range(len(variables))]
+        variables_join = [''.join(('/',v)) if v.startswith('/') == False else v for v in variables_raw]
+        variable_vals = [v.replace(':', '/') for v in variables_join]
+
+        # reformatting
+        formats = [Format.attrib for Format in root.iter('Format')]
+        format_vals = [formats[i]['value'] for i in range(len(formats))]
+        format_vals.remove('')
+
+        # reprojection only applicable on ICESat-2 L3B products, yet to be available.
+
+        # reformatting options that support reprojection
+        normalproj = [Projections.attrib for Projections in root.iter('Projections')]
+        normalproj_vals = []
+        normalproj_vals.append(normalproj[0]['normalProj'])
+        format_proj = normalproj_vals[0].split(',')
+        format_proj.remove('')
+        format_proj.append('No reformatting')
+
+        #reprojection options
+        projections = [Projection.attrib for Projection in root.iter('Projection')]
+        proj_vals = []
+        for i in range(len(projections)):
+            if (projections[i]['value']) != 'NO_CHANGE' :
+                proj_vals.append(projections[i]['value'])
+
+        # reformatting options that do not support reprojection
+        no_proj = [i for i in format_vals if i not in format_proj]
+
+        print(subagent, variable_vals, format_vals, normalproj_vals, proj_vals, no_proj)
 
     def build_CMR_params(self):
         """
@@ -445,14 +493,52 @@ class Icesat2Data():
                 else:
                     if key is 'short_name':
                         self.CMRparams.update({key:self.dataset})
-                    elif key=='version':
+                    elif key is 'version':
                         self.CMRparams.update({key:self._version})
-                    elif key=='temporal':
-                        self.CMRparams.update(self._cmr_fmt_temporal(self._start,self._end))
+                    elif key is 'temporal':
+                        self.CMRparams.update(self.cmr_fmt_temporal(self._start,self._end,key))
             if any(keys in self.CMRparams for keys in CMR_spat_keys):
                 pass
             else:
-                self.CMRparams.update(self._cmr_fmt_spatial(self.extent_type,self._spat_extent))
+                self.CMRparams.update(self.cmr_fmt_spatial(self.extent_type,self._spat_extent))
+
+    def build_subset_params(self, **kwargs):
+        """
+        Build a dictionary of subsetting parameter keys to submit for data orders and download.
+        """
+
+        if not hasattr(self,'subsetparams'):
+            self.subsetparams={}
+
+        default_keys = ['time']
+        spat_keys = ['bbox','bounding_shape']
+        opt_keys = ['format','projection','projection_parameters','Coverage']
+        #check to see if the parameter list is already built
+        if all(keys in self.subsetparams for keys in default_keys) and any(keys in self.subsetparams for keys in spat_keys):
+            pass
+        #if not, see which fields need to be added and add them
+        else:
+            for key in default_keys:
+                if key in self.subsetparams:
+                    pass
+                else:
+                    if key is 'time':
+                        self.subsetparams.update(self.cmr_fmt_temporal(self._start,self._end, key))
+            if any(keys in self.subsetparams for keys in spat_keys):
+                pass
+            else:
+                if self.extent_type is 'bounding_box':
+                    k = 'bbox'
+                elif self.extent_type is 'polygon':
+                    k = 'bounding_shape'
+                self.subsetparams.update(self.cmr_fmt_spatial(k,self._spat_extent))
+            for key in opt_keys:
+                if key in kwargs:
+                    self.subsetparams.update({key:kwargs[key]})
+                else:
+                    pass
+
+
 
 
     def build_reqconfig_params(self,reqtype, **kwargs):
@@ -467,14 +553,14 @@ class Icesat2Data():
         if reqtype is 'search':
             reqkeys = ['page_size','page_num']
         elif reqtype is 'download':
-            reqkeys = ['page_size','page_num','request_mode','token','email','agent','include_meta']
+            reqkeys = ['page_size','page_num','request_mode','token','email','include_meta']
         else:
             raise ValueError("Invalid request type")
 
         if all(keys in self.reqparams for keys in reqkeys):
             pass
         else:
-            defaults={'page_size':10,'page_num':1,'request_mode':'async','agent':'NO','include_meta':'Y'}
+            defaults={'page_size':10,'page_num':1,'request_mode':'async','include_meta':'Y'}
             for key in reqkeys:
                 if key in kwargs:
                     self.reqparams.update({key:kwargs[key]})
@@ -513,7 +599,7 @@ class Icesat2Data():
             if len(results['feed']['entry']) == 0:
                 # Out of results, so break out of loop
                 break
-        
+
             # Collect results and increment page_num
             self.granules.extend(results['feed']['entry'])
             self.reqparams['page_num'] += 1
@@ -572,7 +658,7 @@ class Icesat2Data():
         return session
 
 
-    def order_granules(self, session, verbose=False):
+    def order_granules(self, session, verbose=False, subset=True, **kwargs):
         """
         Place an order for the available granules for the ICESat-2 data object.
         Adds the list of zipped files (orders) to the data object.
@@ -589,6 +675,13 @@ class Icesat2Data():
         verbose : boolean, default False
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
+
+        subset : boolean, default True
+            Use input temporal and spatial search parameters to subset each granule and return only data
+            that is actually within those parameters (rather than complete granules which may contain only
+            a small area of interest).
+
+        kwargs...
         """
 
         if session is None:
@@ -600,7 +693,21 @@ class Icesat2Data():
 
         self.build_CMR_params()
         self.build_reqconfig_params('download')
-        request_params = self.combine_params(self.CMRparams, self.reqparams)
+
+        if subset is False:
+            request_params = self.combine_params(self.CMRparams, self.reqparams, {'agent':'NO'})
+        else:
+#             if kwargs is None:
+#                 #make subset params and add them to request params
+#                 self.build_subset_params()
+#                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
+#             else:
+#                 #make subset params using kwargs and add them to request params
+#                 self.build_subset_params(kwargs)
+#                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
+            self.build_subset_params(**kwargs)
+            request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
+
 
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 

@@ -642,7 +642,8 @@ class Icesat2Data():
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
                 
-        
+        #DEVGOAL - DEBUG THIS
+        self.reqparams['page_num'] = 1 #the below line was still resulting in errors, so until I have a chance to debug this...
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
         
         # Request data service for each page number, and unzip outputs

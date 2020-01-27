@@ -100,7 +100,6 @@ class Icesat2Data():
          
         if isinstance(spatial_extent, list):
             if len(spatial_extent)==4:
-                #BestPractices: move these assertions to a more general set of tests for valid geometries?
                 assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
                 assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
                 assert -180 <= spatial_extent[0] <= 360, "Invalid longitude value" #tighten these ranges depending on actual allowed inputs
@@ -117,7 +116,6 @@ class Icesat2Data():
             if len(date_range)==2:
                 self._start = dt.datetime.strptime(date_range[0], '%Y-%m-%d')
                 self._end = dt.datetime.strptime(date_range[1], '%Y-%m-%d')
-                #BestPractices: can the check that it's a valid date entry be implicit (e.g. by converting it to a datetime object, as done here?) or must it be more explicit?
                 assert self._start.date() <= self._end.date(), "Your date range is invalid"               
             else:
                 raise ValueError("Your date range list is the wrong length. It should have start and end dates only.")
@@ -262,7 +260,6 @@ class Icesat2Data():
         """
         return self._version
 
-    #Note: Would it be helpful to also have start and end properties that give the start/end date+time?
     
     @property
     def granule_info(self):
@@ -431,10 +428,11 @@ class Icesat2Data():
                         self.CMRparams.update({key:self._version})
                     elif key is 'temporal':
                         self.CMRparams.update(self.cmr_fmt_temporal(self._start,self._end,key))
+
             if any(keys in self.CMRparams for keys in CMR_spat_keys):
                 pass
             else:
-                self.CMRparams.update(self.cmr_fmt_spatial(self.extent_type,self._spat_extent))
+                self.CMRparams.update(self._cmr_fmt_spatial(self.extent_type,self._spat_extent))
 
     def build_subset_params(self, **kwargs):
         """
@@ -481,7 +479,7 @@ class Icesat2Data():
         #DevGoal: Allow updating of the request configuration parameters (right now they must be manually deleted to be modified)
         """
         
-        if not hasattr(self,'reqparams'):
+        if not hasattr(self,'reqparams') or self.reqparams==None:
             self.reqparams={}
         
         if reqtype is 'search':

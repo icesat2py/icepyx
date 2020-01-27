@@ -8,7 +8,7 @@ Constructor
 -----------
 
 .. autosummary::
-   :toctree: _icepyx/
+   :toctree: ../_icepyx/
 
    Icesat2Data
 
@@ -17,7 +17,7 @@ Attributes
 ----------
 
 .. autosummary::
-   :toctree: _icepyx/
+   :toctree: ../_icepyx/
    
    Icesat2Data.dataset
    Icesat2Data.dataset_version
@@ -32,7 +32,7 @@ Methods
 -------
 
 .. autosummary::
-   :toctree: _icepyx/
+   :toctree: ../_icepyx/
    
    Icesat2Data.about_dataset
    Icesat2Data.avail_granules

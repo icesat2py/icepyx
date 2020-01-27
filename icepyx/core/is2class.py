@@ -556,7 +556,7 @@ class Icesat2Data():
         --------
         >>> region_a = [define that here]
         >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
-        Earthdata Login password:  ········
+        Earthdata Login password:  ........
         """
 
         if not hasattr(self,'reqparams'):

@@ -7,5 +7,5 @@ icepyx documentation
 .. toctree::
    :maxdepth: 2
    
-   is2class
+   user_guide/is2class
 

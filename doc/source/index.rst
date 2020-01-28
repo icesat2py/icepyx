@@ -10,8 +10,8 @@ Welcome to icepyx's documentation!
    :caption: Contents:
    :maxdepth: 2
 
-   source/getting_started/install
-   source/icepyx
+   getting_started/install
+   icepyx
 
 
 Indices and tables

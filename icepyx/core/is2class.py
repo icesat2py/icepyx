@@ -363,7 +363,8 @@ class Icesat2Data():
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
    
     def get_custom_options(self, session):
-        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
+        # the next line is causing sphinx to fail, and I don't see how it's not causing a bug when trying to run get_custom_options, so this method will need to be debugged
+        #        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         response = session.get(capability_url)
         root = ET.fromstring(response.content)
         
@@ -581,7 +582,8 @@ class Icesat2Data():
         self.reqparams.update({'email': email, 'token': token})
         
         #Start a session
-        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
+        # the next line is causing sphinx to fail, and I don't see how it's not causing a bug when trying to run get_custom_options, so this method will need to be debugged
+        #        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         session = requests.session()
         s = session.get(capability_url)
         response = session.get(s.url,auth=(uid,pswd))

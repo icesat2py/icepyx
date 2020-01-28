@@ -37,6 +37,7 @@ Methods
    Icesat2Data.about_dataset
    Icesat2Data.avail_granules
    Icesat2Data.build_CMR_params
+   Icesat2Data.build_subset_params
    Icesat2Data.build_reqconfig_params
    Icesat2Data.download_granules
    Icesat2Data.earthdata_login

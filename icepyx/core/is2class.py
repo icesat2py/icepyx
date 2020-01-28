@@ -102,7 +102,8 @@ class Icesat2Data():
         self._dset = _validate_dataset(dataset)
 
         if isinstance(spatial_extent, list):
-            if len(spatial_extent)==4:
+            #bounding box
+            if len(spatial_extent)==4 and type(spatial_extent[0]) is not list:
                 #BestPractices: move these assertions to a more general set of tests for valid geometries?
                 assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
                 assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
@@ -112,29 +113,40 @@ class Icesat2Data():
                 assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
                 self._spat_extent = spatial_extent
                 self.extent_type = 'bounding_box'
-            else:
-                assert spatial_extent[0] == spatial_extent[-2], "Starting longitude doesn't match ending longitude"
-                assert spatial_extent[1] == spatial_extent[-1], "Starting latitude doesn't match ending latitude"
+            #user-entered polygon as list of lon, lat coordinate pairs
+            elif len(spatial_extent[0])>1:
+                assert len(spatial_extent)>=4, "Your spatial extent polygon has too few vertices"
+                #DevGoal: add docs and check the below assertions (including add a test)
+                assert spatial_extent[0][0] == spatial_extent[-1][0], "Starting longitude doesn't match ending longitude"
+                assert spatial_extent[0][1] == spatial_extent[-1][1], "Starting latitude doesn't match ending latitude"
                 self._spat_extent = spatial_extent
                 self.extent_type = 'polygon'
+            
+            else:
+                raise ValueError('Your spatial extent does not meet minimum input criteria')
 
         elif isinstance(spatial_extent, str):
-            if spatial_extent.split('.')[-1] == 'kml' or spatial_extent.split('.')[-1] == 'shp' or spatial_extent.split('.')[-1] == 'gpkg':
+            #DevGoal: check for valid filename and issue error otherwise
+            #if spatial_extent.split('.')[-1] == 'kml' or spatial_extent.split('.')[-1] == 'shp' or spatial_extent.split('.')[-1] == 'gpkg':
+            if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
                 #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
+                #DevGoal: use new function geodataframe here?
                 gdf = gpd.read_file(spatial_extent)
+                #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
                 poly = gdf.iloc[0].geometry
-                # # Simplify polygon. The larger the tolerance value, the more simplified the polygon.
+                #Simplify polygon. The larger the tolerance value, the more simplified the polygon.
                 poly = poly.simplify(0.05, preserve_topology=False)
                 poly = orient(poly, sign=1.0)
 
-                # #Format dictionary to polygon coordinate pairs for CMR polygon filtering
+#JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too
+                #Format dictionary to polygon coordinate pairs for CMR polygon filtering
                 polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
                 polygon_list = [float(i) for i in polygon]
 
                 self._spat_extent = polygon_list
                 self.extent_type = 'polygon'
             else:
-                print('spatial file extent does not appear to be either kml,shp or gpkg')
+                raise TypeError('Input spatial extent file must be a kml, shp, or gpkg')
 
         if isinstance(date_range, list):
             if len(date_range)==2:
@@ -218,50 +230,6 @@ class Icesat2Data():
             return ['polygon', self._spat_extent]
         else:
             return ['unknown spatial type', self._spat_extent]
-
-    @property
-    def geodataframe(self):
-        """
-        Return a geodataframe of the spatial extent
-
-
-        Examples
-        --------
-        >>> region_a = icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
-        >>> gdf = region_a.geodataframe
-        """
-
-        if self.extent_type is 'bounding_box':
-            gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(self._spat_extent[0::2], self._spat_extent[1::2]))
-            return gdf
-        if self.extent_type is 'polygon':
-            spat_extent = self._spat_extent
-            if isinstance(spat_extent,str):
-                spat_extent = spat_extent.split(',')
-            spat_extent_list = [float(val) for val in spat_extent]
-            spatial_extent_geom = Polygon(zip(spat_extent_list[0::2], spat_extent_list[1::2]))
-            gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
-            return gdf
-        else:
-            return ['unknown spatial type', self._spat_extent]
-
-    @property
-    def vizualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
-        """
-        Creates a map of the inputted spatial extent
-
-
-        Examples
-        --------
-        >>> icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
-        >>> region_a.vizualize_spatial_extent
-        """
-
-        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-        f, ax = plt.subplots(1, figsize=(12, 6))
-        world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
-        self.geodataframe.plot(ax=ax, color='#FF8C00',alpha = '0.7')
-        plt.show()
 
     @property
     def dates(self):
@@ -353,7 +321,7 @@ class Icesat2Data():
     # Static Methods
 
     @staticmethod
-    def _cmr_fmt_temporal(start,end):
+    def _fmt_temporal(start,end,key):
         """
         Format the start and end dates and times into a temporal CMR search key.
 
@@ -370,7 +338,7 @@ class Icesat2Data():
 
         assert isinstance(start, dt.datetime)
         assert isinstance(end, dt.datetime)
-        #DevGoal: add test for proper keys
+        #DevGoal: add test for proper keys; update docs for CMR vs subset
         if key is 'temporal':
             fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
         elif key is 'time':
@@ -378,25 +346,28 @@ class Icesat2Data():
 
         return {key:fmt_timerange}
 
+    #DevGoal: update docs for with polygon
     @staticmethod
-    def cmr_fmt_spatial(ext_type,extent): #make this more general in name b/c can be used to format for CMR or subset spatial
+    def _fmt_spatial(ext_type,extent):
         """
         Format the spatial extent input into a spatial CMR search key.
 
         Parameters
         ----------
         extent_type : string
-            Spatial extent type. Must be one of ['bounding_box'].
+            Spatial extent type. Must be one of ['bounding_box', 'polygon'].
         extent : list
             Spatial extent, with input format dependent on the extent type.
             Bounding box coordinates should be provided in decimal degrees as
             [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
         """
-
-        assert ext_type in ['bounding_box', 'bbox','polygon','bounding_shape'], "Invalid spatial extent type."
-
-        if ext_type in ['bounding_box', 'bbox','polygon','bounding_shape']:
-            fmt_extent = ','.join(map(str, extent))
+        
+        #CMR keywords: ['bounding_box', 'polygon']
+        #subsetting keywords: ['bbox','bounding_shape']
+        assert ext_type in ['bounding_box', 'polygon'] or ext_type in ['bbox','bounding_shape'],\
+        "Invalid spatial extent type."
+        
+        fmt_extent = ','.join(map(str, extent))
 
         return {ext_type: fmt_extent}
 
@@ -430,6 +401,58 @@ class Icesat2Data():
         """
         dset_info = self.about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
+
+    #DevGoal: can we use a bounding box example in the docs so the user can see what they should expect as output?
+    #DevGoal: have all of these new methods been explicitly added to the docs? Have tests been implemented for them?
+    def geodataframe(self):
+        """
+        Return a geodataframe of the spatial extent
+
+
+        Examples
+        --------
+        >>> region_a = icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
+        >>> gdf = region_a.geodataframe
+        """
+
+        if self.extent_type is 'bounding_box':
+            boxx = [self._spat_extent[0], self._spat_extent[0], self._spat_extent[2],\
+                    self._spat_extent[2], self._spat_extent[0]]
+            boxy = [self._spat_extent[1], self._spat_extent[3], self._spat_extent[3],\
+                    self._spat_extent[1], self._spat_extent[1]]
+            gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(boxx,boxy))
+            return gdf
+        if self.extent_type is 'polygon':
+            #spat_extent = self._spat_extent
+            #if isinstance(spat_extent,str):
+            spat_extent_list = self._spat_extent.split(',')
+            #by virtue of how we've populated self._spat_extent, this should already be floats
+            #spat_extent_list = [float(val) for val in spat_extent]
+            spatial_extent_geom = Polygon(zip(spat_extent_list[0::2], spat_extent_list[1::2]))
+            gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
+            return gdf
+        else:
+            return ['unknown spatial type', self._spat_extent]
+
+    #BestPractices: I think we should make this a method, since it's an action and we're considering having additional input args (properties can only have self as input, I believe)
+    def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
+        """
+        Creates a map of the input spatial extent
+
+
+        Examples
+        --------
+        >>> icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
+        >>> region_a.visualize_spatial_extent
+        """
+
+        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+        f, ax = plt.subplots(1, figsize=(12, 6))
+        #DevGoal: start working here: gdf function has no attribute plot
+        world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
+        self.geodataframe.plot(ax=ax, color='#FF8C00',alpha = '0.7')
+        plt.show()
+
 
     def get_custom_options(self, session):
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
@@ -496,11 +519,15 @@ class Icesat2Data():
                     elif key is 'version':
                         self.CMRparams.update({key:self._version})
                     elif key is 'temporal':
-                        self.CMRparams.update(self.cmr_fmt_temporal(self._start,self._end,key))
+                        print(self._start)
+                        print(self._end)
+                        print(key)
+                        print(Icesat2Data._fmt_temporal(self._start,self._end,key))
+                        self.CMRparams.update(Icesat2Data._fmt_temporal(self._start,self._end,key))
             if any(keys in self.CMRparams for keys in CMR_spat_keys):
                 pass
             else:
-                self.CMRparams.update(self.cmr_fmt_spatial(self.extent_type,self._spat_extent))
+                self.CMRparams.update(Icesat2Data._fmt_spatial(self.extent_type,self._spat_extent))
 
     def build_subset_params(self, **kwargs):
         """
@@ -523,7 +550,7 @@ class Icesat2Data():
                     pass
                 else:
                     if key is 'time':
-                        self.subsetparams.update(self.cmr_fmt_temporal(self._start,self._end, key))
+                        self.subsetparams.update(Icesat2Data._fmt_temporal(self._start,self._end, key))
             if any(keys in self.subsetparams for keys in spat_keys):
                 pass
             else:
@@ -531,7 +558,7 @@ class Icesat2Data():
                     k = 'bbox'
                 elif self.extent_type is 'polygon':
                     k = 'bounding_shape'
-                self.subsetparams.update(self.cmr_fmt_spatial(k,self._spat_extent))
+                self.subsetparams.update(Icesat2Data._fmt_spatial(k,self._spat_extent))
             for key in opt_keys:
                 if key in kwargs:
                     self.subsetparams.update({key:kwargs[key]})
@@ -575,6 +602,9 @@ class Icesat2Data():
                     self.reqparams.update({key:defaults[key]})
                 else:
                     pass
+                
+        #DevGoal: improve the interfacing with NSIDC/DAAC so it's not paging results
+        self.reqparams['page_num'] = 1
 
 
     def avail_granules(self):

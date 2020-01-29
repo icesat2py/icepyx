@@ -17,6 +17,8 @@ import geopandas as gpd
 from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
 import matplotlib.pyplot as plt
+import fiona
+fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 def _validate_dataset(dataset):
     """
@@ -32,7 +34,7 @@ def _validate_dataset(dataset):
     return dataset
 #DevGoal: See if there's a way to dynamically get this list so it's automatically updated
 
-
+#DevGoal: update docs throughout to allow for polygon spatial extent
 class Icesat2Data():
     """
     ICESat-2 Data object to query, obtain, and perform basic operations on
@@ -134,7 +136,7 @@ class Icesat2Data():
                 gdf = gpd.read_file(spatial_extent)
                 #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
                 poly = gdf.iloc[0].geometry
-                #Simplify polygon. The larger the tolerance value, the more simplified the polygon.
+                #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
                 poly = poly.simplify(0.05, preserve_topology=False)
                 poly = orient(poly, sign=1.0)
 
@@ -403,7 +405,7 @@ class Icesat2Data():
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
     #DevGoal: can we use a bounding box example in the docs so the user can see what they should expect as output?
-    #DevGoal: have all of these new methods been explicitly added to the docs? Have tests been implemented for them?
+    #DevGoal: explicitly add to docs; complete example in docs; add testing
     def geodataframe(self):
         """
         Return a geodataframe of the spatial extent
@@ -420,21 +422,22 @@ class Icesat2Data():
                     self._spat_extent[2], self._spat_extent[0]]
             boxy = [self._spat_extent[1], self._spat_extent[3], self._spat_extent[3],\
                     self._spat_extent[1], self._spat_extent[1]]
-            gdf = gpd.GeoDataFrame(geometry=gpd.points_from_xy(boxx,boxy))
+            #DevGoal: check to see that the box is actually correctly constructed; have not checked actual location of test coordinates
+            gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx,boxy)))])
             return gdf
-        if self.extent_type is 'polygon':
-            #spat_extent = self._spat_extent
-            #if isinstance(spat_extent,str):
-            spat_extent_list = self._spat_extent.split(',')
-            #by virtue of how we've populated self._spat_extent, this should already be floats
-            #spat_extent_list = [float(val) for val in spat_extent]
-            spatial_extent_geom = Polygon(zip(spat_extent_list[0::2], spat_extent_list[1::2]))
+        elif self.extent_type is 'polygon':
+            if isinstance(self._spat_extent,str):
+                spat_extent = self._spat_extent.split(',')
+            else:
+                spat_extent = self._spat_extent
+            spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
             gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
             return gdf
         else:
             return ['unknown spatial type', self._spat_extent]
-
-    #BestPractices: I think we should make this a method, since it's an action and we're considering having additional input args (properties can only have self as input, I believe)
+        
+    #DevGoal: explicitly add to docs; complete example in docs; add testing
+    #DevGoal(long term): modify this to accept additional inputs, etc.
     def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
         """
         Creates a map of the input spatial extent
@@ -448,9 +451,8 @@ class Icesat2Data():
 
         world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
         f, ax = plt.subplots(1, figsize=(12, 6))
-        #DevGoal: start working here: gdf function has no attribute plot
         world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
-        self.geodataframe.plot(ax=ax, color='#FF8C00',alpha = '0.7')
+        self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
         plt.show()
 
 
@@ -737,8 +739,7 @@ class Icesat2Data():
 #                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
-
-
+        
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 
         # Request data service for each page number, and unzip outputs

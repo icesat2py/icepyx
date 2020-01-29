@@ -1,6 +1,9 @@
 Contact and Contribute
 ======================
 
+.. _`github`: https://github.com/icesat2py/icepyx
+
+
 Contact
 -------
 Working with ICESat-2 data and have ideas you want to share?
@@ -15,3 +18,5 @@ Contributing
 We welcome and invite contributions from anyone at any career stage and with any amount of coding experience!
 To contribute to icepyx, simply fork this repo, make and commit your changes on your local branch,
 and then submit a pull request with a clear message indicating what your changes accomplish.
+
+github_

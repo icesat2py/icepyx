@@ -40,18 +40,25 @@ class Icesat2Data():
     ICESat-2 Data object to query, obtain, and perform basic operations on
     available ICESat-2 datasets using temporal and spatial input parameters.
     Allows the easy input and formatting of search parameters to match the
-    NASA NSIDC DAAC and conversion to multiple data types.
+    NASA NSIDC DAAC and (DevGoal) conversion to multiple data types.
 
     Parameters
     ----------
     dataset : string
         ICESat-2 dataset ID, also known as "short name" (e.g. ATL03).
         Available datasets can be found at: https://nsidc.org/data/icesat-2/data-sets
-    spatial_extent : list
-        Spatial extent of interest, provided as a bounding box.
+    spatial_extent : list or string
+        Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
+        geospatial polygon file.
         Bounding box coordinates should be provided in decimal degrees as
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        DevGoal: allow broader input of polygons and polygon files (e.g. kml, shp) as bounding areas
+        Polygon coordinates should be provided as coordinate pairs in decimal degrees as
+        [(longitude1, latitude1), (longitude2, latitude2), ... (longitude,latitude)].
+        Your list must contain at least four points, where the first and last are identical.
+        DevGoal: adapt code so the polygon is automatically closed if need be
+        Geospatial polygon files are entered as strings with the full file path and
+        must contain only one polygon with the area of interest.
+        Currently supported formats are: kml, shp, and gpkg
     date_range : list of 'YYYY-MM-DD' strings
         Date range of interest, provided as start and end dates, inclusive.
         The required date format is 'YYYY-MM-DD' strings, where
@@ -70,6 +77,10 @@ class Icesat2Data():
         version is used.
 
 
+    Returns
+    -------
+    icesat2data object
+    
     See Also
     --------
 
@@ -82,6 +93,21 @@ class Icesat2Data():
     >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
     >>> region_a
     [show output here after inputting above info and running it]
+    
+    Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
+    >>> reg_a_poly = [(-64, 66), (-64, 72), (-55, 72), (-55, 66), (-64, 66)]
+    >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
+    >>> region_a
+    [show output here after inputting above info and running it]
+    
+    Initializing Icesat2Data with a geospatial polygon file.
+    >>> aoi = '/User/name/location/aoi.shp'
+    >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    >>> region_a = icepyx.Icesat2Data('ATL06', aoi, reg_a_dates)
+    >>> region_a
+    [show output here after inputting above info and running it]
+
     """
 
     # ----------------------------------------------------------------------
@@ -121,7 +147,9 @@ class Icesat2Data():
                 #DevGoal: add docs and check the below assertions (including add a test)
                 assert spatial_extent[0][0] == spatial_extent[-1][0], "Starting longitude doesn't match ending longitude"
                 assert spatial_extent[0][1] == spatial_extent[-1][1], "Starting latitude doesn't match ending latitude"
-                self._spat_extent = spatial_extent
+                polygon = (','.join([str(c) for xy in spatial_extent for c in xy])).split(",")
+                polygon = [float(i) for i in polygon]
+                self._spat_extent = polygon
                 self.extent_type = 'polygon'
             
             else:
@@ -129,7 +157,7 @@ class Icesat2Data():
 
         elif isinstance(spatial_extent, str):
             #DevGoal: check for valid filename and issue error otherwise
-            #if spatial_extent.split('.')[-1] == 'kml' or spatial_extent.split('.')[-1] == 'shp' or spatial_extent.split('.')[-1] == 'gpkg':
+            #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
             if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
                 #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
                 #DevGoal: use new function geodataframe here?
@@ -143,9 +171,9 @@ class Icesat2Data():
 #JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too
                 #Format dictionary to polygon coordinate pairs for CMR polygon filtering
                 polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
-                polygon_list = [float(i) for i in polygon]
+                polygon = [float(i) for i in polygon]
 
-                self._spat_extent = polygon_list
+                self._spat_extent = polygon
                 self.extent_type = 'polygon'
             else:
                 raise TypeError('Input spatial extent file must be a kml, shp, or gpkg')
@@ -454,7 +482,7 @@ class Icesat2Data():
         world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
         self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
         plt.show()
-
+        
 
     def get_custom_options(self, session):
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'

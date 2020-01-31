@@ -31,5 +31,5 @@ This project combines and generalizes these scripts into a unified framework, ma
 
    getting_started/install
    examples/examples
-   API_ref
-   usage/contact_contribute
+   user_guide/is2class
+   development/contact_contribute

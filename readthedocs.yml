@@ -21,7 +21,3 @@ python:
   version: 3.7
   install:
     - requirements: doc/requirements.txt
-
-# specify the build to use
-build:
-  image: latest

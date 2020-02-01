@@ -1,7 +1,6 @@
 numpydoc
 numpy
 datetime
-os
 getpass
 socket
 requests
@@ -9,10 +8,8 @@ json
 warnings
 pprint
 xml.etree
-time
 zipfile
 io
-math
 geopandas
 shapely
 matplotlib

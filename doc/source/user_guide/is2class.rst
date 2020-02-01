@@ -1,7 +1,7 @@
 Icesat2Data Class
 =================
 
-.. currentmodule:: icepyx.core.is2class
+.. currentmodule:: icepyx.is2class
 
 
 Constructor

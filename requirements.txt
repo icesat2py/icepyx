@@ -1,7 +1,6 @@
 numpydoc
 numpy
 datetime
-re
 os
 getpass
 socket

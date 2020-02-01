@@ -1,15 +1,6 @@
 numpydoc
 numpy
 datetime
-getpass
-socket
-requests
-json
-warnings
-pprint
-xml.etree
-zipfile
-io
 geopandas
 shapely
 matplotlib

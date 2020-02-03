@@ -20,7 +20,7 @@ import icepyx
 # -- Project information -----------------------------------------------------
 
 project = 'icepyx'
-copyright = '2019, Jessica Scheick, Anthony Arendt, Lindsey Heagy, Fernando Perez, Amy Steiker, Raphael Hagen'
+copyright = '2020, Jessica Scheick, Anthony Arendt, Lindsey Heagy, Fernando Perez, Amy Steiker, Raphael Hagen'
 author = 'Jessica Scheick, Anthony Arendt, Lindsey Heagy, Fernando Perez, Amy Steiker, Raphael Hagen'
 
 

@@ -1,5 +1,5 @@
 
-Icepyx
+icepyx
 ======
 
 
@@ -30,6 +30,6 @@ This project combines and generalizes these scripts into a unified framework, ma
    :hidden:
 
    getting_started/install
-   ../examples/examples
+   example_link
    user_guide/is2class
    development/contact_contribute

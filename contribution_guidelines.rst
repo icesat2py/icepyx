@@ -19,13 +19,17 @@ Ways to Contribute
 The best way to report a problem, request a feature, find out if others are working on a similar problem or application, or let us know you'd like to write some code is to find the *Issues* tab and check if your problem/suggestion has already been reported. If so, please provide any additional information in the ongoing discussion. Otherwise, feel free to create a new issue and submit your problem or suggestions.
 
 
+Requesting a Feature
+--------------------
+Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Please give your suggestion a clear title and let us know if this is something you'd like to work on and contribute.
+
+
 Reporting a Bug
 ---------------
 Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Give your issue a clear title and describe the steps required to recreate it in as much detail as possible. If you can, include a small example that reproduces the error. More information and minimal examples will help us resolve issues faster.
 
-DevGoal: separate section for feature requests/suggestions? Should we provide issue/feature templates?
 
-
+.. _pangeo-discourse-ref:
 Questions and Help
 ------------------
 
@@ -35,16 +39,12 @@ Other Resources
 ^^^^^^^^^^^^^^^
 - We are currently working on compiling a list of resources for working with ICESat-2 data (in the meantime, check out the `2019 ICESat-2 Hackweek repo<https://github.com/ICESAT-2HackWeek>`_ and `consider applying for this year's Hackweek<https://icesat-2hackweek.github.io/>`) 
 - A great set of `interactive tutorials<https://learngitbranching.js.org>`_ for learning and practicing using git
-- Let us know about the helpful tools you've found!
+- Let us know about the helpful tools you've found by posting on our discourse forum as indicated above (:ref:`pangeo-discourse-ref`)!
 
 
 Adding Examples
 ---------------
-We are delighted you'd like to contribute your icepyx/ICESat-2 example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "examples" branch, following the steps outlined below for **Contributing Code**.
-
-Question - Do we want to strongly suggest all examples submitted be in python? Are they required to use icepyx, or just ICESat-2 data?
-DevGoal: mechanism for storing example data/external files for examples
-DevGoal: setup examples (or working?) branch on main repo and figure out how it will be regularly merged with master/new versions
+We are delighted you'd like to contribute your `icepyx<https://github.com/icesat2py/icepyx>` example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "examples" branch, following the steps outlined below for **Contributing Code**.
 
 
 Contributing Code

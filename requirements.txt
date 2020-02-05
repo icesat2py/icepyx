@@ -1,0 +1,7 @@
+numpydoc
+numpy
+datetime
+geopandas
+shapely
+matplotlib
+fiona

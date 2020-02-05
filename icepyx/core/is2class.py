@@ -40,18 +40,25 @@ class Icesat2Data():
     ICESat-2 Data object to query, obtain, and perform basic operations on
     available ICESat-2 datasets using temporal and spatial input parameters.
     Allows the easy input and formatting of search parameters to match the
-    NASA NSIDC DAAC and conversion to multiple data types.
+    NASA NSIDC DAAC and (DevGoal) conversion to multiple data types.
 
     Parameters
     ----------
     dataset : string
         ICESat-2 dataset ID, also known as "short name" (e.g. ATL03).
         Available datasets can be found at: https://nsidc.org/data/icesat-2/data-sets
-    spatial_extent : list
-        Spatial extent of interest, provided as a bounding box.
+    spatial_extent : list or string
+        Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
+        geospatial polygon file.
         Bounding box coordinates should be provided in decimal degrees as
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        DevGoal: allow broader input of polygons and polygon files (e.g. kml, shp) as bounding areas
+        Polygon coordinates should be provided as coordinate pairs in decimal degrees as
+        [(longitude1, latitude1), (longitude2, latitude2), ... (longitude,latitude)].
+        Your list must contain at least four points, where the first and last are identical.
+        DevGoal: adapt code so the polygon is automatically closed if need be
+        Geospatial polygon files are entered as strings with the full file path and
+        must contain only one polygon with the area of interest.
+        Currently supported formats are: kml, shp, and gpkg
     date_range : list of 'YYYY-MM-DD' strings
         Date range of interest, provided as start and end dates, inclusive.
         The required date format is 'YYYY-MM-DD' strings, where
@@ -69,6 +76,9 @@ class Icesat2Data():
         Dataset version, given as a 3 digit string. If no version is given, the current
         version is used.
 
+    Returns
+    -------
+    icesat2data object
 
     See Also
     --------
@@ -82,6 +92,21 @@ class Icesat2Data():
     >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
     >>> region_a
     [show output here after inputting above info and running it]
+    
+    Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
+    >>> reg_a_poly = [(-64, 66), (-64, 72), (-55, 72), (-55, 66), (-64, 66)]
+    >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
+    >>> region_a
+    [show output here after inputting above info and running it]
+    
+    Initializing Icesat2Data with a geospatial polygon file.
+    >>> aoi = '/User/name/location/aoi.shp'
+    >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    >>> region_a = icepyx.Icesat2Data('ATL06', aoi, reg_a_dates)
+    >>> region_a
+    [show output here after inputting above info and running it]
+
     """
 
     # ----------------------------------------------------------------------
@@ -100,13 +125,13 @@ class Icesat2Data():
         if dataset is None or spatial_extent is None or date_range is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
 
-
         self._dset = _validate_dataset(dataset)
 
         if isinstance(spatial_extent, list):
             #bounding box
-            if len(spatial_extent)==4 and type(spatial_extent[0]) is not list:
+            if len(spatial_extent)==4 and all(type(i) is int for i in spatial_extent):
                 #BestPractices: move these assertions to a more general set of tests for valid geometries?
+
                 assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
                 assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
                 assert -180 <= spatial_extent[0] <= 360, "Invalid longitude value" #tighten these ranges depending on actual allowed inputs
@@ -116,20 +141,21 @@ class Icesat2Data():
                 self._spat_extent = spatial_extent
                 self.extent_type = 'bounding_box'
             #user-entered polygon as list of lon, lat coordinate pairs
-            elif len(spatial_extent[0])>1:
+            elif all(type(i) in [list, tuple] for i in spatial_extent):
                 assert len(spatial_extent)>=4, "Your spatial extent polygon has too few vertices"
-                #DevGoal: add docs and check the below assertions (including add a test)
                 assert spatial_extent[0][0] == spatial_extent[-1][0], "Starting longitude doesn't match ending longitude"
                 assert spatial_extent[0][1] == spatial_extent[-1][1], "Starting latitude doesn't match ending latitude"
-                self._spat_extent = spatial_extent
+                polygon = (','.join([str(c) for xy in spatial_extent for c in xy])).split(",")
+                polygon = [float(i) for i in polygon]
+                self._spat_extent = polygon
                 self.extent_type = 'polygon'
             
             else:
                 raise ValueError('Your spatial extent does not meet minimum input criteria')
 
         elif isinstance(spatial_extent, str):
-            #DevGoal: check for valid filename and issue error otherwise
-            #if spatial_extent.split('.')[-1] == 'kml' or spatial_extent.split('.')[-1] == 'shp' or spatial_extent.split('.')[-1] == 'gpkg':
+            assert os.path.exists(spatial_extent), "Check that the path and filename of your geometry file are correct"
+            #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
             if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
                 #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
                 #DevGoal: use new function geodataframe here?
@@ -140,12 +166,12 @@ class Icesat2Data():
                 poly = poly.simplify(0.05, preserve_topology=False)
                 poly = orient(poly, sign=1.0)
 
-#JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too
+#JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
                 #Format dictionary to polygon coordinate pairs for CMR polygon filtering
                 polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
-                polygon_list = [float(i) for i in polygon]
+                polygon = [float(i) for i in polygon]
 
-                self._spat_extent = polygon_list
+                self._spat_extent = polygon
                 self.extent_type = 'polygon'
             else:
                 raise TypeError('Input spatial extent file must be a kml, shp, or gpkg')
@@ -155,9 +181,11 @@ class Icesat2Data():
                 self._start = dt.datetime.strptime(date_range[0], '%Y-%m-%d')
                 self._end = dt.datetime.strptime(date_range[1], '%Y-%m-%d')
                 assert self._start.date() <= self._end.date(), "Your date range is invalid"
+
             else:
                 raise ValueError("Your date range list is the wrong length. It should have start and end dates only.")
 
+#DevGoal: accept more date/time input formats
 #         elif isinstance(date_range, date-time object):
 #             print('it is a date-time object')
 #         elif isinstance(date_range, dict):
@@ -216,8 +244,10 @@ class Icesat2Data():
     def spatial_extent(self):
         """
         Return an array showing the spatial extent of the ICESat-2 data object.
-        Spatial extent is returned as an input type followed by the geometry data.
+        Spatial extent is returned as an input type (which depends on how
+        you initially entered your spatial data) followed by the geometry data.
         Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+        Polygon data is [[list of longitudes],[list of corresponding latitudes]].
 
         Examples
         --------
@@ -229,9 +259,9 @@ class Icesat2Data():
         if self.extent_type is 'bounding_box':
             return ['bounding box', self._spat_extent]
         elif self.extent_type is 'polygon':
-            return ['polygon', self._spat_extent]
+            return ['polygon', [self._spat_extent[0::2], self._spat_extent[1::2]]]
         else:
-            return ['unknown spatial type', self._spat_extent]
+            return ['unknown spatial type', None]
 
     @property
     def dates(self):
@@ -362,6 +392,8 @@ class Icesat2Data():
             Spatial extent, with input format dependent on the extent type.
             Bounding box coordinates should be provided in decimal degrees as
             [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+            Polygon coordinates should be provided in decimal degrees as
+            [longitude, latitude, longitude2, latitude2... longituden, latituden].
         """
         
         #CMR keywords: ['bounding_box', 'polygon']
@@ -404,17 +436,18 @@ class Icesat2Data():
         dset_info = self.about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
-    #DevGoal: can we use a bounding box example in the docs so the user can see what they should expect as output?
-    #DevGoal: explicitly add to docs; complete example in docs; add testing
+    #DevGoal: add testing? How do we test this (if it creates a valid dataframe, isn't testing that the dataframe is the one we're creating circular, even if we've constructed the bounding box/polygon again)?
     def geodataframe(self):
         """
         Return a geodataframe of the spatial extent
 
-
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
-        >>> gdf = region_a.geodataframe
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
+        >>> gdf = region_a.geodataframe()
+        >>> gdf.geometry
+        0    POLYGON ((-64 66, -64 72, -55 72, -55 66, -64 ...
+        Name: geometry, dtype: object
         """
 
         if self.extent_type is 'bounding_box':
@@ -434,14 +467,13 @@ class Icesat2Data():
             gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
             return gdf
         else:
-            return ['unknown spatial type', self._spat_extent]
+            raise TypeError("Your spatial extent type (" + self.extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
         
-    #DevGoal: explicitly add to docs; complete example in docs; add testing
+    #DevGoal: add testing? What do we test, and how, given this is a visualization.
     #DevGoal(long term): modify this to accept additional inputs, etc.
     def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
         """
         Creates a map of the input spatial extent
-
 
         Examples
         --------
@@ -454,7 +486,6 @@ class Icesat2Data():
         world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
         self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
         plt.show()
-
 
     def get_custom_options(self, session):
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
@@ -521,10 +552,6 @@ class Icesat2Data():
                     elif key is 'version':
                         self.CMRparams.update({key:self._version})
                     elif key is 'temporal':
-                        print(self._start)
-                        print(self._end)
-                        print(key)
-                        print(Icesat2Data._fmt_temporal(self._start,self._end,key))
                         self.CMRparams.update(Icesat2Data._fmt_temporal(self._start,self._end,key))
             if any(keys in self.CMRparams for keys in CMR_spat_keys):
                 pass
@@ -566,8 +593,6 @@ class Icesat2Data():
                     self.subsetparams.update({key:kwargs[key]})
                 else:
                     pass
-
-
 
 
     def build_reqconfig_params(self,reqtype, **kwargs):

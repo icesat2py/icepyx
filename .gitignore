@@ -65,6 +65,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+doc/source/_icepyx/
 
 # PyBuilder
 target/
@@ -106,4 +107,5 @@ venv.bak/
 # downloaded data
 /download/
 
-
+# directory files
+.DS_Store

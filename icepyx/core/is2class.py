@@ -127,13 +127,13 @@ class Icesat2Data():
         if dataset is None or spatial_extent is None or date_range is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
 
-
         self._dset = _validate_dataset(dataset)
 
         if isinstance(spatial_extent, list):
             #bounding box
             if len(spatial_extent)==4 and all(type(i) is int for i in spatial_extent):
                 #BestPractices: move these assertions to a more general set of tests for valid geometries?
+
                 assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
                 assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
                 assert -180 <= spatial_extent[0] <= 360, "Invalid longitude value" #tighten these ranges depending on actual allowed inputs
@@ -183,6 +183,7 @@ class Icesat2Data():
                 self._start = dt.datetime.strptime(date_range[0], '%Y-%m-%d')
                 self._end = dt.datetime.strptime(date_range[1], '%Y-%m-%d')
                 assert self._start.date() <= self._end.date(), "Your date range is invalid"
+
             else:
                 raise ValueError("Your date range list is the wrong length. It should have start and end dates only.")
 

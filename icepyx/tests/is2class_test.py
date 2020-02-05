@@ -40,6 +40,7 @@ def test_bad_date_range():
     with pytest.raises(ValueError, match=ermsg):
         ipd.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22'])
 
+
 def test_time_defaults():
     reg_a = ipd.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
     obs_start = reg_a.start_time
@@ -56,8 +57,6 @@ def test_old_version():
 #    pytest.warns(UserWarning, ipd.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], version='1'), match=wrng)
 # results in Icesat2Data object is not callable TypeError
 
-
-
 def test_properties():
     reg_a = ipd.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'],\
                             start_time='03:30:00', end_time='21:30:00', version='2')
@@ -66,6 +65,7 @@ def test_properties():
     
     for obs, expected in zip(obs_list,exp_list):
         assert obs == expected
+
 #BestPractices: should do additional properties tests for each potential propoerty type (e.g. spatial extent can have type bounding_box or polygon)    
 
 #need test for static methods (_fmt_temporal or _fmt_spatial), given that these are "tested" through their submission to the data repo?

@@ -92,14 +92,14 @@ class Icesat2Data():
     >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
     >>> region_a
     [show output here after inputting above info and running it]
-    
+
     Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
     >>> reg_a_poly = [(-64, 66), (-64, 72), (-55, 72), (-55, 66), (-64, 66)]
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
     >>> region_a
     [show output here after inputting above info and running it]
-    
+
     Initializing Icesat2Data with a geospatial polygon file.
     >>> aoi = '/User/name/location/aoi.shp'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
@@ -149,7 +149,7 @@ class Icesat2Data():
                 polygon = [float(i) for i in polygon]
                 self._spat_extent = polygon
                 self.extent_type = 'polygon'
-            
+
             else:
                 raise ValueError('Your spatial extent does not meet minimum input criteria')
 
@@ -157,22 +157,9 @@ class Icesat2Data():
             assert os.path.exists(spatial_extent), "Check that the path and filename of your geometry file are correct"
             #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
             if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
-                #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
-                #DevGoal: use new function geodataframe here?
-                gdf = gpd.read_file(spatial_extent)
-                #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
-                poly = gdf.iloc[0].geometry
-                #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-                poly = poly.simplify(0.05, preserve_topology=False)
-                poly = orient(poly, sign=1.0)
-
-#JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
-                #Format dictionary to polygon coordinate pairs for CMR polygon filtering
-                polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
-                polygon = [float(i) for i in polygon]
-
-                self._spat_extent = polygon
                 self.extent_type = 'polygon'
+                self._spat_extent = self.format_polygon(spatial_extent)
+
             else:
                 raise TypeError('Input spatial extent file must be a kml, shp, or gpkg')
 
@@ -239,6 +226,7 @@ class Icesat2Data():
         ATL06
         """
         return self._dset
+
 
     @property
     def spatial_extent(self):
@@ -395,12 +383,12 @@ class Icesat2Data():
             Polygon coordinates should be provided in decimal degrees as
             [longitude, latitude, longitude2, latitude2... longituden, latituden].
         """
-        
+
         #CMR keywords: ['bounding_box', 'polygon']
         #subsetting keywords: ['bbox','bounding_shape']
         assert ext_type in ['bounding_box', 'polygon'] or ext_type in ['bbox','bounding_shape'],\
         "Invalid spatial extent type."
-        
+
         fmt_extent = ','.join(map(str, extent))
 
         return {ext_type: fmt_extent}
@@ -436,6 +424,31 @@ class Icesat2Data():
         dset_info = self.about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
+
+
+    def format_polygon(self, spatial_extent):
+        """
+        Formats input spatial file to shapely polygon
+
+        """
+        #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
+        #DevGoal: use new function geodataframe here?
+
+        gdf = gpd.read_file(spatial_extent)
+        #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
+        #RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
+        poly = gdf.iloc[0].geometry
+        #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
+        # poly = poly.simplify(0.05, preserve_topology=False)
+        poly = orient(poly, sign=1.0)
+
+        #JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
+        #Format dictionary to polygon coordinate pairs for CMR polygon filtering
+        polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
+        polygon = [float(i) for i in polygon]
+        return polygon
+
+
     #DevGoal: add testing? How do we test this (if it creates a valid dataframe, isn't testing that the dataframe is the one we're creating circular, even if we've constructed the bounding box/polygon again)?
     def geodataframe(self):
         """
@@ -468,7 +481,7 @@ class Icesat2Data():
             return gdf
         else:
             raise TypeError("Your spatial extent type (" + self.extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
-        
+
     #DevGoal: add testing? What do we test, and how, given this is a visualization.
     #DevGoal(long term): modify this to accept additional inputs, etc.
     def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
@@ -629,7 +642,7 @@ class Icesat2Data():
                     self.reqparams.update({key:defaults[key]})
                 else:
                     pass
-                
+
         #DevGoal: improve the interfacing with NSIDC/DAAC so it's not paging results
         self.reqparams['page_num'] = 1
 
@@ -764,7 +777,7 @@ class Icesat2Data():
 #                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
-        
+
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 
         # Request data service for each page number, and unzip outputs

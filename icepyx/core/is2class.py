@@ -53,9 +53,9 @@ class Icesat2Data():
         Bounding box coordinates should be provided in decimal degrees as
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
         Polygon coordinates should be provided as coordinate pairs in decimal degrees as
-        [(longitude1, latitude1), (longitude2, latitude2),(longitude_n,latitude_n), ... (longitude1,latitude1)]
+        [(longitude1, latitude1), (longitude2, latitude2), ... (longitude_n,latitude_n), (longitude1,latitude1)]
         or
-        [longitude1, latitude1, longitude2, latitude2,longitude_n,latitude_n, ... longitude1,latitude1].
+        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
         Your list must contain at least four points, where the first and last are identical.
         DevGoal: adapt code so the polygon is automatically closed if need be
         Geospatial polygon files are entered as strings with the full file path and
@@ -132,7 +132,7 @@ class Icesat2Data():
 
         if isinstance(spatial_extent, list):
             #bounding box
-            if len(spatial_extent)==4 and all(type(i) is int for i in spatial_extent):
+            if len(spatial_extent)==4 and all(type(i) in [int, float] for i in spatial_extent):
                 #BestPractices: move these assertions to a more general set of tests for valid geometries?
                 assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
                 assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
@@ -142,9 +142,9 @@ class Icesat2Data():
                 assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
                 self._spat_extent = spatial_extent
                 self.extent_type = 'bounding_box'
+            
             #user-entered polygon as list of lon, lat coordinate pairs
-
-            elif all(type(i) in [tuple] for i in spatial_extent):
+            elif all(type(i) in [list, tuple] for i in spatial_extent):
                 assert len(spatial_extent)>=4, "Your spatial extent polygon has too few vertices"
                 assert spatial_extent[0][0] == spatial_extent[-1][0], "Starting longitude doesn't match ending longitude"
                 assert spatial_extent[0][1] == spatial_extent[-1][1], "Starting latitude doesn't match ending latitude"
@@ -153,8 +153,9 @@ class Icesat2Data():
                 self._spat_extent = polygon
                 self.extent_type = 'polygon'
 
-            elif all(type(i) in [int,float] for i in spatial_extent):
-                assert len(spatial_extent)>=4, "Your spatial extent polygon has too few vertices"
+            elif all(type(i) in [int, float] for i in spatial_extent):
+                assert len(spatial_extent)>=8, "Your spatial extent polygon has too few vertices"
+                assert len(spatial_extent)%2 == 0, "Your spatial extent polygon list should have an even number of entries"
                 assert spatial_extent[0] == spatial_extent[-2], "Starting longitude doesn't match ending longitude"
                 assert spatial_extent[1] == spatial_extent[-1], "Starting latitude doesn't match ending latitude"
                 polygon = [float(i) for i in spatial_extent]

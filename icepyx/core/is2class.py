@@ -153,6 +153,7 @@ class Icesat2Data():
                 self._spat_extent = polygon
                 self.extent_type = 'polygon'
 
+            #DevGoal: add tests for this type of input
             elif all(type(i) in [int, float] for i in spatial_extent):
                 assert len(spatial_extent)>=8, "Your spatial extent polygon has too few vertices"
                 assert len(spatial_extent)%2 == 0, "Your spatial extent polygon list should have an even number of entries"
@@ -591,6 +592,7 @@ class Icesat2Data():
         if not hasattr(self,'subsetparams'):
             self.subsetparams={}
 
+        #DevGoal: get list of available subsetting options for the dataset and use this to build appropriate subset parameters
         default_keys = ['time']
         spat_keys = ['bbox','bounding_shape']
         opt_keys = ['format','projection','projection_parameters','Coverage']
@@ -685,6 +687,7 @@ class Icesat2Data():
             # Collect results and increment page_num
             self.granules.extend(results['feed']['entry'])
             self.reqparams['page_num'] += 1
+            
 
         return self.granule_info
 
@@ -790,6 +793,7 @@ class Icesat2Data():
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
 
+        print(request_params)
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 
         # Request data service for each page number, and unzip outputs
@@ -801,6 +805,9 @@ class Icesat2Data():
 
         # For all requests other than spatial file upload, use get function
             request = session.get(base_url, params=request_params)
+            
+            root=ET.fromstring(request.content)
+            print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
 
             if verbose is True:
                 print('Request HTTP response: ', request.status_code)

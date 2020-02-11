@@ -5,7 +5,7 @@ icepyx
 
 |Documentation Status|  |GitHub license|
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
+.. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
@@ -69,8 +69,7 @@ We welcome and invite contributions from anyone at any career stage and with any
 To contribute to icepyx, simply fork this repo, make and commit your changes on your local branch,
 and then submit a pull request with a clear message indicating what your changes accomplish.
 
-Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
-|Contributor Covenant|
+Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms. |Contributor Covenant|
 
 .. |Contributor Covenant| image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
-   :target: code_of_conduct.md_
+   :target: code_of_conduct.md

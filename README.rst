@@ -3,6 +3,13 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
+|Documentation Status|
+.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
+   :target: http://ansicolortags.readthedocs.io/?badge=latest
+
+|GitHub license|
+.. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
+   :target: https://opensource.org/licenses/BSD-3-Clause
 
 Origin and Purpose
 ------------------
@@ -63,4 +70,6 @@ To contribute to icepyx, simply fork this repo, make and commit your changes on 
 and then submit a pull request with a clear message indicating what your changes accomplish.
 
 Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md)
+|Contributor Covenant|
+.. |Contributor Covenant| image::https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
+   :target: code_of_conduct.md_

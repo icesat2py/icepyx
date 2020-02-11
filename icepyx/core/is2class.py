@@ -53,7 +53,9 @@ class Icesat2Data():
         Bounding box coordinates should be provided in decimal degrees as
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
         Polygon coordinates should be provided as coordinate pairs in decimal degrees as
-        [(longitude1, latitude1), (longitude2, latitude2), ... (longitude,latitude)].
+        [(longitude1, latitude1), (longitude2, latitude2), ... (longitude_n,latitude_n), (longitude1,latitude1)]
+        or
+        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
         Your list must contain at least four points, where the first and last are identical.
         DevGoal: adapt code so the polygon is automatically closed if need be
         Geospatial polygon files are entered as strings with the full file path and
@@ -92,14 +94,14 @@ class Icesat2Data():
     >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
     >>> region_a
     [show output here after inputting above info and running it]
-    
+
     Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
     >>> reg_a_poly = [(-64, 66), (-64, 72), (-55, 72), (-55, 66), (-64, 66)]
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
     >>> region_a
     [show output here after inputting above info and running it]
-    
+
     Initializing Icesat2Data with a geospatial polygon file.
     >>> aoi = '/User/name/location/aoi.shp'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
@@ -125,13 +127,13 @@ class Icesat2Data():
         if dataset is None or spatial_extent is None or date_range is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
 
+
         self._dset = _validate_dataset(dataset)
 
         if isinstance(spatial_extent, list):
             #bounding box
-            if len(spatial_extent)==4 and all(type(i) is int for i in spatial_extent):
+            if len(spatial_extent)==4 and all(type(i) in [int, float] for i in spatial_extent):
                 #BestPractices: move these assertions to a more general set of tests for valid geometries?
-
                 assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
                 assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
                 assert -180 <= spatial_extent[0] <= 360, "Invalid longitude value" #tighten these ranges depending on actual allowed inputs
@@ -140,6 +142,7 @@ class Icesat2Data():
                 assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
                 self._spat_extent = spatial_extent
                 self.extent_type = 'bounding_box'
+            
             #user-entered polygon as list of lon, lat coordinate pairs
             elif all(type(i) in [list, tuple] for i in spatial_extent):
                 assert len(spatial_extent)>=4, "Your spatial extent polygon has too few vertices"
@@ -149,7 +152,17 @@ class Icesat2Data():
                 polygon = [float(i) for i in polygon]
                 self._spat_extent = polygon
                 self.extent_type = 'polygon'
-            
+
+            #DevGoal: add tests for this type of input
+            elif all(type(i) in [int, float] for i in spatial_extent):
+                assert len(spatial_extent)>=8, "Your spatial extent polygon has too few vertices"
+                assert len(spatial_extent)%2 == 0, "Your spatial extent polygon list should have an even number of entries"
+                assert spatial_extent[0] == spatial_extent[-2], "Starting longitude doesn't match ending longitude"
+                assert spatial_extent[1] == spatial_extent[-1], "Starting latitude doesn't match ending latitude"
+                polygon = [float(i) for i in spatial_extent]
+                self._spat_extent = polygon
+                self.extent_type = 'polygon'
+
             else:
                 raise ValueError('Your spatial extent does not meet minimum input criteria')
 
@@ -157,22 +170,9 @@ class Icesat2Data():
             assert os.path.exists(spatial_extent), "Check that the path and filename of your geometry file are correct"
             #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
             if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
-                #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
-                #DevGoal: use new function geodataframe here?
-                gdf = gpd.read_file(spatial_extent)
-                #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
-                poly = gdf.iloc[0].geometry
-                #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-                poly = poly.simplify(0.05, preserve_topology=False)
-                poly = orient(poly, sign=1.0)
-
-#JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
-                #Format dictionary to polygon coordinate pairs for CMR polygon filtering
-                polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
-                polygon = [float(i) for i in polygon]
-
-                self._spat_extent = polygon
                 self.extent_type = 'polygon'
+                self._spat_extent = self.format_polygon(spatial_extent)
+
             else:
                 raise TypeError('Input spatial extent file must be a kml, shp, or gpkg')
 
@@ -239,6 +239,7 @@ class Icesat2Data():
         ATL06
         """
         return self._dset
+
 
     @property
     def spatial_extent(self):
@@ -395,12 +396,12 @@ class Icesat2Data():
             Polygon coordinates should be provided in decimal degrees as
             [longitude, latitude, longitude2, latitude2... longituden, latituden].
         """
-        
+
         #CMR keywords: ['bounding_box', 'polygon']
         #subsetting keywords: ['bbox','bounding_shape']
         assert ext_type in ['bounding_box', 'polygon'] or ext_type in ['bbox','bounding_shape'],\
         "Invalid spatial extent type."
-        
+
         fmt_extent = ','.join(map(str, extent))
 
         return {ext_type: fmt_extent}
@@ -436,6 +437,31 @@ class Icesat2Data():
         dset_info = self.about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
+
+
+    def format_polygon(self, spatial_extent):
+        """
+        Formats input spatial file to shapely polygon
+
+        """
+        #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
+        #DevGoal: use new function geodataframe here?
+
+        gdf = gpd.read_file(spatial_extent)
+        #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
+        #RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
+        poly = gdf.iloc[0].geometry
+        #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
+        # poly = poly.simplify(0.05, preserve_topology=False)
+        poly = orient(poly, sign=1.0)
+
+        #JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
+        #Format dictionary to polygon coordinate pairs for CMR polygon filtering
+        polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
+        polygon = [float(i) for i in polygon]
+        return polygon
+
+
     #DevGoal: add testing? How do we test this (if it creates a valid dataframe, isn't testing that the dataframe is the one we're creating circular, even if we've constructed the bounding box/polygon again)?
     def geodataframe(self):
         """
@@ -468,7 +494,7 @@ class Icesat2Data():
             return gdf
         else:
             raise TypeError("Your spatial extent type (" + self.extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
-        
+
     #DevGoal: add testing? What do we test, and how, given this is a visualization.
     #DevGoal(long term): modify this to accept additional inputs, etc.
     def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
@@ -566,6 +592,7 @@ class Icesat2Data():
         if not hasattr(self,'subsetparams'):
             self.subsetparams={}
 
+        #DevGoal: get list of available subsetting options for the dataset and use this to build appropriate subset parameters
         default_keys = ['time']
         spat_keys = ['bbox','bounding_shape']
         opt_keys = ['format','projection','projection_parameters','Coverage']
@@ -629,7 +656,7 @@ class Icesat2Data():
                     self.reqparams.update({key:defaults[key]})
                 else:
                     pass
-                
+
         #DevGoal: improve the interfacing with NSIDC/DAAC so it's not paging results
         self.reqparams['page_num'] = 1
 
@@ -660,6 +687,7 @@ class Icesat2Data():
             # Collect results and increment page_num
             self.granules.extend(results['feed']['entry'])
             self.reqparams['page_num'] += 1
+            
 
         return self.granule_info
 
@@ -764,7 +792,8 @@ class Icesat2Data():
 #                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
-        
+
+        print(request_params)
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 
         # Request data service for each page number, and unzip outputs
@@ -776,6 +805,9 @@ class Icesat2Data():
 
         # For all requests other than spatial file upload, use get function
             request = session.get(base_url, params=request_params)
+            
+            root=ET.fromstring(request.content)
+            print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
 
             if verbose is True:
                 print('Request HTTP response: ', request.status_code)

@@ -4,11 +4,7 @@ icepyx
 **Python tools for obtaining and working with ICESat-2 data**
 
 
-.. toctree:: ./icepyx/doc/
-   :maxdepth: 2
-   :hidden:
-
-   getting_started/origin_purpose
-   getting_started/install
-   example_link
-   development/contact_contribute
+.. include:: ./icepyx/doc/getting_started/origin_purpose.rst
+.. include:: ./icepyx/doc/getting_started/install
+.. include:: ./icepyx/doc/example_link
+.. include:: ./icepyx/doc/development/contact_contribute

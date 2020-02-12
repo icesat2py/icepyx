@@ -1,10 +1,14 @@
-.. _contributing:
+.. _contributing-link:
+
 Contributing to icepyx
 ======================
 
 Thank you for your interest in contributing to icepyx! We welcome and invite contributions of any size from anyone at any career stage and with any amount of coding experience. Since this is a community-based project, we're thankful for your contributions to the utility and success of this project.
 
-This document provides a set of guidelines and information for contributing to icepyx.
+Here we provide a set of guidelines and information for contributing to icepyx. This project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms. |Contributor Covenant|
+
+.. |Contributor Covenant| image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
+   :target: ../../../code_of_conduct.md
 
 
 Ways to Contribute
@@ -16,7 +20,7 @@ Ways to Contribute
 - Fix typos
 - Improve documentation and testing
 
-The best way to report a problem, request a feature, find out if others are working on a similar problem or application, or let us know you'd like to write some code is to find the *Issues* tab and check if your problem/suggestion has already been reported. If so, please provide any additional information in the ongoing discussion. Otherwise, feel free to create a new issue and submit your problem or suggestions.
+The best way to report a problem, request a feature, find out if others are working on a similar problem or application, or let us know you'd like to contribute some code is to find the *Issues* tab and check if your problem/suggestion has already been reported. If so, please provide any additional information in the ongoing discussion. Otherwise, feel free to create a new issue and submit your problem or suggestions.
 
 
 Requesting a Feature
@@ -29,7 +33,6 @@ Reporting a Bug
 Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Give your issue a clear title and describe the steps required to recreate it in as much detail as possible. If you can, include a small example that reproduces the error. More information and minimal examples will help us resolve issues faster.
 
 
-.. _pangeo-discourse-ref:
 Questions and Help
 ------------------
 
@@ -37,19 +40,19 @@ Please do not create issues to ask for help. A faster way to reach the community
 
 Other Resources
 ^^^^^^^^^^^^^^^
-- We are currently working on compiling a list of resources for working with ICESat-2 data (in the meantime, check out the `2019 ICESat-2 Hackweek repo<https://github.com/ICESAT-2HackWeek>`_ and `consider applying for this year's Hackweek<https://icesat-2hackweek.github.io/>`) 
-- A great set of `interactive tutorials<https://learngitbranching.js.org>`_ for learning and practicing using git
-- Let us know about the helpful tools you've found by posting on our discourse forum as indicated above (:ref:`pangeo-discourse-ref`)!
+- We are currently working on compiling a list of resources for working with ICESat-2 data (in the meantime, check out the `2019 ICESat-2 Hackweek repo <https://github.com/ICESAT-2HackWeek>`_ and `consider applying for this year's Hackweek <https://icesat-2hackweek.github.io/>`_) 
+- A great set of `interactive tutorials <https://learngitbranching.js.org>`_ for learning and practicing using git
+- Let us know about the helpful tools you've found by posting on our discourse forum as indicated above (`Questions and Help`_)!
 
 
 Adding Examples
 ---------------
-We are delighted you'd like to contribute your `icepyx<https://github.com/icesat2py/icepyx>` example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "examples" branch, following the steps outlined below for **Contributing Code**.
+We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "examples" branch, following the steps outlined below for **Contributing Code**.
 
 
 Contributing Code
 -----------------
-We follow a standard git workflow for code changes and additions. All submitted code, including our own, goes through the pull request process; no changes are made directly to the *master* branch. This allows our continuous integration (testing) process to ensure that the code is up to our standards and passes all of our tests (i.e. doesn't break what's already there and working). It also means that the *master* branch remains stable even as new features are being developed.
+We follow a standard git workflow for code changes and additions. All submitted code, including our own, goes through the pull request process; no changes are pushed directly to the *master* branch. This allows our continuous integration (testing) process to ensure that the code is up to our standards and passes all of our tests (i.e. doesn't break what's already there and working). It also means that the *master* branch remains stable even as new features are being developed.
 
 First Steps
 ^^^^^^^^^^^
@@ -60,14 +63,14 @@ General Guidelines
 - Make each pull request as small and simple as possible. Unrelated changes should be submitted as multiple pull requests.
 - Larger changes should be broken down into their basic components and integrated separately.
 - Bug fixes should be their own pull requests.
-- Do not commit changes to files irrelevant to your pull request, such as `.gitignore`)
+- Do not commit changes to files irrelevant to your pull request, such as `.gitignore`
 - Write descriptive commit and pull request messages. Someone looking at the code a decade from now should know what you worked on from your commit message.
 - Be kind and encouraging to all contributors; be willing to accept constructive criticism to improve your code.
 - Review of pull requests takes time, particularly if the pull request is large and/or the commit messages are ambiguous.
 
 Basic Steps to Contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`. In a nutshell, the series of steps required to add new code is:
+We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_. In a nutshell, the series of steps required to add new code is:
 (first time only)
 - Clone the repository
 - Fork the repo to your personal GitHub account
@@ -82,7 +85,7 @@ We encourage users to follow the `git pull request workflow <https://www.asmeure
 
 Licensing
 ^^^^^^^^^
-icepyx is licensed under the BSD-3 license. Contributed code will also be licensed under BSD-3. If you did not write the code yourself, it is your responsibility to ensure that the existing license is compatible and included in the contributed files or you have documented permission from the original author to relicense the code.
+icepyx is licensed under the `BSD-3 license <https://opensource.org/licenses/BSD-3-Clause>`_. Contributed code will also be licensed under BSD-3. If you did not write the code yourself, it is your responsibility to ensure that the existing license is compatible and included in the contributed files or you have documented permission from the original author to relicense the code.
 
 
 Improving Documentation and Testing

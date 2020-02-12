@@ -63,11 +63,14 @@ implemented and want to find out if others would like that tool too?
 Come join the conversation at: https://discourse.pangeo.io/.
 Search for "icesat-2" under the "science" topic to find us.
 
+.. _`icepyx`: https://github.com/icesat2py/icepyx
+.. _`contribution guidelines`: contributing-link_
+
 Contribute
 ----------
-We welcome and invite contributions from anyone at any career stage and with any amount of coding experience!
-To contribute to icepyx, simply fork this repo, make and commit your changes on your local branch,
-and then submit a pull request with a clear message indicating what your changes accomplish.
+
+We welcome and invite contributions to icepyx_ from anyone at any career stage and with any amount of coding experience!
+Check out our `contribution guidelines`_ to see how you can contribute.
 
 Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms. |Contributor Covenant|
 

@@ -47,7 +47,7 @@ Other Resources
 
 Adding Examples
 ---------------
-We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "examples" branch, following the steps outlined below for **Contributing Code**.
+We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "examples" branch, following the steps outlined below for `Contributing Code`_.
 
 
 Contributing Code
@@ -71,17 +71,17 @@ General Guidelines
 Basic Steps to Contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_. In a nutshell, the series of steps required to add new code is:
-(first time only)
-- Clone the repository
-- Fork the repo to your personal GitHub account
-- Add your fork as a remote
-(each time you make changes)
-- Update the master
-- Create a branch
-- Make your change and commit them to the branch
-- Push your changes to your fork
-- Make a pull request (on GitHub)
-- Push any additional, relevant changes to the same pull request (this will happen automatically if you push the changes to the same branch from which you made the pull request)
+ | (first time only)
+ - Clone the repository
+ - Fork the repo to your personal GitHub account
+ - Add your fork as a remote
+ | (each time you make changes)
+ - Update the master
+ - Create a branch
+ - Make your change and commit them to the branch
+ - Push your changes to your fork
+ - Make a pull request (on GitHub)
+ - Push any additional, relevant changes to the same pull request (this will happen automatically if you push the changes to the same branch from which you made the pull request)
 
 Licensing
 ^^^^^^^^^

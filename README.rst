@@ -64,7 +64,7 @@ Come join the conversation at: https://discourse.pangeo.io/.
 Search for "icesat-2" under the "science" topic to find us.
 
 .. _`icepyx`: https://github.com/icesat2py/icepyx
-.. _`contribution guidelines`: contributing-link_
+.. _`contribution guidelines`: ./doc/source/development/contribution_guidelines.rst
 
 Contribute
 ----------

@@ -10,7 +10,7 @@ Come join the conversation at: https://discourse.pangeo.io/.
 Search for "icesat-2" under the "science" topic to find us.
 
 .. _`icepyx`: https://github.com/icesat2py/icepyx
-.. _`contribution guidelines`: contributing-link_
+.. _`contribution guidelines`: contribution_guidelines.rst
 
 Contribute
 ----------
@@ -24,4 +24,5 @@ Please note that this project is released with a Contributor Code of Conduct. By
    :target: ../../../code_of_conduct.md
    
 .. toctree::
+   :hidden:
    contribution_guidelines

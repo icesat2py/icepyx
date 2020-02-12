@@ -12,7 +12,7 @@ Working with ICESat-2 data and have ideas you want to share? Have a great sugges
 
 ## Installation
 
-Right now this library is only available as a github repo. To use icepyx, fork this repo to your own account, then `git clone` the repo onto your system. Provided the location of the repo is part of your PYTHONPATH, you should simply be able to add `import icepyx` to your Python document.
+To use icepyx, fork this repo to your own account, then `git clone` to your system. Within the `icepyx` repo directory on your system, you can run `pip install -e .`, and you should then be able to `import icepyx` in Python/iPython, with the option to modify the source code (https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs). In the future, we hope to support installation via `conda-forge`.
 
 ## Contributing
 

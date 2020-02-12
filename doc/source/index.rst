@@ -15,4 +15,5 @@ icepyx
    getting_started/install
    example_link
    user_guide/is2class
-   development/contact_contribute
+   development/contact
+   development/contribution_guidelines

@@ -23,7 +23,7 @@ Please note that this project is released with a Contributor Code of Conduct. By
 .. |Contributor Covenant| image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
    :target: ../../../code_of_conduct.md
    
-.. include:: ../contribution_guidelines.rst
+.. include:: ./contribution_guidelines.rst
 
 .. toctree::
    :hidden:

@@ -1,7 +1,5 @@
-.. _contributing-link:
-
-Contributing to icepyx
-======================
+Contribution Guidelines
+=======================
 
 Thank you for your interest in contributing to icepyx! We welcome and invite contributions of any size from anyone at any career stage and with any amount of coding experience. Since this is a community-based project, we're thankful for your contributions to the utility and success of this project.
 
@@ -78,7 +76,7 @@ We encourage users to follow the `git pull request workflow <https://www.asmeure
  | (each time you make changes)
  - Update the master
  - Create a branch
- - Make your change and commit them to the branch
+ - Make your changes and commit them to the branch
  - Push your changes to your fork
  - Make a pull request (on GitHub)
  - Push any additional, relevant changes to the same pull request (this will happen automatically if you push the changes to the same branch from which you made the pull request)

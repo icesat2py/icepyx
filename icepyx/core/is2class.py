@@ -57,23 +57,23 @@ class Icesat2Data():
         or
         [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
         Your list must contain at least four points, where the first and last are identical.
-        [DevGoal: adapt code so the polygon is automatically closed if need be]
+        DevGoal: adapt code so the polygon is automatically closed if need be
         Geospatial polygon files are entered as strings with the full file path and
         must contain only one polygon with the area of interest.
-        Currently supported formats are: kml, shp, and gpkg.
+        Currently supported formats are: kml, shp, and gpkg
     date_range : list of 'YYYY-MM-DD' strings
         Date range of interest, provided as start and end dates, inclusive.
         The required date format is 'YYYY-MM-DD' strings, where
         YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
         Currently, a list of specific dates (rather than a range) is not accepted.
-        [DevGoal: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
-        DevGoal: allow searches with a list of dates, rather than a range.]
+        DevGoal: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
+        DevGoal: allow searches with a list of dates, rather than a range.
     start_time : HH:mm:ss, default 00:00:00
         Start time in UTC/Zulu (24 hour clock). If None, use default.
-        [DevGoal: check for time in date-range date-time object, if that's used for input.]
+        DevGoal: check for time in date-range date-time object, if that's used for input.
     end_time : HH:mm:ss, default 23:59:59
         End time in UTC/Zulu (24 hour clock). If None, use default.
-        [DevGoal: check for time in date-range date-time object, if that's used for input.]
+        DevGoal: check for time in date-range date-time object, if that's used for input.
     version : string, default most recent version
         Dataset version, given as a 3 digit string. If no version is given, the current
         version is used.
@@ -81,6 +81,9 @@ class Icesat2Data():
     Returns
     -------
     icesat2data object
+
+    See Also
+    --------
 
 
     Examples
@@ -449,7 +452,7 @@ class Icesat2Data():
         #RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
         poly = gdf.iloc[0].geometry
         #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-        # poly = poly.simplify(0.05, preserve_topology=False)
+        poly = poly.simplify(0.05, preserve_topology=False)
         poly = orient(poly, sign=1.0)
 
         #JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?

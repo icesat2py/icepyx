@@ -38,7 +38,7 @@ To clone the repository:
 
 .. code-block:: none
 
-  git clone git@github.com:icesat2py/icepyx.git
+  git clone https://github.com/icesat2py/icepyx.git
 
 
 Future developments of icepyx may include pip and conda as simplified installation options.

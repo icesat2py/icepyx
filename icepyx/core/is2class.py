@@ -154,6 +154,7 @@ class Icesat2Data():
                 self.extent_type = 'polygon'
 
             #DevGoal: add tests for this type of input
+            #user-entered polygon as a single list of lon and lat coordinates
             elif all(type(i) in [int, float] for i in spatial_extent):
                 assert len(spatial_extent)>=8, "Your spatial extent polygon has too few vertices"
                 assert len(spatial_extent)%2 == 0, "Your spatial extent polygon list should have an even number of entries"
@@ -165,6 +166,11 @@ class Icesat2Data():
 
             else:
                 raise ValueError('Your spatial extent does not meet minimum input criteria')
+            
+            #DevGoal: write a test for this
+            #make sure there is nothing set to self._geom_filepath since its existence determines later steps
+            if hasattr(self,'_geom_filepath'):
+                del self._geom_filepath
 
         elif isinstance(spatial_extent, str):
             assert os.path.exists(spatial_extent), "Check that the path and filename of your geometry file are correct"
@@ -172,6 +178,7 @@ class Icesat2Data():
             if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
                 self.extent_type = 'polygon'
                 self._spat_extent = self.format_polygon(spatial_extent)
+                self._geom_filepath = spatial_extent
 
             else:
                 raise TypeError('Input spatial extent file must be a kml, shp, or gpkg')
@@ -597,7 +604,7 @@ class Icesat2Data():
         spat_keys = ['bbox','bounding_shape']
         opt_keys = ['format','projection','projection_parameters','Coverage']
         #check to see if the parameter list is already built
-        if all(keys in self.subsetparams for keys in default_keys) and any(keys in self.subsetparams for keys in spat_keys):
+        if all(keys in self.subsetparams for keys in default_keys) and (any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath')):
             pass
         #if not, see which fields need to be added and add them
         else:
@@ -607,7 +614,7 @@ class Icesat2Data():
                 else:
                     if key is 'time':
                         self.subsetparams.update(Icesat2Data._fmt_temporal(self._start,self._end, key))
-            if any(keys in self.subsetparams for keys in spat_keys):
+            if any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath'):
                 pass
             else:
                 if self.extent_type is 'bounding_box':
@@ -742,7 +749,7 @@ class Icesat2Data():
 
         return session
 
-
+    #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     def order_granules(self, session, verbose=False, subset=True, **kwargs):
         """
         Place an order for the available granules for the ICESat-2 data object.
@@ -804,13 +811,26 @@ class Icesat2Data():
             request_params.update( {'page_num': page_val} )
 
         # For all requests other than spatial file upload, use get function
-            request = session.get(base_url, params=request_params)
+        #add line here for using post instead of get with polygon and subset
+        #also, make sure to use the full polygon, not the simplified one used for finding granules
+            if subset is True and hasattr(self, '_geom_filepath'):
+                #post polygon file to OGR for geojson conversion
+                #DevGoal: what is this doing under the hood, and can we do it locally?
+                
+                print('into shapefile subsetting loop')
+                request = session.post(base_url, params=request_params, \
+                                       files={'shapefile': open(str(self._geom_filepath), 'rb')})
+                print(request.content)
+            else:
+                request = session.get(base_url, params=request_params)
+                print(request.content)
             
             root=ET.fromstring(request.content)
             print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
 
             if verbose is True:
                 print('Request HTTP response: ', request.status_code)
+                print('Order request URL: ', request.url)
 
         # Raise bad request: Loop will stop for bad response code.
             request.raise_for_status()

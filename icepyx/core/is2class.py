@@ -535,6 +535,9 @@ class Icesat2Data():
         plt.show()
 
     def _get_custom_options(self, session):
+        """
+        Get lists of what customization options are available for the dataset from NSIDC.
+        """
         if session is None:
             raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
 
@@ -579,6 +582,9 @@ class Icesat2Data():
         return [subagent, format_vals, proj_vals, format_proj, no_proj, variable_vals]
 
     def show_custom_options(self, session):
+        """
+        Display customization/subsetting options available for this dataset.
+        """
         headers=['Subsetting options', 'Data File Formats (Reformatting Options)', 'Reprojection Options',
                  'Data File (Reformatting) Options Supporting Reprojection',
                  'Data File (Reformatting) Options NOT Supporting Reprojection',

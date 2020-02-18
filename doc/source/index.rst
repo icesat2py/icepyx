@@ -13,6 +13,7 @@ icepyx
 
    getting_started/origin_purpose
    getting_started/install
+   getting_started/resources
    example_link
    user_guide/is2class
    development/contact

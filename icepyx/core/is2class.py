@@ -424,23 +424,38 @@ class Icesat2Data():
     # ----------------------------------------------------------------------
     # Methods
 
-    def about_dataset(self):
+    def _about_dataset(self):
         """
-        Return metadata about the dataset of interest (the collection).
+        Ping Earthdata to get metadata about the dataset of interest (the collection).
         """
 
         cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
         response = requests.get(cmr_collections_url, params={'short_name': self._dset})
         results = json.loads(response.content)
         return results
-        #DevGoal: provide a more readable data format if the user prints the data (look into pprint, per Amy's tutorial)
+
+    def dataset_summary_info(self):
+        """
+        Display a summary of selected metadata for the most recent version of the dataset 
+        of interest (the collection).
+        """
+        summ_keys = ['dataset_id', 'short_name', 'version_id', 'time_start', 'coordinate_system', 'summary',
+             'orbit_parameters']
+        for key in summ_keys:
+            print(key,': ',self._about_dataset()['feed']['entry'][int(self.latest_version())-1][key])
+
+    def dataset_all_info(self):
+        """
+        Display all metadata about the dataset of interest (the collection).
+        """
+        pprint.pprint(self._about_dataset())
 
 
     def latest_version(self):
         """
         Determine the most recent version available for the given dataset.
         """
-        dset_info = self.about_dataset()
+        dset_info = self._about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
 

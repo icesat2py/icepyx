@@ -534,8 +534,7 @@ class Icesat2Data():
         self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
         plt.show()
 
-    def get_custom_options(self, session):
-        #DevGoal: does getting the custom options actually require a login, or is there a way to do it without one? If the latter, modify this function accordingly.
+    def _get_custom_options(self, session):
         if session is None:
             raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
 
@@ -545,12 +544,6 @@ class Icesat2Data():
 
         # collect lists with each service option
         subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
-
-        # variable subsetting
-        variables = [SubsetVariable.attrib for SubsetVariable in root.iter('SubsetVariable')]
-        variables_raw = [variables[i]['value'] for i in range(len(variables))]
-        variables_join = [''.join(('/',v)) if v.startswith('/') == False else v for v in variables_raw]
-        variable_vals = [v.replace(':', '/') for v in variables_join]
 
         # reformatting
         formats = [Format.attrib for Format in root.iter('Format')]
@@ -577,7 +570,25 @@ class Icesat2Data():
         # reformatting options that do not support reprojection
         no_proj = [i for i in format_vals if i not in format_proj]
 
-        print(subagent, variable_vals, format_vals, normalproj_vals, proj_vals, no_proj)
+        # variable subsetting
+        variables = [SubsetVariable.attrib for SubsetVariable in root.iter('SubsetVariable')]
+        variables_raw = [variables[i]['value'] for i in range(len(variables))]
+        variables_join = [''.join(('/',v)) if v.startswith('/') == False else v for v in variables_raw]
+        variable_vals = [v.replace(':', '/') for v in variables_join]
+
+        return [subagent, format_vals, proj_vals, format_proj, no_proj, variable_vals]
+
+    def show_custom_options(self, session):
+        headers=['Subsetting options', 'Data File Formats (Reformatting Options)', 'Reprojection Options',
+                 'Data File (Reformatting) Options Supporting Reprojection',
+                 'Data File (Reformatting) Options NOT Supporting Reprojection',
+                 'Data Variables (also Subsettable)']
+        options = self._get_custom_options(session)
+        
+        for h,o in zip(headers,options):
+            print(h)
+            pprint.pprint(o)
+
 
     def build_CMR_params(self):
         """

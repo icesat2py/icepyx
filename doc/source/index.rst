@@ -18,3 +18,4 @@ icepyx
    user_guide/is2class
    development/contact
    development/contribution_guidelines
+   development/development_plan

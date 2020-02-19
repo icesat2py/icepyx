@@ -58,6 +58,7 @@ Before you even begin writing code, please first check out our issues page. Some
 
 General Guidelines
 ^^^^^^^^^^^^^^^^^^
+
 - Make each pull request as small and simple as possible. Unrelated changes should be submitted as multiple pull requests.
 - Larger changes should be broken down into their basic components and integrated separately.
 - Bug fixes should be their own pull requests.
@@ -69,11 +70,14 @@ General Guidelines
 Basic Steps to Contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_. In a nutshell, the series of steps required to add new code is:
- | (first time only)
+(first time only)
+
  - Clone the repository
  - Fork the repo to your personal GitHub account
  - Add your fork as a remote
- | (each time you make changes)
+ 
+(each time you make changes)
+
  - Update the master
  - Create a branch
  - Make your changes and commit them to the branch

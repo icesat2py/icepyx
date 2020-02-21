@@ -424,23 +424,38 @@ class Icesat2Data():
     # ----------------------------------------------------------------------
     # Methods
 
-    def about_dataset(self):
+    def _about_dataset(self):
         """
-        Return metadata about the dataset of interest (the collection).
+        Ping Earthdata to get metadata about the dataset of interest (the collection).
         """
 
         cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
         response = requests.get(cmr_collections_url, params={'short_name': self._dset})
         results = json.loads(response.content)
         return results
-        #DevGoal: provide a more readable data format if the user prints the data (look into pprint, per Amy's tutorial)
+
+    def dataset_summary_info(self):
+        """
+        Display a summary of selected metadata for the most recent version of the dataset 
+        of interest (the collection).
+        """
+        summ_keys = ['dataset_id', 'short_name', 'version_id', 'time_start', 'coordinate_system', 'summary',
+             'orbit_parameters']
+        for key in summ_keys:
+            print(key,': ',self._about_dataset()['feed']['entry'][int(self.latest_version())-1][key])
+
+    def dataset_all_info(self):
+        """
+        Display all metadata about the dataset of interest (the collection).
+        """
+        pprint.pprint(self._about_dataset())
 
 
     def latest_version(self):
         """
         Determine the most recent version available for the given dataset.
         """
-        dset_info = self.about_dataset()
+        dset_info = self._about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
 
@@ -519,8 +534,10 @@ class Icesat2Data():
         self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
         plt.show()
 
-    def get_custom_options(self, session):
-        #DevGoal: does getting the custom options actually require a login, or is there a way to do it without one? If the latter, modify this function accordingly.
+    def _get_custom_options(self, session):
+        """
+        Get lists of what customization options are available for the dataset from NSIDC.
+        """
         if session is None:
             raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
 
@@ -530,12 +547,6 @@ class Icesat2Data():
 
         # collect lists with each service option
         subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
-
-        # variable subsetting
-        variables = [SubsetVariable.attrib for SubsetVariable in root.iter('SubsetVariable')]
-        variables_raw = [variables[i]['value'] for i in range(len(variables))]
-        variables_join = [''.join(('/',v)) if v.startswith('/') == False else v for v in variables_raw]
-        variable_vals = [v.replace(':', '/') for v in variables_join]
 
         # reformatting
         formats = [Format.attrib for Format in root.iter('Format')]
@@ -562,7 +573,28 @@ class Icesat2Data():
         # reformatting options that do not support reprojection
         no_proj = [i for i in format_vals if i not in format_proj]
 
-        print(subagent, variable_vals, format_vals, normalproj_vals, proj_vals, no_proj)
+        # variable subsetting
+        variables = [SubsetVariable.attrib for SubsetVariable in root.iter('SubsetVariable')]
+        variables_raw = [variables[i]['value'] for i in range(len(variables))]
+        variables_join = [''.join(('/',v)) if v.startswith('/') == False else v for v in variables_raw]
+        variable_vals = [v.replace(':', '/') for v in variables_join]
+
+        return [subagent, format_vals, proj_vals, format_proj, no_proj, variable_vals]
+
+    def show_custom_options(self, session):
+        """
+        Display customization/subsetting options available for this dataset.
+        """
+        headers=['Subsetting options', 'Data File Formats (Reformatting Options)', 'Reprojection Options',
+                 'Data File (Reformatting) Options Supporting Reprojection',
+                 'Data File (Reformatting) Options NOT Supporting Reprojection',
+                 'Data Variables (also Subsettable)']
+        options = self._get_custom_options(session)
+        
+        for h,o in zip(headers,options):
+            print(h)
+            pprint.pprint(o)
+
 
     def build_CMR_params(self):
         """

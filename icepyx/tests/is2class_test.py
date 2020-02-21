@@ -20,12 +20,12 @@ def test_bad_dataset():
     with pytest.raises(AssertionError, match=ermsg):
         ipd._validate_dataset(wrngds)
 
-def test_bbox_spat_input_type():
+def test_spat_input_type():
     ermsg = 'Your spatial extent does not meet minimum input criteria'
     with pytest.raises(ValueError, match=ermsg):
         ipd.Icesat2Data('ATL06',[-64, 66, (-55, 72), 72],['2019-02-22','2019-02-28'])
 
-def test_poly_spat_input():
+def test_poly_spat_file_input():
     ermsg = "Check that the path and filename of your geometry file are correct"
     with pytest.raises(AssertionError, match=ermsg):
         ipd.Icesat2Data('ATL06','file_path/name/invalid_type.txt',['2019-02-22','2019-02-28'])
@@ -70,6 +70,19 @@ def test_properties():
 
 #need test for static methods (_fmt_temporal or _fmt_spatial), given that these are "tested" through their submission to the data repo?
 
+def test_combine_params():
+    dict1 = {'key1': 0, 'key2': 1}
+    dict2 = {'key3':0}
+    expected = {'key1': 0, 'key2': 1, 'key3':0}
+    obs = ipd.Icesat2Data.combine_params(dict1,dict2)
+    assert obs == expected
+
+def test_no_granules_in_search_results():
+    ermsg = "Your search returned no results; try different search parameters"
+    with pytest.raises(AssertionError, match=ermsg):
+        ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-20'], version='2').avail_granules()
+
+
 #how test for things like returning a geodataframe or figure, if at all? (see notes in is2class.py, approx lines 439 and 472)
     
 
@@ -105,3 +118,5 @@ def test_reqconfig_params():
 #check that search results are correct (spatially, temporally, match actually available data)
 #check that agent key is added in event of no subsetting
 #check that downloaded data is subset
+#how to test orders and downloads without a login?
+

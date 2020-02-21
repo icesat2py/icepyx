@@ -133,7 +133,6 @@ class Icesat2Data():
         if isinstance(spatial_extent, list):
             #bounding box
             if len(spatial_extent)==4 and all(type(i) in [int, float] for i in spatial_extent):
-                #BestPractices: move these assertions to a more general set of tests for valid geometries?
                 assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
                 assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
                 assert -180 <= spatial_extent[0] <= 360, "Invalid longitude value" #tighten these ranges depending on actual allowed inputs
@@ -153,7 +152,6 @@ class Icesat2Data():
                 self._spat_extent = polygon
                 self.extent_type = 'polygon'
 
-            #DevGoal: add tests for this type of input
             #user-entered polygon as a single list of lon and lat coordinates
             elif all(type(i) in [int, float] for i in spatial_extent):
                 assert len(spatial_extent)>=8, "Your spatial extent polygon has too few vertices"
@@ -347,6 +345,7 @@ class Icesat2Data():
         --------
         >>>
         """
+        assert len(self.granules)>0, "Your data object has no granules associated with it"
         gran_info = {}
         gran_info.update({'Number of available granules': len(self.granules)})
 
@@ -363,7 +362,7 @@ class Icesat2Data():
     @staticmethod
     def _fmt_temporal(start,end,key):
         """
-        Format the start and end dates and times into a temporal CMR search key.
+        Format the start and end dates and times into a temporal CMR search or subsetting key value.
 
         Parameters
         ----------
@@ -373,12 +372,12 @@ class Icesat2Data():
             End date and time for the period of interest.
         key : string
             Dictionary key, entered as a string, indicating which temporal format is needed.
-            Must be one of ['temporal','time']
+            Must be one of ['temporal','time'] for data searching and subsetting, respectively.
         """
 
         assert isinstance(start, dt.datetime)
         assert isinstance(end, dt.datetime)
-        #DevGoal: add test for proper keys; update docs for CMR vs subset
+        #DevGoal: add test for proper keys
         if key is 'temporal':
             fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
         elif key is 'time':
@@ -386,21 +385,21 @@ class Icesat2Data():
 
         return {key:fmt_timerange}
 
-    #DevGoal: update docs for with polygon
     @staticmethod
     def _fmt_spatial(ext_type,extent):
         """
-        Format the spatial extent input into a spatial CMR search key.
+        Format the spatial extent input into a spatial CMR search or subsetting key value.
 
         Parameters
         ----------
         extent_type : string
-            Spatial extent type. Must be one of ['bounding_box', 'polygon'].
+            Spatial extent type. Must be one of ['bounding_box', 'polygon'] for data searching
+            or one of ['bbox, 'bounding_shape'] for subsetting.
         extent : list
-            Spatial extent, with input format dependent on the extent type.
-            Bounding box coordinates should be provided in decimal degrees as
+            Spatial extent, with input format dependent on the extent type and search.
+            Bounding box (bounding_box, bbox) coordinates should be provided in decimal degrees as
             [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-            Polygon coordinates should be provided in decimal degrees as
+            Polygon (polygon, bounding_shape) coordinates should be provided in decimal degrees as
             [longitude, latitude, longitude2, latitude2... longituden, latituden].
         """
 
@@ -521,6 +520,10 @@ class Icesat2Data():
         plt.show()
 
     def get_custom_options(self, session):
+        #DevGoal: does getting the custom options actually require a login, or is there a way to do it without one? If the latter, modify this function accordingly.
+        if session is None:
+            raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
+
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         response = session.get(capability_url)
         root = ET.fromstring(response.content)
@@ -686,15 +689,11 @@ class Icesat2Data():
 
             results = json.loads(response.content)
 
-            #DevGoal: check that there ARE results (ie not an empty search) and let the user know if that's the case
-            if len(results['feed']['entry']) == 0:
-                # Out of results, so break out of loop
-                break
+            assert len(results['feed']['entry'])>0, "Your search returned no results; try different search parameters"
 
             # Collect results and increment page_num
             self.granules.extend(results['feed']['entry'])
             self.reqparams['page_num'] += 1
-            
 
         return self.granule_info
 
@@ -736,7 +735,31 @@ class Icesat2Data():
         data = {'token': {'username': uid, 'password': pswd,\
                           'client_id': 'NSIDC_client_id','user_ip_address': ip}
         }
+        
         response = requests.post(token_api_url, json=data, headers={'Accept': 'application/json'})
+        
+        #check for a valid login and retry up to 5 times if errors were returned
+        for i in range(5):
+            try:
+                json.loads(response.content)['token']
+                break
+            except KeyError:
+                try:
+                    print(json.loads(response.content)['errors'])
+                    uid = input("Please re-enter your Earthdata user ID: ")
+                    pswd = getpass.getpass('Earthdata Login password: ')
+                    data = {'token': {'username': uid, 'password': pswd,\
+                          'client_id': 'NSIDC_client_id','user_ip_address': ip}
+                            }
+                    response = None
+                    response = requests.post(token_api_url, json=data, headers={'Accept': 'application/json'})
+                    i = i+1
+
+                except KeyError:
+                    print("There are no error messages, but an Earthdata login token was not successfully generated")
+        else:
+            raise RuntimeError("You could not successfully obtain an Earthdata login token")
+            
         token = json.loads(response.content)['token']['id']
 
         self.reqparams.update({'email': email, 'token': token})
@@ -778,7 +801,6 @@ class Icesat2Data():
 
         if session is None:
             raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
-            #DevGoal: make this a more robust check for an active session
 
         base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
         #DevGoal: get the base_url from the granules
@@ -800,7 +822,6 @@ class Icesat2Data():
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
 
-        print(request_params)
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 
         # Request data service for each page number, and unzip outputs
@@ -816,14 +837,11 @@ class Icesat2Data():
             if subset is True and hasattr(self, '_geom_filepath'):
                 #post polygon file to OGR for geojson conversion
                 #DevGoal: what is this doing under the hood, and can we do it locally?
-                
-                print('into shapefile subsetting loop')
+
                 request = session.post(base_url, params=request_params, \
                                        files={'shapefile': open(str(self._geom_filepath), 'rb')})
-                print(request.content)
             else:
                 request = session.get(base_url, params=request_params)
-                print(request.content)
             
             root=ET.fromstring(request.content)
             print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])

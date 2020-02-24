@@ -13,10 +13,9 @@ icepyx
 
 Origin and Purpose
 ------------------
-A library to simplify the process of downloading and manipulating ICESat-2 data to enable scientific discovery.
-icepyx aims to provide a clearinghouse for code, documentation, examples,
-and educational resources that tackle disciplinary research questions while minimizing
-the amount of repeated effort across groups utilizing similar datasets.
+icepyx is both a software library and a community composed of ICESat-2 data users, developers, and the scientific community. We are working together to develop a shared library of resources - including existing resources, new code, tutorials, and use-cases/examples - that simplify the process of querying, obtaining, analyzing, and manipulating ICESat-2 datasets to enable scientific discovery.
+
+icepyx aims to provide a clearinghouse for code, functionality to improve interoperability, documentation, examples, and educational resources that tackle disciplinary research questions while minimizing the amount of repeated effort across groups utilizing similar datasets. icepyx also hopes to foster collaboration, open-science, and reproducible workflows by integrating and sharing resources.
 
 Many of these tools began as Jupyter Notebooks developed for and during the cryosphere themed ICESat-2 Hackweek
 at the University of Washington in June 2019 or as scripts written and used by the ICESat-2 Science Team members.

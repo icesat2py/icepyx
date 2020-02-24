@@ -68,33 +68,12 @@ Though in many cases preliminary, these `project repositories <https://github.co
 
   - Resolve topography over complex terrain
 
-Other Relevant GitHub Repositories
+Complimentary GitHub Repositories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Here we describe a selection of publicly available Python code posted on GitHub with potential applicability for working with ICESat-2 data within the context of icepyx. This includes repositories that extend its capabilities for working with LiDAR datasets in general.
+.. _`contact page`: ../development/contact.rst
+Here we describe a selection of publicly available Python code posted on GitHub with applicability for working with ICESat-2 data. This includes repositories that are more broadly designed for working with LiDAR/point cloud datasets in general. These repositories represent independent but complimentary projects that we hope to make easily interoperable within icepyx in order to maximize capabilities and minimize duplication of efforts. Conversations about how to best accomplish this have been ongoing since the conception of icepyx, and we welcome everyone to join the conversation (please see our `contact page`_).
 
-*Note: Listing here does not suggest endorsement or recommended use of these tools; this list is simply a compilation of publicly available GitHub repositories relevant to icepyx and annotations to reflect how they may relate to icepyx. Please check the licensing information before using any of this code. Additional resources having to do specifically with ICESat-2 are noted in the last section of this document.*
-
-- `PointDatabase <https://github.com/SmithB/PointDatabase>`_
-
-  - by Ben Smith
-  - Efficiently create and query a database of points using this set of utilities
-  
-- `Nsidc-subsetter <https://github.com/tsutterley/nsidc-subsetter>`_
-
-  - by Tyler Sutterly
-  - Retrieve IceBridge, ICESat, and ICESat-2 data using the NSIDC subsetter API
-  - Command line tool
-  - Download data and convert it into a georeferenced format (e.g. geojson, kml, or shapefile)
-
-- `Icesat2-viz <https://github.com/abarciauskas-bgse/icesat2-viz>`_
-
-  - by Aimee Barciauskas-bgse
-  - Exploration for visualizing ICESat-2 data products; focused on 3-D visualization using mapbox tools
-
-- `Chasingseaice <https://github.com/akpetty/chasingseaice>`_
-
-  - by Alek Petty, Linette Boisvert, Jeremy Harbeck
-  - Correct IceBridge flight path to account for ice drift relative to ICESat-2
+*Note: This list is a compilation of publicly available GitHub repositories and includes some annotations to reflect how they relate to icepyx. Please check each repository's licensing information before using or modifying their code. Additional resources having to do specifically with obtaining ICESat-2 data are noted in the last section of this document.*
 
 - `captoolkit <https://github.com/fspaolo/captoolkit>`_
 
@@ -102,10 +81,39 @@ Here we describe a selection of publicly available Python code posted on GitHub 
   - NASA's JPL Cryosphere Altimetry Processing Toolkit
   - Set of command line utilities to process, reduce, change format, etc. altimetry data from ICESat-2 and several other altimeters (e.g. ERS, CryoSat-2, IceBridge)
   - Includes utilities to read and extract variables of interest, compute and apply various corrections (e.g. tides, inverse barometer), detrend and correct data, do a variety of geographic computations and manipulations (e.g. raster math, masking, slope/aspect), and tile/grid/reduce data
+  - We envision making captoolkit's utilities available as part of the icepyx ecosystem in order for users to quickly obtain and pre-process/correct/process ICESat-2 data.
 
+- `Chasingseaice <https://github.com/akpetty/chasingseaice>`_
+
+  - by Alek Petty, Linette Boisvert, Jeremy Harbeck
+  - Correct IceBridge flight path to account for ice drift relative to ICESat-2
+  - We envision making Chasingseaice's functionality available as part of the icepyx ecosystem to aid users wishing to apply a sea ice drift model to their datasets.
+
+- `Icesat2-viz <https://github.com/abarciauskas-bgse/icesat2-viz>`_
+
+  - by Aimee Barciauskas-bgse
+  - Exploration for visualizing ICESat-2 data products; focused on 3-D visualization using mapbox tools
+  - We hope to take advantage of Icesat2-viz's work to provide 3-D visualizations of ICESat-2 data to expand on the 2-D visualization options currently available within icepyx.
+
+- `Nsidc-subsetter <https://github.com/tsutterley/nsidc-subsetter>`_
+
+  - by Tyler Sutterly
+  - Retrieve IceBridge, ICESat, and ICESat-2 data using the NSIDC subsetter API
+  - Command line tool
+  - Download data and convert it into a georeferenced format (e.g. geojson, kml, or shapefile)
+  - We envision use of Nsidc-subsetter to improve interoperability between icepyx and the NSIDC subsetter API. Currently, icepyx has very limited subsetting capabilities that are not easy to access or find more information about.
+
+- `PointDatabase <https://github.com/SmithB/PointDatabase>`_
+
+  - by Ben Smith
+  - Efficiently create and query a database of points using this set of utilities
+  - We hope to capitalize on some of the concepts of data processing presented in PointDatabase to improve our interfacing with ICESat-2 data within icepyx.
+  
 
 Other Ways to Access ICESat-2 Data
 ----------------------------------
+icepyx aims to provide intuitive, object-based methods for finding, obtaining, visualizing, and analyzing ICESat-2 data as part of an open, reproducible workflow that leverages existing tools wherever possible (see `Complimentary GitHub Repositories`_) and can be run locally, using high performance computing, or in the cloud using Pangeo. A few other options available for querying, visualizing, and downloading ICESat-2 data files are:
+
 - `NSIDC (DAAC) Data Access <https://nsidc.org/data/icesat-2>`_
 
   - Select “ICESat-2 Data Sets” from the left hand menu. Choose your dataset (ATL##). Then, use the spatial and temporal filters to narrow your list of granules available for download.

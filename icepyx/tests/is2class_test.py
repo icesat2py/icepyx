@@ -119,4 +119,5 @@ def test_reqconfig_params():
 #check that agent key is added in event of no subsetting
 #check that downloaded data is subset
 #how to test orders and downloads without a login?
+#test avail data and subsetting success for each input type (kml, shp, list of coords, bbox)
 

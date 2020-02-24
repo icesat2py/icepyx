@@ -151,6 +151,8 @@ class Icesat2Data():
                 polygon = [float(i) for i in polygon]
                 self._spat_extent = polygon
                 self.extent_type = 'polygon'
+                #DevGoal: properly format this input type (and any polygon type) so that it is clockwise (and only contains 1 pole)!!
+                warnings.warn("this type of input is not yet well handled and you may not be able to find data")
 
             #user-entered polygon as a single list of lon and lat coordinates
             elif all(type(i) in [int, float] for i in spatial_extent):
@@ -714,18 +716,24 @@ class Icesat2Data():
         self.build_CMR_params()
         self.build_reqconfig_params('search')
         headers={'Accept': 'application/json'}
+        #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
+        #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
         while True:
             response = requests.get(granule_search_url, headers=headers,\
                                     params=self.combine_params(self.CMRparams,\
                                                                {k: self.reqparams[k] for k in ('page_size','page_num')}))
 
             results = json.loads(response.content)
-
-            assert len(results['feed']['entry'])>0, "Your search returned no results; try different search parameters"
+            print(results)
+            if len(results['feed']['entry']) == 0:
+                # Out of results, so break out of loop
+                break
 
             # Collect results and increment page_num
             self.granules.extend(results['feed']['entry'])
             self.reqparams['page_num'] += 1
+
+        assert len(self.granules)>0, "Your search returned no results; try different search parameters"
 
         return self.granule_info
 

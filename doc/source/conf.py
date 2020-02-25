@@ -31,6 +31,7 @@ author = 'Jessica Scheick, Anthony Arendt, Lindsey Heagy, Fernando Perez, Amy St
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosectionlabel",
     "numpydoc"
 ]
 

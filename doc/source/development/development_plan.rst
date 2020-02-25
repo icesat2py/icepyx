@@ -15,15 +15,13 @@ Even as new resources and tools are developed to make computing easier, discipli
 
 Open Science Example Use Cases
 ------------------------------
-.. _`contact us`: ./contact.rst
-
 We are currently partnering with multiple researchers conducting investigations using ICESat-2 datasets. Their research, from data collection and analysis to publication, will be used to drive the development of icepyx functionality, ultimately providing software contributions and example workflows. Current collaborations focus on:
 
 - impacts of blowing snow and low clouds on ICESat-2 measurements
 - snow height in non-glaciated regions
 - parameter assimilation into sea ice models
 
-If you are or plan to work on a project using ICESat-2 datasets, we encourage you to use icepyx as a framework for finding and processing your data, from designing your analysis to writing code to analyze your data (if the analysis tools you need aren't already a part of icepyx, that is!) to generating publication figures. Please `contact us`_ if you have any questions or would like some guidance to get involved!
+If you are or plan to work on a project using ICESat-2 datasets, we encourage you to use icepyx as a framework for finding and processing your data, from designing your analysis to writing code to analyze your data (if the analysis tools you need aren't already a part of icepyx, that is!) to generating publication figures. Please :ref:`contact us<contact_ref_label>` if you have any questions or would like some guidance to get involved!
 
 Data Analysis and Interaction
 -----------------------------

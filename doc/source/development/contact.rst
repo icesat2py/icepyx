@@ -1,3 +1,4 @@
+.. _contact_ref_label:
 Contact Us
 ======================
 

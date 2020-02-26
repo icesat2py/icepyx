@@ -1,7 +1,8 @@
+datetime
+fiona
+geopandas
+matplotlib
+nbsphinx
 numpydoc
 numpy
-datetime
-geopandas
 shapely
-matplotlib
-fiona

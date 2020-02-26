@@ -32,7 +32,8 @@ author = 'Jessica Scheick, Anthony Arendt, Lindsey Heagy, Fernando Perez, Amy St
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
-    "numpydoc"
+    "numpydoc",
+    "nbsphinx"
 ]
 
 # Add any paths that contain templates here, relative to this directory.

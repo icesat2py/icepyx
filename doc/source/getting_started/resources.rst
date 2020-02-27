@@ -69,7 +69,7 @@ Though in many cases preliminary, these `project repositories <https://github.co
 
   - Resolve topography over complex terrain
 
-Complimentary GitHub Repositories
+Complementary GitHub Repositories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Here we describe a selection of publicly available Python code posted on GitHub with applicability for working with ICESat-2 data. This includes repositories that are more broadly designed for working with LiDAR/point cloud datasets in general. These repositories represent independent but complimentary projects that we hope to make easily interoperable within icepyx in order to maximize capabilities and minimize duplication of efforts. Conversations about how to best accomplish this have been ongoing since the conception of icepyx, and we welcome everyone to join the conversation (please see our :ref:`contact page<contact_ref_label>`).
 

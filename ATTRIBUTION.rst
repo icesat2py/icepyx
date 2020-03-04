@@ -9,11 +9,11 @@ We are extremely grateful to everyone who has contributed to the success of the 
     a tailored package that broadens the functionality of icepyx, feedback and suggestions, 
     community building, etc.
     
-We use the terms "contributors", "developers", and "authors" interchangably. We will recognize contributions in the following ways.
+We use the terms "contributors", "developers", and "authors" interchangeably. We will recognize contributions in the following ways.
 
 Contributors List
 -----------------
-Anyone who has contributed a pull request to icepyx is welcome to add themselves to the ``CONTRIBUTORS.rst`` <https://github.com/icesat2py/icepyx/blob/master/CONTRIBUTORS.rst>`_ file located in the top level directory; the file is packaged and distributed with icepyx. This process is optional, but is the easiest way for us to say "thank you" to everyone who has helped this project.
+Anyone who has contributed a pull request to icepyx is welcome to add themselves to the ``CONTRIBUTORS.rst`` file located in the top level directory; the file is packaged and distributed with icepyx. This process is optional, but is the easiest way for us to say "thank you" to everyone who has helped this project.
 
 
 Example Workflows

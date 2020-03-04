@@ -19,3 +19,4 @@ icepyx
    development/contact
    development/contribution_guidelines
    development/development_plan
+   credits_link

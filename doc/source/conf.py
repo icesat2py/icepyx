@@ -13,6 +13,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
+import datetime
 
 import icepyx
 
@@ -20,9 +21,8 @@ import icepyx
 # -- Project information -----------------------------------------------------
 
 project = 'icepyx'
-copyright = '2020, Jessica Scheick, Anthony Arendt, Lindsey Heagy, Fernando Perez, Amy Steiker, Raphael Hagen'
-author = 'Jessica Scheick, Anthony Arendt, Lindsey Heagy, Fernando Perez, Amy Steiker, Raphael Hagen'
-
+year = datetime.date.today().year
+copyright = '2019-{}, The icepyx Developers'.format(year)
 
 # -- General configuration ---------------------------------------------------
 

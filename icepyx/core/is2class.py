@@ -438,20 +438,18 @@ class Icesat2Data():
 
     def dataset_summary_info(self):
         """
-        Display a summary of selected metadata for the most recent version of the dataset 
+        Display a summary of selected metadata for the most specified version of the dataset 
         of interest (the collection).
         """
-        summ_keys = ['dataset_id', 'short_name', 'version_id', 'time_start', 'coordinate_system', 'summary',
-             'orbit_parameters']
+        summ_keys = ['dataset_id', 'short_name', 'version_id', 'time_start', 'coordinate_system', 'summary', 'orbit_parameters']
         for key in summ_keys:
-            print(key,': ',self._about_dataset()['feed']['entry'][int(self.latest_version())-1][key])
+            print(key,': ',self._about_dataset()['feed']['entry'][int(self._version)-1][key])
 
     def dataset_all_info(self):
         """
         Display all metadata about the dataset of interest (the collection).
         """
         pprint.pprint(self._about_dataset())
-
 
     def latest_version(self):
         """

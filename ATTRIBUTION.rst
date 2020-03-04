@@ -3,6 +3,7 @@ Attribution Guidelines
 ======================
 
 We are extremely grateful to everyone who has contributed to the success of the icepyx community, whether through direct contributions to or feedback about icepyx or as developers or maintainers of complimentary resources that are included within the icepyx ecosystem. This document outlines our goals to give appropriate attribution to all contributors to icepyx in ways that are fair and diverse and supportive of professional goals. To do so, we define broadly *contributions* as:
+
     Efforts towards achieving icepyx's goals, including writing code, tests, or documentation,
     development of example workflows, development, significant contributions, or maintenance of 
     a tailored package that broadens the functionality of icepyx, feedback and suggestions, 
@@ -33,6 +34,7 @@ Scientific Publications (Papers)
 --------------------------------
 
 We aim to write academic papers for our software and its uses. Ideally, we will publish on an early version of the software and subsequently on major releases, use cases, or to advance the causes of open-source software and open science. To be eligible for authorship on scientific papers, contributors must:
+
   1. Contribute to the development (including code, documentation, and examples) of icepyx. Substantial non-code contributions constitute eligibility for authorship.
   2. Add yourself to the `Contributors List`_.
   3. Write, read, and review the manuscript in a timely manner and provide feedback (acknowledgement of review is sufficient, but we'd prefer more).

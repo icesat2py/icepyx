@@ -73,7 +73,6 @@ Search for "icesat-2" under the "science" topic to find us.
 
 Contribute
 ----------
-
 We welcome and invite contributions to icepyx_ from anyone at any career stage and with any amount of coding experience!
 Check out our `contribution guidelines`_ to see how you can contribute.
 

@@ -33,4 +33,4 @@ If you have used one of the included packages to extend your data analysis capab
 
 ICESat-2 Data
 -------------
-ICESat-2 data citation depends on the exact dataset used. Citation information for each data product can be found through the `NSIDC website <https://nsidc.org/data/icesat-2/data-sets>`_
+ICESat-2 data citation depends on the exact dataset used. Citation information for each data product can be found through the `NSIDC website <https://nsidc.org/data/icesat-2/data-sets>`_.

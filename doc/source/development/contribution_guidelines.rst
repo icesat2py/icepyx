@@ -99,4 +99,4 @@ Discovered a currently untested case? Please share your test, either by creating
 
 Attribution for Contributions
 -----------------------------
-We appreciate any and all contributions made to icepyx, direct or indirect, large or small. To learn more about how you will be recognized for your contributions, please see our :ref:`Attribution Guidelines page<attribution_ref_label>`.
+We appreciate any and all contributions made to icepyx, direct or indirect, large or small. To learn more about how you will be recognized for your contributions, please see our :ref:`Attribution Guidelines <attribution_ref_label>`.

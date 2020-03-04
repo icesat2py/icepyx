@@ -1,9 +1,3 @@
-Attribution for Contributors
-============================
-
-.. iniclude:: ../../ATTRIBUTION.rst
-
-Citing icepyx
-=============
+.. include:: ../../ATTRIBUTION.rst
 
 .. include:: ../../CITATION.rst

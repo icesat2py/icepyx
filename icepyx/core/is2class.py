@@ -18,6 +18,7 @@ from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
 import matplotlib.pyplot as plt
 import fiona
+import h5py
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 def _validate_dataset(dataset):
@@ -581,6 +582,8 @@ class Icesat2Data():
 
         return [subagent, format_vals, proj_vals, format_proj, no_proj, variable_vals]
 
+
+
     def show_custom_options(self, session):
         """
         Display customization/subsetting options available for this dataset.
@@ -625,6 +628,172 @@ class Icesat2Data():
                 pass
             else:
                 self.CMRparams.update(Icesat2Data._fmt_spatial(self.extent_type,self._spat_extent))
+                
+
+
+
+    def build_dataset_vardict(self,filename,outdir='vardata'):
+        '''
+        Generate a dictionary contain full paths for variables in the IS2 hdf5 file. 
+        This requires: 
+                either an existing data file of this dataset 
+                or an existing json file containing this data under outdir . 
+        By default, these json files are included in the icepyx package under icepyx/vardata
+        Parameters:
+        -----------
+        filename: file name including full path to the existing data file
+        outdir: the output directory where json file containing the variable dictionary is. 
+        '''
+
+        varlist = []
+        vgrp = dict()
+
+        def IS2h5walk(vname, h5node):
+            '''
+            callable for h5 visititems to return the list of variables
+            '''
+            if isinstance(h5node, h5py.Dataset):
+                varlist.append(vname)
+            return 
+
+  
+        outdir_abs = os.path.abspath(outdir)     
+        fn_vdict = os.path.join(outdir_abs,self.dataset+'.json')
+
+        vgrp = dict()
+        if os.path.exists(fn_vdict):
+            
+            print('Loading variable lists from  file: '+fn_vdict)
+            with open(fn_vdict) as fid:
+                vgrp   = json.load(fid)
+        else:
+            
+            if not os.path.exists( outdir_abs ): os.makedirs( outdir_abs )   
+        
+            if os.path.exists(filename):
+                
+                with h5py.File(filename,'r') as h5pt:
+                    h5pt.visititems(IS2h5walk)
+                    
+                for vn in varlist:
+                    vpath,vkey = os.path.split(vn)
+                    if vkey not in vgrp.keys():
+                        vgrp[vkey] = [vn]
+                    else:
+                        vgrp[vkey].append(vn)
+                        
+                with open(fn_vdict,'w') as fid:
+                    json.dump(vgrp,fid)
+
+            else:
+                raise ValueError("Need an existing data file to generate variable dictionary.")
+
+        
+        return vgrp
+
+
+    def build_subset_coverage(self,vdatdir='vardata',**kwarg):
+        '''
+        Return the coverage string for data subset request.
+        
+        Parameters:
+        -----------
+        vdatdir: local directory of the json file for variable group 
+             information of the dataset
+        **kwarg: additional keyword arguments:
+        beam_ids: the beams to extract for the subset request. For ATL09 use profile_x
+        
+        return:
+        ------ 
+        subcover: string of paths of subset variables
+        '''
+        print(vdatdir)
+        vdatdir_abs = os.path.abspath(vdatdir)
+        vgrpfn = os.path.join(vdatdir_abs,self.dataset+'.json')
+        with open(vgrpfn) as fid:
+            vgrp   = json.load(fid)
+        
+        vdict = self.build_subset_vardict(vgrp,**kwarg)
+        subcover = ''
+        for vn in vdict.keys():
+            vpaths = vdict[vn]
+            for vpath in vpaths: subcover += '/'+vpath+','
+            
+        return subcover[:-1]
+
+
+    def build_subset_vardict(self,vgrp,**kwarg):
+        '''
+        Generic wrapper for subsetting variables.
+        kwarg: Partly defined in build_subset_coverage, they can also be used for the subsetting of other datasets.
+        '''
+        if self.dataset=='ATL07': vdict = self._ATL07_vars(vgrp,**kwarg)
+        if self.dataset=='ATL09': vdict = self._ATL09_vars(vgrp,**kwarg)
+        if self.dataset=='ATL10': vdict = self._ATL10_vars(vgrp,**kwarg)
+        return vdict
+
+
+    def _ATL09_vars(self,vgrp,
+                    kw1_list=['profile_1','profile_2','profile_3','orbit_info'],
+                    kw2_list = ['high_rate','low_rate','bckgrd_atlas'],
+                    var_list = None,
+                    add_default_vars=True):
+        '''
+        Build the variable dictionary using user specified beams and variable list. 
+        A pregenerated default variable list can be used by setting add_default_vars to True. 
+        Note: The calibrated backscatter cab_prof is not in the default list
+        Parameters:
+        -----------
+        kw1_list:         a list of first level tag in the full path of the variable.
+                          For ATL09, this include: profile_x's and orbit_info
+                          ancillary_data and quality_assessment variables will be added 
+                          because of their negligible size. 
+        var_list:         a list of variables to include for subsetting. 
+                          If var_list is not provided, a default list will be used. 
+        kw2_list:         a list of second level tag in the full path of the variable. 
+                          For ATL09, this is valid only if kw1 is profile_x's and may include
+                          high_rate, low_rate, bckgrd_atlas 
+        add_default_vars: The flag to append the variables in the default list to the user defined list. 
+                          It is set to True by default. 
+        '''
+
+        vd09 = dict({})
+
+        def_varlist = ['delta_time','latitude','longitude',
+                       'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
+                       'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
+                       'column_od_asr','column_od_asr_qf',
+                       'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
+                       'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
+        
+        if var_list is not None:
+            if add_default_vars:
+                for vn in def_varlist:
+                    if vn not in var_list: var_list.append(vn)
+        else:
+            var_list = def_varlist
+
+        for vkey in vgrp:
+            vpaths = vgrp[vkey]
+            
+            for vpath in vpaths:
+                
+                vpath_kws = vpath.split('/')
+                if vpath_kws[0] in ['quality_assessment','ancillary_data']:
+                    if vkey not in vd09: vd09[vkey] = []
+                    vd09[vkey].append(vpath)     
+                elif vpath_kws[0]=='orbit_info':
+                    if vkey not in vd09: vd09[vkey] = []
+                    if vpath_kws[-1] in var_list:
+                        vd09[vkey].append(vpath)
+                elif vpath_kws[0] in kw1_list and \
+                    vpath_kws[1] in kw2_list and \
+                    vpath_kws[-1] in var_list:
+                    if vkey not in vd09: vd09[vkey] = []
+                    vd09[vkey].append(vpath)
+                        
+        return vd09
+    
 
     def build_subset_params(self, **kwargs):
         """

@@ -631,7 +631,7 @@ class Icesat2Data():
                 
 
 
-
+    #DevGoal: once we've added ability to create a data object from a directory of files, use some of the functionality here to glean the variable list from the file. Otherwise, use self._get_custom_options to build the variable list. Then we don't need to create and maintain and distribute the vardata files at all.
     def build_dataset_vardict(self,filename,outdir='vardata'):
         '''
         Generate a dictionary contain full paths for variables in the IS2 hdf5 file. 
@@ -691,7 +691,7 @@ class Icesat2Data():
         
         return vgrp
 
-
+    #DevGoal: generalize this function to pull info from the _get_custom_options list (rather than requiring the vdatdir input). Then, build the subset parameter within the self.build_subset_params function. If necessary, portions of this can remain as a hidden function to do that formatting, but I suspect we can trim it to only a few lines of code that can go directly into build_subset_params
     def build_subset_coverage(self,vdatdir='vardata',**kwarg):
         '''
         Return the coverage string for data subset request.
@@ -721,7 +721,7 @@ class Icesat2Data():
             
         return subcover[:-1]
 
-
+    #DevGoal: generalize this (and maybe incorporate directly into self.build_subset_params)
     def build_subset_vardict(self,vgrp,**kwarg):
         '''
         Generic wrapper for subsetting variables.
@@ -732,7 +732,7 @@ class Icesat2Data():
         if self.dataset=='ATL10': vdict = self._ATL10_vars(vgrp,**kwarg)
         return vdict
 
-
+    #DevGoal: see to what extent we can just have one function that will provide a default list of variables for each dataset (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
     def _ATL09_vars(self,vgrp,
                     kw1_list=['profile_1','profile_2','profile_3','orbit_info'],
                     kw2_list = ['high_rate','low_rate','bckgrd_atlas'],
@@ -794,7 +794,7 @@ class Icesat2Data():
                         
         return vd09
     
-
+    #DevGoal: this may need some additional args depending on the above...
     def build_subset_params(self, **kwargs):
         """
         Build a dictionary of subsetting parameter keys to submit for data orders and download.

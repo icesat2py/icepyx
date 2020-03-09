@@ -25,7 +25,7 @@ Version Release on Zenodo
 -------------------------
 When new releases of icepyx are archived on Zenodo, anyone who has contributed to icepyx will be invited to be an author. The list of potential authors will be generated using the `Contributors List`. Thus, if you have contributed to icepyx and would like to be included as an author, you *must* add your full name, affiliation ("Unaffiliated" is acceptable), and ORCID (optional) to ``CONTRIBUTORS.rst``.
 
-Author order will be determined based on the number of commits made to the repository (``git shortlog -sne``) and may be modified on an individual-case basis by consensus of the lead development team (Anthony Arendt, Lindsey Heagy, Fernando Perez, Jessica Scheick).
+Author order will be determined based on co-author discussion during preparation of the version release, led by one or more of the members of the lead development team (Anthony Arendt, Lindsey Heagy, Fernando Perez, Jessica Scheick). Metrics for guiding the determination of author order will include the number of commits made to the repository (``git shortlog -sne``) and active engagement on GitHub (e.g. through issues and pull requests) and Discourse. Author order may also be modified on a case-by-case basis by consensus of the lead development team and top contributors.
 
 If you do not wish to be included in the author list for Zenodo version releases, please add a note (e.g. "do not include in Zenodo") to your entry.
 
@@ -33,15 +33,17 @@ If you do not wish to be included in the author list for Zenodo version releases
 Scientific Publications (Papers)
 --------------------------------
 
-We aim to write academic papers for our software and its uses. Ideally, we will publish on an early version of the software and subsequently on major releases, use cases, or to advance the causes of open-source software and open science. To be eligible for authorship on scientific papers, contributors must:
+Authorship on scientific papers currently constitutes an important metric for assessing scientific merit and contribution and is often directly linked to career advancement. We aim to write academic papers for our software and its uses. Ideally, we will publish on an early version of the software and subsequently on major releases, use cases, or to advance the causes of open-source software and open science. To be eligible for authorship on scientific papers, contributors must:
 
   1. Contribute to the development (including code, documentation, and examples) of icepyx. Substantial non-code contributions constitute eligibility for authorship.
-  2. Add yourself to the `Contributors List`_.
-  3. Write, read, and review the manuscript in a timely manner and provide feedback (acknowledgement of review is sufficient, but we'd prefer more).
+  2. Add themself to the `Contributors List`_.
+  3. Contribute ideas, participate in authorship discussions (see next paragraph), write, read, and review the manuscript in a timely manner, and provide feedback (acknowledgement of review is sufficient, but we'd prefer more).
 
-Author order will be determined by the number of commits since the last major release with an associated paper (``git shortlog vX.0.0...HEAD -sne``) and may be modified to reflect contributions to the writing of the manuscript. Authors with contributions that do not have associated commits will be decided by all authors. Author order may be modified on a case-by-case basis by consensus of the lead development team and top contributors.
+Author order will be determined based on co-author discussion, led by the lead author, during the initial planning stages of manuscript preparation (i.e. as soon as an idea matures into a potential manuscript and before writing begins). Authorship will continue to be evaluated throughout the manuscript preparation process. Discussions will consider authorship norms (e.g. How does author order convey participation and prestige? How critical is first authorship to career advancement for each member of the team? Do an individual's contributions meet authorship criteria or are they more suited to acknowledgements?). Author order determination will also consider metrics such as the number of commits since the last major release with an associated paper (``git shortlog vX.0.0...HEAD -sne``), contributions that do not have associated commits, and contributions to the preparation of the manuscript. 
 
 
-Disclaimer: These policies are not permanent or fixed and may change to accomodate community growth, best practices, and feedback.
 
-Copyright notice: This document was inspired by the `authorship guidelines <https://github.com/fatiando/verde/blob/master/AUTHORSHIP.md>`_ provided by `Verde <https://github.com/fatiando/verde>`_.
+    Disclaimer: These policies are not permanent or fixed and may change to accomodate community growth, 
+    best practices, and feedback.
+
+Copyright notice: This document was inspired by the `authorship guidelines <https://github.com/fatiando/contributing/blob/master/AUTHORSHIP.md>`_ provided by `Fatiando a Terra <https://github.com/fatiando>`_ and encourages potential co-authors to consider the resources provided by the `NASA High Mountain Asia Team (HiMAT) <https://highmountainasia.github.io/team-collaboration/authorship/>`_.

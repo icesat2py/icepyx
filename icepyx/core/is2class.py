@@ -632,7 +632,7 @@ class Icesat2Data():
 
 
     #DevGoal: once we've added ability to create a data object from a directory of files, use some of the functionality here to glean the variable list from the file. Otherwise, use self._get_custom_options to build the variable list. Then we don't need to create and maintain and distribute the vardata files at all.
-    def build_dataset_vardict(self,filename,outdir='vardata'):
+    def build_dataset_vardict(self,filename='',outdir='vardata'):
         '''
         Generate a dictionary contain full paths for variables in the IS2 hdf5 file. 
         This requires: 
@@ -707,7 +707,6 @@ class Icesat2Data():
         ------ 
         subcover: string of paths of subset variables
         '''
-        print(vdatdir)
         vdatdir_abs = os.path.abspath(vdatdir)
         vgrpfn = os.path.join(vdatdir_abs,self.dataset+'.json')
         with open(vgrpfn) as fid:

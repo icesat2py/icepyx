@@ -46,13 +46,19 @@ Future developments of icepyx may include pip and conda as simplified installati
 Examples (Jupyter Notebooks)
 ----------------------------
 
-.. _ICESat-2_DAAC_DataAccess_Example: ICESat-2_DAAC_DataAccess_Example.ipynb
+.. _`ICESat-2_DAAC_DataAccess_Example`: ICESat-2_DAAC_DataAccess_Example.ipynb
 
 
 Listed below are example jupyter-notebooks
 
 ICESat-2_DAAC_DataAccess_Example_
 
+
+Citing icepyx
+-------------
+.. _`CITATION.rst`: ./CITATION.rst
+
+This community and software is developed with the goal of supporting science applications. Thus, our contributors (including those who have developed the packages used within icepyx) and maintainers justify their efforts and demonstrate the impact of their work through citations. Please see  `CITATION.rst`_ for additional citation information.
 
 Contact
 -------
@@ -67,7 +73,6 @@ Search for "icesat-2" under the "science" topic to find us.
 
 Contribute
 ----------
-
 We welcome and invite contributions to icepyx_ from anyone at any career stage and with any amount of coding experience!
 Check out our `contribution guidelines`_ to see how you can contribute.
 

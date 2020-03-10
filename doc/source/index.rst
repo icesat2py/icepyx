@@ -19,3 +19,5 @@ icepyx
    development/contact
    development/contribution_guidelines
    development/development_plan
+   attribution_link
+   citation_link

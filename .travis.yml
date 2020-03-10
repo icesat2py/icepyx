@@ -1,17 +1,15 @@
 language: python
 
 stages:
-    - name: basic tests
-    - name: behind Earthdata
+  - name: basic tests
+  - name: behind Earthdata
     if: branch = master OR commit_message =~ nsidc_tests OR type = cron
 
+#ultimately move basic tests list into a separate script with the list of files to run (then this can be put into a matrix and paralellized as well)
 jobs:
-    include:
-        - stage: basic tests
-          script: pytest \
-          icepyx/tests/test_is2class_inputs.py \
-          icepyx/tests/test_is2class_query.py \
-          icepyx/tests/test_is2class_methods.py
+  include:
+    - stage: basic tests
+      script: pytest icepyx/tests/test_is2class_inputs.py icepyx/tests/test_is2class_query.py icepyx/tests/test_is2class_methods.py
         
-        - stage: behind Earthdata
-          script: pytest icepyx/tests/test_is2class_NSIDC-API.py
+    - stage: behind Earthdata
+      script: pytest icepyx/tests/test_is2class_NSIDC-API.py

@@ -738,6 +738,7 @@ class Icesat2Data():
         return self.granule_info
 
 
+    #DevGoal: update docs for both earthdata_login/session functions
     def earthdata_login(self,uid,email):
         """
         Initiate an Earthdata session and create a token for interacting
@@ -758,7 +759,7 @@ class Icesat2Data():
         >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
         Earthdata Login password:  ········
         """
-
+        
         if not hasattr(self,'reqparams'):
             self.reqparams={}
 
@@ -766,6 +767,42 @@ class Icesat2Data():
         assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
 
         pswd = getpass.getpass('Earthdata Login password: ')
+        
+        #try for a valid login and retry up to 5 times if errors were returned
+        for i in range(5):
+            try:
+                session = self._start_earthdata_session(uid,email,pswd)
+                break
+            except KeyError:
+                uid = input("Please re-enter your Earthdata user ID: ")
+                pswd = getpass.getpass('Earthdata Login password: ')
+                i = i+1
+                
+        else:
+            raise RuntimeError("You could not successfully log in to Earthdata")
+
+        return session
+
+    def _start_earthdata_session(self,uid,email,pswd):
+        """
+        Initiate an Earthdata session and create a token for interacting
+        with the NSIDC DAAC. This function will prompt the user for
+        their Earthdata password, but will only store that information
+        within the active session.
+
+        Parameters
+        ----------
+        uid : string
+            Earthdata Login user name.
+        email : string
+            Complete email address, provided as a string.
+
+        Examples
+        --------
+        >>> region_a = [define that here]
+        >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
+        Earthdata Login password:  ········
+        """
 
         #Request CMR token using Earthdata credentials
         token_api_url = 'https://cmr.earthdata.nasa.gov/legacy-services/rest/tokens'
@@ -776,41 +813,30 @@ class Icesat2Data():
                           'client_id': 'NSIDC_client_id','user_ip_address': ip}
         }
         
+        response = None
         response = requests.post(token_api_url, json=data, headers={'Accept': 'application/json'})
         
-        #check for a valid login and retry up to 5 times if errors were returned
-        for i in range(5):
+        #check for a valid login
+        try:
+            json.loads(response.content)['token']
+        except KeyError: 
             try:
-                json.loads(response.content)['token']
-                break
+                print(json.loads(response.content)['errors'])
             except KeyError:
-                try:
-                    print(json.loads(response.content)['errors'])
-                    uid = input("Please re-enter your Earthdata user ID: ")
-                    pswd = getpass.getpass('Earthdata Login password: ')
-                    data = {'token': {'username': uid, 'password': pswd,\
-                          'client_id': 'NSIDC_client_id','user_ip_address': ip}
-                            }
-                    response = None
-                    response = requests.post(token_api_url, json=data, headers={'Accept': 'application/json'})
-                    i = i+1
-
-                except KeyError:
-                    print("There are no error messages, but an Earthdata login token was not successfully generated")
-        else:
-            raise RuntimeError("You could not successfully obtain an Earthdata login token")
-            
+                print("There are no error messages, but an Earthdata login token was not successfully generated")
+        
         token = json.loads(response.content)['token']['id']
 
         self.reqparams.update({'email': email, 'token': token})
 
-        #Start a session
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         session = requests.session()
         s = session.get(capability_url)
         response = session.get(s.url,auth=(uid,pswd))
 
         return session
+
+
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     def order_granules(self, session, verbose=False, subset=True, **kwargs):
@@ -962,7 +988,7 @@ class Icesat2Data():
             else: print('Request failed.')
 
 
-
+#can the order_granules subsetting kwarg be passed to download_granules somehow, so the user doesn't have to order and download in separate steps?
     def download_granules(self, session, path, verbose=False): #, extract=False):
         """
         Downloads the data ordered using order_granules.

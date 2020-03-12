@@ -760,9 +760,6 @@ class Icesat2Data():
         Earthdata Login password:  ········
         """
         
-        if not hasattr(self,'reqparams'):
-            self.reqparams={}
-
         assert isinstance(uid, str), "Enter your login user id as a string"
         assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
 
@@ -803,6 +800,9 @@ class Icesat2Data():
         >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
         Earthdata Login password:  ········
         """
+
+        if not hasattr(self,'reqparams'):
+            self.reqparams={}
 
         #Request CMR token using Earthdata credentials
         token_api_url = 'https://cmr.earthdata.nasa.gov/legacy-services/rest/tokens'

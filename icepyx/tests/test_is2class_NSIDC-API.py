@@ -22,14 +22,15 @@ def session(reg_a):
     return reg_a._start_earthdata_session('icepyx_devteam', 'icepyx.dev@gmail.com', os.getenv('NSIDC_LOGIN'))
 
 
-def test_earthdata_session_started(session):
-    assert isinstance(session, 'requests.sessions.Session')
+#QUESTION: should we be testing to make sure the session starts? If so, how? The below doesn't work because the 'requests.sessions.Session' isn't recognized... is this a case where I'd need to have a mock session to compare it to?
+# def test_earthdata_session_started(session):
+#     assert isinstance(session, 'requests.sessions.Session')
 
-# def test_download_granules_with_subsetting(reg_a, session):
-#     path = './downloads_subset'
-#     reg_a.order_granules(session)
-#     reg_a.download_granules(session,path)
-#     #now actually check that the max extent of the downloaded granules is subsetted
+def test_download_granules_with_subsetting(reg_a, session):
+    path = './downloads_subset'
+    reg_a.order_granules(session)
+    reg_a.download_granules(session,path)
+    #now actually check that the max extent of the downloaded granules is subsetted
     
 # #     exp = ???
 # #     assert:

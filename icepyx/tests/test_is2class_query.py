@@ -47,3 +47,4 @@ def test_no_granules_in_search_results():
 
 #CMR temporal and spatial formats --> what's the best way to compare formatted text? character by character comparison of strings?
 #check that search results are correct (spatially, temporally, match actually available data)
+#add check that correct granules are returned for a search using region_a.granules

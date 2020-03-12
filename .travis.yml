@@ -2,7 +2,7 @@ language: python
 
 stages:
   - name: basic tests
-    if: type = push
+    if: type = push AND branch = master
   - name: behind Earthdata
     if: branch = master OR commit_message =~ nsidc_tests OR type = cron
 
@@ -15,4 +15,4 @@ jobs:
     - stage: behind Earthdata
       script: 
         - export NSIDC_LOGIN=$NSIDC_LOGIN
-          pytest icepyx/tests/test_is2class_NSIDC-API.py
+        - pytest icepyx/tests/test_is2class_NSIDC-API.py

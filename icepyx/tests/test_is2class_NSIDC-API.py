@@ -1,18 +1,22 @@
 from icepyx import is2class as ipd
 import pytest
 import warnings
-import mock
-import builtins
+from unittest.mock import patch
+#import mock
+#import builtins
+import getpass
 
 #test avail data and subsetting success for each input type (kml, shp, list of coords, bbox)
 #check that agent key is added in event of no subsetting
 #check that downloaded data is subset
 
-
+@patch("getpass.getpass")
 def setup_function():
     reg_a = ipd.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-    with mock.patch.object(builtins, 'input', lambda _: NSIDC_LOGIN):
-        session = reg_a.earthdata_login('icepyx_devteam', 'icepyx.dev@gmail.com')
+    session = reg_a.earthdata_login('icepyx_devteam', 'icepyx.dev@gmail.com')
+    getpass.return_value = os.getenv('NSIDC_LOGIN')
+#    with mock.patch.object(builtins, 'input', lambda _: os.getenv('NSIDC_LOGIN')):
+
 
 def test_download_granules_with_subsetting():
     path = './downloads_subset'

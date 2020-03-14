@@ -78,6 +78,7 @@ class Icesat2Data():
     version : string, default most recent version
         Dataset version, given as a 3 digit string. If no version is given, the current
         version is used.
+    variables: 
 
     Returns
     -------
@@ -338,6 +339,20 @@ class Icesat2Data():
         """
         return self._version
 
+    @property
+    def variables(self):
+        """
+        Return a dictionary of the variables in the dataset.
+
+        Examples
+        --------
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
+        >>> session = region_a.earthdata_login(user_id,user_email)
+        >>> opts = region_a._get_custom_options(session)
+        >>> region_a.variables
+        """
+        return self._variables
+
 
     @property
     def granule_info(self):
@@ -574,13 +589,33 @@ class Icesat2Data():
         # reformatting options that do not support reprojection
         no_proj = [i for i in format_vals if i not in format_proj]
 
-        # variable subsetting
+        # variable subsetting --- This method gives a list containing directories, remove in future?
         variables = [SubsetVariable.attrib for SubsetVariable in root.iter('SubsetVariable')]
         variables_raw = [variables[i]['value'] for i in range(len(variables))]
         variables_join = [''.join(('/',v)) if v.startswith('/') == False else v for v in variables_raw]
         variable_vals = [v.replace(':', '/') for v in variables_join]
 
-        return [subagent, format_vals, proj_vals, format_proj, no_proj, variable_vals]
+        # variable for subsetting: parse the xml info to exact the list of variables
+        vars_raw = []        
+        def get_varlist(elem):
+            childlist = list(elem)      
+            if len(childlist)==0 and elem.tag=='SubsetVariable': 
+                vars_raw.append(elem.attrib['value'])
+            for child in childlist:
+                get_varlist(child)
+        get_varlist(root)
+        vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace(':','')  for v in vars_raw]
+        # convert the variable list to a dictionary and saved as an attribute
+        vgrp = dict()
+        for vn in vars_vals:
+            vpath,vkey = os.path.split(vn)
+            if vkey not in vgrp.keys():
+                vgrp[vkey] = [vn]
+            else:
+                vgrp[vkey].append(vn)
+        self._variables = vgrp
+        
+        return [subagent, format_vals, proj_vals, format_proj, no_proj, vars_vals]
 
 
 
@@ -631,88 +666,28 @@ class Icesat2Data():
                 
 
 
-    #DevGoal: once we've added ability to create a data object from a directory of files, use some of the functionality here to glean the variable list from the file. Otherwise, use self._get_custom_options to build the variable list. Then we don't need to create and maintain and distribute the vardata files at all.
-    def build_dataset_vardict(self,filename='',outdir='vardata'):
-        '''
-        Generate a dictionary contain full paths for variables in the IS2 hdf5 file. 
-        This requires: 
-                either an existing data file of this dataset 
-                or an existing json file containing this data under outdir . 
-        By default, these json files are included in the icepyx package under icepyx/vardata
-        Parameters:
-        -----------
-        filename: file name including full path to the existing data file
-        outdir: the output directory where json file containing the variable dictionary is. 
-        '''
 
-        varlist = []
-        vgrp = dict()
-
-        def IS2h5walk(vname, h5node):
-            '''
-            callable for h5 visititems to return the list of variables
-            '''
-            if isinstance(h5node, h5py.Dataset):
-                varlist.append(vname)
-            return 
-
-  
-        outdir_abs = os.path.abspath(outdir)     
-        fn_vdict = os.path.join(outdir_abs,self.dataset+'.json')
-
-        vgrp = dict()
-        if os.path.exists(fn_vdict):
-            
-            print('Loading variable lists from  file: '+fn_vdict)
-            with open(fn_vdict) as fid:
-                vgrp   = json.load(fid)
-        else:
-            
-            if not os.path.exists( outdir_abs ): os.makedirs( outdir_abs )   
-        
-            if os.path.exists(filename):
-                
-                with h5py.File(filename,'r') as h5pt:
-                    h5pt.visititems(IS2h5walk)
-                    
-                for vn in varlist:
-                    vpath,vkey = os.path.split(vn)
-                    if vkey not in vgrp.keys():
-                        vgrp[vkey] = [vn]
-                    else:
-                        vgrp[vkey].append(vn)
-                        
-                with open(fn_vdict,'w') as fid:
-                    json.dump(vgrp,fid)
-
-            else:
-                raise ValueError("Need an existing data file to generate variable dictionary.")
-
-        
-        return vgrp
 
     #DevGoal: generalize this function to pull info from the _get_custom_options list (rather than requiring the vdatdir input). Then, build the subset parameter within the self.build_subset_params function. If necessary, portions of this can remain as a hidden function to do that formatting, but I suspect we can trim it to only a few lines of code that can go directly into build_subset_params
-    def build_subset_coverage(self,vdatdir='vardata',**kwarg):
+    def build_subset_coverage(self,**kwarg):
         '''
         Return the coverage string for data subset request.
         
         Parameters:
         -----------
-        vdatdir: local directory of the json file for variable group 
-             information of the dataset
-        **kwarg: additional keyword arguments:
+        **kwarg: additional keyword arguments needed later:
         beam_ids: the beams to extract for the subset request. For ATL09 use profile_x
         
         return:
         ------ 
         subcover: string of paths of subset variables
-        '''
-        vdatdir_abs = os.path.abspath(vdatdir)
-        vgrpfn = os.path.join(vdatdir_abs,self.dataset+'.json')
-        with open(vgrpfn) as fid:
-            vgrp   = json.load(fid)
+        ''' 
+        vgrp = self.variables
         
-        vdict = self.build_subset_vardict(vgrp,**kwarg)
+        if self.dataset=='ATL07': vdict = self._ATL07_vars(vgrp,**kwarg)
+        if self.dataset=='ATL09': vdict = self._ATL09_vars(vgrp,**kwarg)
+        if self.dataset=='ATL10': vdict = self._ATL10_vars(vgrp,**kwarg)
+        
         subcover = ''
         for vn in vdict.keys():
             vpaths = vdict[vn]
@@ -720,16 +695,6 @@ class Icesat2Data():
             
         return subcover[:-1]
 
-    #DevGoal: generalize this (and maybe incorporate directly into self.build_subset_params)
-    def build_subset_vardict(self,vgrp,**kwarg):
-        '''
-        Generic wrapper for subsetting variables.
-        kwarg: Partly defined in build_subset_coverage, they can also be used for the subsetting of other datasets.
-        '''
-        if self.dataset=='ATL07': vdict = self._ATL07_vars(vgrp,**kwarg)
-        if self.dataset=='ATL09': vdict = self._ATL09_vars(vgrp,**kwarg)
-        if self.dataset=='ATL10': vdict = self._ATL10_vars(vgrp,**kwarg)
-        return vdict
 
     #DevGoal: see to what extent we can just have one function that will provide a default list of variables for each dataset (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
     def _ATL09_vars(self,vgrp,

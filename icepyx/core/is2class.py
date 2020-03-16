@@ -266,9 +266,9 @@ class Icesat2Data():
         ['bounding box', [-64, 66, -55, 72]]
         """
 
-        if self.extent_type is 'bounding_box':
+        if self.extent_type == 'bounding_box':
             return ['bounding box', self._spat_extent]
-        elif self.extent_type is 'polygon':
+        elif self.extent_type == 'polygon':
             return ['polygon', [self._spat_extent[0::2], self._spat_extent[1::2]]]
         else:
             return ['unknown spatial type', None]
@@ -339,6 +339,7 @@ class Icesat2Data():
         """
         return self._version
 
+    #DevGoal: JESSICA - have this call _show_custom_options if need be (if variables is not already filled in)
     @property
     def variables(self):
         """
@@ -396,9 +397,9 @@ class Icesat2Data():
         assert isinstance(start, dt.datetime)
         assert isinstance(end, dt.datetime)
         #DevGoal: add test for proper keys
-        if key is 'temporal':
+        if key == 'temporal':
             fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
-        elif key is 'time':
+        elif key == 'time':
             fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%S') +',' + end.strftime('%Y-%m-%dT%H:%M:%S')
 
         return {key:fmt_timerange}
@@ -513,7 +514,7 @@ class Icesat2Data():
         Name: geometry, dtype: object
         """
 
-        if self.extent_type is 'bounding_box':
+        if self.extent_type == 'bounding_box':
             boxx = [self._spat_extent[0], self._spat_extent[0], self._spat_extent[2],\
                     self._spat_extent[2], self._spat_extent[0]]
             boxy = [self._spat_extent[1], self._spat_extent[3], self._spat_extent[3],\
@@ -521,7 +522,7 @@ class Icesat2Data():
             #DevGoal: check to see that the box is actually correctly constructed; have not checked actual location of test coordinates
             gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx,boxy)))])
             return gdf
-        elif self.extent_type is 'polygon':
+        elif self.extent_type == 'polygon':
             if isinstance(self._spat_extent,str):
                 spat_extent = self._spat_extent.split(',')
             else:
@@ -550,10 +551,15 @@ class Icesat2Data():
         self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
         plt.show()
 
+#DevGoal: add a test to ensure that _cust_options is actually populated 
+#DevGoal: add a test to compare the generated list with an existing [checked] one
+#DevGoal: use a mock of this ping to test later functions, such as displaying options and widgets, etc.
     def _get_custom_options(self, session):
         """
         Get lists of what customization options are available for the dataset from NSIDC.
         """
+        self._cust_options={}
+        
         if session is None:
             raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
 
@@ -563,11 +569,14 @@ class Icesat2Data():
 
         # collect lists with each service option
         subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
+        print(subagent)
+        self._cust_options.update({'options':subagent})
 
         # reformatting
         formats = [Format.attrib for Format in root.iter('Format')]
         format_vals = [formats[i]['value'] for i in range(len(formats))]
         format_vals.remove('')
+        self._cust_options.update({'fileformats':format_vals})
 
         # reprojection only applicable on ICESat-2 L3B products, yet to be available.
 
@@ -578,6 +587,7 @@ class Icesat2Data():
         format_proj = normalproj_vals[0].split(',')
         format_proj.remove('')
         format_proj.append('No reformatting')
+        self._cust_options.update({'formatreproj':format_proj})
 
         #reprojection options
         projections = [Projection.attrib for Projection in root.iter('Projection')]
@@ -585,17 +595,13 @@ class Icesat2Data():
         for i in range(len(projections)):
             if (projections[i]['value']) != 'NO_CHANGE' :
                 proj_vals.append(projections[i]['value'])
+        self._cust_options.update({'reprojectionONLY':proj_vals})
 
         # reformatting options that do not support reprojection
         no_proj = [i for i in format_vals if i not in format_proj]
+        self._cust_options.update({'noproj':no_proj})
 
-        # variable subsetting --- This method gives a list containing directories, remove in future?
-        variables = [SubsetVariable.attrib for SubsetVariable in root.iter('SubsetVariable')]
-        variables_raw = [variables[i]['value'] for i in range(len(variables))]
-        variables_join = [''.join(('/',v)) if v.startswith('/') == False else v for v in variables_raw]
-        variable_vals = [v.replace(':', '/') for v in variables_join]
-
-        # variable for subsetting: parse the xml info to exact the list of variables
+        # variable subsetting
         vars_raw = []        
         def get_varlist(elem):
             childlist = list(elem)      
@@ -605,6 +611,10 @@ class Icesat2Data():
                 get_varlist(child)
         get_varlist(root)
         vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace(':','')  for v in vars_raw]
+        self._cust_options.update({'variables':vars_vals})
+        
+        
+        #DevGoal:move to own function
         # convert the variable list to a dictionary and saved as an attribute
         vgrp = dict()
         for vn in vars_vals:
@@ -613,10 +623,8 @@ class Icesat2Data():
                 vgrp[vkey] = [vn]
             else:
                 vgrp[vkey].append(vn)
-        self._variables = vgrp
-        
-        return [subagent, format_vals, proj_vals, format_proj, no_proj, vars_vals]
-
+        #self._cust_options.append{'variables':vgrp}
+        #self._variables = vgrp
 
 
     def show_custom_options(self, session):
@@ -627,11 +635,16 @@ class Icesat2Data():
                  'Data File (Reformatting) Options Supporting Reprojection',
                  'Data File (Reformatting) Options NOT Supporting Reprojection',
                  'Data Variables (also Subsettable)']
-        options = self._get_custom_options(session)
+        keys=['options', 'fileformats', 'reprojectionONLY', 'formatreproj', 'noproj', 'variables']
         
-        for h,o in zip(headers,options):
+        try:
+            all(key in self._cust_options.keys() for key in keys)
+        except AttributeError or KeyError:
+            self._get_custom_options(session)
+
+        for h,k in zip(headers,keys):
             print(h)
-            pprint.pprint(o)
+            pprint.pprint(self._cust_options[k])
 
 
     def build_CMR_params(self):
@@ -653,11 +666,11 @@ class Icesat2Data():
                 if key in self.CMRparams:
                     pass
                 else:
-                    if key is 'short_name':
+                    if key == 'short_name':
                         self.CMRparams.update({key:self.dataset})
-                    elif key is 'version':
+                    elif key == 'version':
                         self.CMRparams.update({key:self._version})
-                    elif key is 'temporal':
+                    elif key == 'temporal':
                         self.CMRparams.update(Icesat2Data._fmt_temporal(self._start,self._end,key))
             if any(keys in self.CMRparams for keys in CMR_spat_keys):
                 pass
@@ -669,9 +682,10 @@ class Icesat2Data():
 
 
     #DevGoal: generalize this function to pull info from the _get_custom_options list (rather than requiring the vdatdir input). Then, build the subset parameter within the self.build_subset_params function. If necessary, portions of this can remain as a hidden function to do that formatting, but I suspect we can trim it to only a few lines of code that can go directly into build_subset_params
-    def build_subset_coverage(self,**kwarg):
+#DevGoal: add checks here that the incoming kwarg is a dict with valid variable names. If it's already a formatted string, just let it pass through. If it's not, turn the dict into a string to be submitted to the subsetter
+    def _fmt_var_subset_list(self,**kwarg):
         '''
-        Return the coverage string for data subset request.
+        Return the coverage string for variable subset request.
         
         Parameters:
         -----------
@@ -757,8 +771,8 @@ class Icesat2Data():
                     vd09[vkey].append(vpath)
                         
         return vd09
-    
-    #DevGoal: this may need some additional args depending on the above...
+
+
     def build_subset_params(self, **kwargs):
         """
         Build a dictionary of subsetting parameter keys to submit for data orders and download.
@@ -780,18 +794,22 @@ class Icesat2Data():
                 if key in self.subsetparams:
                     pass
                 else:
-                    if key is 'time':
+                    if key == 'time':
                         self.subsetparams.update(Icesat2Data._fmt_temporal(self._start,self._end, key))
             if any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath'):
                 pass
             else:
-                if self.extent_type is 'bounding_box':
+                if self.extent_type == 'bounding_box':
                     k = 'bbox'
-                elif self.extent_type is 'polygon':
+                elif self.extent_type == 'polygon':
                     k = 'bounding_shape'
                 self.subsetparams.update(Icesat2Data._fmt_spatial(k,self._spat_extent))
             for key in opt_keys:
-                if key in kwargs:
+                if key == 'Coverage':
+                    #DevGoal: remove print statement and make it a required input, not kwarg
+                    print(kwargs[key])
+                    self.subsetparams.update({key:self._fmt_var_subset_list(**kwargs[key])})
+                elif key in kwargs:
                     self.subsetparams.update({key:kwargs[key]})
                 else:
                     pass
@@ -806,9 +824,9 @@ class Icesat2Data():
         if not hasattr(self,'reqparams') or self.reqparams==None:
             self.reqparams={}
 
-        if reqtype is 'search':
+        if reqtype == 'search':
             reqkeys = ['page_size','page_num']
-        elif reqtype is 'download':
+        elif reqtype == 'download':
             reqkeys = ['page_size','page_num','request_mode','token','email','include_meta']
         else:
             raise ValueError("Invalid request type")

@@ -569,7 +569,7 @@ class Icesat2Data():
 
         # collect lists with each service option
         subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
-        print(subagent)
+        #print(subagent)
         self._cust_options.update({'options':subagent})
 
         # reformatting
@@ -614,18 +614,6 @@ class Icesat2Data():
         self._cust_options.update({'variables':vars_vals})
         
         
-        #DevGoal:move to own function
-        # convert the variable list to a dictionary and saved as an attribute
-        vgrp = dict()
-        for vn in vars_vals:
-            vpath,vkey = os.path.split(vn)
-            if vkey not in vgrp.keys():
-                vgrp[vkey] = [vn]
-            else:
-                vgrp[vkey].append(vn)
-        #self._cust_options.append{'variables':vgrp}
-        #self._variables = vgrp
-
 
     def show_custom_options(self, session):
         """
@@ -690,14 +678,21 @@ class Icesat2Data():
         Parameters:
         -----------
         **kwarg: additional keyword arguments needed later:
-        beam_ids: the beams to extract for the subset request. For ATL09 use profile_x
         
         return:
         ------ 
         subcover: string of paths of subset variables
         ''' 
-        vgrp = self.variables
         
+        vars_vals = self._cust_options['variables']
+        vgrp = dict()
+        for vn in vars_vals:
+            vpath,vkey = os.path.split(vn)
+            if vkey not in vgrp.keys():
+                vgrp[vkey] = [vn]
+            else:
+                vgrp[vkey].append(vn)  
+        #pprint.pprint(vgrp)
         if self.dataset=='ATL07': vdict = self._ATL07_vars(vgrp,**kwarg)
         if self.dataset=='ATL09': vdict = self._ATL09_vars(vgrp,**kwarg)
         if self.dataset=='ATL10': vdict = self._ATL10_vars(vgrp,**kwarg)
@@ -807,8 +802,8 @@ class Icesat2Data():
             for key in opt_keys:
                 if key == 'Coverage':
                     #DevGoal: remove print statement and make it a required input, not kwarg
-                    print(kwargs[key])
-                    self.subsetparams.update({key:self._fmt_var_subset_list(**kwargs[key])})
+                    #print(kwargs[key])
+                    self.subsetparams.update({key:self._fmt_var_subset_list(**kwargs)})
                 elif key in kwargs:
                     self.subsetparams.update({key:kwargs[key]})
                 else:

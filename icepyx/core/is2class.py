@@ -337,7 +337,7 @@ class Icesat2Data():
         """
         return self._end.strftime('%H:%M:%S')
 
-    #DevGoal: JESSICA - have this call _show_custom_options if need be (if variables is not already filled in)
+    #DevGoal: add to tests
     @property
     def variables(self):
         """
@@ -351,9 +351,13 @@ class Icesat2Data():
         >>> region_a.variables
         """
         
+        try:
+            if hasattr(self, variables):
+                return pprint.pprint(self.variables)
+        except NameError:
+            return AttributeError('You must order or bring in a set of data files to populate this parameter')
+        #this information can be populated in two ways: 1 (implemented) by having the user submit an order for data; 2 (not yet implemented) by bringing in existing data files into a class object
         
-        return self._variables
-
 
     @property
     def granule_info(self):
@@ -488,7 +492,7 @@ class Icesat2Data():
         return vgrp, paths         
 
     @staticmethod
-    def _fmt_var_subset_list(v_dict):
+    def _fmt_var_subset_list(vdict):
         """
         Return the NSIDC-API subsetter formatted coverage string for variable subset request.
         
@@ -617,7 +621,6 @@ class Icesat2Data():
                 get_varlist(child)
         get_varlist(root)
         vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace('/:','')  for v in vars_raw]
-        print(vars_vals)
         self._cust_options.update({'variables':vars_vals})
 
     def show_custom_options(self, session):
@@ -686,7 +689,7 @@ class Icesat2Data():
         spat_keys = ['bbox','bounding_shape']
         opt_keys = ['format','projection','projection_parameters','Coverage']
         #check to see if the parameter list is already built
-        if all(keys in self.subsetparams for keys in default_keys) and (any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath')):
+        if all(keys in self.subsetparams for keys in default_keys) and (any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath')) and all(keys in self.subsetparams for keys in kwargs.keys()):
             pass
         #if not, see which fields need to be added and add them
         else:
@@ -706,7 +709,8 @@ class Icesat2Data():
                 self.subsetparams.update(Icesat2Data._fmt_spatial(k,self._spat_extent))
             for key in opt_keys:
                 if key == 'Coverage':
-                    self.subsetparams.update({key:self._fmt_var_subset_list(var_dict=kwargs[key])})
+                    #DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input self.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+                    self.subsetparams.update({key:self._fmt_var_subset_list(kwargs[key])})
                 elif key in kwargs:
                     self.subsetparams.update({key:kwargs[key]})
                 else:
@@ -755,8 +759,9 @@ class Icesat2Data():
     # ----------------------------------------------------------------------
     # Methods - - Generate and format information for submitting to API (non-general)
 
-            #DevGoal: see to what extent we can just have one function that will provide a default list of variables for each dataset (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
-    #DevGoal: if we make this not a hidden function, then there can also be an "interactive" trigger that will open the widget. Otherwise, it will use the var_list passed by the user/defaults
+    #DevGoal: generalize the default part to get a list of default variables for each dataset from outside this function (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
+    #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
+    #DevGoal: we need to re-introduce the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc.
     def build_wanted_var_list(self, var_list = None, add_default_vars=True):
         '''
         Build a dictionary of desired variables using user specified beams and variable list. 
@@ -774,6 +779,7 @@ class Icesat2Data():
         req_vars = {}
         vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
         
+        #leaving these and a few other print statements (e.g. in _parse_var_list) until we've done some evaluation of other datasets
         print(np.unique(np.array(paths[0])))
         print(np.unique(np.array(paths[1])))
 
@@ -793,11 +799,10 @@ class Icesat2Data():
         else:
             var_list = def_varlist
 
-        
         for var in var_list:
             req_vars[var] = vgrp[var]
         
-#DELETE? I don't understand exactly what this is doing, though I could see it being useful if we're allowing users to instead select all variables associated with "profile_1" or something that wasn't put into the vgrp dictionary...
+#How can we generalize this? And what will we or won't we require the user to input/how?
 #         for vkey in vgrp:
 #             vpaths = vgrp[vkey]
             
@@ -927,6 +932,7 @@ class Icesat2Data():
 
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
+    #DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
     def order_granules(self, session, verbose=False, subset=True, **kwargs):
         """
         Place an order for the available granules for the ICESat-2 data object.
@@ -964,6 +970,7 @@ class Icesat2Data():
 
         if subset is False:
             request_params = self.combine_params(self.CMRparams, self.reqparams, {'agent':'NO'})
+            self.variables = self._cust_options('variables')
         else:
 #             if kwargs is None:
 #                 #make subset params and add them to request params
@@ -975,6 +982,8 @@ class Icesat2Data():
 #                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
+            #DevGoal: make this the dictionary instead of the long string?
+            self.variables = self.subsetparams['Coverage']
 
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 

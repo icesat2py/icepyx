@@ -18,6 +18,7 @@ from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
 import matplotlib.pyplot as plt
 import fiona
+import h5py
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 def _validate_dataset(dataset):
@@ -77,6 +78,7 @@ class Icesat2Data():
     version : string, default most recent version
         Dataset version, given as a 3 digit string. If no version is given, the current
         version is used.
+    variables: 
 
     Returns
     -------
@@ -177,7 +179,7 @@ class Icesat2Data():
             #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
             if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
                 self.extent_type = 'polygon'
-                self._spat_extent = self.format_polygon(spatial_extent)
+                self._spat_extent = self._fmt_polygon(spatial_extent)
                 self._geom_filepath = spatial_extent
 
             else:
@@ -247,6 +249,22 @@ class Icesat2Data():
         """
         return self._dset
 
+    @property
+    def dataset_version(self):
+        """
+        Return the dataset version of the data object.
+
+        Examples
+        --------
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
+        >>> region_a.dataset_version
+        002
+
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], version='1')
+        >>> region_a.dataset_version
+        001
+        """
+        return self._version
 
     @property
     def spatial_extent(self):
@@ -264,9 +282,9 @@ class Icesat2Data():
         ['bounding box', [-64, 66, -55, 72]]
         """
 
-        if self.extent_type is 'bounding_box':
+        if self.extent_type == 'bounding_box':
             return ['bounding box', self._spat_extent]
-        elif self.extent_type is 'polygon':
+        elif self.extent_type == 'polygon':
             return ['polygon', [self._spat_extent[0::2], self._spat_extent[1::2]]]
         else:
             return ['unknown spatial type', None]
@@ -284,7 +302,6 @@ class Icesat2Data():
         ['2019-02-22', '2019-02-28']
         """
         return [self._start.strftime('%Y-%m-%d'), self._end.strftime('%Y-%m-%d')] #could also use self._start.date()
-
 
     @property
     def start_time(self):
@@ -320,23 +337,27 @@ class Icesat2Data():
         """
         return self._end.strftime('%H:%M:%S')
 
+    #DevGoal: add to tests
     @property
-    def dataset_version(self):
+    def variables(self):
         """
-        Return the dataset version of the data object.
+        Return a list of the variables in the dataset.
 
         Examples
         --------
         >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.dataset_version
-        002
-
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], version='1')
-        >>> region_a.dataset_version
-        001
+        >>> session = region_a.earthdata_login(user_id,user_email)
+        >>> opts = region_a._get_custom_options(session)
+        >>> region_a.variables
         """
-        return self._version
-
+        
+        try:
+            if hasattr(self, variables):
+                return pprint.pprint(self.variables)
+        except NameError:
+            return AttributeError('You must order or bring in a set of data files to populate this parameter')
+        #this information can be populated in two ways: 1 (implemented) by having the user submit an order for data; 2 (not yet implemented) by bringing in existing data files into a class object
+        
 
     @property
     def granule_info(self):
@@ -380,9 +401,9 @@ class Icesat2Data():
         assert isinstance(start, dt.datetime)
         assert isinstance(end, dt.datetime)
         #DevGoal: add test for proper keys
-        if key is 'temporal':
+        if key == 'temporal':
             fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
-        elif key is 'time':
+        elif key == 'time':
             fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%S') +',' + end.strftime('%Y-%m-%dT%H:%M:%S')
 
         return {key:fmt_timerange}
@@ -415,54 +436,7 @@ class Icesat2Data():
         return {ext_type: fmt_extent}
 
     @staticmethod
-    def combine_params(*param_dicts):
-        params={}
-        for dictionary in param_dicts:
-            params.update(dictionary)
-        return params
-
-
-
-    # ----------------------------------------------------------------------
-    # Methods
-
-    def _about_dataset(self):
-        """
-        Ping Earthdata to get metadata about the dataset of interest (the collection).
-        """
-
-        cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
-        response = requests.get(cmr_collections_url, params={'short_name': self._dset})
-        results = json.loads(response.content)
-        return results
-
-    def dataset_summary_info(self):
-        """
-        Display a summary of selected metadata for the most recent version of the dataset 
-        of interest (the collection).
-        """
-        summ_keys = ['dataset_id', 'short_name', 'version_id', 'time_start', 'coordinate_system', 'summary',
-             'orbit_parameters']
-        for key in summ_keys:
-            print(key,': ',self._about_dataset()['feed']['entry'][int(self.latest_version())-1][key])
-
-    def dataset_all_info(self):
-        """
-        Display all metadata about the dataset of interest (the collection).
-        """
-        pprint.pprint(self._about_dataset())
-
-
-    def latest_version(self):
-        """
-        Determine the most recent version available for the given dataset.
-        """
-        dset_info = self._about_dataset()
-        return max([entry['version_id'] for entry in dset_info['feed']['entry']])
-
-
-
-    def format_polygon(self, spatial_extent):
+    def _fmt_polygon(spatial_extent):
         """
         Formats input spatial file to shapely polygon
 
@@ -484,62 +458,119 @@ class Icesat2Data():
         polygon = [float(i) for i in polygon]
         return polygon
 
-
-    #DevGoal: add testing? How do we test this (if it creates a valid dataframe, isn't testing that the dataframe is the one we're creating circular, even if we've constructed the bounding box/polygon again)?
-    def geodataframe(self):
+    @staticmethod
+    def _parse_var_list(varlist):
         """
-        Return a geodataframe of the spatial extent
-
-        Examples
-        --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> gdf = region_a.geodataframe()
-        >>> gdf.geometry
-        0    POLYGON ((-64 66, -64 72, -55 72, -55 66, -64 ...
-        Name: geometry, dtype: object
+        Parse a list of path strings into tiered lists and names of variables
         """
 
-        if self.extent_type is 'bounding_box':
-            boxx = [self._spat_extent[0], self._spat_extent[0], self._spat_extent[2],\
-                    self._spat_extent[2], self._spat_extent[0]]
-            boxy = [self._spat_extent[1], self._spat_extent[3], self._spat_extent[3],\
-                    self._spat_extent[1], self._spat_extent[1]]
-            #DevGoal: check to see that the box is actually correctly constructed; have not checked actual location of test coordinates
-            gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx,boxy)))])
-            return gdf
-        elif self.extent_type is 'polygon':
-            if isinstance(self._spat_extent,str):
-                spat_extent = self._spat_extent.split(',')
+        # create a dictionary of variable names and paths
+        vgrp = {}
+        num = np.max([v.count('/') for v in varlist])
+        print('max needed: ' + str(num))
+        paths = [[] for i in range(num)]
+        
+        #QUESTION: do we actually need this? I don't know that we ever use the lists currently, though it could come in handy in the future for building a dicitonary by first level (e.g. by beam) rather than by variable name
+        #print(self._cust_options['variables'])
+        for vn in varlist:
+            vpath,vkey = os.path.split(vn)
+            #print('path '+ vpath + ', key '+vkey)
+            if vkey not in vgrp.keys():
+                vgrp[vkey] = [vn]
             else:
-                spat_extent = self._spat_extent
-            spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
-            gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
-            return gdf
-        else:
-            raise TypeError("Your spatial extent type (" + self.extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
+                vgrp[vkey].append(vn)
 
-    #DevGoal: add testing? What do we test, and how, given this is a visualization.
-    #DevGoal(long term): modify this to accept additional inputs, etc.
-    def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
+            if vpath:
+                j=0
+                for d in vpath.split('/'):
+                        paths[j].append(d)
+                        j=j+1
+                for i in range(j,num):
+                    paths[i].append('none')
+                    i=i+1
+                    
+        return vgrp, paths         
+
+    @staticmethod
+    def _fmt_var_subset_list(vdict):
         """
-        Creates a map of the input spatial extent
+        Return the NSIDC-API subsetter formatted coverage string for variable subset request.
+        
+        Parameters
+        ----------
+        var_dict : dictionary
+            Dictionary containing variable names as keys with values containing a list of
+            paths to those variables (so each variable key may have multiple paths, e.g. for
+            multiple beams)
+        """ 
+        
+        #find another spot to put this type of check, like where the user would actually be supplying info, in order to make this a static method
+#         try:
+#             assert all(key in self._cust_options['variables'] for key in var_dict.keys()), "Your variable subset list contains invalid entries for this dataset."
+#         except TypeError:
+#             "Please enter a dictionary of variables and paths to pass to the subsetter"
+        
+        subcover = ''
+        for vn in vdict.keys():
+            vpaths = vdict[vn]
+            for vpath in vpaths: subcover += '/'+vpath+','
+            
+        return subcover[:-1]
 
-        Examples
-        --------
-        >>> icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
-        >>> region_a.visualize_spatial_extent
+    @staticmethod
+    def combine_params(*param_dicts):
+        params={}
+        for dictionary in param_dicts:
+            params.update(dictionary)
+        return params
+
+
+
+    # ----------------------------------------------------------------------
+    # Methods - Get and display neatly information at the dataset level
+
+    def _about_dataset(self):
+        """
+        Ping Earthdata to get metadata about the dataset of interest (the collection).
         """
 
-        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-        f, ax = plt.subplots(1, figsize=(12, 6))
-        world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
-        self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
-        plt.show()
+        cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
+        response = requests.get(cmr_collections_url, params={'short_name': self._dset})
+        results = json.loads(response.content)
+        return results
 
+    def dataset_summary_info(self):
+        """
+        Display a summary of selected metadata for the most specified version of the dataset 
+        of interest (the collection).
+        """
+        summ_keys = ['dataset_id', 'short_name', 'version_id', 'time_start', 'coordinate_system', 'summary', 'orbit_parameters']
+        for key in summ_keys:
+            print(key,': ',self._about_dataset()['feed']['entry'][int(self._version)-1][key])
+
+    def dataset_all_info(self):
+        """
+        Display all metadata about the dataset of interest (the collection).
+        """
+        pprint.pprint(self._about_dataset())
+
+    def latest_version(self):
+        """
+        Determine the most recent version available for the given dataset.
+        """
+        dset_info = self._about_dataset()
+        return max([entry['version_id'] for entry in dset_info['feed']['entry']])
+
+
+#DevGoal: add a test to ensure that _cust_options is actually populated 
+#DevGoal: add a test to compare the generated list with an existing [checked] one
+#DevGoal: use a mock of this ping to test later functions, such as displaying options and widgets, etc.
     def _get_custom_options(self, session):
         """
         Get lists of what customization options are available for the dataset from NSIDC.
         """
+        self._cust_options={}
+        
         if session is None:
             raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
 
@@ -549,11 +580,13 @@ class Icesat2Data():
 
         # collect lists with each service option
         subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
+        self._cust_options.update({'options':subagent})
 
         # reformatting
         formats = [Format.attrib for Format in root.iter('Format')]
         format_vals = [formats[i]['value'] for i in range(len(formats))]
         format_vals.remove('')
+        self._cust_options.update({'fileformats':format_vals})
 
         # reprojection only applicable on ICESat-2 L3B products, yet to be available.
 
@@ -564,6 +597,7 @@ class Icesat2Data():
         format_proj = normalproj_vals[0].split(',')
         format_proj.remove('')
         format_proj.append('No reformatting')
+        self._cust_options.update({'formatreproj':format_proj})
 
         #reprojection options
         projections = [Projection.attrib for Projection in root.iter('Projection')]
@@ -571,17 +605,23 @@ class Icesat2Data():
         for i in range(len(projections)):
             if (projections[i]['value']) != 'NO_CHANGE' :
                 proj_vals.append(projections[i]['value'])
+        self._cust_options.update({'reprojectionONLY':proj_vals})
 
         # reformatting options that do not support reprojection
         no_proj = [i for i in format_vals if i not in format_proj]
+        self._cust_options.update({'noproj':no_proj})
 
         # variable subsetting
-        variables = [SubsetVariable.attrib for SubsetVariable in root.iter('SubsetVariable')]
-        variables_raw = [variables[i]['value'] for i in range(len(variables))]
-        variables_join = [''.join(('/',v)) if v.startswith('/') == False else v for v in variables_raw]
-        variable_vals = [v.replace(':', '/') for v in variables_join]
-
-        return [subagent, format_vals, proj_vals, format_proj, no_proj, variable_vals]
+        vars_raw = []        
+        def get_varlist(elem):
+            childlist = list(elem)
+            if len(childlist)==0 and elem.tag=='SubsetVariable': 
+                vars_raw.append(elem.attrib['value'])
+            for child in childlist:
+                get_varlist(child)
+        get_varlist(root)
+        vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace('/:','')  for v in vars_raw]
+        self._cust_options.update({'variables':vars_vals})
 
     def show_custom_options(self, session):
         """
@@ -591,12 +631,20 @@ class Icesat2Data():
                  'Data File (Reformatting) Options Supporting Reprojection',
                  'Data File (Reformatting) Options NOT Supporting Reprojection',
                  'Data Variables (also Subsettable)']
-        options = self._get_custom_options(session)
+        keys=['options', 'fileformats', 'reprojectionONLY', 'formatreproj', 'noproj', 'variables']
         
-        for h,o in zip(headers,options):
-            print(h)
-            pprint.pprint(o)
+        try:
+            all(key in self._cust_options.keys() for key in keys)
+        except AttributeError or KeyError:
+            self._get_custom_options(session)
 
+        for h,k in zip(headers,keys):
+            print(h)
+            pprint.pprint(self._cust_options[k])
+
+            
+    # ----------------------------------------------------------------------
+    # Methods - Generate and format information for submitting to API (general)
 
     def build_CMR_params(self):
         """
@@ -617,17 +665,17 @@ class Icesat2Data():
                 if key in self.CMRparams:
                     pass
                 else:
-                    if key is 'short_name':
+                    if key == 'short_name':
                         self.CMRparams.update({key:self.dataset})
-                    elif key is 'version':
+                    elif key == 'version':
                         self.CMRparams.update({key:self._version})
-                    elif key is 'temporal':
+                    elif key == 'temporal':
                         self.CMRparams.update(Icesat2Data._fmt_temporal(self._start,self._end,key))
             if any(keys in self.CMRparams for keys in CMR_spat_keys):
                 pass
             else:
                 self.CMRparams.update(Icesat2Data._fmt_spatial(self.extent_type,self._spat_extent))
-
+                
     def build_subset_params(self, **kwargs):
         """
         Build a dictionary of subsetting parameter keys to submit for data orders and download.
@@ -641,7 +689,7 @@ class Icesat2Data():
         spat_keys = ['bbox','bounding_shape']
         opt_keys = ['format','projection','projection_parameters','Coverage']
         #check to see if the parameter list is already built
-        if all(keys in self.subsetparams for keys in default_keys) and (any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath')):
+        if all(keys in self.subsetparams for keys in default_keys) and (any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath')) and all(keys in self.subsetparams for keys in kwargs.keys()):
             pass
         #if not, see which fields need to be added and add them
         else:
@@ -649,18 +697,21 @@ class Icesat2Data():
                 if key in self.subsetparams:
                     pass
                 else:
-                    if key is 'time':
+                    if key == 'time':
                         self.subsetparams.update(Icesat2Data._fmt_temporal(self._start,self._end, key))
             if any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath'):
                 pass
             else:
-                if self.extent_type is 'bounding_box':
+                if self.extent_type == 'bounding_box':
                     k = 'bbox'
-                elif self.extent_type is 'polygon':
+                elif self.extent_type == 'polygon':
                     k = 'bounding_shape'
                 self.subsetparams.update(Icesat2Data._fmt_spatial(k,self._spat_extent))
             for key in opt_keys:
-                if key in kwargs:
+                if key == 'Coverage':
+                    #DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input self.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+                    self.subsetparams.update({key:self._fmt_var_subset_list(kwargs[key])})
+                elif key in kwargs:
                     self.subsetparams.update({key:kwargs[key]})
                 else:
                     pass
@@ -675,9 +726,9 @@ class Icesat2Data():
         if not hasattr(self,'reqparams') or self.reqparams==None:
             self.reqparams={}
 
-        if reqtype is 'search':
+        if reqtype == 'search':
             reqkeys = ['page_size','page_num']
-        elif reqtype is 'download':
+        elif reqtype == 'download':
             reqkeys = ['page_size','page_num','request_mode','token','email','include_meta']
         else:
             raise ValueError("Invalid request type")
@@ -705,38 +756,73 @@ class Icesat2Data():
         self.reqparams['page_num'] = 1
 
 
-    def avail_granules(self):
-        """
-        Get a list of available granules for the ICESat-2 data object's parameters
-        """
+    # ----------------------------------------------------------------------
+    # Methods - - Generate and format information for submitting to API (non-general)
 
-        granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
+    #DevGoal: generalize the default part to get a list of default variables for each dataset from outside this function (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
+    #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
+    #DevGoal: we need to re-introduce the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc.
+    def build_wanted_var_list(self, var_list = None, add_default_vars=True):
+        '''
+        Build a dictionary of desired variables using user specified beams and variable list. 
+        A pregenerated default variable list can be used by setting add_default_vars to True. 
+        Note: The calibrated backscatter cab_prof is not in the default list
+        
+        Parameters:
+        -----------
+        var_list:         a list of variables to include for subsetting. 
+                          If var_list is not provided, a default list will be used. 
+        add_default_vars: The flag to append the variables in the default list to the user defined list. 
+                          It is set to True by default. 
+        '''
 
-        self.granules = []
-        self.build_CMR_params()
-        self.build_reqconfig_params('search')
-        headers={'Accept': 'application/json'}
-        #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
-        #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
-        while True:
-            response = requests.get(granule_search_url, headers=headers,\
-                                    params=self.combine_params(self.CMRparams,\
-                                                               {k: self.reqparams[k] for k in ('page_size','page_num')}))
+        req_vars = {}
+        vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
+        
+        #leaving these and a few other print statements (e.g. in _parse_var_list) until we've done some evaluation of other datasets
+        print(np.unique(np.array(paths[0])))
+        print(np.unique(np.array(paths[1])))
 
-            results = json.loads(response.content)
-            print(results)
-            if len(results['feed']['entry']) == 0:
-                # Out of results, so break out of loop
-                break
+        #get this from another place, ultimately, that's got lists according to dataset
+        def_varlist = ['delta_time','latitude','longitude',
+                       'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
+                       'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
+                       'column_od_asr','column_od_asr_qf',
+                       'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
+                       'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
+        
+        #DevGoal: add some assert statements here to make sure a list is passed OR defaults are used. If not, then the user needs to do that. Then we can probably also get rid of the first if statement.
+        if var_list is not None:
+            if add_default_vars:
+                for vn in def_varlist:
+                    if vn not in var_list: var_list.append(vn)
+        else:
+            var_list = def_varlist
 
-            # Collect results and increment page_num
-            self.granules.extend(results['feed']['entry'])
-            self.reqparams['page_num'] += 1
+        for var in var_list:
+            req_vars[var] = vgrp[var]
+        
+#How can we generalize this? And what will we or won't we require the user to input/how?
+#         for vkey in vgrp:
+#             vpaths = vgrp[vkey]
+            
+#             for vpath in vpaths:
+                
+#                 vpath_kws = vpath.split('/')
+#                 if vpath_kws[0] in ['quality_assessment','ancillary_data','orbit_info']:
+#                     if vkey not in req_vars: req_vars[vkey] = []
+#                     req_vars[vkey].append(vpath)     
+#                 elif vpath_kws[0] in paths[0] and \
+#                     vpath_kws[1] in paths[1] and \
+#                     vpath_kws[-1] in var_list:
+#                     if vkey not in req_vars: req_vars[vkey] = []
+#                     req_vars[vkey].append(vpath)
+        
+        return req_vars
 
-        assert len(self.granules)>0, "Your search returned no results; try different search parameters"
 
-        return self.granule_info
-
+    # ----------------------------------------------------------------------
+    # Methods - Interact with NSIDC-API
 
     #DevGoal: update docs for both earthdata_login/session functions
     def earthdata_login(self,uid,email):
@@ -745,14 +831,12 @@ class Icesat2Data():
         with the NSIDC DAAC. This function will prompt the user for
         their Earthdata password, but will only store that information
         within the active session.
-
         Parameters
         ----------
         uid : string
             Earthdata Login user name.
         email : string
             Complete email address, provided as a string.
-
         Examples
         --------
         >>> region_a = [define that here]
@@ -786,14 +870,12 @@ class Icesat2Data():
         with the NSIDC DAAC. This function will prompt the user for
         their Earthdata password, but will only store that information
         within the active session.
-
         Parameters
         ----------
         uid : string
             Earthdata Login user name.
         email : string
             Complete email address, provided as a string.
-
         Examples
         --------
         >>> region_a = [define that here]
@@ -836,9 +918,41 @@ class Icesat2Data():
 
         return session
 
+    def avail_granules(self):
+        """
+        Get a list of available granules for the ICESat-2 data object's parameters
+        """
+
+        granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
+
+        self.granules = []
+        self.build_CMR_params()
+        self.build_reqconfig_params('search')
+        headers={'Accept': 'application/json'}
+        #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
+        #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
+        while True:
+            response = requests.get(granule_search_url, headers=headers,\
+                                    params=self.combine_params(self.CMRparams,\
+                                                               {k: self.reqparams[k] for k in ('page_size','page_num')}))
+
+            results = json.loads(response.content)
+            print(results)
+            if len(results['feed']['entry']) == 0:
+                # Out of results, so break out of loop
+                break
+
+            # Collect results and increment page_num
+            self.granules.extend(results['feed']['entry'])
+            self.reqparams['page_num'] += 1
+
+        assert len(self.granules)>0, "Your search returned no results; try different search parameters"
+
+        return self.granule_info
 
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
+    #DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
     def order_granules(self, session, verbose=False, subset=True, **kwargs):
         """
         Place an order for the available granules for the ICESat-2 data object.
@@ -876,6 +990,7 @@ class Icesat2Data():
 
         if subset is False:
             request_params = self.combine_params(self.CMRparams, self.reqparams, {'agent':'NO'})
+            self.variables = self._cust_options('variables')
         else:
 #             if kwargs is None:
 #                 #make subset params and add them to request params
@@ -887,6 +1002,8 @@ class Icesat2Data():
 #                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
+            #DevGoal: make this the dictionary instead of the long string?
+            self.variables = self.subsetparams['Coverage']
 
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 
@@ -988,7 +1105,6 @@ class Icesat2Data():
             else: print('Request failed.')
 
 
-#can the order_granules subsetting kwarg be passed to download_granules somehow, so the user doesn't have to order and download in separate steps?
     def download_granules(self, session, path, verbose=False): #, extract=False):
         """
         Downloads the data ordered using order_granules.
@@ -1043,3 +1159,61 @@ class Icesat2Data():
 #         if extract is True:
             with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
                 z.extractall(path)
+
+
+    # ----------------------------------------------------------------------
+    # Methods - IS2class specific geospatial manipulation and visualization
+
+    #DevGoal: add testing? How do we test this (if it creates a valid dataframe, isn't testing that the dataframe is the one we're creating circular, even if we've constructed the bounding box/polygon again)?
+    def geodataframe(self):
+        """
+        Return a geodataframe of the spatial extent
+
+        Examples
+        --------
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
+        >>> gdf = region_a.geodataframe()
+        >>> gdf.geometry
+        0    POLYGON ((-64 66, -64 72, -55 72, -55 66, -64 ...
+        Name: geometry, dtype: object
+        """
+
+        if self.extent_type == 'bounding_box':
+            boxx = [self._spat_extent[0], self._spat_extent[0], self._spat_extent[2],\
+                    self._spat_extent[2], self._spat_extent[0]]
+            boxy = [self._spat_extent[1], self._spat_extent[3], self._spat_extent[3],\
+                    self._spat_extent[1], self._spat_extent[1]]
+            #DevGoal: check to see that the box is actually correctly constructed; have not checked actual location of test coordinates
+            gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx,boxy)))])
+            return gdf
+        elif self.extent_type == 'polygon':
+            if isinstance(self._spat_extent,str):
+                spat_extent = self._spat_extent.split(',')
+            else:
+                spat_extent = self._spat_extent
+            spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
+            gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
+            return gdf
+        else:
+            raise TypeError("Your spatial extent type (" + self.extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
+
+    #DevGoal: add testing? What do we test, and how, given this is a visualization.
+    #DevGoal(long term): modify this to accept additional inputs, etc.
+    def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
+        """
+        Creates a map of the input spatial extent
+
+        Examples
+        --------
+        >>> icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
+        >>> region_a.visualize_spatial_extent
+        """
+
+        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+        f, ax = plt.subplots(1, figsize=(12, 6))
+        world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
+        self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
+        plt.show()
+
+
+

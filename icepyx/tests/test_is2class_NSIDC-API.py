@@ -13,7 +13,7 @@ import os
 
 @pytest.fixture
 def reg_a():
-    return ipd.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
+    return ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-22','2019-02-28'])
 
 #@patch('my_module.__get_input', return_value='y')
 
@@ -26,11 +26,19 @@ def session(reg_a):
 # def test_earthdata_session_started(session):
 #     assert isinstance(session, 'requests.sessions.Session')
 
-def test_download_granules_with_subsetting(reg_a, session):
-    path = './downloads_subset'
-    reg_a.order_granules(session)
-    reg_a.download_granules(session,path)
-    #now actually check that the max extent of the downloaded granules is subsetted
+
+def test_get_subsetting_options(reg_a, session):
+    reg_a._get_custom_options(session)
+    obs_keys = reg_a._cust_options.keys()
+    exp_keys = ['options', 'fileformats', 'formatreproj', 'reprojectionONLY', 'noproj', 'variables']
+    assert all(keys in obs_keys for keys in exp_keys)
+
+
+# def test_download_granules_with_subsetting(reg_a, session):
+#     path = './downloads_subset'
+#     reg_a.order_granules(session)
+#     reg_a.download_granules(session,path)
+#     #now actually check that the max extent of the downloaded granules is subsetted and that the files were downloaded
     
 # #     exp = ???
 # #     assert:

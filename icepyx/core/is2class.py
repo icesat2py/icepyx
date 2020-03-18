@@ -179,7 +179,7 @@ class Icesat2Data():
             #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
             if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
                 self.extent_type = 'polygon'
-                self._spat_extent = self.format_polygon(spatial_extent)
+                self._spat_extent = self._fmt_polygon(spatial_extent)
                 self._geom_filepath = spatial_extent
 
             else:
@@ -249,6 +249,22 @@ class Icesat2Data():
         """
         return self._dset
 
+    @property
+    def dataset_version(self):
+        """
+        Return the dataset version of the data object.
+
+        Examples
+        --------
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
+        >>> region_a.dataset_version
+        002
+
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], version='1')
+        >>> region_a.dataset_version
+        001
+        """
+        return self._version
 
     @property
     def spatial_extent(self):
@@ -287,7 +303,6 @@ class Icesat2Data():
         """
         return [self._start.strftime('%Y-%m-%d'), self._end.strftime('%Y-%m-%d')] #could also use self._start.date()
 
-
     @property
     def start_time(self):
         """
@@ -322,28 +337,11 @@ class Icesat2Data():
         """
         return self._end.strftime('%H:%M:%S')
 
-    @property
-    def dataset_version(self):
-        """
-        Return the dataset version of the data object.
-
-        Examples
-        --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.dataset_version
-        002
-
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], version='1')
-        >>> region_a.dataset_version
-        001
-        """
-        return self._version
-
     #DevGoal: JESSICA - have this call _show_custom_options if need be (if variables is not already filled in)
     @property
     def variables(self):
         """
-        Return a dictionary of the variables in the dataset.
+        Return a list of the variables in the dataset.
 
         Examples
         --------
@@ -352,6 +350,8 @@ class Icesat2Data():
         >>> opts = region_a._get_custom_options(session)
         >>> region_a.variables
         """
+        
+        
         return self._variables
 
 
@@ -432,6 +432,88 @@ class Icesat2Data():
         return {ext_type: fmt_extent}
 
     @staticmethod
+    def _fmt_polygon(spatial_extent):
+        """
+        Formats input spatial file to shapely polygon
+
+        """
+        #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
+        #DevGoal: use new function geodataframe here?
+
+        gdf = gpd.read_file(spatial_extent)
+        #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
+        #RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
+        poly = gdf.iloc[0].geometry
+        #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
+        poly = poly.simplify(0.05, preserve_topology=False)
+        poly = orient(poly, sign=1.0)
+
+        #JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
+        #Format dictionary to polygon coordinate pairs for CMR polygon filtering
+        polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
+        polygon = [float(i) for i in polygon]
+        return polygon
+
+    @staticmethod
+    def _parse_var_list(varlist):
+        """
+        Parse a list of path strings into tiered lists and names of variables
+        """
+
+        # create a dictionary of variable names and paths
+        vgrp = {}
+        num = np.max([v.count('/') for v in varlist])
+        print('max needed: ' + str(num))
+        paths = [[] for i in range(num)]
+        
+        #QUESTION: do we actually need this? I don't know that we ever use the lists currently, though it could come in handy in the future for building a dicitonary by first level (e.g. by beam) rather than by variable name
+        #print(self._cust_options['variables'])
+        for vn in varlist:
+            vpath,vkey = os.path.split(vn)
+            #print('path '+ vpath + ', key '+vkey)
+            if vkey not in vgrp.keys():
+                vgrp[vkey] = [vn]
+            else:
+                vgrp[vkey].append(vn)
+
+            if vpath:
+                j=0
+                for d in vpath.split('/'):
+                        paths[j].append(d)
+                        j=j+1
+                for i in range(j,num):
+                    paths[i].append('none')
+                    i=i+1
+                    
+        return vgrp, paths         
+
+    @staticmethod
+    def _fmt_var_subset_list(v_dict):
+        """
+        Return the NSIDC-API subsetter formatted coverage string for variable subset request.
+        
+        Parameters
+        ----------
+        var_dict : dictionary
+            Dictionary containing variable names as keys with values containing a list of
+            paths to those variables (so each variable key may have multiple paths, e.g. for
+            multiple beams)
+        """ 
+        
+        #find another spot to put this type of check, like where the user would actually be supplying info, in order to make this a static method
+#         try:
+#             assert all(key in self._cust_options['variables'] for key in var_dict.keys()), "Your variable subset list contains invalid entries for this dataset."
+#         except TypeError:
+#             "Please enter a dictionary of variables and paths to pass to the subsetter"
+        
+        subcover = ''
+        for vn in vdict.keys():
+            vpaths = vdict[vn]
+            for vpath in vpaths: subcover += '/'+vpath+','
+            
+        return subcover[:-1]
+
+    @staticmethod
     def combine_params(*param_dicts):
         params={}
         for dictionary in param_dicts:
@@ -441,7 +523,7 @@ class Icesat2Data():
 
 
     # ----------------------------------------------------------------------
-    # Methods
+    # Methods - Get and display neatly information at the dataset level
 
     def _about_dataset(self):
         """
@@ -475,81 +557,6 @@ class Icesat2Data():
         dset_info = self._about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
-
-
-    def format_polygon(self, spatial_extent):
-        """
-        Formats input spatial file to shapely polygon
-
-        """
-        #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
-        #DevGoal: use new function geodataframe here?
-
-        gdf = gpd.read_file(spatial_extent)
-        #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
-        #RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
-        poly = gdf.iloc[0].geometry
-        #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-        poly = poly.simplify(0.05, preserve_topology=False)
-        poly = orient(poly, sign=1.0)
-
-        #JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
-        #Format dictionary to polygon coordinate pairs for CMR polygon filtering
-        polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
-        polygon = [float(i) for i in polygon]
-        return polygon
-
-
-    #DevGoal: add testing? How do we test this (if it creates a valid dataframe, isn't testing that the dataframe is the one we're creating circular, even if we've constructed the bounding box/polygon again)?
-    def geodataframe(self):
-        """
-        Return a geodataframe of the spatial extent
-
-        Examples
-        --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> gdf = region_a.geodataframe()
-        >>> gdf.geometry
-        0    POLYGON ((-64 66, -64 72, -55 72, -55 66, -64 ...
-        Name: geometry, dtype: object
-        """
-
-        if self.extent_type == 'bounding_box':
-            boxx = [self._spat_extent[0], self._spat_extent[0], self._spat_extent[2],\
-                    self._spat_extent[2], self._spat_extent[0]]
-            boxy = [self._spat_extent[1], self._spat_extent[3], self._spat_extent[3],\
-                    self._spat_extent[1], self._spat_extent[1]]
-            #DevGoal: check to see that the box is actually correctly constructed; have not checked actual location of test coordinates
-            gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx,boxy)))])
-            return gdf
-        elif self.extent_type == 'polygon':
-            if isinstance(self._spat_extent,str):
-                spat_extent = self._spat_extent.split(',')
-            else:
-                spat_extent = self._spat_extent
-            spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
-            gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
-            return gdf
-        else:
-            raise TypeError("Your spatial extent type (" + self.extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
-
-    #DevGoal: add testing? What do we test, and how, given this is a visualization.
-    #DevGoal(long term): modify this to accept additional inputs, etc.
-    def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
-        """
-        Creates a map of the input spatial extent
-
-        Examples
-        --------
-        >>> icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
-        >>> region_a.visualize_spatial_extent
-        """
-
-        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-        f, ax = plt.subplots(1, figsize=(12, 6))
-        world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
-        self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
-        plt.show()
 
 #DevGoal: add a test to ensure that _cust_options is actually populated 
 #DevGoal: add a test to compare the generated list with an existing [checked] one
@@ -612,39 +619,6 @@ class Icesat2Data():
         vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace('/:','')  for v in vars_raw]
         print(vars_vals)
         self._cust_options.update({'variables':vars_vals})
-        
-    def _parse_var_list(self):
-        """
-        Parse a list of path strings into tiered lists and names of variables
-        """
-
-        # create a dictionary of variable names and paths
-        vgrp = {}
-        num = np.max([v.count('/') for v in self._cust_options['variables']])
-        print('max needed: ' + str(num))
-        paths = [[] for i in range(num)]
-        
-        #QUESTION: do we actually need this/this list/info? I don't know that we ever use it currently, though it could come in handy in the future for building a dicitonary by first level (e.g. by beam) rather than by variable name
-        #print(self._cust_options['variables'])
-        for vn in self._cust_options['variables']:
-            vpath,vkey = os.path.split(vn)
-            #print('path '+ vpath + ', key '+vkey)
-            if vkey not in vgrp.keys():
-                vgrp[vkey] = [vn]
-            else:
-                vgrp[vkey].append(vn)
-
-            if vpath:
-                j=0
-                for d in vpath.split('/'):
-                        paths[j].append(d)
-                        j=j+1
-                for i in range(j,num):
-                    paths[i].append('none')
-                    i=i+1
-                    
-        return vgrp, paths         
-
 
     def show_custom_options(self, session):
         """
@@ -665,6 +639,9 @@ class Icesat2Data():
             print(h)
             pprint.pprint(self._cust_options[k])
 
+            
+    # ----------------------------------------------------------------------
+    # Methods - Generate and format information for submitting to API (general)
 
     def build_CMR_params(self):
         """
@@ -696,94 +673,6 @@ class Icesat2Data():
             else:
                 self.CMRparams.update(Icesat2Data._fmt_spatial(self.extent_type,self._spat_extent))
                 
-
-
-    def _fmt_var_subset_list(self, v_dict):
-        """
-        Return the NSIDC-API subsetter formatted coverage string for variable subset request.
-        
-        Parameters
-        ----------
-        var_dict : dictionary
-            Dictionary containing variable names as keys with values containing a list of
-            paths to those variables (so each variable key may have multiple paths, e.g. for
-            multiple beams)
-        """ 
-        
-        try:
-            assert all(key in self._cust_options['variables'] for key in var_dict.keys()), "Your variable subset list contains invalid entries for this dataset."
-        except TypeError:
-            "Please enter a dictionary of variables and paths to pass to the subsetter"
-        
-        subcover = ''
-        for vn in vdict.keys():
-            vpaths = vdict[vn]
-            for vpath in vpaths: subcover += '/'+vpath+','
-            
-        return subcover[:-1]
-
-
-    #DevGoal: see to what extent we can just have one function that will provide a default list of variables for each dataset (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
-    #DevGoal: if we make this not a hidden function, then there can also be an "interactive" trigger that will open the widget. Otherwise, it will use the var_list passed by the user/defaults
-    def _build_wanted_var_list(self, var_list = None, add_default_vars=True):
-        '''
-        Build a dictionary of desired variables using user specified beams and variable list. 
-        A pregenerated default variable list can be used by setting add_default_vars to True. 
-        Note: The calibrated backscatter cab_prof is not in the default list
-        
-        Parameters:
-        -----------
-        var_list:         a list of variables to include for subsetting. 
-                          If var_list is not provided, a default list will be used. 
-        add_default_vars: The flag to append the variables in the default list to the user defined list. 
-                          It is set to True by default. 
-        '''
-
-        req_vars = {}
-        vgrp, paths = self._parse_var_list()
-        
-        print(np.unique(np.array(paths[0])))
-        print(np.unique(np.array(paths[1])))
-
-        #get this from another place, ultimately, that's got lists according to dataset
-        def_varlist = ['delta_time','latitude','longitude',
-                       'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
-                       'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
-                       'column_od_asr','column_od_asr_qf',
-                       'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
-                       'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
-        
-        #DevGoal: add some assert statements here to make sure a list is passed OR defaults are used. If not, then the user needs to do that. Then we can probably also get rid of the first if statement.
-        if var_list is not None:
-            if add_default_vars:
-                for vn in def_varlist:
-                    if vn not in var_list: var_list.append(vn)
-        else:
-            var_list = def_varlist
-
-        
-        for var in var_list:
-            req_vars[var] = vgrp[var]
-        
-#DELETE? I don't understand exactly what this is doing, though I could see it being useful if we're allowing users to instead select all variables associated with "profile_1" or something that wasn't put into the vgrp dictionary...
-#         for vkey in vgrp:
-#             vpaths = vgrp[vkey]
-            
-#             for vpath in vpaths:
-                
-#                 vpath_kws = vpath.split('/')
-#                 if vpath_kws[0] in ['quality_assessment','ancillary_data','orbit_info']:
-#                     if vkey not in req_vars: req_vars[vkey] = []
-#                     req_vars[vkey].append(vpath)     
-#                 elif vpath_kws[0] in paths[0] and \
-#                     vpath_kws[1] in paths[1] and \
-#                     vpath_kws[-1] in var_list:
-#                     if vkey not in req_vars: req_vars[vkey] = []
-#                     req_vars[vkey].append(vpath)
-        
-        return req_vars
-
-
     def build_subset_params(self, **kwargs):
         """
         Build a dictionary of subsetting parameter keys to submit for data orders and download.
@@ -863,38 +752,72 @@ class Icesat2Data():
         self.reqparams['page_num'] = 1
 
 
-    def avail_granules(self):
-        """
-        Get a list of available granules for the ICESat-2 data object's parameters
-        """
+    # ----------------------------------------------------------------------
+    # Methods - - Generate and format information for submitting to API (non-general)
 
-        granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
+            #DevGoal: see to what extent we can just have one function that will provide a default list of variables for each dataset (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
+    #DevGoal: if we make this not a hidden function, then there can also be an "interactive" trigger that will open the widget. Otherwise, it will use the var_list passed by the user/defaults
+    def build_wanted_var_list(self, var_list = None, add_default_vars=True):
+        '''
+        Build a dictionary of desired variables using user specified beams and variable list. 
+        A pregenerated default variable list can be used by setting add_default_vars to True. 
+        Note: The calibrated backscatter cab_prof is not in the default list
+        
+        Parameters:
+        -----------
+        var_list:         a list of variables to include for subsetting. 
+                          If var_list is not provided, a default list will be used. 
+        add_default_vars: The flag to append the variables in the default list to the user defined list. 
+                          It is set to True by default. 
+        '''
 
-        self.granules = []
-        self.build_CMR_params()
-        self.build_reqconfig_params('search')
-        headers={'Accept': 'application/json'}
-        #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
-        #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
-        while True:
-            response = requests.get(granule_search_url, headers=headers,\
-                                    params=self.combine_params(self.CMRparams,\
-                                                               {k: self.reqparams[k] for k in ('page_size','page_num')}))
+        req_vars = {}
+        vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
+        
+        print(np.unique(np.array(paths[0])))
+        print(np.unique(np.array(paths[1])))
 
-            results = json.loads(response.content)
-            print(results)
-            if len(results['feed']['entry']) == 0:
-                # Out of results, so break out of loop
-                break
+        #get this from another place, ultimately, that's got lists according to dataset
+        def_varlist = ['delta_time','latitude','longitude',
+                       'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
+                       'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
+                       'column_od_asr','column_od_asr_qf',
+                       'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
+                       'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
+        
+        #DevGoal: add some assert statements here to make sure a list is passed OR defaults are used. If not, then the user needs to do that. Then we can probably also get rid of the first if statement.
+        if var_list is not None:
+            if add_default_vars:
+                for vn in def_varlist:
+                    if vn not in var_list: var_list.append(vn)
+        else:
+            var_list = def_varlist
 
-            # Collect results and increment page_num
-            self.granules.extend(results['feed']['entry'])
-            self.reqparams['page_num'] += 1
+        
+        for var in var_list:
+            req_vars[var] = vgrp[var]
+        
+#DELETE? I don't understand exactly what this is doing, though I could see it being useful if we're allowing users to instead select all variables associated with "profile_1" or something that wasn't put into the vgrp dictionary...
+#         for vkey in vgrp:
+#             vpaths = vgrp[vkey]
+            
+#             for vpath in vpaths:
+                
+#                 vpath_kws = vpath.split('/')
+#                 if vpath_kws[0] in ['quality_assessment','ancillary_data','orbit_info']:
+#                     if vkey not in req_vars: req_vars[vkey] = []
+#                     req_vars[vkey].append(vpath)     
+#                 elif vpath_kws[0] in paths[0] and \
+#                     vpath_kws[1] in paths[1] and \
+#                     vpath_kws[-1] in var_list:
+#                     if vkey not in req_vars: req_vars[vkey] = []
+#                     req_vars[vkey].append(vpath)
+        
+        return req_vars
 
-        assert len(self.granules)>0, "Your search returned no results; try different search parameters"
 
-        return self.granule_info
-
+    # ----------------------------------------------------------------------
+    # Methods - Interact with NSIDC-API
 
     def earthdata_login(self,uid,email):
         """
@@ -969,6 +892,39 @@ class Icesat2Data():
         response = session.get(s.url,auth=(uid,pswd))
 
         return session
+
+    def avail_granules(self):
+        """
+        Get a list of available granules for the ICESat-2 data object's parameters
+        """
+
+        granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
+
+        self.granules = []
+        self.build_CMR_params()
+        self.build_reqconfig_params('search')
+        headers={'Accept': 'application/json'}
+        #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
+        #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
+        while True:
+            response = requests.get(granule_search_url, headers=headers,\
+                                    params=self.combine_params(self.CMRparams,\
+                                                               {k: self.reqparams[k] for k in ('page_size','page_num')}))
+
+            results = json.loads(response.content)
+            print(results)
+            if len(results['feed']['entry']) == 0:
+                # Out of results, so break out of loop
+                break
+
+            # Collect results and increment page_num
+            self.granules.extend(results['feed']['entry'])
+            self.reqparams['page_num'] += 1
+
+        assert len(self.granules)>0, "Your search returned no results; try different search parameters"
+
+        return self.granule_info
+
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     def order_granules(self, session, verbose=False, subset=True, **kwargs):
@@ -1120,7 +1076,6 @@ class Icesat2Data():
             else: print('Request failed.')
 
 
-
     def download_granules(self, session, path, verbose=False): #, extract=False):
         """
         Downloads the data ordered using order_granules.
@@ -1175,3 +1130,61 @@ class Icesat2Data():
 #         if extract is True:
             with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
                 z.extractall(path)
+
+
+    # ----------------------------------------------------------------------
+    # Methods - IS2class specific geospatial manipulation and visualization
+
+    #DevGoal: add testing? How do we test this (if it creates a valid dataframe, isn't testing that the dataframe is the one we're creating circular, even if we've constructed the bounding box/polygon again)?
+    def geodataframe(self):
+        """
+        Return a geodataframe of the spatial extent
+
+        Examples
+        --------
+        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
+        >>> gdf = region_a.geodataframe()
+        >>> gdf.geometry
+        0    POLYGON ((-64 66, -64 72, -55 72, -55 66, -64 ...
+        Name: geometry, dtype: object
+        """
+
+        if self.extent_type == 'bounding_box':
+            boxx = [self._spat_extent[0], self._spat_extent[0], self._spat_extent[2],\
+                    self._spat_extent[2], self._spat_extent[0]]
+            boxy = [self._spat_extent[1], self._spat_extent[3], self._spat_extent[3],\
+                    self._spat_extent[1], self._spat_extent[1]]
+            #DevGoal: check to see that the box is actually correctly constructed; have not checked actual location of test coordinates
+            gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx,boxy)))])
+            return gdf
+        elif self.extent_type == 'polygon':
+            if isinstance(self._spat_extent,str):
+                spat_extent = self._spat_extent.split(',')
+            else:
+                spat_extent = self._spat_extent
+            spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
+            gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
+            return gdf
+        else:
+            raise TypeError("Your spatial extent type (" + self.extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
+
+    #DevGoal: add testing? What do we test, and how, given this is a visualization.
+    #DevGoal(long term): modify this to accept additional inputs, etc.
+    def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
+        """
+        Creates a map of the input spatial extent
+
+        Examples
+        --------
+        >>> icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
+        >>> region_a.visualize_spatial_extent
+        """
+
+        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+        f, ax = plt.subplots(1, figsize=(12, 6))
+        world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
+        self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
+        plt.show()
+
+
+

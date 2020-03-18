@@ -620,9 +620,9 @@ class Icesat2Data():
 
         # create a dictionary of variable names and paths
         vgrp = {}
-        paths = []
         num = np.max([v.count('/') for v in self._cust_options['variables']])
-        print(num)
+        print('max needed: ' + str(num))
+        paths = [[] for i in range(num)]
         
         #print(self._cust_options['variables'])
         for vn in self._cust_options['variables']:
@@ -632,17 +632,33 @@ class Icesat2Data():
                 vgrp[vkey] = [vn]
             else:
                 vgrp[vkey].append(vn)
-            
-            #NOTE: This currently doesn't work, but it's getting there...
+
             if vpath:
-                print(vpath)
-                for i in range(num):
-                    print(i)
-                    for d in vpath.split('/'):
-                        paths[i].append(d)
-                        i=i+1
+                j=0
+                for d in vpath.split('/'):
+                        paths[j].append(d)
+                        j=j+1
+                for i in range(j,num):
                     paths[i].append('none')
                     i=i+1
+                    
+
+                    
+                    
+#                 for i in range(num-1):
+#                     print(i)
+#                     if '/' in vpath:
+#                         for d in vpath.split('/'):
+#                             print(paths)
+#                             print(d)
+#                             paths[i].append(d)
+#                             i=i+1
+#                     else:
+#                         paths[i].append(vpath)
+#                         i=i+1
+                        
+#                     paths[i].append('none')
+#                     i=i+1
             
 #DELETE (original way - limited to datasets with up to two directory levels for variables)
 #             if '/' in vpath:
@@ -770,8 +786,8 @@ class Icesat2Data():
         req_vars = {}
         vgrp, paths = self._parse_var_list()
         
-        print(paths[0])
-        print(paths[1])
+        print(np.unique(np.array(paths[0])))
+        print(np.unique(np.array(paths[1])))
 
         #get this from another place, ultimately, that's got lists according to dataset
         def_varlist = ['delta_time','latitude','longitude',
@@ -789,26 +805,23 @@ class Icesat2Data():
         else:
             var_list = def_varlist
 
-        for vkey in vgrp:
-            vpaths = vgrp[vkey]
+        
+        
+        
+#         for vkey in vgrp:
+#             vpaths = vgrp[vkey]
             
-            for vpath in vpaths:
+#             for vpath in vpaths:
                 
-                vpath_kws = vpath.split('/')
-                if vpath_kws[0] in ['quality_assessment','ancillary_data']:
-                    if vkey not in req_vars: req_vars[vkey] = []
-                    req_vars[vkey].append(vpath)     
-                elif vpath_kws[0]=='orbit_info':
-                    if vkey not in req_vars: req_vars[vkey] = []
-                    if vpath_kws[-1] in var_list:
-                        req_vars[vkey].append(vpath)
-                elif vpath_kws[0] in paths[0] and \
-                    vpath_kws[1] in paths[1] and \
-                    vpath_kws[-1] in var_list:
-                    if vkey not in req_vars: req_vars[vkey] = []
-                    req_vars[vkey].append(vpath)
-                        
-        print(req_vars)
+#                 vpath_kws = vpath.split('/')
+#                 if vpath_kws[0] in ['quality_assessment','ancillary_data','orbit_info']:
+#                     if vkey not in req_vars: req_vars[vkey] = []
+#                     req_vars[vkey].append(vpath)     
+#                 elif vpath_kws[0] in paths[0] and \
+#                     vpath_kws[1] in paths[1] and \
+#                     vpath_kws[-1] in var_list:
+#                     if vkey not in req_vars: req_vars[vkey] = []
+#                     req_vars[vkey].append(vpath)
         
         return req_vars
 

@@ -624,6 +624,7 @@ class Icesat2Data():
         print('max needed: ' + str(num))
         paths = [[] for i in range(num)]
         
+        #QUESTION: do we actually need this/this list/info? I don't know that we ever use it currently, though it could come in handy in the future for building a dicitonary by first level (e.g. by beam) rather than by variable name
         #print(self._cust_options['variables'])
         for vn in self._cust_options['variables']:
             vpath,vkey = os.path.split(vn)
@@ -642,39 +643,7 @@ class Icesat2Data():
                     paths[i].append('none')
                     i=i+1
                     
-
-                    
-                    
-#                 for i in range(num-1):
-#                     print(i)
-#                     if '/' in vpath:
-#                         for d in vpath.split('/'):
-#                             print(paths)
-#                             print(d)
-#                             paths[i].append(d)
-#                             i=i+1
-#                     else:
-#                         paths[i].append(vpath)
-#                         i=i+1
-                        
-#                     paths[i].append('none')
-#                     i=i+1
-            
-#DELETE (original way - limited to datasets with up to two directory levels for variables)
-#             if '/' in vpath:
-#                 j=0
-#                 for d in vpath.split('/'):
-#                     paths[j].append(d)
-#                     j=j+1
-#             else:
-#                 #print(i)
-#                 paths[0].append(vpath)
-#                 paths[1].append('none')
-
-                    
         return vgrp, paths         
-        #self._cust_options.append{'variables':vgrp}
-        #self._variables = vgrp
 
 
     def show_custom_options(self, session):
@@ -729,35 +698,22 @@ class Icesat2Data():
                 
 
 
-
-
-    #DevGoal: generalize this function to pull info from the _get_custom_options list (rather than requiring the vdatdir input). Then, build the subset parameter within the self.build_subset_params function. If necessary, portions of this can remain as a hidden function to do that formatting, but I suspect we can trim it to only a few lines of code that can go directly into build_subset_params
-#DevGoal: add checks here that the incoming kwarg is a dict with valid variable names. If it's already a formatted string, just let it pass through. If it's not, turn the dict into a string to be submitted to the subsetter
-    def _fmt_var_subset_list(self,**kwarg):
-        '''
-        Return the coverage string for variable subset request.
+    def _fmt_var_subset_list(self, v_dict):
+        """
+        Return the NSIDC-API subsetter formatted coverage string for variable subset request.
         
-        Parameters:
-        -----------
-        **kwarg: additional keyword arguments needed later:
+        Parameters
+        ----------
+        var_dict : dictionary
+            Dictionary containing variable names as keys with values containing a list of
+            paths to those variables (so each variable key may have multiple paths, e.g. for
+            multiple beams)
+        """ 
         
-        return:
-        ------ 
-        subcover: string of paths of subset variables
-        ''' 
-        
-        vars_vals = self._cust_options['variables']
-        vgrp = dict()
-        for vn in vars_vals:
-            vpath,vkey = os.path.split(vn)
-            if vkey not in vgrp.keys():
-                vgrp[vkey] = [vn]
-            else:
-                vgrp[vkey].append(vn)  
-        #pprint.pprint(vgrp)
-        if self.dataset=='ATL07': vdict = self._ATL07_vars(vgrp,**kwarg)
-        if self.dataset=='ATL09': vdict = self._ATL09_vars(vgrp,**kwarg)
-        if self.dataset=='ATL10': vdict = self._ATL10_vars(vgrp,**kwarg)
+        try:
+            assert all(key in self._cust_options['variables'] for key in var_dict.keys()), "Your variable subset list contains invalid entries for this dataset."
+        except TypeError:
+            "Please enter a dictionary of variables and paths to pass to the subsetter"
         
         subcover = ''
         for vn in vdict.keys():
@@ -806,8 +762,10 @@ class Icesat2Data():
             var_list = def_varlist
 
         
+        for var in var_list:
+            req_vars[var] = vgrp[var]
         
-        
+#DELETE? I don't understand exactly what this is doing, though I could see it being useful if we're allowing users to instead select all variables associated with "profile_1" or something that wasn't put into the vgrp dictionary...
 #         for vkey in vgrp:
 #             vpaths = vgrp[vkey]
             
@@ -824,67 +782,6 @@ class Icesat2Data():
 #                     req_vars[vkey].append(vpath)
         
         return req_vars
-
-#     def _ATL09_vars(self,vgrp,
-#                     kw1_list=['profile_1','profile_2','profile_3','orbit_info'],
-#                     kw2_list = ['high_rate','low_rate','bckgrd_atlas'],
-#                     var_list = None,
-#                     add_default_vars=True):
-#         '''
-#         Build the variable dictionary using user specified beams and variable list. 
-#         A pregenerated default variable list can be used by setting add_default_vars to True. 
-#         Note: The calibrated backscatter cab_prof is not in the default list
-#         Parameters:
-#         -----------
-#         kw1_list:         a list of first level tag in the full path of the variable.
-#                           For ATL09, this include: profile_x's and orbit_info
-#                           ancillary_data and quality_assessment variables will be added 
-#                           because of their negligible size. 
-#         var_list:         a list of variables to include for subsetting. 
-#                           If var_list is not provided, a default list will be used. 
-#         kw2_list:         a list of second level tag in the full path of the variable. 
-#                           For ATL09, this is valid only if kw1 is profile_x's and may include
-#                           high_rate, low_rate, bckgrd_atlas 
-#         add_default_vars: The flag to append the variables in the default list to the user defined list. 
-#                           It is set to True by default. 
-#         '''
-
-#         vd09 = dict({})
-
-#         def_varlist = ['delta_time','latitude','longitude',
-#                        'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
-#                        'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
-#                        'column_od_asr','column_od_asr_qf',
-#                        'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
-#                        'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
-        
-#         if var_list is not None:
-#             if add_default_vars:
-#                 for vn in def_varlist:
-#                     if vn not in var_list: var_list.append(vn)
-#         else:
-#             var_list = def_varlist
-
-#         for vkey in vgrp:
-#             vpaths = vgrp[vkey]
-            
-#             for vpath in vpaths:
-                
-#                 vpath_kws = vpath.split('/')
-#                 if vpath_kws[0] in ['quality_assessment','ancillary_data']:
-#                     if vkey not in vd09: vd09[vkey] = []
-#                     vd09[vkey].append(vpath)     
-#                 elif vpath_kws[0]=='orbit_info':
-#                     if vkey not in vd09: vd09[vkey] = []
-#                     if vpath_kws[-1] in var_list:
-#                         vd09[vkey].append(vpath)
-#                 elif vpath_kws[0] in kw1_list and \
-#                     vpath_kws[1] in kw2_list and \
-#                     vpath_kws[-1] in var_list:
-#                     if vkey not in vd09: vd09[vkey] = []
-#                     vd09[vkey].append(vpath)
-                        
-#         return vd09
 
 
     def build_subset_params(self, **kwargs):
@@ -920,9 +817,7 @@ class Icesat2Data():
                 self.subsetparams.update(Icesat2Data._fmt_spatial(k,self._spat_extent))
             for key in opt_keys:
                 if key == 'Coverage':
-                    #DevGoal: remove print statement and make it a required input, not kwarg
-                    #print(kwargs[key])
-                    self.subsetparams.update({key:self._fmt_var_subset_list(**kwargs)})
+                    self.subsetparams.update({key:self._fmt_var_subset_list(var_dict=kwargs[key])})
                 elif key in kwargs:
                     self.subsetparams.update({key:kwargs[key]})
                 else:

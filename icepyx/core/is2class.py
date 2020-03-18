@@ -569,7 +569,6 @@ class Icesat2Data():
 
         # collect lists with each service option
         subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
-        #print(subagent)
         self._cust_options.update({'options':subagent})
 
         # reformatting
@@ -604,16 +603,63 @@ class Icesat2Data():
         # variable subsetting
         vars_raw = []        
         def get_varlist(elem):
-            childlist = list(elem)      
+            childlist = list(elem)
             if len(childlist)==0 and elem.tag=='SubsetVariable': 
                 vars_raw.append(elem.attrib['value'])
             for child in childlist:
                 get_varlist(child)
         get_varlist(root)
-        vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace(':','')  for v in vars_raw]
+        vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace('/:','')  for v in vars_raw]
+        print(vars_vals)
         self._cust_options.update({'variables':vars_vals})
         
+    def _parse_var_list(self):
+        """
+        Parse a list of path strings into tiered lists and names of variables
+        """
+
+        # create a dictionary of variable names and paths
+        vgrp = {}
+        paths = []
+        num = np.max([v.count('/') for v in self._cust_options['variables']])
+        print(num)
         
+        #print(self._cust_options['variables'])
+        for vn in self._cust_options['variables']:
+            vpath,vkey = os.path.split(vn)
+            #print('path '+ vpath + ', key '+vkey)
+            if vkey not in vgrp.keys():
+                vgrp[vkey] = [vn]
+            else:
+                vgrp[vkey].append(vn)
+            
+            #NOTE: This currently doesn't work, but it's getting there...
+            if vpath:
+                print(vpath)
+                for i in range(num):
+                    print(i)
+                    for d in vpath.split('/'):
+                        paths[i].append(d)
+                        i=i+1
+                    paths[i].append('none')
+                    i=i+1
+            
+#DELETE (original way - limited to datasets with up to two directory levels for variables)
+#             if '/' in vpath:
+#                 j=0
+#                 for d in vpath.split('/'):
+#                     paths[j].append(d)
+#                     j=j+1
+#             else:
+#                 #print(i)
+#                 paths[0].append(vpath)
+#                 paths[1].append('none')
+
+                    
+        return vgrp, paths         
+        #self._cust_options.append{'variables':vgrp}
+        #self._variables = vgrp
+
 
     def show_custom_options(self, session):
         """
@@ -706,32 +752,28 @@ class Icesat2Data():
 
 
     #DevGoal: see to what extent we can just have one function that will provide a default list of variables for each dataset (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
-    def _ATL09_vars(self,vgrp,
-                    kw1_list=['profile_1','profile_2','profile_3','orbit_info'],
-                    kw2_list = ['high_rate','low_rate','bckgrd_atlas'],
-                    var_list = None,
-                    add_default_vars=True):
+    #DevGoal: if we make this not a hidden function, then there can also be an "interactive" trigger that will open the widget. Otherwise, it will use the var_list passed by the user/defaults
+    def _build_wanted_var_list(self, var_list = None, add_default_vars=True):
         '''
-        Build the variable dictionary using user specified beams and variable list. 
+        Build a dictionary of desired variables using user specified beams and variable list. 
         A pregenerated default variable list can be used by setting add_default_vars to True. 
         Note: The calibrated backscatter cab_prof is not in the default list
+        
         Parameters:
         -----------
-        kw1_list:         a list of first level tag in the full path of the variable.
-                          For ATL09, this include: profile_x's and orbit_info
-                          ancillary_data and quality_assessment variables will be added 
-                          because of their negligible size. 
         var_list:         a list of variables to include for subsetting. 
                           If var_list is not provided, a default list will be used. 
-        kw2_list:         a list of second level tag in the full path of the variable. 
-                          For ATL09, this is valid only if kw1 is profile_x's and may include
-                          high_rate, low_rate, bckgrd_atlas 
         add_default_vars: The flag to append the variables in the default list to the user defined list. 
                           It is set to True by default. 
         '''
 
-        vd09 = dict({})
+        req_vars = {}
+        vgrp, paths = self._parse_var_list()
+        
+        print(paths[0])
+        print(paths[1])
 
+        #get this from another place, ultimately, that's got lists according to dataset
         def_varlist = ['delta_time','latitude','longitude',
                        'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
                        'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
@@ -739,6 +781,7 @@ class Icesat2Data():
                        'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
                        'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
         
+        #DevGoal: add some assert statements here to make sure a list is passed OR defaults are used. If not, then the user needs to do that. Then we can probably also get rid of the first if statement.
         if var_list is not None:
             if add_default_vars:
                 for vn in def_varlist:
@@ -753,19 +796,82 @@ class Icesat2Data():
                 
                 vpath_kws = vpath.split('/')
                 if vpath_kws[0] in ['quality_assessment','ancillary_data']:
-                    if vkey not in vd09: vd09[vkey] = []
-                    vd09[vkey].append(vpath)     
+                    if vkey not in req_vars: req_vars[vkey] = []
+                    req_vars[vkey].append(vpath)     
                 elif vpath_kws[0]=='orbit_info':
-                    if vkey not in vd09: vd09[vkey] = []
+                    if vkey not in req_vars: req_vars[vkey] = []
                     if vpath_kws[-1] in var_list:
-                        vd09[vkey].append(vpath)
-                elif vpath_kws[0] in kw1_list and \
-                    vpath_kws[1] in kw2_list and \
+                        req_vars[vkey].append(vpath)
+                elif vpath_kws[0] in paths[0] and \
+                    vpath_kws[1] in paths[1] and \
                     vpath_kws[-1] in var_list:
-                    if vkey not in vd09: vd09[vkey] = []
-                    vd09[vkey].append(vpath)
+                    if vkey not in req_vars: req_vars[vkey] = []
+                    req_vars[vkey].append(vpath)
                         
-        return vd09
+        print(req_vars)
+        
+        return req_vars
+
+#     def _ATL09_vars(self,vgrp,
+#                     kw1_list=['profile_1','profile_2','profile_3','orbit_info'],
+#                     kw2_list = ['high_rate','low_rate','bckgrd_atlas'],
+#                     var_list = None,
+#                     add_default_vars=True):
+#         '''
+#         Build the variable dictionary using user specified beams and variable list. 
+#         A pregenerated default variable list can be used by setting add_default_vars to True. 
+#         Note: The calibrated backscatter cab_prof is not in the default list
+#         Parameters:
+#         -----------
+#         kw1_list:         a list of first level tag in the full path of the variable.
+#                           For ATL09, this include: profile_x's and orbit_info
+#                           ancillary_data and quality_assessment variables will be added 
+#                           because of their negligible size. 
+#         var_list:         a list of variables to include for subsetting. 
+#                           If var_list is not provided, a default list will be used. 
+#         kw2_list:         a list of second level tag in the full path of the variable. 
+#                           For ATL09, this is valid only if kw1 is profile_x's and may include
+#                           high_rate, low_rate, bckgrd_atlas 
+#         add_default_vars: The flag to append the variables in the default list to the user defined list. 
+#                           It is set to True by default. 
+#         '''
+
+#         vd09 = dict({})
+
+#         def_varlist = ['delta_time','latitude','longitude',
+#                        'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
+#                        'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
+#                        'column_od_asr','column_od_asr_qf',
+#                        'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
+#                        'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
+        
+#         if var_list is not None:
+#             if add_default_vars:
+#                 for vn in def_varlist:
+#                     if vn not in var_list: var_list.append(vn)
+#         else:
+#             var_list = def_varlist
+
+#         for vkey in vgrp:
+#             vpaths = vgrp[vkey]
+            
+#             for vpath in vpaths:
+                
+#                 vpath_kws = vpath.split('/')
+#                 if vpath_kws[0] in ['quality_assessment','ancillary_data']:
+#                     if vkey not in vd09: vd09[vkey] = []
+#                     vd09[vkey].append(vpath)     
+#                 elif vpath_kws[0]=='orbit_info':
+#                     if vkey not in vd09: vd09[vkey] = []
+#                     if vpath_kws[-1] in var_list:
+#                         vd09[vkey].append(vpath)
+#                 elif vpath_kws[0] in kw1_list and \
+#                     vpath_kws[1] in kw2_list and \
+#                     vpath_kws[-1] in var_list:
+#                     if vkey not in vd09: vd09[vkey] = []
+#                     vd09[vkey].append(vpath)
+                        
+#         return vd09
 
 
     def build_subset_params(self, **kwargs):

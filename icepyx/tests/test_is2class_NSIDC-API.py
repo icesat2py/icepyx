@@ -26,7 +26,7 @@ def session(reg_a):
 # def test_earthdata_session_started(session):
 #     assert isinstance(session, 'requests.sessions.Session')
 
-
+#is this something that would be better done with a mock, since it's really testing if the code is generating the right dict? If so, does it make sense to test a particular output from NSIDC?
 def test_get_subsetting_options(reg_a, session):
     reg_a._get_custom_options(session)
     obs_keys = reg_a._cust_options.keys()
@@ -34,10 +34,15 @@ def test_get_subsetting_options(reg_a, session):
     assert all(keys in obs_keys for keys in exp_keys)
 
 
-# def test_download_granules_with_subsetting(reg_a, session):
-#     path = './downloads_subset'
-#     reg_a.order_granules(session)
-#     reg_a.download_granules(session,path)
+#NOTE: best this test can do at the moment is a successful download with no errors... need to have more code to check the files themselves
+def test_download_granules_with_subsetting(reg_a, session):
+    path = './downloads_subset'
+    reg_a.order_granules(session)
+    reg_a.download_granules(session,path)
+    
+    #get filename here... not best way to test for successful download though, because also need to unzip and take files out of zipped dirs
+    
+#     with h5py.File(filename) as h5f:
 #     #now actually check that the max extent of the downloaded granules is subsetted and that the files were downloaded
     
 # #     exp = ???

@@ -352,8 +352,8 @@ class Icesat2Data():
         """
         
         try:
-            if hasattr(self, variables):
-                return pprint.pprint(self.variables)
+            if hasattr(self, '_variables'):
+                return pprint.pprint(self._variables)
         except NameError:
             return AttributeError('You must order or bring in a set of data files to populate this parameter')
         #this information can be populated in two ways: 1 (implemented) by having the user submit an order for data; 2 (not yet implemented) by bringing in existing data files into a class object
@@ -708,7 +708,7 @@ class Icesat2Data():
                     k = 'bounding_shape'
                 self.subsetparams.update(Icesat2Data._fmt_spatial(k,self._spat_extent))
             for key in opt_keys:
-                if key == 'Coverage':
+                if key == 'Coverage' and key in kwargs:
                     #DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input self.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
                     self.subsetparams.update({key:self._fmt_var_subset_list(kwargs[key])})
                 elif key in kwargs:
@@ -990,20 +990,20 @@ class Icesat2Data():
 
         if subset is False:
             request_params = self.combine_params(self.CMRparams, self.reqparams, {'agent':'NO'})
-            self.variables = self._cust_options('variables')
         else:
-#             if kwargs is None:
-#                 #make subset params and add them to request params
-#                 self.build_subset_params()
-#                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
-#             else:
-#                 #make subset params using kwargs and add them to request params
-#                 self.build_subset_params(kwargs)
-#                 request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
             self.build_subset_params(**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
+
+        #DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able
+        try:
             #DevGoal: make this the dictionary instead of the long string?
-            self.variables = self.subsetparams['Coverage']
+            self._variables = self.subsetparams['Coverage']
+        except KeyError:
+            try:
+                self._variables = self._cust_options['variables']
+            except AttributeError:
+                self._get_custom_options(session)
+                self._variables = self._cust_options['variables']
 
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 

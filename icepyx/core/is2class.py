@@ -467,7 +467,7 @@ class Icesat2Data():
         # create a dictionary of variable names and paths
         vgrp = {}
         num = np.max([v.count('/') for v in varlist])
-        print('max needed: ' + str(num))
+#         print('max needed: ' + str(num))
         paths = [[] for i in range(num)]
         
         #QUESTION: do we actually need this? I don't know that we ever use the lists currently, though it could come in handy in the future for building a dicitonary by first level (e.g. by beam) rather than by variable name

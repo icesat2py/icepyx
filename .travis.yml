@@ -13,4 +13,6 @@ jobs:
       script: pytest icepyx/tests/test_is2class_inputs.py icepyx/tests/test_is2class_query.py icepyx/tests/test_is2class_methods.py
         
     - stage: behind Earthdata
-      script: pytest icepyx/tests/test_is2class_NSIDC-API.py
+      script: 
+        - export NSIDC_LOGIN=$NSIDC_LOGIN
+        - pytest icepyx/tests/test_is2class_NSIDC-API.py

@@ -3,13 +3,16 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|Documentation Status|  |GitHub license|
+|Documentation Status|  |GitHub license|  |Travis CI Status|
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
+
+.. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=master
+    :target: https://travis-ci.org/icesat2py/icepyx
 
 Origin and Purpose
 ------------------
@@ -46,13 +49,19 @@ Future developments of icepyx may include pip and conda as simplified installati
 Examples (Jupyter Notebooks)
 ----------------------------
 
-.. _ICESat-2_DAAC_DataAccess_Example: ICESat-2_DAAC_DataAccess_Example.ipynb
+.. _`ICESat-2_DAAC_DataAccess_Example`: ICESat-2_DAAC_DataAccess_Example.ipynb
 
 
 Listed below are example jupyter-notebooks
 
 ICESat-2_DAAC_DataAccess_Example_
 
+
+Citing icepyx
+-------------
+.. _`CITATION.rst`: ./CITATION.rst
+
+This community and software is developed with the goal of supporting science applications. Thus, our contributors (including those who have developed the packages used within icepyx) and maintainers justify their efforts and demonstrate the impact of their work through citations. Please see  `CITATION.rst`_ for additional citation information.
 
 Contact
 -------
@@ -67,7 +76,6 @@ Search for "icesat-2" under the "science" topic to find us.
 
 Contribute
 ----------
-
 We welcome and invite contributions to icepyx_ from anyone at any career stage and with any amount of coding experience!
 Check out our `contribution guidelines`_ to see how you can contribute.
 

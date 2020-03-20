@@ -6,8 +6,10 @@ with open("README.rst", "r") as fh:
 setuptools.setup(
     name="icepyx",
     version="0.0.1",
-    author="Jessica Scheick",
+    author="The icepyx Developers",
     author_email="jbscheick@gmail.com",
+    maintainer="Jessica Scheick",
+    maintainer_email=author_email,
     description="Python tools for obtaining and working with ICESat-2 data",
     long_description=long_description,
     long_description_content_type="text/markdown",

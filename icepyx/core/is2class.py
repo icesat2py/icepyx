@@ -620,21 +620,34 @@ class Icesat2Data():
         vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace('/:','')  for v in vars_raw]
         self._cust_options.update({'variables':vars_vals})
 
-    def show_custom_options(self, session,dictview=False):
+    def show_custom_options(self, session, dictview=False):
         """
         Display customization/subsetting options available for this dataset.
+        
+        Parameters
+        ----------
+        session : requests.session object
+            A session object authenticating the user to download data using their Earthdata login information.
+            The session object can be obtained using is2_data.earthdata_login(uid, email) and entering your
+            Earthdata login password when prompted. You must have previously registered for an Earthdata account.
+
+        dictview : boolean, default False
+            Show the variable portion of the custom options list as a dictionary with key:value
+            pairs representing variable:paths-to-variable rather than as a long list of full
+            variable paths.
+        
         """
         headers=['Subsetting options', 'Data File Formats (Reformatting Options)', 'Reprojection Options',
                  'Data File (Reformatting) Options Supporting Reprojection',
                  'Data File (Reformatting) Options NOT Supporting Reprojection',
                  'Data Variables (also Subsettable)']
         keys=['options', 'fileformats', 'reprojectionONLY', 'formatreproj', 'noproj', 'variables']
-        
+
         try:
             all(key in self._cust_options.keys() for key in keys)
         except AttributeError or KeyError:
             self._get_custom_options(session)
-        
+
         for h,k in zip(headers,keys):
             print(h)
             if k=='variables' and dictview:
@@ -643,6 +656,20 @@ class Icesat2Data():
             else:
                 pprint.pprint(self._cust_options[k])
 
+    #DevGoal: populate this with default variable lists for all of the datasets!
+    #DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with self.dataset not being in the list, though it should since it was checked as valid earlier...)
+    def _default_varlists(self):
+        """
+        Return a list of default variables to select and send to the NSIDC subsetter.
+        """
+        
+        if self.dataset == 'ATL09':
+            return ['delta_time','latitude','longitude',
+                       'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
+                       'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
+                       'column_od_asr','column_od_asr_qf',
+                       'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
+                       'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
             
     # ----------------------------------------------------------------------
     # Methods - Generate and format information for submitting to API (general)
@@ -760,7 +787,7 @@ class Icesat2Data():
     # ----------------------------------------------------------------------
     # Methods - - Generate and format information for submitting to API (non-general)
 
-    #DevGoal: generalize the default part to get a list of default variables for each dataset from outside this function (and combine them with any extras from a user defined list). I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
+    #DevGoal: combine defaults with any extras from a user defined list. I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
     #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
     #DevGoal: we need to re-introduce the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc.
     def build_wanted_var_list(self, var_list = None, add_default_vars=True):
@@ -771,10 +798,11 @@ class Icesat2Data():
         
         Parameters:
         -----------
-        var_list: list of strings, default depends on dataset
+        var_list : list of strings, default depends on dataset
             A list of variables to include for subsetting. If var_list is not provided, a 
             default list will be used. 
-        add_default_vars: boolean, default True
+
+        add_default_vars : boolean, default True
             Append the variables in the default list to the user defined list. 
         '''
 
@@ -791,13 +819,7 @@ class Icesat2Data():
         print(np.unique(np.array(paths[0])))
         print(np.unique(np.array(paths[1])))
 
-        #get this from another place, ultimately, that's got lists according to dataset
-        def_varlist = ['delta_time','latitude','longitude',
-                       'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
-                       'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
-                       'column_od_asr','column_od_asr_qf',
-                       'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
-                       'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
+        def_varlist = self._default_varlists()
         
         #DevGoal: add some assert statements here to make sure a list is passed OR defaults are used. If not, then the user needs to do that. Then we can probably also get rid of the first if statement.
         if var_list is not None:

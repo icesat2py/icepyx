@@ -620,7 +620,7 @@ class Icesat2Data():
         vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace('/:','')  for v in vars_raw]
         self._cust_options.update({'variables':vars_vals})
 
-    def show_custom_options(self, session):
+    def show_custom_options(self, session,dictview=False):
         """
         Display customization/subsetting options available for this dataset.
         """
@@ -634,10 +634,14 @@ class Icesat2Data():
             all(key in self._cust_options.keys() for key in keys)
         except AttributeError or KeyError:
             self._get_custom_options(session)
-
+        
         for h,k in zip(headers,keys):
             print(h)
-            pprint.pprint(self._cust_options[k])
+            if k=='variables' and dictview:
+                vgrp,paths = self._parse_var_list(self._cust_options[k])
+                pprint.pprint(vgrp)
+            else:
+                pprint.pprint(self._cust_options[k])
 
             
     # ----------------------------------------------------------------------

@@ -9,7 +9,7 @@ setuptools.setup(
     author="The icepyx Developers",
     author_email="jbscheick@gmail.com",
     maintainer="Jessica Scheick",
-    maintainer_email=author_email,
+    maintainer_email="jbscheick@gmail.com",
     description="Python tools for obtaining and working with ICESat-2 data",
     long_description=long_description,
     long_description_content_type="text/markdown",

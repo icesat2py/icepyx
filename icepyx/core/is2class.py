@@ -341,13 +341,15 @@ class Icesat2Data():
     @property
     def variables(self):
         """
-        Return a list of the variables in the dataset.
+        Return a list of the variables contained in the dataset (not all available variables). 
+        The variable list is generated either when a set of data files are opened or data is 
+        ordered from the NSIDC.
 
         Examples
         --------
         >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
         >>> session = region_a.earthdata_login(user_id,user_email)
-        >>> opts = region_a._get_custom_options(session)
+        >>> region_a.order_granules(session)
         >>> region_a.variables
         """
         
@@ -362,7 +364,8 @@ class Icesat2Data():
     @property
     def granule_info(self):
         """
-        Return some basic information about the granules available for the given ICESat-2 data object.
+        Return some basic information about the granules available for the given 
+        ICESat-2 data object.
 
         Examples
         --------
@@ -385,7 +388,8 @@ class Icesat2Data():
     @staticmethod
     def _fmt_temporal(start,end,key):
         """
-        Format the start and end dates and times into a temporal CMR search or subsetting key value.
+        Format the start and end dates and times into a temporal CMR search 
+        or subsetting key value.
 
         Parameters
         ----------
@@ -470,7 +474,6 @@ class Icesat2Data():
 #         print('max needed: ' + str(num))
         paths = [[] for i in range(num)]
         
-        #QUESTION: do we actually need this? I don't know that we ever use the lists currently, though it could come in handy in the future for building a dicitonary by first level (e.g. by beam) rather than by variable name
         #print(self._cust_options['variables'])
         for vn in varlist:
             vpath,vkey = os.path.split(vn)
@@ -498,17 +501,11 @@ class Icesat2Data():
         
         Parameters
         ----------
-        var_dict : dictionary
+        vdict : dictionary
             Dictionary containing variable names as keys with values containing a list of
             paths to those variables (so each variable key may have multiple paths, e.g. for
             multiple beams)
         """ 
-        
-        #find another spot to put this type of check, like where the user would actually be supplying info, in order to make this a static method
-#         try:
-#             assert all(key in self._cust_options['variables'] for key in var_dict.keys()), "Your variable subset list contains invalid entries for this dataset."
-#         except TypeError:
-#             "Please enter a dictionary of variables and paths to pass to the subsetter"
         
         subcover = ''
         for vn in vdict.keys():
@@ -770,12 +767,19 @@ class Icesat2Data():
         
         Parameters:
         -----------
-        var_list:         a list of variables to include for subsetting. 
-                          If var_list is not provided, a default list will be used. 
-        add_default_vars: The flag to append the variables in the default list to the user defined list. 
-                          It is set to True by default. 
+        var_list: list of strings, default depends on dataset
+            A list of variables to include for subsetting. If var_list is not provided, a 
+            default list will be used. 
+        add_default_vars: boolean, default True
+            Append the variables in the default list to the user defined list. 
         '''
 
+#DevGoal: implement some test along these lines here to ensure that the requested variables are valid
+#         try:
+#             assert all(key in self._cust_options['variables'] for key in var_dict.keys()), "Your variable subset list contains invalid entries for this dataset."
+#         except TypeError:
+#             "Please enter a dictionary of variables and paths to pass to the subsetter"
+        
         req_vars = {}
         vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
         
@@ -870,12 +874,14 @@ class Icesat2Data():
         with the NSIDC DAAC. This function will prompt the user for
         their Earthdata password, but will only store that information
         within the active session.
+
         Parameters
         ----------
         uid : string
             Earthdata Login user name.
         email : string
             Complete email address, provided as a string.
+
         Examples
         --------
         >>> region_a = [define that here]

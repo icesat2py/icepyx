@@ -355,6 +355,7 @@ class Icesat2Data():
         
         try:
             if hasattr(self, '_variables'):
+                # DevNote: should we return the actually variable and printout/mute at the same time?
                 return pprint.pprint(self._variables)
         except NameError:
             return AttributeError('You must order or bring in a set of data files to populate this parameter')
@@ -790,11 +791,23 @@ class Icesat2Data():
     #DevGoal: combine defaults with any extras from a user defined list. I like the breakdown into kw levels because I think that will help make it more widely applicable across datasets (everyone is likely to want lat and lon).
     #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
     #DevGoal: we need to re-introduce the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc.
-    def build_wanted_var_list(self, var_list = None, add_default_vars=True):
+    def build_wanted_var_list(self, var_list = None, beam_list=None, add_default_vars=True, 
+                              additional_vars=False, kw_list1=None,kw_list2=None,kw_list3=None):
         '''
         Build a dictionary of desired variables using user specified beams and variable list. 
         A pregenerated default variable list can be used by setting add_default_vars to True. 
-        Note: The calibrated backscatter cab_prof is not in the default list
+        Note: The calibrated backscatter cab_prof is not in the default list for ATL09
+        
+        Example:
+        # For ATL07 to add variables related to IS2 beams:
+        >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'])
+        # To exlude the default variables:
+        >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'],add_default_vars=False)
+        # To add additional variables in ancillary_data, orbit_info, or quality_assessment, etc., 
+        # set additional_vars to Ture:
+        >>> region_a.build_wanted_var_list(kw_list1=['orbit_info'],var_list=['sc_orient_time'],additional_vars=True)
+        # To add all variables in ancillary_data
+        >>> region_a.build_wanted_var_list(kw_list1=['ancillary_data'],additional_vars=True)
         
         Parameters:
         -----------
@@ -811,27 +824,101 @@ class Icesat2Data():
 #             assert all(key in self._cust_options['variables'] for key in var_dict.keys()), "Your variable subset list contains invalid entries for this dataset."
 #         except TypeError:
 #             "Please enter a dictionary of variables and paths to pass to the subsetter"
-        
+       
         req_vars = {}
+        
         vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
+        
+            
+        # add necessary ancillary variable and orbit_info 
+        nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
+                       'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
+        
+        if not hasattr(self, '_variables'):
+            for varid in nec_varlist:
+                req_vars[varid] = vgrp[varid]
+                self._variables = req_vars
+        
+        if self.dataset=='ATL09':
+            beam_avail = ['profile_'+str(i+1) for i in range(3)]
+        else:
+            beam_avail = ['gt'+str(i+1)+'l' for i in range(3)]
+            beam_avail = beam_avail + ['gt'+str(i+1)+'r' for i in range(3)]
+            
+        vars_avail = vgrp.keys()   
+        
+        # check if the list of beams are available in the dataset
+        if beam_list is not None:
+            for beam_id in beam_list:
+                if beam_id not in beam_avail:
+                    err_msg_beam = "Invalid beam_id: " + beam_id + '. '
+                    err_msg_beam = err_msg_beam + 'Please select from this list: '
+                    err_msg_beam = err_msg_beam + ', '.join(beam_avail)
+                    raise ValueError(err_msg_beam)
+
+        # check if the list of variables are available in the dataset              
+        if var_list is not None:       
+            for var_id in var_list:
+                if var_id not in vars_avail:
+                    err_msg_varid = "Invalid varaible name: " + var_id + '. '
+                    err_msg_varid = err_msg_varid + 'Please select from this list: '
+                    err_msg_varid = err_msg_varid + ', '.join(vars_avail)
+                    raise ValueError(err_msg_varid)
+                    
+        # check if kw_list1 consistent with dataset
+        if kw_list1 is not None:
+            for kw in kw_list1:
+                if var_id not in paths[0]:
+                    err_msg_kw1 = "Invalid level 1 keyword: " + kw + '. '
+                    err_msg_kw1 = err_msg_kw1 + 'Please select from this list: '
+                    err_msg_kw1 = err_msg_kw1 + ', '.join(kw_list1)
+                    raise ValueError(err_msg_kw1)
+                    
+        # check if kw_list2 consistent with dataset
+        if kw_list2 is not None:
+            for kw in kw_list2:
+                if var_id not in paths[1]:
+                    err_msg_kw2 = "Invalid level 2 keyword: " + kw + '. '
+                    err_msg_kw2 = err_msg_kw2 + 'Please select from this list: '
+                    err_msg_kw2 = err_msg_kw2 + ', '.join(kw_list2)
+                    raise ValueError(err_msg_kw2)
         
         #leaving these and a few other print statements (e.g. in _parse_var_list) until we've done some evaluation of other datasets
         print(np.unique(np.array(paths[0])))
         print(np.unique(np.array(paths[1])))
-
-        def_varlist = self._default_varlists()
         
-        #DevGoal: add some assert statements here to make sure a list is passed OR defaults are used. If not, then the user needs to do that. Then we can probably also get rid of the first if statement.
-        if var_list is not None:
-            if add_default_vars:
-                for vn in def_varlist:
-                    if vn not in var_list: var_list.append(vn)
+        if not additional_vars:     
+            
+            # use beam_list and var_list
+            if beam_list is None: beam_list = beam_avail
+            def_varlist = self._default_varlists()
+
+            #DevGoal: add some assert statements here to make sure a list is passed OR defaults are used. If not, then the user needs to do that. Then we can probably also get rid of the first if statement.
+            if var_list is not None:
+                if add_default_vars:
+                    for vn in def_varlist:
+                        if vn not in var_list: var_list.append(vn)
+            else:
+                var_list = def_varlist
+
+            for varid in var_list:
+                req_vars.update({varid:[]})
+                vpaths = vgrp[varid]
+                for vpath in vpaths:
+                    vpath_kws = vpath.split('/')
+                    for beam_id in beam_list:
+                        if beam_id in vpath_kws and vpath not in req_vars[varid]:
+                            req_vars[varid].append(vpath)
+                            
         else:
-            var_list = def_varlist
-
-        for var in var_list:
-            req_vars[var] = vgrp[var]
-        
+            # DevNote: Placeholder for adding additional variables using kw_lists
+            #          The intened behaviors of this section are showed in the example section
+            #          of this function. 
+            for varid in varlist:
+                req_vars[varid] = vgrp[varid]
+ 
+        self._variables.update(req_vars)
+    
 #How can we generalize this? And what will we or won't we require the user to input/how?
 #         for vkey in vgrp:
 #             vpaths = vgrp[vkey]
@@ -848,6 +935,9 @@ class Icesat2Data():
 #                     if vkey not in req_vars: req_vars[vkey] = []
 #                     req_vars[vkey].append(vpath)
         
+        #DevNote: this return may not be necessary anymore. 
+        #         the correpsonding line in build_subset_params should be modified to allow 
+        #         the user to 
         return req_vars
 
 
@@ -1027,15 +1117,15 @@ class Icesat2Data():
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
 
         #DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able
-        try:
-            #DevGoal: make this the dictionary instead of the long string?
-            self._variables = self.subsetparams['Coverage']
-        except KeyError:
-            try:
-                self._variables = self._cust_options['variables']
-            except AttributeError:
-                self._get_custom_options(session)
-                self._variables = self._cust_options['variables']
+#         try:
+#             #DevGoal: make this the dictionary instead of the long string?
+#             self._variables = self.subsetparams['Coverage']
+#         except KeyError:
+#             try:
+#                 self._variables = self._cust_options['variables']
+#             except AttributeError:
+#                 self._get_custom_options(session)
+#                 self._variables = self._cust_options['variables']
 
         granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 

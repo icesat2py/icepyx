@@ -936,8 +936,6 @@ class Icesat2Data():
 #                     req_vars[vkey].append(vpath)
         
         #DevNote: this return may not be necessary anymore. 
-        #         the correpsonding line in build_subset_params should be modified to allow 
-        #         the user to 
         return req_vars
 
 

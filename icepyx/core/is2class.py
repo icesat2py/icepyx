@@ -801,14 +801,18 @@ class Icesat2Data():
         
         Parameters:
         -----------
-        defaults : boolean, default True
-            Append the variables in the default variable list to the user defined list. Defaults are defined
-            per-data product. When specified in conjuction with a var_list, default variables not on the user-
+        defaults : boolean, default False
+            Include the variables in the default variable list. Defaults are defined per-data product. 
+            When specified in conjuction with a var_list, default variables not on the user-
             specified list will be added to the order.
         
-        var_list : list of strings, default depends on dataset
-            A list of variables to include for subsetting. A list of available variables can be obtained by
-            entering `var_list=['']` into the function.
+        append : boolean, default True
+            Update the existing variable list with the new variables/beams/keywords specified. Setting this
+            to false will remove all previously included variables.
+        
+        var_list : list of strings, default None
+            A list of variables to request, if not all available variables are wanted. 
+            A list of available variables can be obtained by entering `var_list=['']` into the function.
 
         beam_list : list of strings, default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically 
@@ -825,7 +829,7 @@ class Icesat2Data():
             For ATL07 to add variables related to IS2 beams:
             >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'],defaults=True)
             
-            To exlude the default variables:
+            To exclude the default variables:
             >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'])
 
             To add additional variables in ancillary_data, orbit_info, or quality_assessment, etc., 
@@ -856,7 +860,7 @@ class Icesat2Data():
         if var_list is not None:
             for var_id in var_list:
                 if var_id not in vgrp.keys():
-                    err_msg_varid = "Invalid varaible name: " + var_id + '. '
+                    err_msg_varid = "Invalid variable name: " + var_id + '. '
                     err_msg_varid = err_msg_varid + 'Please select from this list: '
                     err_msg_varid = err_msg_varid + ', '.join(vgrp.keys())
                     raise ValueError(err_msg_varid)
@@ -887,97 +891,59 @@ class Icesat2Data():
                     raise ValueError(err_msg_kw)
 
 
-        #build a complete var list including default and mandatory variables
+        #if the user does not want to append new variables, clear existing ones
+        if append==False:
+            try: self._variables=None
+            except NameError:
+                pass
+
+        #add the mandatory variables to the data object
         nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
                        'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
 
-        #DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
-
-        #QUESTION: is this first line unnecessary and we should just start the nec_varlist as the first step of sum_varlist?
-        
-        # DevNotes: The variables in nec_varlist may not fit in beam/keyword format and are excluded later in the code. 
-        #           It makes more sense and clearer to add them here once and for all. 
-        if not hasattr(self, '_variables'):
+        if not hasattr(self, '_variables') or self._variables==None:
             for varid in nec_varlist:
                 req_vars[varid] = vgrp[varid]
             self._variables = req_vars
-        
+
+            #DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
+
+        #generate a list of variable names to include, depending on user input
         sum_varlist = []
         if defaults==True:
             sum_varlist = sum_varlist + self._default_varlists()
         if var_list is not None:
             for vn in var_list:
-                if vn not in sum_varlist: sum_varlist.append(vn) 
+                if vn not in sum_varlist: sum_varlist.append(vn)
+        if len(sum_varlist)==0:
+            sum_varlist = vgrp.keys()
         
-        #Case only variable list or defaults are specified
+        #Case only variables (but not keywords or beams) are specified
         if beam_list==None and keyword_list==None:
             for vn in sum_varlist:
                 req_vars[vn] = vgrp[vn]
                 
-        #Case only a beam and/or keyword list are specified
-        ##DevNote: originally this is for when var_list is empty and no defaults added. Should check len(sum_varlist) here. 
-        #          The two conditions below can be combined. 
-        # elif len(sum_varlist)==0 and (beam_list is not None or keyword_list is not None):
-        else:
-            
-            tmp_varlist = vgrp.keys() if len(sum_varlist)==0 else sum_varlist            
-            for vkey in tmp_varlist:
+        #Case a beam and/or keyword list is specified (with or without variables)
+        else:        
+            for vkey in sum_varlist:
                 for vpath in vgrp[vkey]:
                     vpath_kws = vpath.split('/')
-                    # flags to check if beam id and/or keyword in the list are found in vpath. Set to True if empty
-                    kw_match = False if keyword_list is not None else True
-                    bm_match = False if beam_list is not None else True
                     for kw in vpath_kws[0:-1]:
-                        #DevNote: The conditions below only allow keyword_list and beam_list as alternative, but not together    
-                        #if (keyword_list is not None and kw in keyword_list) or \
-                        #(beam_list is not None and kw in beam_list):
-                        if (keyword_list is not None and kw in keyword_list): kw_match = True
-                        if (beam_list is not None and kw in beam_list): bm_match = True
-                    if kw_match and bm_match:
-                        if vkey not in req_vars: req_vars[vkey] = []                       
-                        req_vars[vkey].append(vpath)                        
+                        #DevNote: this condition works because "or" is inclusive, not exclusive. Thus, the condition will return true if both parts before and after the "or" return true
+                        if (keyword_list is not None and kw in keyword_list) or \
+                        (beam_list is not None and kw in beam_list):
+                            if vkey not in req_vars: req_vars[vkey] = []                       
+                            req_vars[vkey].append(vpath)                        
 
-#         #Case a variable list - including mandatory and/or defaults - and a beam or keyword list are specified       
-#         else:
-#             for vkey in sum_varlist:
-#                 for vpath in vgrp[vkey]:
-#                     vpath_kws = vpath.split('/')
-#                     # flags to check if beam id and/or keyword in the list are found in vpath. Set to True if empty
-#                     kw_match = False if keyword_list is not None else True
-#                     bm_match = False if beam_list is not None else True
-#                     for kw in vpath_kws[0:-1]:
-#                         #DevNote: The conditions below only allow keyword_list and beam_list as alternative, but not together            
-#                         #if (keyword_list is not None and kw in keyword_list) or \
-#                         #(beam_list is not None and kw in beam_list):
-#                         if (keyword_list is not None and kw in keyword_list): kw_match = True
-#                         if (beam_list is not None and kw in beam_list): bm_match = True
-#                     if kw_match and bm_match:
-#                         if vkey not in req_vars: req_vars[vkey] = []                            
-#                         req_vars[vkey].append(vpath)
-                        
-# DevNote: The check below is not necessary, because vpath_kws[-1] is used as keys for vgrp and the check for valid variables has done the consistency check.  
-#                     for kw in vpath_kws[-1:]:
-#                         if kw in sum_varlist:
-#                             if vkey not in req_vars: req_vars[vkey] = []
-#                             if vpath in req_vars[vkey]: pass
-#                             else: req_vars[vkey].append(vpath)
-
-        # DevNote: self._variables is initalized earlier and only has to be updated here. 
+        # update the data object variables
         for vkey in req_vars.keys():
-            # add all matching paths for new variables
+            # add all matching keys and paths for new variables
             if vkey not in self._variables.keys():
                 self._variables[vkey] = req_vars[vkey]
-            elif append:
-                # append new paths for existing variables
-                vpaths = self._variables[vkey]
-                for vpath in req_vars[vkey]:
-                    if vpath not in vpaths: self._variables[vkey].append(vpath)
             else:
-                # overwrite existing variables with a list of new matching paths
-                self._variables[vkey] = req_vars[vkey]
-        
-        #DevNote: this return may not be necessary anymore
-        return req_vars
+                for vpath in req_vars[vkey]:
+                    if vpath not in self._variables[vkey]: self._variables[vkey].append(vpath)
+
 
 
     # ----------------------------------------------------------------------

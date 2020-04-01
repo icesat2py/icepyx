@@ -928,13 +928,27 @@ class Icesat2Data():
             for vkey in sum_varlist:
                 for vpath in vgrp[vkey]:
                     vpath_kws = vpath.split('/')
+                    
+                    kw_match = False if keyword_list is not None else True
+                    bm_match = False if beam_list is not None else True
                     for kw in vpath_kws[0:-1]:
                         #DevNote: this condition works because "or" is inclusive, not exclusive. Thus, the condition will return true if both parts before and after the "or" return true
-                        if (keyword_list is not None and kw in keyword_list) or \
-                        (beam_list is not None and kw in beam_list):
-                            if vkey not in req_vars: req_vars[vkey] = []                       
-                            req_vars[vkey].append(vpath)                        
-
+                        #DevNote ZL: this condition itself is fine but under a loop over kws,
+                        #         it will add variable multple times because multiple kws of the save vpath may satisfy it. 
+                        #         Although the update section below fixed it eventually, but this is not right.
+                        #         Example: initialize region_a, run test 1 and then test 5. The pprint line below will show the repeated lines of 
+                        #         profile_3/low_rate/latitude
+                        #         I am used to the flag way of dealing with such issue. It is not concise though. 
+#                         if (keyword_list is not None and kw in keyword_list) or \
+#                         (beam_list is not None and kw in beam_list):
+#                             if vkey not in req_vars: req_vars[vkey] = []                       
+#                             req_vars[vkey].append(vpath)  
+                        if (keyword_list is not None and kw in keyword_list): kw_match = True
+                        if (beam_list is not None and kw in beam_list): bm_match = True
+                    if kw_match and bm_match:
+                        if vkey not in req_vars: req_vars[vkey] = []                       
+                        req_vars[vkey].append(vpath)                                          
+        pprint.pprint(req_vars)
         # update the data object variables
         for vkey in req_vars.keys():
             # add all matching keys and paths for new variables

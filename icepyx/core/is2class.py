@@ -662,14 +662,25 @@ class Icesat2Data():
         """
         Return a list of default variables to select and send to the NSIDC subsetter.
         """
+        common_list = ['delta_time','latitude','longitude']
         
         if self.dataset == 'ATL09':
-            return ['delta_time','latitude','longitude',
-                       'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
+            return common_list + ['bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
                        'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
                        'column_od_asr','column_od_asr_qf',
                        'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
                        'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
+        
+        if self.dataset == 'ATL07':
+            return common_list + ['seg_dist_x',
+                                  'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
+                                  'height_segment_type', 'height_segment_quality', 'height_segment_confidence' ]
+        
+        if self.dataset == 'ATL10':
+            return common_list + ['seg_dist_x','lead_height','lead_length',
+                                  'beam_fb_height', 'beam_fb_length', 'beam_fb_confidence', 'beam_fb_quality_flag',
+                                  'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
+                                  'height_segment_type', 'height_segment_confidence']
             
     # ----------------------------------------------------------------------
     # Methods - Generate and format information for submitting to API (general)
@@ -792,8 +803,8 @@ class Icesat2Data():
     #DEVGOAL: we need to be explicit about our handling of existing variables. Does this function append new paths or replace any previously existing list? I think trying to make it so that it can remove paths would be too much, but the former distinction could easily be done with a boolean flag.
     #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
     #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
-    def build_wanted_var_list(self, defaults=False, append=True, var_list=None, 
-                              beam_list=None, keyword_list=None):
+    def build_wanted_var_list(self, defaults=True, append=True, inclusive=True,
+                              var_list=None, beam_list=None, keyword_list=None, ):
         '''
         Build a dictionary of desired variables using user specified beams and variable list. 
         A pregenerated default variable list can be used by setting defaults to True. 
@@ -924,31 +935,18 @@ class Icesat2Data():
                 req_vars[vn] = vgrp[vn]
                 
         #Case a beam and/or keyword list is specified (with or without variables)
-        else:        
+        else:  
+            
             for vkey in sum_varlist:
                 for vpath in vgrp[vkey]:
                     vpath_kws = vpath.split('/')
                     
-                    kw_match = False if keyword_list is not None else True
-                    bm_match = False if beam_list is not None else True
                     for kw in vpath_kws[0:-1]:
-                        #DevNote: this condition works because "or" is inclusive, not exclusive. Thus, the condition will return true if both parts before and after the "or" return true
-                        #DevNote ZL: this condition itself is fine but under a loop over kws,
-                        #         it will add variable multple times because multiple kws of the save vpath may satisfy it. 
-                        #         Although the update section below fixed it eventually, but this is not right.
-                        #         Example: initialize region_a, run test 1 and then test 5. The pprint line below will show the repeated lines of 
-                        #         profile_3/low_rate/latitude
-                        #         I am used to the flag way of dealing with such issue. It is not concise though. 
-#                         if (keyword_list is not None and kw in keyword_list) or \
-#                         (beam_list is not None and kw in beam_list):
-#                             if vkey not in req_vars: req_vars[vkey] = []                       
-#                             req_vars[vkey].append(vpath)  
-                        if (keyword_list is not None and kw in keyword_list): kw_match = True
-                        if (beam_list is not None and kw in beam_list): bm_match = True
-                    if kw_match and bm_match:
-                        if vkey not in req_vars: req_vars[vkey] = []                       
-                        req_vars[vkey].append(vpath)                                          
-        pprint.pprint(req_vars)
+                        if (keyword_list is not None and kw in keyword_list) or \
+                        (beam_list is not None and kw in beam_list):
+                            if vkey not in req_vars: req_vars[vkey] = []  
+                            if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)  
+                            
         # update the data object variables
         for vkey in req_vars.keys():
             # add all matching keys and paths for new variables

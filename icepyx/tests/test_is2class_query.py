@@ -45,6 +45,14 @@ def test_no_granules_in_search_results():
     with pytest.raises(AssertionError, match=ermsg):
         ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-20'], version='2').avail_granules()
 
+def test_correct_granule_list_returned():
+    reg_a = ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='2')
+    reg_a.avail_granules()
+    obs_grans = [gran['producer_granule_id'] for gran in reg_a.granules]
+    exp_grans = ['ATL06_20190221121851_08410203_002_01.h5', 'ATL06_20190222010344_08490205_002_01.h5', 'ATL06_20190225121032_09020203_002_01.h5', 'ATL06_20190226005526_09100205_002_01.h5']
+    
+    assert set(obs_grans) == set(exp_grans)
+
+        
 #CMR temporal and spatial formats --> what's the best way to compare formatted text? character by character comparison of strings?
 #check that search results are correct (spatially, temporally, match actually available data)
-#add check that correct granules are returned for a search using region_a.granules

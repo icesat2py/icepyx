@@ -559,8 +559,7 @@ class Icesat2Data():
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
 
-#DevGoal: add a test to ensure that _cust_options is actually populated 
-#DevGoal: add a test to compare the generated list with an existing [checked] one
+#DevGoal: add a test to compare the generated list with an existing [checked] one (right now this is done explicitly for keywords, but not for values)?
 #DevGoal: use a mock of this ping to test later functions, such as displaying options and widgets, etc.
     def _get_custom_options(self, session):
         """

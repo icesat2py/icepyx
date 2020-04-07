@@ -21,6 +21,8 @@ import fiona
 import h5py
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
+from icepyx.core import EarthdataLogin
+
 def _validate_dataset(dataset):
     """
     Confirm a valid ICESat-2 dataset was specified
@@ -960,102 +962,13 @@ class Icesat2Data():
     # ----------------------------------------------------------------------
     # Methods - Interact with NSIDC-API
 
-    #DevGoal: update docs for both earthdata_login/session functions
     def earthdata_login(self,uid,email):
-        """
-        Initiate an Earthdata session and create a token for interacting
-        with the NSIDC DAAC. This function will prompt the user for
-        their Earthdata password, but will only store that information
-        within the active session.
-        Parameters
-        ----------
-        uid : string
-            Earthdata Login user name.
-        email : string
-            Complete email address, provided as a string.
-        Examples
-        --------
-        >>> region_a = [define that here]
-        >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
-        Earthdata Login password:  ········
-        """
-        
-        assert isinstance(uid, str), "Enter your login user id as a string"
-        assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
-
-        pswd = getpass.getpass('Earthdata Login password: ')
-        
-        #try for a valid login and retry up to 5 times if errors were returned
-        for i in range(5):
-            try:
-                session = self._start_earthdata_session(uid,email,pswd)
-                break
-            except KeyError:
-                uid = input("Please re-enter your Earthdata user ID: ")
-                pswd = getpass.getpass('Earthdata Login password: ')
-                i = i+1
-                
-        else:
-            raise RuntimeError("You could not successfully log in to Earthdata")
-
-        self._session = session
-        return session
-
-    def _start_earthdata_session(self,uid,email,pswd):
-        """
-        Initiate an Earthdata session and create a token for interacting
-        with the NSIDC DAAC. This function will prompt the user for
-        their Earthdata password, but will only store that information
-        within the active session.
-
-        Parameters
-        ----------
-        uid : string
-            Earthdata Login user name.
-        email : string
-            Complete email address, provided as a string.
-
-        Examples
-        --------
-        >>> region_a = [define that here]
-        >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
-        Earthdata Login password:  ········
-        """
-
         if not hasattr(self,'reqparams'):
             self.reqparams={}
-
-        #Request CMR token using Earthdata credentials
-        token_api_url = 'https://cmr.earthdata.nasa.gov/legacy-services/rest/tokens'
-        hostname = socket.gethostname()
-        ip = socket.gethostbyname(hostname)
-
-        data = {'token': {'username': uid, 'password': pswd,\
-                          'client_id': 'NSIDC_client_id','user_ip_address': ip}
-        }
-        
-        response = None
-        response = requests.post(token_api_url, json=data, headers={'Accept': 'application/json'})
-        
-        #check for a valid login
-        try:
-            json.loads(response.content)['token']
-        except KeyError: 
-            try:
-                print(json.loads(response.content)['errors'])
-            except KeyError:
-                print("There are no error messages, but an Earthdata login token was not successfully generated")
-        
-        token = json.loads(response.content)['token']['id']
-
-        self.reqparams.update({'email': email, 'token': token})
-
+        self.reqparams.update({'email': email) #REFACTOR-need this?, 'token': token})
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
-        session = requests.session()
-        s = session.get(capability_url)
-        response = session.get(s.url,auth=(uid,pswd))
-
-        return session
+        self._session = EarthdataLogin.login(uid,email,capability_url)
+        return self._session
 
     def avail_granules(self):
         """

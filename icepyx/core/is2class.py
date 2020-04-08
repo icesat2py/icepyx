@@ -15,7 +15,6 @@ import io
 import math
 import geopandas as gpd
 from shapely.geometry import Polygon
-from shapely.geometry.polygon import orient
 import matplotlib.pyplot as plt
 import fiona
 import h5py
@@ -23,20 +22,7 @@ fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 from icepyx.core.Earthdata import Earthdata
 import icepyx.core.APIformatting as apifmt
-
-def _validate_dataset(dataset):
-    """
-    Confirm a valid ICESat-2 dataset was specified
-    """
-    if isinstance(dataset, str):
-        dataset = str.upper(dataset)
-        assert dataset in ['ATL01','ATL02', 'ATL03', 'ATL04','ATL06', 'ATL07', 'ATL08', 'ATL09', 'ATL10', \
-                           'ATL12', 'ATL13'],\
-        "Please enter a valid dataset"
-    else:
-        raise TypeError("Please enter a dataset string")
-    return dataset
-#DevGoal: See if there's a way to dynamically get this list so it's automatically updated
+import icepyx.core.is2ref as is2ref
 
 #DevGoal: update docs throughout to allow for polygon spatial extent
 class Icesat2Data():
@@ -133,7 +119,7 @@ class Icesat2Data():
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
 
 
-        self._dset = _validate_dataset(dataset)
+        self._dset = is2ref._validate_dataset(dataset)
 
         if isinstance(spatial_extent, list):
             #bounding box
@@ -553,31 +539,6 @@ class Icesat2Data():
             else:
                 pprint.pprint(self._cust_options[k])
 
-    #DevGoal: populate this with default variable lists for all of the datasets!
-    #DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with self.dataset not being in the list, though it should since it was checked as valid earlier...)
-    def _default_varlists(self):
-        """
-        Return a list of default variables to select and send to the NSIDC subsetter.
-        """
-        common_list = ['delta_time','latitude','longitude']
-        
-        if self.dataset == 'ATL09':
-            return common_list + ['bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
-                       'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
-                       'column_od_asr','column_od_asr_qf',
-                       'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
-                       'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
-        
-        if self.dataset == 'ATL07':
-            return common_list + ['seg_dist_x',
-                                  'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
-                                  'height_segment_type', 'height_segment_quality', 'height_segment_confidence' ]
-        
-        if self.dataset == 'ATL10':
-            return common_list + ['seg_dist_x','lead_height','lead_length',
-                                  'beam_fb_height', 'beam_fb_length', 'beam_fb_confidence', 'beam_fb_quality_flag',
-                                  'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
-                                  'height_segment_type', 'height_segment_confidence']
   
 
     # ----------------------------------------------------------------------
@@ -707,7 +668,7 @@ class Icesat2Data():
         #generate a list of variable names to include, depending on user input
         sum_varlist = []
         if defaults==True:
-            sum_varlist = sum_varlist + self._default_varlists()
+            sum_varlist = sum_varlist + is2ref._default_varlists(self.dataset)
         if var_list is not None:
             for vn in var_list:
                 if vn not in sum_varlist: sum_varlist.append(vn)
@@ -1051,6 +1012,3 @@ class Icesat2Data():
         world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
         self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
         plt.show()
-
-
-

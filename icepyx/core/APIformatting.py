@@ -1,5 +1,10 @@
 #Generate and format information for submitting to API (CMR and NSIDC)
 
+import datetime as dt
+import geopandas as gpd
+from shapely.geometry import Polygon
+from shapely.geometry.polygon import orient
+
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
 # or input to a set of API parameters (CMR or NSIDC)

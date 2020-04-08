@@ -21,7 +21,7 @@ import fiona
 import h5py
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
-from icepyx.core import EarthdataLogin
+from icepyx.core.Earthdata import Earthdata
 
 def _validate_dataset(dataset):
     """
@@ -965,9 +965,9 @@ class Icesat2Data():
     def earthdata_login(self,uid,email):
         if not hasattr(self,'reqparams'):
             self.reqparams={}
-        self.reqparams.update({'email': email) #REFACTOR-need this?, 'token': token})
+        self.reqparams.update({'email': email}) #REFACTOR-need this?, 'token': token})
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
-        self._session = EarthdataLogin.login(uid,email,capability_url)
+        self._session = Earthdata(uid,email,capability_url).login()
         return self._session
 
     def avail_granules(self):

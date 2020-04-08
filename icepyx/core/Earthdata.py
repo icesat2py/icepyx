@@ -4,34 +4,7 @@ import socket
 import re
 import json
 
-#REFACTOR: make login part of the class...
-
-#try for a valid login and retry up to 5 times if errors were returned
-def login(uid, email, url):
-    """
-    This function tries to log the user in to Earthdata with the
-    information provided. It prompts the user for their Earthdata password,
-    but will only store that information within the active session.
-    If the login fails, it will ask the user to re-enter their
-    username and password up to five times to try and log in.
-
-
-
-    """
-    pswd = getpass.getpass('Earthdata Login password: ')
-    for i in range(5):
-        try:
-            session = EarthdataLogin(uid,email,pswd, url).session
-            break
-        except KeyError:
-            uid = input("Please re-enter your Earthdata user ID: ")
-            pswd = getpass.getpass('Earthdata Login password: ')
-            i = i+1
-            
-    else:
-        raise RuntimeError("You could not successfully log in to Earthdata")
-
-class EarthdataLogin():
+class Earthdata():
     """
     Initiate an Earthdata session for interacting
     with the NSIDC DAAC.
@@ -62,20 +35,25 @@ class EarthdataLogin():
         self,
         uid,
         email,
+        capability_url,
         pswd=None,
-        capability_url
     ):
-
+        
         assert isinstance(uid, str), "Enter your login user id as a string"
         assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
+        
+        self.uid = uid
+        self.email = email
+        self.capability_url = capability_url
+        self.pswd = pswd
 
-     
+    def _start_session(self):
         #Request CMR token using Earthdata credentials
         token_api_url = 'https://cmr.earthdata.nasa.gov/legacy-services/rest/tokens'
         hostname = socket.gethostname()
         ip = socket.gethostbyname(hostname)
 
-        data = {'token': {'username': uid, 'password': pswd,\
+        data = {'token': {'username': self.uid, 'password': self.pswd,\
                           'client_id': 'NSIDC_client_id','user_ip_address': ip}
         }
         
@@ -94,17 +72,42 @@ class EarthdataLogin():
         token = json.loads(response.content)['token']['id']
 
         session = requests.session()
-        s = session.get(capability_url)
-        response = session.get(s.url,auth=(uid,pswd))
+        s = session.get(self.capability_url)
+        response = session.get(s.url,auth=(self.uid,self.pswd))
 
         self.session = session
 
+    def login(self):
+        """
+        This function tries to log the user in to Earthdata with the
+        information provided. It prompts the user for their Earthdata password,
+        but will only store that information within the active session.
+        If the login fails, it will ask the user to re-enter their
+        username and password up to five times to try and log in.
+
+
+
+        """
+        self.pswd = getpass.getpass('Earthdata Login password: ')
+        for i in range(5):
+            try:
+                session = self._start_session()
+                break
+            except KeyError:
+                self.uid = input("Please re-enter your Earthdata user ID: ")
+                self.pswd = getpass.getpass('Earthdata Login password: ')
+                i = i+1
+                
+        else:
+            raise RuntimeError("You could not successfully log in to Earthdata")
+
 
 #DevGoal: try turning this into a class that uses super... an initial attempt at portions of this is below
-"""class EarthdataLogin(requests.Session):
+"""class Earthdata(requests.Session):
         
     def __init__(self, uid = uid, email = email,pswd = None):
-        super(EarthdataLogin, self).__init__() 
+        super(Earthdata, self).__init__() 
 
         assert isinstance(uid, str), "Enter your login user id as a string"
         assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
+"""

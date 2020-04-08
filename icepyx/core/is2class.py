@@ -22,7 +22,7 @@ import h5py
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 from icepyx.core.Earthdata import Earthdata
-import icepyx.core.formatting as fmt
+import icepyx.core.APIformatting as apifmt
 
 def _validate_dataset(dataset):
     """
@@ -182,7 +182,7 @@ class Icesat2Data():
             #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
             if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
                 self.extent_type = 'polygon'
-                self._spat_extent = self._fmt_polygon(spatial_extent)
+                self._spat_extent = apifmt._format_polygon(spatial_extent)
                 self._geom_filepath = spatial_extent
 
             else:
@@ -389,83 +389,6 @@ class Icesat2Data():
     # Static Methods
 
     @staticmethod
-    def _fmt_temporal(start,end,key):
-        """
-        Format the start and end dates and times into a temporal CMR search 
-        or subsetting key value.
-
-        Parameters
-        ----------
-        start : date time object
-            Start date and time for the period of interest.
-        end : date time object
-            End date and time for the period of interest.
-        key : string
-            Dictionary key, entered as a string, indicating which temporal format is needed.
-            Must be one of ['temporal','time'] for data searching and subsetting, respectively.
-        """
-
-        assert isinstance(start, dt.datetime)
-        assert isinstance(end, dt.datetime)
-        #DevGoal: add test for proper keys
-        if key == 'temporal':
-            fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
-        elif key == 'time':
-            fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%S') +',' + end.strftime('%Y-%m-%dT%H:%M:%S')
-
-        return {key:fmt_timerange}
-
-    @staticmethod
-    def _fmt_spatial(ext_type,extent):
-        """
-        Format the spatial extent input into a spatial CMR search or subsetting key value.
-
-        Parameters
-        ----------
-        extent_type : string
-            Spatial extent type. Must be one of ['bounding_box', 'polygon'] for data searching
-            or one of ['bbox, 'bounding_shape'] for subsetting.
-        extent : list
-            Spatial extent, with input format dependent on the extent type and search.
-            Bounding box (bounding_box, bbox) coordinates should be provided in decimal degrees as
-            [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-            Polygon (polygon, bounding_shape) coordinates should be provided in decimal degrees as
-            [longitude, latitude, longitude2, latitude2... longituden, latituden].
-        """
-
-        #CMR keywords: ['bounding_box', 'polygon']
-        #subsetting keywords: ['bbox','bounding_shape']
-        assert ext_type in ['bounding_box', 'polygon'] or ext_type in ['bbox','bounding_shape'],\
-        "Invalid spatial extent type."
-
-        fmt_extent = ','.join(map(str, extent))
-
-        return {ext_type: fmt_extent}
-
-    @staticmethod
-    def _fmt_polygon(spatial_extent):
-        """
-        Formats input spatial file to shapely polygon
-
-        """
-        #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
-        #DevGoal: use new function geodataframe here?
-
-        gdf = gpd.read_file(spatial_extent)
-        #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
-        #RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
-        poly = gdf.iloc[0].geometry
-        #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-        poly = poly.simplify(0.05, preserve_topology=False)
-        poly = orient(poly, sign=1.0)
-
-        #JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
-        #Format dictionary to polygon coordinate pairs for CMR polygon filtering
-        polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
-        polygon = [float(i) for i in polygon]
-        return polygon
-
-    @staticmethod
     def _parse_var_list(varlist):
         """
         Parse a list of path strings into tiered lists and names of variables
@@ -474,7 +397,7 @@ class Icesat2Data():
         # create a dictionary of variable names and paths
         vgrp = {}
         num = np.max([v.count('/') for v in varlist])
-#         print('max needed: ' + str(num))
+    #         print('max needed: ' + str(num))
         paths = [[] for i in range(num)]
         
         #print(self._cust_options['variables'])
@@ -495,35 +418,7 @@ class Icesat2Data():
                     paths[i].append('none')
                     i=i+1
                     
-        return vgrp, paths         
-
-    @staticmethod
-    def _fmt_var_subset_list(vdict):
-        """
-        Return the NSIDC-API subsetter formatted coverage string for variable subset request.
-        
-        Parameters
-        ----------
-        vdict : dictionary
-            Dictionary containing variable names as keys with values containing a list of
-            paths to those variables (so each variable key may have multiple paths, e.g. for
-            multiple beams)
-        """ 
-        
-        subcover = ''
-        for vn in vdict.keys():
-            vpaths = vdict[vn]
-            for vpath in vpaths: subcover += '/'+vpath+','
-            
-        return subcover[:-1]
-
-    @staticmethod
-    def combine_params(*param_dicts):
-        params={}
-        for dictionary in param_dicts:
-            params.update(dictionary)
-        return params
-
+        return vgrp, paths  
 
 
     # ----------------------------------------------------------------------
@@ -867,14 +762,14 @@ class Icesat2Data():
         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
 
         self.granules = []
-        fmt.build_CMR_params(self)
-        fmt.build_reqconfig_params(self,'search')
+        apifmt.build_CMR_params(self)
+        apifmt.build_reqconfig_params(self,'search')
         headers={'Accept': 'application/json'}
         #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
         #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
         while True:
             response = requests.get(granule_search_url, headers=headers,\
-                                    params=self.combine_params(self.CMRparams,\
+                                    params=apifmt.combine_params(self.CMRparams,\
                                                                {k: self.reqparams[k] for k in ('page_size','page_num')}))
 
             results = json.loads(response.content)
@@ -927,14 +822,14 @@ class Icesat2Data():
         base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
         #DevGoal: get the base_url from the granules
 
-        fmt.build_CMR_params(self)
-        fmt.build_reqconfig_params(self,'download')
+        apifmt.build_CMR_params(self)
+        apifmt.build_reqconfig_params(self,'download')
 
         if subset is False:
-            request_params = self.combine_params(self.CMRparams, self.reqparams, {'agent':'NO'})
+            request_params = apifmt.combine_params(self.CMRparams, self.reqparams, {'agent':'NO'})
         else:
-            fmt.build_subset_params(self,**kwargs)
-            request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
+            apifmt.build_subset_params(self,**kwargs)
+            request_params = apifmt.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
 
         #DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able
 #         try:

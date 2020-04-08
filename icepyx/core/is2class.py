@@ -22,6 +22,7 @@ import h5py
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 from icepyx.core.Earthdata import Earthdata
+import icepyx.core.formatting as fmt
 
 def _validate_dataset(dataset):
     """
@@ -682,119 +683,7 @@ class Icesat2Data():
                                   'beam_fb_height', 'beam_fb_length', 'beam_fb_confidence', 'beam_fb_quality_flag',
                                   'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
                                   'height_segment_type', 'height_segment_confidence']
-            
-    # ----------------------------------------------------------------------
-    # Methods - Generate and format information for submitting to API (general)
-
-    def build_CMR_params(self):
-        """
-        Build a dictionary of CMR parameter keys to submit for granule searches and download.
-        """
-
-        if not hasattr(self,'CMRparams'):
-            self.CMRparams={}
-
-        CMR_solo_keys = ['short_name','version','temporal']
-        CMR_spat_keys = ['bounding_box','polygon']
-        #check to see if the parameter list is already built
-        if all(keys in self.CMRparams for keys in CMR_solo_keys) and any(keys in self.CMRparams for keys in CMR_spat_keys):
-            pass
-        #if not, see which fields need to be added and add them
-        else:
-            for key in CMR_solo_keys:
-                if key in self.CMRparams:
-                    pass
-                else:
-                    if key == 'short_name':
-                        self.CMRparams.update({key:self.dataset})
-                    elif key == 'version':
-                        self.CMRparams.update({key:self._version})
-                    elif key == 'temporal':
-                        self.CMRparams.update(Icesat2Data._fmt_temporal(self._start,self._end,key))
-            if any(keys in self.CMRparams for keys in CMR_spat_keys):
-                pass
-            else:
-                self.CMRparams.update(Icesat2Data._fmt_spatial(self.extent_type,self._spat_extent))
-                
-    def build_subset_params(self, **kwargs):
-        """
-        Build a dictionary of subsetting parameter keys to submit for data orders and download.
-        """
-
-        if not hasattr(self,'subsetparams'):
-            self.subsetparams={}
-
-        #DevGoal: get list of available subsetting options for the dataset and use this to build appropriate subset parameters
-        default_keys = ['time']
-        spat_keys = ['bbox','bounding_shape']
-        opt_keys = ['format','projection','projection_parameters','Coverage']
-        #check to see if the parameter list is already built
-        if all(keys in self.subsetparams for keys in default_keys) and (any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath')) and all(keys in self.subsetparams for keys in kwargs.keys()):
-            pass
-        #if not, see which fields need to be added and add them
-        else:
-            for key in default_keys:
-                if key in self.subsetparams:
-                    pass
-                else:
-                    if key == 'time':
-                        self.subsetparams.update(Icesat2Data._fmt_temporal(self._start,self._end, key))
-            if any(keys in self.subsetparams for keys in spat_keys) or hasattr(self, '_geom_filepath'):
-                pass
-            else:
-                if self.extent_type == 'bounding_box':
-                    k = 'bbox'
-                elif self.extent_type == 'polygon':
-                    k = 'bounding_shape'
-                self.subsetparams.update(Icesat2Data._fmt_spatial(k,self._spat_extent))
-            for key in opt_keys:
-                if key == 'Coverage' and key in kwargs:
-                    #DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input self.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
-                    self.subsetparams.update({key:self._fmt_var_subset_list(kwargs[key])})
-                elif key in kwargs:
-                    self.subsetparams.update({key:kwargs[key]})
-                else:
-                    pass
-
-
-    def build_reqconfig_params(self,reqtype, **kwargs):
-        """
-        Build a dictionary of request configuration parameters.
-        #DevGoal: Allow updating of the request configuration parameters (right now they must be manually deleted to be modified)
-        """
-
-        if not hasattr(self,'reqparams') or self.reqparams==None:
-            self.reqparams={}
-
-        if reqtype == 'search':
-            reqkeys = ['page_size','page_num']
-        elif reqtype == 'download':
-            reqkeys = ['page_size','page_num','request_mode','token','email','include_meta']
-        else:
-            raise ValueError("Invalid request type")
-
-        if all(keys in self.reqparams for keys in reqkeys):
-            pass
-        else:
-            defaults={'page_size':10,'page_num':1,'request_mode':'async','include_meta':'Y'}
-            for key in reqkeys:
-                if key in kwargs:
-                    self.reqparams.update({key:kwargs[key]})
-#                 elif key in defaults:
-#                     if key is 'page_num':
-#                         pnum = math.ceil(len(self.granules)/self.reqparams['page_size'])
-#                         if pnum > 0:
-#                             self.reqparams.update({key:pnum})
-#                         else:
-#                             self.reqparams.update({key:defaults[key]})
-                elif key in defaults:
-                    self.reqparams.update({key:defaults[key]})
-                else:
-                    pass
-
-        #DevGoal: improve the interfacing with NSIDC/DAAC so it's not paging results
-        self.reqparams['page_num'] = 1
-
+  
 
     # ----------------------------------------------------------------------
     # Methods - - Generate and format information for submitting to API (non-general)
@@ -978,8 +867,8 @@ class Icesat2Data():
         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
 
         self.granules = []
-        self.build_CMR_params()
-        self.build_reqconfig_params('search')
+        fmt.build_CMR_params(self)
+        fmt.build_reqconfig_params(self,'search')
         headers={'Accept': 'application/json'}
         #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
         #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
@@ -1038,13 +927,13 @@ class Icesat2Data():
         base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
         #DevGoal: get the base_url from the granules
 
-        self.build_CMR_params()
-        self.build_reqconfig_params('download')
+        fmt.build_CMR_params(self)
+        fmt.build_reqconfig_params(self,'download')
 
         if subset is False:
             request_params = self.combine_params(self.CMRparams, self.reqparams, {'agent':'NO'})
         else:
-            self.build_subset_params(**kwargs)
+            fmt.build_subset_params(self,**kwargs)
             request_params = self.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
 
         #DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able

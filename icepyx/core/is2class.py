@@ -2,7 +2,6 @@ import numpy as np
 import datetime as dt
 import re
 import os
-import getpass
 import socket
 import requests
 import json
@@ -23,6 +22,10 @@ fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 from icepyx.core.Earthdata import Earthdata
 import icepyx.core.APIformatting as apifmt
 import icepyx.core.is2ref as is2ref
+import icepyx.core.granules as granules
+from icepyx.core.granules import Granules as Granules
+#QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
+# from icepyx.core.granules import Granules
 
 #DevGoal: update docs throughout to allow for polygon spatial extent
 class Icesat2Data():
@@ -117,7 +120,6 @@ class Icesat2Data():
 
         if dataset is None or spatial_extent is None or date_range is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
-
 
         self._dset = is2ref._validate_dataset(dataset)
 
@@ -350,26 +352,7 @@ class Icesat2Data():
         #this information can be populated in three ways: 0 (implemented) generate a list of variables for the subsetter 1 (not yet implemented) by having the user submit an order for data; 2 (not yet implemented) by bringing in existing data files into a class object
         
 
-    @property
-    def granule_info(self):
-        """
-        Return some basic information about the granules available for the given 
-        ICESat-2 data object.
-
-        Examples
-        --------
-        >>>
-        """
-        assert len(self.granules)>0, "Your data object has no granules associated with it"
-        gran_info = {}
-        gran_info.update({'Number of available granules': len(self.granules)})
-
-        gran_sizes = [float(gran['granule_size']) for gran in self.granules]
-        gran_info.update({'Average size of granules (MB)': np.mean(gran_sizes)})
-        gran_info.update({'Total size of all granules (MB)': sum(gran_sizes)})
-
-        return gran_info
-
+ 
 
     # ----------------------------------------------------------------------
     # Static Methods
@@ -597,7 +580,7 @@ class Icesat2Data():
         '''
 
         assert not (defaults==False and var_list==None and beam_list==None and keyword_list==None), \
-        "You must enter parameters to build a variable subset list. If you do not want to subset by variable, ensure your is2.subset_params dictionary does not contain the key 'Coverage'."
+        "You must enter parameters to build a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
     
         req_vars = {}
         
@@ -713,39 +696,22 @@ class Icesat2Data():
         self.reqparams.update({'email': email}) #REFACTOR-need this?, 'token': token})
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         self._session = Earthdata(uid,email,capability_url).login()
+        print(self._session)
         return self._session
 
     def avail_granules(self):
         """
         Get a list of available granules for the ICESat-2 data object's parameters
         """
-
-        granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
-
-        self.granules = []
+        #REFACTOR: add test to make sure there's a session
+        self.granules = Granules(session=self._session)
         apifmt.build_CMR_params(self)
         apifmt.build_reqconfig_params(self,'search')
-        headers={'Accept': 'application/json'}
-        #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
-        #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
-        while True:
-            response = requests.get(granule_search_url, headers=headers,\
-                                    params=apifmt.combine_params(self.CMRparams,\
-                                                               {k: self.reqparams[k] for k in ('page_size','page_num')}))
 
-            results = json.loads(response.content)
-            print(results)
-            if len(results['feed']['entry']) == 0:
-                # Out of results, so break out of loop
-                break
+        self.granules.get_avail(self.CMRparams,self.reqparams)
+        # self.granules = Granules.get_avail(self.CMRparams,self.reqparams)
 
-            # Collect results and increment page_num
-            self.granules.extend(results['feed']['entry'])
-            self.reqparams['page_num'] += 1
-
-        assert len(self.granules)>0, "Your search returned no results; try different search parameters"
-
-        return self.granule_info
+        return granules.info(self.granules.avail)
 
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
@@ -756,14 +722,10 @@ class Icesat2Data():
         Adds the list of zipped files (orders) to the data object.
         DevGoal: add additional kwargs to allow subsetting and more control over request options.
         Note: This currently uses paging to download data - this may not be the best method
+        You must already be logged in to Earthdata to use this function.
 
         Parameters
         ----------
-        session : requests.session object
-            A session object authenticating the user to download data using their Earthdata login information.
-            The session object can be obtained using is2_data.earthdata_login(uid, email) and entering your
-            Earthdata login password when prompted. You must have previously registered for an Earthdata account.
-
         verbose : boolean, default False
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
@@ -776,23 +738,18 @@ class Icesat2Data():
         kwargs...
         """
 
-        session=self._session
-        if session is None:
-           raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
-
-        base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
-        #DevGoal: get the base_url from the granules
-
         apifmt.build_CMR_params(self)
         apifmt.build_reqconfig_params(self,'download')
-
         if subset is False:
-            request_params = apifmt.combine_params(self.CMRparams, self.reqparams, {'agent':'NO'})
+            self.subsetparams=None
         else:
             apifmt.build_subset_params(self,**kwargs)
-            request_params = apifmt.combine_params(self.CMRparams, self.reqparams, self.subsetparams)
 
-        #DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able
+        #REFACTOR: add checks here to see if the granules object has been created (if not, need to create one and add session)
+        self.granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, verbose, subset, **kwargs)
+        # self.orderIDs = granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, /
+        #                                     self._session, verbose=verbose, subset=subset, **kwargs)
+        #DELETE? DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able
 #         try:
 #             #DevGoal: make this the dictionary instead of the long string?
 #             self._variables = self.subsetparams['Coverage']
@@ -803,116 +760,13 @@ class Icesat2Data():
 #                 self._get_custom_options(session)
 #                 self._variables = self._cust_options['variables']
 
-        granules=self.avail_granules() #this way the reqparams['page_num'] is updated
 
-        # Request data service for each page number, and unzip outputs
-        for i in range(request_params['page_num']):
-            page_val = i + 1
-            if verbose is True:
-                print('Order: ', page_val)
-            request_params.update( {'page_num': page_val} )
-
-        # For all requests other than spatial file upload, use get function
-        #add line here for using post instead of get with polygon and subset
-        #also, make sure to use the full polygon, not the simplified one used for finding granules
-            if subset is True and hasattr(self, '_geom_filepath'):
-                #post polygon file to OGR for geojson conversion
-                #DevGoal: what is this doing under the hood, and can we do it locally?
-
-                request = session.post(base_url, params=request_params, \
-                                       files={'shapefile': open(str(self._geom_filepath), 'rb')})
-            else:
-                request = session.get(base_url, params=request_params)
-            
-            root=ET.fromstring(request.content)
-            print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
-
-            if verbose is True:
-                print('Request HTTP response: ', request.status_code)
-                print('Order request URL: ', request.url)
-
-        # Raise bad request: Loop will stop for bad response code.
-            request.raise_for_status()
-            esir_root = ET.fromstring(request.content)
-            if verbose is True:
-                print('Order request URL: ', request.url)
-                print('Order request response XML content: ', request.content)
-
-        #Look up order ID
-            orderlist = []
-            for order in esir_root.findall("./order/"):
-                if verbose is True:
-                    print(order)
-                orderlist.append(order.text)
-            orderID = orderlist[0]
-            print('order ID: ', orderID)
-
-        #Create status URL
-            statusURL = base_url + '/' + orderID
-            if verbose is True:
-                print('status URL: ', statusURL)
-
-        #Find order status
-            request_response = session.get(statusURL)
-            if verbose is True:
-                print('HTTP response from order response URL: ', request_response.status_code)
-
-        # Raise bad request: Loop will stop for bad response code.
-            request_response.raise_for_status()
-            request_root = ET.fromstring(request_response.content)
-            statuslist = []
-            for status in request_root.findall("./requestStatus/"):
-                statuslist.append(status.text)
-            status = statuslist[0]
-            print('Data request ', page_val, ' is submitting...')
-            print('Initial request status is ', status)
-
-        #Continue loop while request is still processing
-            while status == 'pending' or status == 'processing':
-                print('Status is not complete. Trying again.')
-                time.sleep(10)
-                loop_response = session.get(statusURL)
-
-        # Raise bad request: Loop will stop for bad response code.
-                loop_response.raise_for_status()
-                loop_root = ET.fromstring(loop_response.content)
-
-        #find status
-                statuslist = []
-                for status in loop_root.findall("./requestStatus/"):
-                    statuslist.append(status.text)
-                status = statuslist[0]
-                print('Retry request status is: ', status)
-                if status == 'pending' or status == 'processing':
-                    continue
-
-        #Order can either complete, complete_with_errors, or fail:
-        # Provide complete_with_errors error message:
-            if status == 'complete_with_errors' or status == 'failed':
-                messagelist = []
-                for message in loop_root.findall("./processInfo/"):
-                    messagelist.append(message.text)
-                print('error messages:')
-                pprint.pprint(messagelist)
-
-            if status == 'complete' or status == 'complete_with_errors':
-                if not hasattr(self,'orderIDs'):
-                    self.orderIDs=[]
-
-                self.orderIDs.append(orderID)
-            else: print('Request failed.')
-
-
-    def download_granules(self, session, path, verbose=False): #, extract=False):
+    def download_granules(self, path, verbose=False): #, extract=False):
         """
         Downloads the data ordered using order_granules.
 
         Parameters
         ----------
-        session : requests.session object
-            A session object authenticating the user to download data using their Earthdata login information.
-            The session object can be obtained using is2_data.earthdata_login(uid, email) and entering your
-            Earthdata login password when prompted. You must have previously registered for an Earthdata account.
         path : string
             String with complete path to desired download location.
         verbose : boolean, default False
@@ -923,41 +777,16 @@ class Icesat2Data():
         extract : boolean, default False
             Unzip the downloaded granules.
         """
-
-        #Note: need to test these checks still
-        if session is None:
-            raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
-            #DevGoal: make this a more robust check for an active session
-
-        if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
-            try:
-                self.order_granules(session, verbose=verbose)
-            except:
-                if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
-                    raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
-
+     
         if not os.path.exists(path):
             os.mkdir(path)
-
         os.chdir(path)
 
-        for order in self.orderIDs:
-            downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + order + '.zip'
-            #DevGoal: get the download_url from the granules
+        #REFACTOR: check that the attribute/order exists
+        self.granules.download(verbose, path)
+  
 
-            if verbose is True:
-                print('Zip download URL: ', downloadURL)
-            print('Beginning download of zipped output...')
-            zip_response = session.get(downloadURL)
-            # Raise bad request: Loop will stop for bad response code.
-            zip_response.raise_for_status()
-            print('Data request', order, 'of ', len(self.orderIDs), ' order(s) is complete.')
-
-#         #Note: extract the dataset to save it locally
-#         if extract is True:
-            with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
-                z.extractall(path)
-
+     
 
     # ----------------------------------------------------------------------
     # Methods - IS2class specific geospatial manipulation and visualization

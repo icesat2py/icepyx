@@ -100,6 +100,8 @@ class Earthdata():
                 
         else:
             raise RuntimeError("You could not successfully log in to Earthdata")
+        
+        return self.session
 
 
 #DevGoal: try turning this into a class that uses super... an initial attempt at portions of this is below

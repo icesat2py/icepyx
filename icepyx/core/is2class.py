@@ -26,6 +26,7 @@ import icepyx.core.granules as granules
 from icepyx.core.granules import Granules as Granules
 #QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
 # from icepyx.core.granules import Granules
+from icepyx.core.variables import Variables as Variables
 
 #DevGoal: update docs throughout to allow for polygon spatial extent
 class Icesat2Data():
@@ -70,7 +71,7 @@ class Icesat2Data():
     version : string, default most recent version
         Dataset version, given as a 3 digit string. If no version is given, the current
         version is used.
-    variables: 
+    variables : 
 
     Returns
     -------
@@ -116,10 +117,19 @@ class Icesat2Data():
         start_time = None,
         end_time = None,
         version = None,
+        files = None,
     ):
 
-        if dataset is None or spatial_extent is None or date_range is None:
+        if (dataset is None or spatial_extent is None or date_range is None) and files is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
+
+        if files is not None:
+            self._source = 'files'
+            # self.file_vars = Variables(self._source)
+        else:
+            self._source = 'order'
+            # self.order_vars = Variables(self._source)
+        # self.variables = Variables(self._source)
 
         self._dset = is2ref._validate_dataset(dataset)
 
@@ -222,6 +232,7 @@ class Icesat2Data():
             if int(self._version) < int(latest_vers):
                 warnings.filterwarnings("always")
                 warnings.warn("You are using an old version of this dataset")
+
 
 
     # ----------------------------------------------------------------------
@@ -329,6 +340,7 @@ class Icesat2Data():
         return self._end.strftime('%H:%M:%S')
 
     #DevGoal: add to tests
+    #REFACTOR: split into two properties? order_vars and file_vars?
     @property
     def variables(self):
         """
@@ -344,51 +356,30 @@ class Icesat2Data():
         >>> region_a.variables
         """
         
-        try:
-            if hasattr(self, '_variables'):
-                return self._variables
-        except NameError:
-            return AttributeError('You must generate a list of wanted variables with `build_wanted_var_list`, place a data order, or bring in a set of data files to populate this parameter')
+        if not hasattr(self, '_variables'):
+            if self._source == 'order':
+                #DevGoal: check for active session here
+                if hassattr(self, '_cust_options'):
+                    self._variables = Variables(self._source, session=self._session, avail=self._cust_options['variables'])
+                else:
+                    self._variables = Variables(self._source, session=self._session, /
+                    dataset=self.dataset, version=self._version)
+            elif: self._source == 'file':
+                self._variables = Variables(self._source)
+
+        return self._variables
+        print(self._variables)
+        
+        # try:
+        #     if hasattr(self, '_variables'):
+        #         return self._variables
+        # except NameError:
+        #     return AttributeError('You must generate a list of wanted variables with `build_wanted_var_list`, place a data order, or bring in a set of data files to populate this parameter')
         #this information can be populated in three ways: 0 (implemented) generate a list of variables for the subsetter 1 (not yet implemented) by having the user submit an order for data; 2 (not yet implemented) by bringing in existing data files into a class object
         
 
- 
-
     # ----------------------------------------------------------------------
     # Static Methods
-
-    @staticmethod
-    def _parse_var_list(varlist):
-        """
-        Parse a list of path strings into tiered lists and names of variables
-        """
-
-        # create a dictionary of variable names and paths
-        vgrp = {}
-        num = np.max([v.count('/') for v in varlist])
-    #         print('max needed: ' + str(num))
-        paths = [[] for i in range(num)]
-        
-        #print(self._cust_options['variables'])
-        for vn in varlist:
-            vpath,vkey = os.path.split(vn)
-            #print('path '+ vpath + ', key '+vkey)
-            if vkey not in vgrp.keys():
-                vgrp[vkey] = [vn]
-            else:
-                vgrp[vkey].append(vn)
-
-            if vpath:
-                j=0
-                for d in vpath.split('/'):
-                        paths[j].append(d)
-                        j=j+1
-                for i in range(j,num):
-                    paths[i].append('none')
-                    i=i+1
-                    
-        return vgrp, paths  
-
 
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the dataset level
@@ -425,67 +416,6 @@ class Icesat2Data():
         dset_info = self._about_dataset()
         return max([entry['version_id'] for entry in dset_info['feed']['entry']])
 
-
-#DevGoal: add a test to compare the generated list with an existing [checked] one (right now this is done explicitly for keywords, but not for values)?
-#DevGoal: use a mock of this ping to test later functions, such as displaying options and widgets, etc.
-    def _get_custom_options(self, session):
-        """
-        Get lists of what customization options are available for the dataset from NSIDC.
-        """
-        self._cust_options={}
-        
-        if session is None:
-            raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
-
-        capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
-        response = session.get(capability_url)
-        root = ET.fromstring(response.content)
-
-        # collect lists with each service option
-        subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
-        self._cust_options.update({'options':subagent})
-
-        # reformatting
-        formats = [Format.attrib for Format in root.iter('Format')]
-        format_vals = [formats[i]['value'] for i in range(len(formats))]
-        format_vals.remove('')
-        self._cust_options.update({'fileformats':format_vals})
-
-        # reprojection only applicable on ICESat-2 L3B products, yet to be available.
-
-        # reformatting options that support reprojection
-        normalproj = [Projections.attrib for Projections in root.iter('Projections')]
-        normalproj_vals = []
-        normalproj_vals.append(normalproj[0]['normalProj'])
-        format_proj = normalproj_vals[0].split(',')
-        format_proj.remove('')
-        format_proj.append('No reformatting')
-        self._cust_options.update({'formatreproj':format_proj})
-
-        #reprojection options
-        projections = [Projection.attrib for Projection in root.iter('Projection')]
-        proj_vals = []
-        for i in range(len(projections)):
-            if (projections[i]['value']) != 'NO_CHANGE' :
-                proj_vals.append(projections[i]['value'])
-        self._cust_options.update({'reprojectionONLY':proj_vals})
-
-        # reformatting options that do not support reprojection
-        no_proj = [i for i in format_vals if i not in format_proj]
-        self._cust_options.update({'noproj':no_proj})
-
-        # variable subsetting
-        vars_raw = []        
-        def get_varlist(elem):
-            childlist = list(elem)
-            if len(childlist)==0 and elem.tag=='SubsetVariable': 
-                vars_raw.append(elem.attrib['value'])
-            for child in childlist:
-                get_varlist(child)
-        get_varlist(root)
-        vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace('/:','')  for v in vars_raw]
-        self._cust_options.update({'variables':vars_vals})
-
     def show_custom_options(self, session, dictview=False):
         """
         Display customization/subsetting options available for this dataset.
@@ -512,12 +442,12 @@ class Icesat2Data():
         try:
             all(key in self._cust_options.keys() for key in keys)
         except AttributeError or KeyError:
-            self._get_custom_options(session)
+            self._cust_options=is2ref._get_custom_options(session, self.dataset, self._version)
 
         for h,k in zip(headers,keys):
             print(h)
             if k=='variables' and dictview:
-                vgrp,paths = self._parse_var_list(self._cust_options[k])
+                vgrp,paths = Variables._parse_var_list(self._cust_options[k])
                 pprint.pprint(vgrp)
             else:
                 pprint.pprint(self._cust_options[k])
@@ -527,165 +457,7 @@ class Icesat2Data():
     # ----------------------------------------------------------------------
     # Methods - - Generate and format information for submitting to API (non-general)
 
-    #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
-    #DevGoal: we need to re-introduce, if possible, the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc. Right now, they would get all latitude paths and all profile_1 paths. Maybe we can have a inclusive/exclusive boolean trigger?
-    #DEVGOAL: we need to be explicit about our handling of existing variables. Does this function append new paths or replace any previously existing list? I think trying to make it so that it can remove paths would be too much, but the former distinction could easily be done with a boolean flag.
-    #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
-    #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
-    def build_wanted_var_list(self, defaults=True, append=True, inclusive=True,
-                              var_list=None, beam_list=None, keyword_list=None, ):
-        '''
-        Build a dictionary of desired variables using user specified beams and variable list. 
-        A pregenerated default variable list can be used by setting defaults to True. 
-        Note: The calibrated backscatter cab_prof is not in the default list for ATL09
-        
-        Parameters:
-        -----------
-        defaults : boolean, default False
-            Include the variables in the default variable list. Defaults are defined per-data product. 
-            When specified in conjuction with a var_list, default variables not on the user-
-            specified list will be added to the order.
-        
-        append : boolean, default True
-            Update the existing variable list with the new variables/beams/keywords specified. Setting this
-            to false will remove all previously included variables.
-        
-        var_list : list of strings, default None
-            A list of variables to request, if not all available variables are wanted. 
-            A list of available variables can be obtained by entering `var_list=['']` into the function.
-
-        beam_list : list of strings, default None
-            A list of beam strings, if only selected beams are wanted (the default value of None will automatically 
-            include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
-            For all other datasets, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
-
-        keyword_list : list of strings, default None
-            A list of keywords, from any heirarchy level within the data structure, to select variables within
-            the dataset that include that keyword in their path. A list of availble keywords can be obtained by
-            entering `keyword_list=['']` into the function.
-
-        Examples:
-        ---------
-            For ATL07 to add variables related to IS2 beams:
-            >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'],defaults=True)
-            
-            To exclude the default variables:
-            >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'])
-
-            To add additional variables in ancillary_data, orbit_info, or quality_assessment, etc., 
-            >>> region_a.build_wanted_var_list(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
-
-            To add all variables in ancillary_data
-            >>> region_a.build_wanted_var_list(keyword_list=['ancillary_data'])
-        '''
-
-        assert not (defaults==False and var_list==None and beam_list==None and keyword_list==None), \
-        "You must enter parameters to build a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
-    
-        req_vars = {}
-        
-        if not hasattr(self, '_cust_options'):
-            self._get_custom_options(self._session)
-        vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
-        allpaths = []
-        [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
-        allpaths = np.unique(allpaths)
-
-        #leaving these and a few other print statements (e.g. in _parse_var_list) until we've done some evaluation of other datasets
-#         print(np.unique(np.array(paths[0])))
-#         print(np.unique(np.array(paths[1])))
-#         print(allpaths)
-
-        # check if the list of variables, if specified, are available in the dataset              
-        if var_list is not None:
-            for var_id in var_list:
-                if var_id not in vgrp.keys():
-                    err_msg_varid = "Invalid variable name: " + var_id + '. '
-                    err_msg_varid = err_msg_varid + 'Please select from this list: '
-                    err_msg_varid = err_msg_varid + ', '.join(vgrp.keys())
-                    raise ValueError(err_msg_varid)
-    
-        #DevGoal: is there a way to not have this hard-coded in?
-        # check if the list of beams, if specified, are available in the dataset
-        if self.dataset=='ATL09':
-            beam_avail = ['profile_'+str(i+1) for i in range(3)]
-        else:
-            beam_avail = ['gt'+str(i+1)+'l' for i in range(3)]
-            beam_avail = beam_avail + ['gt'+str(i+1)+'r' for i in range(3)]
-        if beam_list is not None:
-            for beam_id in beam_list:
-                if beam_id not in beam_avail:
-                    err_msg_beam = "Invalid beam_id: " + beam_id + '. '
-                    err_msg_beam = err_msg_beam + 'Please select from this list: '
-                    err_msg_beam = err_msg_beam + ', '.join(beam_avail)
-                    raise ValueError(err_msg_beam)
-
-        #check if keywords, if specified, are available for the dataset
-        if keyword_list is not None:
-            for kw in keyword_list:
-#                 assert kw in allpaths, "Invalid keyword. Please select from: " + ', '.join(allpaths)
-                if kw not in allpaths:
-                    err_msg_kw = "Invalid keyword: " + kw + '. '
-                    err_msg_kw = err_msg_kw + 'Please select from this list: '
-                    err_msg_kw = err_msg_kw + ', '.join(np.unique(np.array(allpaths)))
-                    raise ValueError(err_msg_kw)
-
-
-        #if the user does not want to append new variables, clear existing ones
-        if append==False:
-            try: self._variables=None
-            except NameError:
-                pass
-
-        #add the mandatory variables to the data object
-        nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
-                       'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
-
-        if not hasattr(self, '_variables') or self._variables==None:
-            for varid in nec_varlist:
-                req_vars[varid] = vgrp[varid]
-            self._variables = req_vars
-
-            #DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
-
-        #generate a list of variable names to include, depending on user input
-        sum_varlist = []
-        if defaults==True:
-            sum_varlist = sum_varlist + is2ref._default_varlists(self.dataset)
-        if var_list is not None:
-            for vn in var_list:
-                if vn not in sum_varlist: sum_varlist.append(vn)
-        if len(sum_varlist)==0:
-            sum_varlist = vgrp.keys()
-        
-        #Case only variables (but not keywords or beams) are specified
-        if beam_list==None and keyword_list==None:
-            for vn in sum_varlist:
-                req_vars[vn] = vgrp[vn]
-                
-        #Case a beam and/or keyword list is specified (with or without variables)
-        else:  
-            
-            for vkey in sum_varlist:
-                for vpath in vgrp[vkey]:
-                    vpath_kws = vpath.split('/')
-                    
-                    for kw in vpath_kws[0:-1]:
-                        if (keyword_list is not None and kw in keyword_list) or \
-                        (beam_list is not None and kw in beam_list):
-                            if vkey not in req_vars: req_vars[vkey] = []  
-                            if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)  
-                            
-        # update the data object variables
-        for vkey in req_vars.keys():
-            # add all matching keys and paths for new variables
-            if vkey not in self._variables.keys():
-                self._variables[vkey] = req_vars[vkey]
-            else:
-                for vpath in req_vars[vkey]:
-                    if vpath not in self._variables[vkey]: self._variables[vkey].append(vpath)
-
-
+   
 
     # ----------------------------------------------------------------------
     # Methods - Interact with NSIDC-API
@@ -697,6 +469,7 @@ class Icesat2Data():
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         self._session = Earthdata(uid,email,capability_url).login()
         print(self._session)
+        self.variables = Variables(self._source, session=self._session)
         return self._session
 
     def avail_granules(self):

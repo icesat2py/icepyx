@@ -1,4 +1,5 @@
 #ICESat-2 specific reference functions
+#options to get customization options for ICESat-2 data (though could be used generally)
 
 def _validate_dataset(dataset):
     """
@@ -39,3 +40,65 @@ def _default_varlists(dataset):
                                 'beam_fb_height', 'beam_fb_length', 'beam_fb_confidence', 'beam_fb_quality_flag',
                                 'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
                                 'height_segment_type', 'height_segment_confidence']
+
+#DevGoal: add a test to compare the generated list with an existing [checked] one (right now this is done explicitly for keywords, but not for values)?
+#DevGoal: use a mock of this ping to test later functions, such as displaying options and widgets, etc.
+def _get_custom_options(session, dataset, version):
+    """
+    Get lists of what customization options are available for the dataset from NSIDC.
+    """
+    cust_options={}
+    
+    if session is None:
+        raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
+
+    capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
+    response = session.get(capability_url)
+    root = ET.fromstring(response.content)
+
+    # collect lists with each service option
+    subagent = [subset_agent.attrib for subset_agent in root.iter('SubsetAgent')]
+    cust_options.update({'options':subagent})
+
+    # reformatting
+    formats = [Format.attrib for Format in root.iter('Format')]
+    format_vals = [formats[i]['value'] for i in range(len(formats))]
+    format_vals.remove('')
+    cust_options.update({'fileformats':format_vals})
+
+    # reprojection only applicable on ICESat-2 L3B products, yet to be available.
+
+    # reformatting options that support reprojection
+    normalproj = [Projections.attrib for Projections in root.iter('Projections')]
+    normalproj_vals = []
+    normalproj_vals.append(normalproj[0]['normalProj'])
+    format_proj = normalproj_vals[0].split(',')
+    format_proj.remove('')
+    format_proj.append('No reformatting')
+    cust_options.update({'formatreproj':format_proj})
+
+    #reprojection options
+    projections = [Projection.attrib for Projection in root.iter('Projection')]
+    proj_vals = []
+    for i in range(len(projections)):
+        if (projections[i]['value']) != 'NO_CHANGE' :
+            proj_vals.append(projections[i]['value'])
+    cust_options.update({'reprojectionONLY':proj_vals})
+
+    # reformatting options that do not support reprojection
+    no_proj = [i for i in format_vals if i not in format_proj]
+    cust_options.update({'noproj':no_proj})
+
+    # variable subsetting
+    vars_raw = []        
+    def get_varlist(elem):
+        childlist = list(elem)
+        if len(childlist)==0 and elem.tag=='SubsetVariable': 
+            vars_raw.append(elem.attrib['value'])
+        for child in childlist:
+            get_varlist(child)
+    get_varlist(root)
+    vars_vals = [v.replace(':', '/') if v.startswith('/') == False else v.replace('/:','')  for v in vars_raw]
+    cust_options.update({'variables':vars_vals})
+
+    return cust_options

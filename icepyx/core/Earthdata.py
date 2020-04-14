@@ -113,3 +113,4 @@ class Earthdata():
         assert isinstance(uid, str), "Enter your login user id as a string"
         assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
 """
+

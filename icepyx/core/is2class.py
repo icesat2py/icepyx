@@ -1352,7 +1352,7 @@ class Icesat2Data():
         world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
         f, ax = plt.subplots(1, figsize=(12, 6))
         world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
-        self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
+        self.geodataframe().plot(ax=ax, color='#FF8C00',alpha = 0.7)
         plt.show()
 
 

@@ -77,6 +77,10 @@ class Granules():
         # assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
 
         print(self._session)
+    
+    #allow the class to access the attributes of the icesat2 data object
+    # def __get_attr__():
+    
     # ----------------------------------------------------------------------
     # Methods
 

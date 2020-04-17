@@ -211,7 +211,7 @@ def build_subset_params(subsetparams, geom_filepath = None, **kwargs):
             else:
                 if key == 'time':
                     subsetparams.update(_fmt_temporal(start,end, key))
-        if any(keys in subsetparams for keys in spat_keys) orgeom_filepath is not None:
+        if any(keys in subsetparams for keys in spat_keys) or geom_filepath is not None:
             pass
         else:
             if extent_type == 'bounding_box':

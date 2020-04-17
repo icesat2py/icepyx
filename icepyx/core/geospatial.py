@@ -1,7 +1,7 @@
 import geopandas as gpd
 from shapely.geometry import Polygon
  
- def geodataframe(extent_type, spatial_extent):
+def geodataframe(extent_type, spatial_extent):
         """
         Return a geodataframe of the spatial extent
 

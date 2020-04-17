@@ -38,7 +38,7 @@ class Variables():
         self._session = session
 
         #DevGoal: put some more/robust checks here to assess validity of inputs
-        
+
         if self._vartype == 'order':
             if self.avail == None:
                 self.dataset = dataset
@@ -88,7 +88,7 @@ class Variables():
         """
 
         if self._vartype == 'order':
-            self.avail = is2ref._get_custom_options(self._session, self.dataset, self._version)['variables']
+            if not hasattr(self, 'avail'): self.avail = is2ref._get_custom_options(self._session, self.dataset, self._version)['variables']
 
         elif self._vartype == 'file':
             pass

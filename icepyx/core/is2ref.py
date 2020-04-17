@@ -1,5 +1,6 @@
 import requests
 from xml.etree import ElementTree as ET
+import json
 
 #ICESat-2 specific reference functions
 #options to get customization options for ICESat-2 data (though could be used generally)
@@ -18,31 +19,15 @@ def _validate_dataset(dataset):
     return dataset
 #DevGoal: See if there's a way to dynamically get this list so it's automatically updated
     
-#DevGoal: populate this with default variable lists for all of the datasets!
-#DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with dataset not being in the list, though it should since it was checked as valid earlier...)
-def _default_varlists(dataset):
+def about_dataset(dset):
     """
-    Return a list of default variables to select and send to the NSIDC subsetter.
+    Ping Earthdata to get metadata about the dataset of interest (the collection).
     """
-    common_list = ['delta_time','latitude','longitude']
-    
-    if dataset == 'ATL09':
-        return common_list + ['bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
-                    'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
-                    'column_od_asr','column_od_asr_qf',
-                    'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
-                    'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
-    
-    if dataset == 'ATL07':
-        return common_list + ['seg_dist_x',
-                                'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
-                                'height_segment_type', 'height_segment_quality', 'height_segment_confidence' ]
-    
-    if dataset == 'ATL10':
-        return common_list + ['seg_dist_x','lead_height','lead_length',
-                                'beam_fb_height', 'beam_fb_length', 'beam_fb_confidence', 'beam_fb_quality_flag',
-                                'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
-                                'height_segment_type', 'height_segment_confidence']
+
+    cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
+    response = requests.get(cmr_collections_url, params={'short_name': dset})
+    results = json.loads(response.content)
+    return results
 
 #DevGoal: add a test to compare the generated list with an existing [checked] one (right now this is done explicitly for keywords, but not for values)?
 #DevGoal: use a mock of this ping to test later functions, such as displaying options and widgets, etc.
@@ -55,7 +40,7 @@ def _get_custom_options(session, dataset, version):
     if session is None:
         raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
 
-    capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
+    capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{dataset}.{version}.xml'
     response = session.get(capability_url)
     root = ET.fromstring(response.content)
 
@@ -105,3 +90,29 @@ def _get_custom_options(session, dataset, version):
     cust_options.update({'variables':vars_vals})
 
     return cust_options
+
+#DevGoal: populate this with default variable lists for all of the datasets!
+#DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with dataset not being in the list, though it should since it was checked as valid earlier...)
+def _default_varlists(dataset):
+    """
+    Return a list of default variables to select and send to the NSIDC subsetter.
+    """
+    common_list = ['delta_time','latitude','longitude']
+    
+    if dataset == 'ATL09':
+        return common_list + ['bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
+                    'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
+                    'column_od_asr','column_od_asr_qf',
+                    'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
+                    'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
+    
+    if dataset == 'ATL07':
+        return common_list + ['seg_dist_x',
+                                'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
+                                'height_segment_type', 'height_segment_quality', 'height_segment_confidence' ]
+    
+    if dataset == 'ATL10':
+        return common_list + ['seg_dist_x','lead_height','lead_length',
+                                'beam_fb_height', 'beam_fb_length', 'beam_fb_confidence', 'beam_fb_quality_flag',
+                                'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
+                                'height_segment_type', 'height_segment_confidence']

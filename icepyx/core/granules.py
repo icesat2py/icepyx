@@ -76,10 +76,8 @@ class Granules():
         # assert isinstance(uid, str), "Enter your login user id as a string"
         # assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
 
-        print(self._session)
+        # print(self._session)
     
-    #allow the class to access the attributes of the icesat2 data object
-    # def __get_attr__():
     
     # ----------------------------------------------------------------------
     # Methods
@@ -120,6 +118,7 @@ class Granules():
         Adds the list of zipped files (orders) to the data object.
         DevGoal: add additional kwargs to allow subsetting and more control over request options.
         Note: This currently uses paging to download data - this may not be the best method
+        You must already be logged in to Earthdata to use this function.
 
         Parameters
         ----------

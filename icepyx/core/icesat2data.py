@@ -262,7 +262,7 @@ class Icesat2Data():
             if self._source == 'order':
                 #DevGoal: check for active session here
                 if hasattr(self, '_cust_options'):
-                    self._order_vars = Variables(self._source, session=self._session, avail=self._cust_options['variables'])
+                    self._order_vars = Variables(self._source, session=self._session, dataset=self.dataset, avail=self._cust_options['variables'])
                 else:
                     self._order_vars = Variables(self._source, session=self._session, dataset=self.dataset, version=self._version)
 
@@ -286,7 +286,7 @@ class Icesat2Data():
         
         if not hasattr(self, '_file_vars'):
             if self._source == 'file':
-                self._file_vars = Variables(self._source)
+                self._file_vars = Variables(self._source, dataset=self.dataset)
 
         return self._file_vars
 
@@ -379,23 +379,28 @@ class Icesat2Data():
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         self._session = Earthdata(uid,email,capability_url).login()
 
+    #DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self):
         """
         Get a list of available granules for the ICESat-2 data object's parameters.
 
-        See...
+        See Also
+        --------
+        granules.avail
         """
         #REFACTOR: add test to make sure there's a session
-        if not hasattr(self, 'CMRparams'): self.CMRparams = {}
-        self.CMRparams = apifmt.build_CMR_params(self.CMRparams, self.dataset, self._version, self._start, self._end, self.extent_type, self._spat_extent)
-        
-        if not hasattr(self, 'reqparams'): self.reqparams = {}
-        self.reqparams = apifmt.build_reqconfig_params(self.reqparams,'search')
+        try: return granules.info(self._granules.avail)
+        except AttributeError:
+            if not hasattr(self, 'CMRparams'): self.CMRparams = {}
+            self.CMRparams = apifmt.build_CMR_params(self.CMRparams, self.dataset, self._version, self._start, self._end, self.extent_type, self._spat_extent)
+            
+            if not hasattr(self, 'reqparams'): self.reqparams = {}
+            self.reqparams = apifmt.build_reqconfig_params(self.reqparams,'search')
 
-        if not hasattr(self, '_granules'): self.granules
-        self._granules.get_avail(self.CMRparams,self.reqparams)
+            if not hasattr(self, '_granules'): self.granules
+            self._granules.get_avail(self.CMRparams,self.reqparams)
 
-        return granules.info(self._granules.avail)
+            return granules.info(self._granules.avail)
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     #DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
@@ -403,7 +408,9 @@ class Icesat2Data():
         """
         Place an order for the available granules for the ICESat-2 data object.
         
-        See...
+        See Also
+        --------
+        granules.place_order
         """
 
         #DevGoal: don't recompute CMRparams if they're already there...
@@ -433,16 +440,19 @@ class Icesat2Data():
 #             except AttributeError:
 #                 self._get_custom_options(session)
 #                 self._variables = self._cust_options['variables']
+
     def download_granules(self, path, verbose=False): #, extract=False):
         """
         Downloads the data ordered using order_granules.
-
-        See...
 
         Parameters
         ----------
         path : string
             String with complete path to desired download location.
+
+        See Also
+        --------
+        granules.download
         """
         """
         extract : boolean, default False

@@ -1,1 +1,1 @@
-from .core import is2class
+from .core import icesat2data

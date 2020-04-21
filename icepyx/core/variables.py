@@ -6,6 +6,8 @@ import pprint
 # from icepyx.core.is2class import Icesat2Data as is2d
 import icepyx.core.is2ref as is2ref
 
+#DEVGOAL: use h5py to simplify some of these tasks, if possible!
+
 #REFACTOR: class needs better docstrings
 class Variables():
     """
@@ -33,6 +35,7 @@ class Variables():
         assert vartype in ['order','file'], "Please submit a valid variables type flag"
         
         self._vartype = vartype
+        self.dataset = dataset
         self.avail = avail
         self.wanted = wanted
         self._session = session
@@ -41,12 +44,15 @@ class Variables():
 
         if self._vartype == 'order':
             if self.avail == None:
-                self.dataset = dataset
                 self._version = version
         elif self._vartype == 'file':
             #DevGoal: check that the list or string are valid dir/files
             self.source = source
         
+
+    # @property
+    # def wanted(self):
+    #     return self._wanted
 
     @staticmethod
     def _parse_var_list(varlist):
@@ -158,7 +164,7 @@ class Variables():
     #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
     #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
     #DevGoal: actuall implement use of the inclusive flag!
-    def append(self, defaults=True, inclusive=True, var_list=None, beam_list=None, keyword_list=None):
+    def append(self, defaults=False, inclusive=False, var_list=None, beam_list=None, keyword_list=None):
         '''
         Add to the list of desired variables using user specified beams and variable list. 
         A pregenerated default variable list can be used by setting defaults to True. 
@@ -210,10 +216,9 @@ class Variables():
         "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
     
         req_vars = {}
-        
+
         if not hasattr(self, 'avail'): self.get_avail()
         vgrp, paths = self._parse_var_list(self.avail) 
-        # vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
         allpaths = []
         [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
         allpaths = np.unique(allpaths)
@@ -224,10 +229,10 @@ class Variables():
         nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
                        'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
 
-        if not hasattr(self, '_wanted') or self._wanted==None:
+        if not hasattr(self, 'wanted') or self.wanted==None:
             for varid in nec_varlist:
                 req_vars[varid] = vgrp[varid]
-            self._wanted = req_vars
+            self.wanted = req_vars
 
             #DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
 
@@ -241,6 +246,7 @@ class Variables():
         if len(sum_varlist)==0:
             sum_varlist = vgrp.keys()
         
+
         #Case only variables (but not keywords or beams) are specified
         if beam_list==None and keyword_list==None:
             for vn in sum_varlist:
@@ -248,25 +254,62 @@ class Variables():
                 
         #Case a beam and/or keyword list is specified (with or without variables)
         else:  
-            
+            if beam_list==None:
+                combined_list = keyword_list
+            elif keyword_list==None:
+                combined_list = beam_list
+            else:
+                combined_list = keyword_list + beam_list
+
             for vkey in sum_varlist:
                 for vpath in vgrp[vkey]:
                     vpath_kws = vpath.split('/')
                     
-                    for kw in vpath_kws[0:-1]:
-                        if (keyword_list is not None and kw in keyword_list) or \
-                        (beam_list is not None and kw in beam_list):
-                            if vkey not in req_vars: req_vars[vkey] = []  
-                            if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)  
+                    if inclusive==True:
+                        for kw in combined_list:
+                            if kw in vpath_kws:
+                                if vkey not in req_vars: req_vars[vkey] = []  
+                                if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)
+                    else:
+                        try:
+                            for bkw in beam_list:
+                                if bkw in vpath_kws:
+                                    for kw in keyword_list:
+                                        if kw in vpath_kws:
+                                            if vkey not in req_vars: req_vars[vkey] = []  
+                                            if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)
+                        except TypeError:
+                            for kw in combined_list:
+                                if kw in vpath_kws:
+                                    if vkey not in req_vars: req_vars[vkey] = []  
+                                    if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)
+
+
+                    
+                    
+                    # for kw in vpath_kws[0:-1]:
+                    #     if inclusive==True:
+                    #         if (keyword_list is not None and kw in keyword_list) or \
+                    #         (beam_list is not None and kw in beam_list):
+                    #             if vkey not in req_vars: req_vars[vkey] = []  
+                    #             if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)  
+                    #     else:
+                    #         if (keyword_list==None and kw in beam_list) or \
+                    #             (beam_list==None and kw in keyword_list):
+                    #             if vkey not in req_vars: req_vars[vkey] = []  
+                    #             if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)  
+
+
                             
         # update the data object variables
         for vkey in req_vars.keys():
             # add all matching keys and paths for new variables
-            if vkey not in self._wanted.keys():
-                self._wanted[vkey] = req_vars[vkey]
+            if vkey not in self.wanted.keys():
+                self.wanted[vkey] = req_vars[vkey]
             else:
                 for vpath in req_vars[vkey]:
-                    if vpath not in self._wanted[vkey]: self._wanted[vkey].append(vpath)  
+                    if vpath not in self.wanted[vkey]: self.wanted[vkey].append(vpath)
+    # print(self.wanted)  
     
     
  #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
@@ -274,7 +317,7 @@ class Variables():
     #DEVGOAL: we need to be explicit about our handling of existing variables. Does this function append new paths or replace any previously existing list? I think trying to make it so that it can remove paths would be too much, but the former distinction could easily be done with a boolean flag.
     #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
     #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
-    def remove(self, all=False, inclusive=True, var_list=None, beam_list=None, keyword_list=None):
+    def remove(self, all=False, inclusive=False, var_list=None, beam_list=None, keyword_list=None):
         '''
         Remove the variables and paths from the wanted list using user specified beam, keyword,
          and variable lists. 
@@ -319,211 +362,71 @@ class Variables():
             >>> region_a.build_wanted_var_list(keyword_list=['ancillary_data'])
         '''
 
+        if not hasattr(self, 'wanted') or self.wanted==None:
+            raise ValueError("You must construct a wanted variable list in order to remove values from it.")
+
         assert not (all==False and var_list==None and beam_list==None and keyword_list==None), \
         "You must specify which variables/paths/beams you would like to remove from your wanted list."
 
         req_vars = {}
         
-        if not hasattr(self, 'avail'): self.get_avail()
-        vgrp, paths = self._parse_var_list(self.avail) 
-        # vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
-        allpaths = []
-        [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
-        allpaths = np.unique(allpaths)
+        # if not hasattr(self, 'avail'): self.get_avail()
+        # vgrp, paths = self._parse_var_list(self.avail) 
+        # # vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
+        # allpaths = []
+        # [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
+        # allpaths = np.unique(allpaths)
 
-        self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
+        # self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
         if all==True:
-            try: self._wanted=None
+            try: self.wanted=None
             except NameError:
                 pass
-
-
-
-        #REFACTOR: need to change this section now to REMOVE variables, rather than add them
-        #Might also need to modify the above checks - it really only matters that we check for and remove each category, not whether or not they're valid inputs
-        #add the mandatory variables to the data object
-        nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
-                       'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
-
-        if not hasattr(self, '_wanted') or self._wanted==None:
-            for varid in nec_varlist:
-                req_vars[varid] = vgrp[varid]
-            self._wanted = req_vars
-
-            #DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
-
-        #generate a list of variable names to include, depending on user input
-        sum_varlist = []
-        if defaults==True:
-            sum_varlist = sum_varlist + is2ref._default_varlists(self.dataset)
-        if var_list is not None:
-            for vn in var_list:
-                if vn not in sum_varlist: sum_varlist.append(vn)
-        if len(sum_varlist)==0:
-            sum_varlist = vgrp.keys()
         
-        #Case only variables (but not keywords or beams) are specified
-        if beam_list==None and keyword_list==None:
-            for vn in sum_varlist:
-                req_vars[vn] = vgrp[vn]
+        else:
+            #Case only variables (but not keywords or beams) are specified
+            if beam_list==None and keyword_list==None:
+                for vn in var_list:
+                    try: del self.wanted[vn]
+                    except KeyError: pass
+        
+            
+            #DevGoal: Do we want to enable the user to remove mandatory variables (how it's written now)?
+            #Case a beam and/or keyword list is specified (with or without variables)
+            else: 
+                if beam_list==None:
+                    combined_list = keyword_list
+                elif keyword_list==None:
+                    combined_list = beam_list
+                else:
+                    combined_list = keyword_list + beam_list
                 
-        #Case a beam and/or keyword list is specified (with or without variables)
-        else:  
-            
-            for vkey in sum_varlist:
-                for vpath in vgrp[vkey]:
-                    vpath_kws = vpath.split('/')
-                    
-                    for kw in vpath_kws[0:-1]:
-                        if (keyword_list is not None and kw in keyword_list) or \
-                        (beam_list is not None and kw in beam_list):
-                            if vkey not in req_vars: req_vars[vkey] = []  
-                            if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)  
+                # nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
+                #             'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
+                for vkey in self.wanted.keys():
+                    if inclusive==True:
+                        if vkey in var_list:
+                            del self.wanted[vkey]
+                        else:
+                            vpaths = self.wanted[vkey]
+                            for vpath in vpaths:
+                                vpath_kws = vpath.split('/')
                             
-        # update the data object variables
-        for vkey in req_vars.keys():
-            # add all matching keys and paths for new variables
-            if vkey not in self._wanted.keys():
-                self._wanted[vkey] = req_vars[vkey]
-            else:
-                for vpath in req_vars[vkey]:
-                    if vpath not in self._wanted[vkey]: self._wanted[vkey].append(vpath)
-   
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-#DELETE - original code that was within icesat2data  
-    
-    #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
-    #DevGoal: we need to re-introduce, if possible, the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc. Right now, they would get all latitude paths and all profile_1 paths. Maybe we can have a inclusive/exclusive boolean trigger?
-    #DEVGOAL: we need to be explicit about our handling of existing variables. Does this function append new paths or replace any previously existing list? I think trying to make it so that it can remove paths would be too much, but the former distinction could easily be done with a boolean flag.
-    #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
-    #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
-#     def build_wanted_var_list(self, defaults=True, append=True, inclusive=True,
-#                               var_list=None, beam_list=None, keyword_list=None, ):
-#         '''
-#         Build a dictionary of desired variables using user specified beams and variable list. 
-#         A pregenerated default variable list can be used by setting defaults to True. 
-#         Note: The calibrated backscatter cab_prof is not in the default list for ATL09
-        
-#         Parameters:
-#         -----------
-#         defaults : boolean, default False
-#             Include the variables in the default variable list. Defaults are defined per-data product. 
-#             When specified in conjuction with a var_list, default variables not on the user-
-#             specified list will be added to the order.
-        
-#         append : boolean, default True
-#             Update the existing variable list with the new variables/beams/keywords specified. Setting this
-#             to false will remove all previously included variables.
-        
-#         var_list : list of strings, default None
-#             A list of variables to request, if not all available variables are wanted. 
-#             A list of available variables can be obtained by entering `var_list=['']` into the function.
+                                for kw in combined_list: 
+                                    if kw in vpath_kws:
+                                        self.wanted[vkey].remove(vpath)
+                                       
+                    
+                    else:
+                        # vpaths = tuple(self.wanted[vkey])
+                        for vpath in tuple(self.wanted[vkey]):
+                            vpath_kws = vpath.split('/')
 
-#         beam_list : list of strings, default None
-#             A list of beam strings, if only selected beams are wanted (the default value of None will automatically 
-#             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
-#             For all other datasets, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
-
-#         keyword_list : list of strings, default None
-#             A list of keywords, from any heirarchy level within the data structure, to select variables within
-#             the dataset that include that keyword in their path. A list of availble keywords can be obtained by
-#             entering `keyword_list=['']` into the function.
-
-#         Examples:
-#         ---------
-#             For ATL07 to add variables related to IS2 beams:
-#             >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'],defaults=True)
-            
-#             To exclude the default variables:
-#             >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'])
-
-#             To add additional variables in ancillary_data, orbit_info, or quality_assessment, etc., 
-#             >>> region_a.build_wanted_var_list(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
-
-#             To add all variables in ancillary_data
-#             >>> region_a.build_wanted_var_list(keyword_list=['ancillary_data'])
-#         '''
-
-#         assert not (defaults==False and var_list==None and beam_list==None and keyword_list==None), \
-#         "You must enter parameters to build a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
-    
-#         req_vars = {}
-        
-#         if not hasattr(self, 'avail'): self.get_avail()
-#         vgrp, paths = self._parse_var_list(self.avail) 
-#         # vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
-#         allpaths = []
-#         [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
-#         allpaths = np.unique(allpaths)
-
-#         #leaving these and a few other print statements (e.g. in _parse_var_list) until we've done some evaluation of other datasets
-# #         print(np.unique(np.array(paths[0])))
-# #         print(np.unique(np.array(paths[1])))
-# #         print(allpaths)
-
-#         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
-
-#         #if the user does not want to append new variables, clear existing ones
-#         if append==False:
-#             try: self._wanted=None
-#             except NameError:
-#                 pass
-
-#         #add the mandatory variables to the data object
-#         nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
-#                        'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
-
-#         if not hasattr(self, '_variables') or self._wanted==None:
-#             for varid in nec_varlist:
-#                 req_vars[varid] = vgrp[varid]
-#             self._wanted = req_vars
-
-#             #DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
-
-#         #generate a list of variable names to include, depending on user input
-#         sum_varlist = []
-#         if defaults==True:
-#             sum_varlist = sum_varlist + is2ref._default_varlists(self.dataset)
-#         if var_list is not None:
-#             for vn in var_list:
-#                 if vn not in sum_varlist: sum_varlist.append(vn)
-#         if len(sum_varlist)==0:
-#             sum_varlist = vgrp.keys()
-        
-#         #Case only variables (but not keywords or beams) are specified
-#         if beam_list==None and keyword_list==None:
-#             for vn in sum_varlist:
-#                 req_vars[vn] = vgrp[vn]
+                            for kw in combined_list:
+                                if kw in vpath_kws and vkey in var_list:
+                                    self.wanted[vkey].remove(vpath)
                 
-#         #Case a beam and/or keyword list is specified (with or without variables)
-#         else:  
-            
-#             for vkey in sum_varlist:
-#                 for vpath in vgrp[vkey]:
-#                     vpath_kws = vpath.split('/')
-                    
-#                     for kw in vpath_kws[0:-1]:
-#                         if (keyword_list is not None and kw in keyword_list) or \
-#                         (beam_list is not None and kw in beam_list):
-#                             if vkey not in req_vars: req_vars[vkey] = []  
-#                             if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)  
-                            
-#         # update the data object variables
-#         for vkey in req_vars.keys():
-#             # add all matching keys and paths for new variables
-#             if vkey not in self._wanted.keys():
-#                 self._wanted[vkey] = req_vars[vkey]
-#             else:
-#                 for vpath in req_vars[vkey]:
-#                     if vpath not in self._wanted[vkey]: self._wanted[vkey].append(vpath)
-
+                    if len(self.wanted[vkey])==0:
+                        del self.wanted[vkey]
+                                

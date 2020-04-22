@@ -62,16 +62,16 @@ class Granules():
         
     def __init__(
         self,
-        avail=[],
-        orderIDs=[],
-        files=[],
-        session=None
+        # avail=[],
+        # orderIDs=[],
+        # files=[],
+        # session=None
     ):
-
-        self.avail = avail
-        self.orderIDs = orderIDs
-        self.files = files
-        self._session = session
+        pass
+        # self.avail = avail
+        # self.orderIDs = orderIDs
+        # self.files = files
+        # self._session = session
 
         # assert isinstance(uid, str), "Enter your login user id as a string"
         # assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
@@ -82,12 +82,14 @@ class Granules():
     # ----------------------------------------------------------------------
     # Methods
 
-    def get_avail(self,CMRparams,reqparams):
+    def get_avail(self, CMRparams, reqparams):
         """
         Get a list of available granules for the ICESat-2 data object's parameters
         """
 
         assert CMRparams is not None and reqparams is not None, "Missing required input parameter dictionaries"
+
+        if not hasattr(self, 'avail'): self.avail=[]
 
         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
 
@@ -112,7 +114,7 @@ class Granules():
         assert len(self.avail)>0, "Your search returned no results; try different search parameters"
 
     
-    def place_order(self, CMRparams, reqparams, subsetparams, verbose, subset, **kwargs):
+    def place_order(self, CMRparams, reqparams, subsetparams, verbose, subset, session=None, **kwargs):
         """
         Place an order for the available granules for the ICESat-2 data object.
         Adds the list of zipped files (orders) to the data object.
@@ -139,7 +141,9 @@ class Granules():
         kwargs...
         """
 
-        if self._session is None:
+        print('trying to place the order')
+
+        if session is None:
            raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
 
         base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
@@ -277,12 +281,16 @@ class Granules():
             raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
             #DevGoal: make this a more robust check for an active session
 
+        print(len(self.orderIDs))
         if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
-            try:
-                self.place_order(verbose=verbose)
-            except:
-                if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
-                    raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
+            # print('got into the if')
+            # try:
+            #     self.place_order(verbose=verbose)
+            # except:
+            #     if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
+            #         raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
+            raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
+
 
         for order in self.orderIDs:
             downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + order + '.zip'

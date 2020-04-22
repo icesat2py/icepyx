@@ -420,16 +420,21 @@ class Icesat2Data():
         if not hasattr(self, 'reqparams'): self.reqparams = {}
         self.reqparams = apifmt.build_reqconfig_params(self.reqparams,'download')
 
+        if self._geom_filepath == None: print('evaluating correctly here')
+        
         if subset is False:
             self.subsetparams=None
         else:
-            #REFACTOR update this as needed to do above
-            if hasattr(self, '_geom_filepath'):
-                apifmt.build_subset_params(self,**kwargs, geom_filepath = self._geom_filepath)
+            if not hasattr(self, 'subsetparams'): self.subsetparams = {}
+            
+            if self._geom_filepath is not None:
+                apifmt.build_subset_params(self.subsetparams, geom_filepath = self._geom_filepath, **kwargs)
+            else:
+                apifmt.build_subset_params(self.subsetparams, **kwargs)
 
         #REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, '_granules'): self.granules
-        self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, verbose, subset, **kwargs)
+        self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, verbose, subset, session=self._session, **kwargs)
         #DELETE? DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able
 #         try:
 #             #DevGoal: make this the dictionary instead of the long string?
@@ -464,7 +469,9 @@ class Icesat2Data():
         os.chdir(path)
 
         if not hasattr(self, '_granules'): self.granules
-        #REFACTOR: check that the attribute/order exists
+            
+        if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose)
+    
         self._granules.download(verbose, path)
   
    

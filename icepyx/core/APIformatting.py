@@ -201,7 +201,7 @@ def build_subset_params(subsetparams, geom_filepath = None, **kwargs):
     spat_keys = ['bbox','bounding_shape']
     opt_keys = ['format','projection','projection_parameters','Coverage']
     #check to see if the parameter list is already built
-    if all(keys in subsetparams for keys in default_keys) and (any(keys in subsetparams for keys in spat_keys) or hasattr(is2obj, '_geom_filepath')) and all(keys in subsetparams for keys in kwargs.keys()):
+    if all(keys in subsetparams for keys in default_keys) and (any(keys in subsetparams for keys in spat_keys) or geom_filepath is not None) and all(keys in subsetparams for keys in kwargs.keys()):
         pass
     #if not, see which fields need to be added and add them
     else:
@@ -210,7 +210,7 @@ def build_subset_params(subsetparams, geom_filepath = None, **kwargs):
                 pass
             else:
                 if key == 'time':
-                    subsetparams.update(_fmt_temporal(start,end, key))
+                    subsetparams.update(_fmt_temporal(start, end, key))
         if any(keys in subsetparams for keys in spat_keys) or geom_filepath is not None:
             pass
         else:

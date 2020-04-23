@@ -466,6 +466,11 @@ class Icesat2Data():
      
         if not os.path.exists(path):
             os.mkdir(path)
+        
+        #DevNote: I am not sure how the specified path is supposed to work here.
+        #         For me, it generates an extra layer of specified path.
+        #         May need to specify clearly how path should be defined in the demo notebook, 
+        #         if the current behavior is by design. 
         os.chdir(path)
 
         if not hasattr(self, '_granules'): self.granules

@@ -2,8 +2,11 @@
 
 import datetime as dt
 import geopandas as gpd
+import pprint
 from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
+import fiona
+fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
@@ -116,114 +119,311 @@ def combine_params(*param_dicts):
 # ----------------------------------------------------------------------
 # parameter-list level formatting (e.g. to create)
 
-def build_CMR_params(CMRparams, dataset, version, start, end, extent_type, spatial_extent):
+#DevGoal: this could be expanded, similar to the variables class, to provide users with valid options if need be
+class Parameters():
     """
-    Build a dictionary of CMR parameter keys to submit for granule searches and download.
-    """
+    Build and update the parameter lists needed to submit a data order
 
-    # if not hasattr(is2obj,'CMRparams'):
-    #     CMRparams={}
-
-    CMR_solo_keys = ['short_name','version','temporal']
-    CMR_spat_keys = ['bounding_box','polygon']
-    #check to see if the parameter list is already built
-    if all(keys in CMRparams for keys in CMR_solo_keys) and any(keys in CMRparams for keys in CMR_spat_keys):
-        pass
-    #if not, see which fields need to be added and add them
-    else:
-        for key in CMR_solo_keys:
-            if key in CMRparams:
-                pass
-            else:
-                if key == 'short_name':
-                    CMRparams.update({key:dataset})
-                elif key == 'version':
-                    CMRparams.update({key:version})
-                elif key == 'temporal':
-                    CMRparams.update(_fmt_temporal(start,end,key))
-        if any(keys in CMRparams for keys in CMR_spat_keys):
-            pass
-        else:
-            CMRparams.update(_fmt_spatial(extent_type,spatial_extent))
+    Parameters
+    ----------
+    partype : string
+        Type of parameter list. Must be one of ['CMR','required','subset']
     
-    return CMRparams
+    wanted : list of strings
+        List of wanted keys to format.
 
-def build_reqconfig_params(reqparams,reqtype, **kwargs):
-    """
-    Build a dictionary of request configuration parameters.
-    #DevGoal: Allow updating of the request configuration parameters (right now they must be manually deleted to be modified)
     """
 
-    # if not hasattr(is2obj,'reqparams') or reqparams==None:
-    #     reqparams={}
-
-    if reqtype == 'search':
-        reqkeys = ['page_size','page_num']
-    elif reqtype == 'download':
-        reqkeys = ['page_size','page_num','request_mode','token','email','include_meta']
-    else:
-        raise ValueError("Invalid request type")
-
-    if all(keys in reqparams for keys in reqkeys):
-        pass
-    else:
-        defaults={'page_size':10,'page_num':1,'request_mode':'async','include_meta':'Y'}
-        for key in reqkeys:
-            if key in kwargs:
-                reqparams.update({key:kwargs[key]})
-#                 elif key in defaults:
-#                     if key is 'page_num':
-#                         pnum = math.ceil(len(is2obj.granules)/reqparams['page_size'])
-#                         if pnum > 0:
-#                             reqparams.update({key:pnum})
-#                         else:
-#                             reqparams.update({key:defaults[key]})
-            elif key in defaults:
-                reqparams.update({key:defaults[key]})
-            else:
-                pass
-
-    #DevGoal: improve the interfacing with NSIDC/DAAC so it's not paging results
-    reqparams['page_num'] = 1
-
-    return reqparams
+    def __init__(self, partype, values=None, reqtype=None):
         
-def build_subset_params(subsetparams, geom_filepath = None, **kwargs):
-    """
-    Build a dictionary of subsetting parameter keys to submit for data orders and download.
-    """
+        assert partype in ['CMR','required','subset'], "You need to submit a valid parametery type."
+        self.partype = partype
+        
+        if partype == 'required':
+            assert reqtype in ['search','download'], "A valid require parameter type is needed"
+        self._reqtype = reqtype
+        
+        # self._wanted = wanted
+        self._fmt_keys = values
 
-    # if not hasattr(is2obj,'subsetparams'):
-    #     subsetparams={}
+        # if wanted == None and values is not None:
+        #     self._wanted = values.keys()
 
-    #DevGoal: get list of available subsetting options for the dataset and use this to build appropriate subset parameters
-    default_keys = ['time']
-    spat_keys = ['bbox','bounding_shape']
-    opt_keys = ['format','projection','projection_parameters','Coverage']
-    #check to see if the parameter list is already built
-    if all(keys in subsetparams for keys in default_keys) and (any(keys in subsetparams for keys in spat_keys) or geom_filepath is not None) and all(keys in subsetparams for keys in kwargs.keys()):
-        pass
-    #if not, see which fields need to be added and add them
-    else:
-        for key in default_keys:
-            if key in subsetparams:
-                pass
-            else:
-                if key == 'time':
-                    subsetparams.update(_fmt_temporal(start, end, key))
-        if any(keys in subsetparams for keys in spat_keys) or geom_filepath is not None:
-            pass
+
+    @property
+    def poss_keys(self):
+        if not hasattr(self,'_poss_keys'):
+            self._get_possible_keys()
+        
+        return self._poss_keys
+
+        # return pprint(self._poss_keys)
+
+    # @property
+    # def wanted_keys(self):
+    #     if not hasattr(_wanted):
+    #         self._wanted = []
+
+    #     return self._wanted
+    
+    @property
+    def fmted_keys(self):
+        if not hasattr(self,'_fmted_keys'):
+            self._fmted_keys = {}
+        
+        return self._fmted_keys
+
+
+    def _get_possible_keys(self):
+        
+        if self.partype == 'CMR':
+            self._poss_keys = {'default': ['short_name','version','temporal'], 'spatial': ['bounding_box','polygon'], 'optional': []}
+        elif self.partype == 'required':
+            self._poss_keys = {'search': ['page_size','page_num'], 'download': ['page_size','page_num','request_mode','token','email','include_meta']}
+        elif self.partype == 'subset':
+            self._poss_keys = {'default': ['time'],'spatial': ['bbox','bounding_shape'],'optional': ['format','projection','projection_parameters','Coverage']}
+
+
+    def _check_valid_keys(self):
+        
+        # if self._wanted == None:
+        #     raise ValueError("No desired parameter list was passed")
+        
+        if not hasattr(self, '_poss_keys'): self._get_possible_keys()
+        
+        for key in self._fmted_keys.values():
+            assert key in self._poss_keys.values(), "An invalid key was passed"
+
+    
+    def check_req_values(self):
+        reqkeys = self.poss_keys[self._reqtype]
+
+        if all(keys in self._fmted_keys.keys() for keys in reqkeys):
+            assert all(values in self._fmted_keys.values() for keys in reqkeys), "One of your formated parameters is missing a value"
+            return True
         else:
-            if extent_type == 'bounding_box':
-                k = 'bbox'
-            elif extent_type == 'polygon':
-                k = 'bounding_shape'
-            subsetparams.update(_fmt_spatial(k,spatial_extent))
-        for key in opt_keys:
-            if key == 'Coverage' and key in kwargs:
-                #DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
-                subsetparams.update({key:_fmt_var_subset_list(kwargs[key])})
-            elif key in kwargs:
-                subsetparams.update({key:kwargs[key]})
+            return False
+
+    def check_values(self):
+        default_keys = self.poss_keys['default']
+    
+        spatial_keys = self.poss_keys['spatial']
+
+        if all(keys in self._fmted_keys.keys() for keys in default_keys):
+            assert all(values in self._fmted_keys.values() for keys in default_keys), "One of your formated parameters is missing a value"
+
+            #not the most robust check, but better than nothing...
+            if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
+                assert any(values in self._fmted_keys.values() for keys in default_keys), "One of your formated parameters is missing a value"
+                return True
+            else: return False
+        else:
+            return False
+
+    def build_params(self, **kwargs):
+        
+        if not kwargs: kwargs=None
+
+        if self.partype == 'required':
+            if self.check_req_values==True and kwargs==None: pass
             else:
-                pass
+                reqkeys = self.poss_keys[self._reqtype]
+                defaults={'page_size':10,'page_num':1,'request_mode':'async','include_meta':'Y'}
+                for key in reqkeys:
+                    if key in kwargs:
+                        self._fmted_keys.update({key:kwargs[key]})
+        #                 elif key in defaults:
+        #                     if key is 'page_num':
+        #                         pnum = math.ceil(len(is2obj.granules)/reqparams['page_size'])
+        #                         if pnum > 0:
+        #                             reqparams.update({key:pnum})
+        #                         else:
+        #                             reqparams.update({key:defaults[key]})
+                    elif key in defaults:
+                        self._fmted_keys.update({key:defaults[key]})
+                    else:
+                        pass
+
+                self._fmted_keys['page_num'] = 1
+
+        
+        else:
+            if self.check_values==True and kwargs==None: pass
+            else:
+                default_keys = self.poss_keys['default']
+                spatial_keys = self.poss_keys['spatial']
+                opt_keys = self.poss_keys['optional']
+
+                for key in default_keys:
+                    if key in self._fmted_keys.values():
+                        assert self._fmted_keys[key]
+                    else:
+                        if key == 'short_name':
+                            self._fmted_keys.update({key:kwargs['dataset']})
+                        elif key == 'version':
+                            self._fmted_keys.update({key:kwargs['version']})
+                        elif key == 'temporal' or key == 'time':
+                            self._fmted_keys.update(_fmt_temporal(kwargs['start'],kwargs['end'],key))
+                
+                
+                for key in opt_keys:
+                    if key == 'Coverage' and key in kwargs.keys():
+                #DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+                        self._fmted_keys.update({key:_fmt_var_subset_list(kwargs[key])})
+                    elif key in kwargs:
+                        self._fmted_keys.update({key:kwargs[key]})
+                    else:
+                        pass
+            
+
+            if self.partype == 'CMR':
+                if any(keys in self._fmted_keys for keys in spatial_keys):
+                    pass
+                else:
+                    self._fmted_keys.update(_fmt_spatial(kwargs['extent_type'],kwargs['spatial_extent']))
+            
+            elif self.partype == 'subset':
+                if any(keys in subsetparams for keys in spat_keys) or kwargs['geom_filepath']==None:
+                    pass
+                else:
+                    if kwargs['extent_type'] == 'bounding_box':
+                        k = 'bbox'
+                    elif kwargs['extent_type'] == 'polygon':
+                        k = 'bounding_shape'
+                    self._fmted_keys.update.update(_fmt_spatial(k,kwargs['spatial_extent']))
+            
+
+
+
+# #DevGoal: the calls to this function could (should) be simplified to not submit a bunch of
+# #kwargs that aren't necessary (e.g. they already exist)
+# #DevGoal: simplify and generalize these parameter building functions...
+# #DevGoal: add getter and setter methods to the class properties so users can more easily update these
+# def build_CMR_params(CMRparams, **kwargs):
+#     """
+#     Build a dictionary of CMR parameter keys to submit for granule searches and download.
+
+#     Parameters
+#     ----------
+#     CMRparams : dict
+#         About that here...
+
+#     **kwargs
+#         The keyword arguments are used for ...
+#     """
+
+#     dataset = kwargs.pop('dataset', False)
+#     version = kwargs.pop('version', False)
+#     start = kwargs.pop('start', False)
+#     end = kwargs.pop('end', False)
+#     extent_type = kwargs.pop('extent_type', False)
+#     spatial_extent = kwargs.pop('spatial_extent', False)
+#     if kwargs:
+#         raise TypeError('Unexpected **kwargs: %r' % kwargs)
+
+
+#     CMR_solo_keys = ['short_name','version','temporal']
+#     CMR_spat_keys = ['bounding_box','polygon']
+#     #check to see if the parameter list is already built
+#     if all(keys in CMRparams for keys in CMR_solo_keys) and any(keys in CMRparams for keys in CMR_spat_keys):
+#         pass
+#     #if not, see which fields need to be added and add them
+#     else:
+#         for key in CMR_solo_keys:
+#             if key in CMRparams:
+#                 pass
+#             else:
+#                 if key == 'short_name':
+#                     CMRparams.update({key:dataset})
+#                 elif key == 'version':
+#                     CMRparams.update({key:version})
+#                 elif key == 'temporal':
+#                     CMRparams.update(_fmt_temporal(start,end,key))
+#         if any(keys in CMRparams for keys in CMR_spat_keys):
+#             pass
+#         else:
+#             CMRparams.update(_fmt_spatial(extent_type,spatial_extent))
+    
+#     return CMRparams
+
+# def build_reqconfig_params(reqparams,reqtype, **kwargs):
+#     """
+#     Build a dictionary of request configuration parameters.
+#     #DevGoal: Allow updating of the request configuration parameters (right now they must be manually deleted to be modified)
+#     """
+
+#     if reqtype == 'search':
+#         reqkeys = ['page_size','page_num']
+#     elif reqtype == 'download':
+#         reqkeys = ['page_size','page_num','request_mode','token','email','include_meta']
+#     else:
+#         raise ValueError("Invalid request type")
+
+#     if all(keys in reqparams for keys in reqkeys):
+#         pass
+#     else:
+#         defaults={'page_size':10,'page_num':1,'request_mode':'async','include_meta':'Y'}
+#         for key in reqkeys:
+#             if key in kwargs:
+#                 reqparams.update({key:kwargs[key]})
+# #                 elif key in defaults:
+# #                     if key is 'page_num':
+# #                         pnum = math.ceil(len(is2obj.granules)/reqparams['page_size'])
+# #                         if pnum > 0:
+# #                             reqparams.update({key:pnum})
+# #                         else:
+# #                             reqparams.update({key:defaults[key]})
+#             elif key in defaults:
+#                 reqparams.update({key:defaults[key]})
+#             else:
+#                 pass
+
+#     #DevGoal: improve the interfacing with NSIDC/DAAC so it's not paging results
+#     reqparams['page_num'] = 1
+
+#     return reqparams
+
+# #DevGoal: see build_CMR_params        
+# def build_subset_params(subsetparams, geom_filepath = None, **kwargs):
+#     """
+#     Build a dictionary of subsetting parameter keys to submit for data orders and download.
+#     """
+
+#     start = kwargs.pop('start', False)
+#     end = kwargs.pop('end', False)
+#     extent_type = kwargs.pop('extent_type', False)
+#     spatial_extent = kwargs.pop('spatial_extent', False)
+
+#     #DevGoal: get list of available subsetting options for the dataset and use this to build appropriate subset parameters
+#     default_keys = ['time']
+#     spat_keys = ['bbox','bounding_shape']
+#     opt_keys = ['format','projection','projection_parameters','Coverage']
+#     #check to see if the parameter list is already built  
+#     if all(keys in subsetparams for keys in default_keys) and (any(keys in subsetparams for keys in spat_keys) or geom_filepath is None) and all(keys in subsetparams for keys in kwargs.keys()):
+#         pass
+#     #if not, see which fields need to be added and add them
+#     else:
+#         for key in default_keys:
+#             if key in subsetparams:
+#                 pass
+#             else:
+#                 if key == 'time':
+#                     subsetparams.update(_fmt_temporal(start, end, key))
+#         if any(keys in subsetparams for keys in spat_keys) or geom_filepath is None:
+#             pass
+#         else:
+#             if extent_type == 'bounding_box':
+#                 k = 'bbox'
+#             elif extent_type == 'polygon':
+#                 k = 'bounding_shape'
+#             subsetparams.update(_fmt_spatial(k,spatial_extent))
+#         for key in opt_keys:
+#             if key == 'Coverage' and key in kwargs:
+#                 #DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+#                 subsetparams.update({key:_fmt_var_subset_list(kwargs[key])})
+#             elif key in kwargs:
+#                 subsetparams.update({key:kwargs[key]})
+#             else:
+#                 pass
+
+#     return subsetparams

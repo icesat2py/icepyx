@@ -71,12 +71,12 @@ class Granules():
         # self.avail = avail
         # self.orderIDs = orderIDs
         # self.files = files
-        # self._session = session
+        # session = session
 
         # assert isinstance(uid, str), "Enter your login user id as a string"
         # assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
 
-        # print(self._session)
+        # print(session)
     
     
     # ----------------------------------------------------------------------
@@ -114,7 +114,7 @@ class Granules():
         assert len(self.avail)>0, "Your search returned no results; try different search parameters"
 
     
-    def place_order(self, CMRparams, reqparams, subsetparams, verbose, subset, session=None, **kwargs):
+    def place_order(self, CMRparams, reqparams, subsetparams, verbose, subset=True, session=None, geom_filepath=None, **kwargs):
         """
         Place an order for the available granules for the ICESat-2 data object.
         Adds the list of zipped files (orders) to the data object.
@@ -141,21 +141,20 @@ class Granules():
         kwargs...
         """
 
-        print('trying to place the order')
-
         if session is None:
            raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
 
         base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
         #DevGoal: get the base_url from the granules?
 
+        granules=self.get_avail(CMRparams, reqparams) #this way the reqparams['page_num'] is updated
+
         if subset is False:
             request_params = apifmt.combine_params(CMRparams, reqparams, {'agent':'NO'})
         else:
             request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
 
-        granules=self.get_avail(CMRparams, reqparams) #this way the reqparams['page_num'] is updated
-
+        
         # Request data service for each page number, and unzip outputs
         for i in range(request_params['page_num']):
             page_val = i + 1
@@ -163,18 +162,17 @@ class Granules():
                 print('Order: ', page_val)
             request_params.update( {'page_num': page_val} )
 
-        #REFACTOR: this is going to break now when a polygon is tried!!!
         # For all requests other than spatial file upload, use get function
         #add line here for using post instead of get with polygon and subset
         #also, make sure to use the full polygon, not the simplified one used for finding granules
-            if subset is True and hasattr(self, '_geom_filepath'):
+            if subset is True and geom_filepath is not None: #hasattr(self, '_geom_filepath'):
                 #post polygon file to OGR for geojson conversion
                 #DevGoal: what is this doing under the hood, and can we do it locally?
-
-                request = self._session.post(base_url, params=request_params, \
-                                       files={'shapefile': open(str(self._geom_filepath), 'rb')})
+                print(open(str(kwargs['geom_filepath']), 'rb'))
+                request = session.post(base_url, params=request_params, \
+                                       files={'shapefile': open(str(geom_filepath), 'rb')})
             else:
-                request = self._session.get(base_url, params=request_params)
+                request = session.get(base_url, params=request_params)
             
             root=ET.fromstring(request.content)
             print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
@@ -205,7 +203,7 @@ class Granules():
                 print('status URL: ', statusURL)
 
         #Find order status
-            request_response = self._session.get(statusURL)
+            request_response = session.get(statusURL)
             if verbose is True:
                 print('HTTP response from order response URL: ', request_response.status_code)
 
@@ -223,7 +221,7 @@ class Granules():
             while status == 'pending' or status == 'processing':
                 print('Status is not complete. Trying again.')
                 time.sleep(10)
-                loop_response = self._session.get(statusURL)
+                loop_response = session.get(statusURL)
 
         # Raise bad request: Loop will stop for bad response code.
                 loop_response.raise_for_status()
@@ -257,7 +255,7 @@ class Granules():
         return self.orderIDs
 
     
-    def download(self, verbose, path):
+    def download(self, verbose, path, session=None):
         """
         Downloads the data ordered using order_granules.
 
@@ -277,11 +275,10 @@ class Granules():
         """
 
         #Note: need to test these checks still
-        if self._session is None:
+        if session is None:
             raise ValueError("Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)")
             #DevGoal: make this a more robust check for an active session
 
-        print(len(self.orderIDs))
         if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
             # print('got into the if')
             # try:
@@ -300,7 +297,7 @@ class Granules():
             if verbose is True:
                 print('Zip download URL: ', downloadURL)
             print('Beginning download of zipped output...')
-            zip_response = self._session.get(downloadURL)
+            zip_response = session.get(downloadURL)
             # Raise bad request: Loop will stop for bad response code.
             zip_response.raise_for_status()
             print('Data request', order, 'of ', len(self.orderIDs), ' order(s) is complete.')

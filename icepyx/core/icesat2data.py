@@ -241,6 +241,53 @@ class Icesat2Data():
         """
         return self._end.strftime('%H:%M:%S')
 
+    @property
+    def CMRparams(self):
+        """
+        Display the CMR key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
+        """
+
+        if not hasattr(self, '_CMRparams'): 
+            self._CMRparams = apifmt.Parameters('CMR')
+
+        if self._CMRparams.fmted_keys == {}:
+            self._CMRparams.build_params(dataset=self.dataset, version=self._version,\
+                    start=self._start, end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent)
+        #     self._CMRparams = {}
+        # self._CMRparams = apifmt.build_CMR_params(self._CMRparams, dataset=self.dataset, version=self._version,\
+        #             start=self._start, end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent)
+
+        return self._CMRparams.fmted_keys
+
+    @property
+    def reqparams(self):
+        """
+        Display the required key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
+        """
+
+        if not hasattr(self, '_reqparams'):
+            self._reqparams = apifmt.Parameters('required', reqtype='search').build_params()
+            
+        #     self._reqparams = {}
+        # self._reqparams = apifmt.build_reqconfig_params(self._reqparams,'search')
+            
+        return self._reqparams.fmted_keys
+
+    #DevGoal: need to refactor/match this to new class
+    @property
+    def subsetparams(self, **kwargs):
+        if not hasattr(self, '_subsetparams'): self._subsetparams = {}
+        
+        if self._geom_filepath is not None:
+            self._subsetparams = apifmt.build_subset_params(self._subsetparams, geom_filepath = self._geom_filepath, \
+                                start=self._start, end=self._end, extent_type=self.extent_type, \
+                                spatial_extent=self._spat_extent, **kwargs)
+        else:
+            self._subsetparams = apifmt.build_subset_params(self._subsetparams, start=self._start, \
+                                    end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent, **kwargs)
+
+        return self._subsetparams
+    
     #DevGoal: add to tests
     #DevGoal: add statements to the following vars properties to let the user know if they've got a mismatched source and vars type
     @property
@@ -389,13 +436,14 @@ class Icesat2Data():
         granules.avail
         """
         #REFACTOR: add test to make sure there's a session
+        #DevGoal: I think I can remove much of this code by creating attributes for these...
         try: return granules.info(self._granules.avail)
         except AttributeError:
-            if not hasattr(self, 'CMRparams'): self.CMRparams = {}
-            self.CMRparams = apifmt.build_CMR_params(self.CMRparams, self.dataset, self._version, self._start, self._end, self.extent_type, self._spat_extent)
-            
-            if not hasattr(self, 'reqparams'): self.reqparams = {}
-            self.reqparams = apifmt.build_reqconfig_params(self.reqparams,'search')
+            # if not hasattr(self, 'CMRparams'): self.CMRparams = {}
+            # self.CMRparams = apifmt.build_CMR_params(self.CMRparams, dataset=self.dataset, version=self._version,\
+            #             start=self._start, end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent)
+            # if not hasattr(self, 'reqparams'): self.reqparams = {}
+            # self.reqparams = apifmt.build_reqconfig_params(self.reqparams,'search')
 
             if not hasattr(self, '_granules'): self.granules
             self._granules.get_avail(self.CMRparams,self.reqparams)
@@ -414,27 +462,33 @@ class Icesat2Data():
         """
 
         #DevGoal: don't recompute CMRparams if they're already there...
-        if not hasattr(self, 'CMRparams'): self.CMRparams = {}
-        self.CMRparams = apifmt.build_CMR_params(self.CMRparams, self.dataset, self._version, self._start, self._end, self.extent_type, self._spat_extent)
+        # if not hasattr(self, 'CMRparams'): self.CMRparams = {}
+        # self.CMRparams = apifmt.build_CMR_params(self.CMRparams, dataset=self.dataset, version=self._version,\
+        #                 start=self._start, end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent)
         
-        if not hasattr(self, 'reqparams'): self.reqparams = {}
-        self.reqparams = apifmt.build_reqconfig_params(self.reqparams,'download')
+        # if not hasattr(self, 'reqparams'): self.reqparams = {}
+        # self.reqparams = apifmt.build_reqconfig_params(self.reqparams,'download')
 
-        if self._geom_filepath == None: print('evaluating correctly here')
+        # if self._geom_filepath == None: print('evaluating correctly here')
         
         if subset is False:
             self.subsetparams=None
-        else:
-            if not hasattr(self, 'subsetparams'): self.subsetparams = {}
+        # else:
+        #     if not hasattr(self, 'subsetparams'): self.subsetparams = {}
             
-            if self._geom_filepath is not None:
-                apifmt.build_subset_params(self.subsetparams, geom_filepath = self._geom_filepath, **kwargs)
-            else:
-                apifmt.build_subset_params(self.subsetparams, **kwargs)
+        #     if self._geom_filepath is not None:
+        #         self.subsetparams = apifmt.build_subset_params(self.subsetparams, geom_filepath = self._geom_filepath, \
+        #                             start=self._start, end=self._end, extent_type=self.extent_type, \
+        #                             spatial_extent=self._spat_extent, **kwargs)
+        #     else:
+        #         self.subsetparams = apifmt.build_subset_params(self.subsetparams, start=self._start, \
+        #                             end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent, **kwargs)
 
         #REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, '_granules'): self.granules
-        self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, verbose, subset, session=self._session, **kwargs)
+        self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, \
+                                verbose, subset, session=self._session, geom_filepath=self._geom_filepath, **kwargs)
+
         #DELETE? DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able
 #         try:
 #             #DevGoal: make this the dictionary instead of the long string?
@@ -472,7 +526,7 @@ class Icesat2Data():
             
         if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose)
     
-        self._granules.download(verbose, path)
+        self._granules.download(verbose, path, session=self._session)
   
    
     #DevGoal: add testing? What do we test, and how, given this is a visualization.
@@ -491,5 +545,5 @@ class Icesat2Data():
         world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
         f, ax = plt.subplots(1, figsize=(12, 6))
         world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
-        geospatial.geodataframe().plot(ax=ax, color='#FF8C00',alpha = '0.7')
+        geospatial.geodataframe(self.extent_type,self._spat_extent).plot(ax=ax, color='#FF8C00',alpha = 0.7)
         plt.show()

@@ -1,4 +1,8 @@
 import datetime as dt
+import os
+import warnings
+
+import icepyx.core.APIformatting as apifmt
 
 def dset_version(latest_vers, version):
     if version is None:
@@ -67,7 +71,7 @@ def spatial(spatial_extent):
         #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
         if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
             extent_type = 'polygon'
-            _spat_extent = apifmt._format_polygon(spatial_extent)
+            _spat_extent = apifmt._fmt_polygon(spatial_extent)
             _geom_filepath = spatial_extent
 
         else:

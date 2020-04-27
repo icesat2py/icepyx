@@ -253,9 +253,6 @@ class Icesat2Data():
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(dataset=self.dataset, version=self._version,\
                     start=self._start, end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent)
-        #     self._CMRparams = {}
-        # self._CMRparams = apifmt.build_CMR_params(self._CMRparams, dataset=self.dataset, version=self._version,\
-        #             start=self._start, end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent)
 
         return self._CMRparams.fmted_keys
 
@@ -266,27 +263,24 @@ class Icesat2Data():
         """
 
         if not hasattr(self, '_reqparams'):
-            self._reqparams = apifmt.Parameters('required', reqtype='search').build_params()
-            
-        #     self._reqparams = {}
-        # self._reqparams = apifmt.build_reqconfig_params(self._reqparams,'search')
-            
+            self._reqparams = apifmt.Parameters('required', reqtype='search')
+            self._reqparams.build_params()
+                       
         return self._reqparams.fmted_keys
 
-    #DevGoal: need to refactor/match this to new class
     @property
     def subsetparams(self, **kwargs):
-        if not hasattr(self, '_subsetparams'): self._subsetparams = {}
+        if not hasattr(self, '_subsetparams'): self._subsetparams = apifmt.Parameters('subset')
         
         if self._geom_filepath is not None:
-            self._subsetparams = apifmt.build_subset_params(self._subsetparams, geom_filepath = self._geom_filepath, \
+            self._subsetparams.build_params(geom_filepath = self._geom_filepath, \
                                 start=self._start, end=self._end, extent_type=self.extent_type, \
                                 spatial_extent=self._spat_extent, **kwargs)
         else:
-            self._subsetparams = apifmt.build_subset_params(self._subsetparams, start=self._start, \
-                                    end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent, **kwargs)
+            self._subsetparams.build_params(start=self._start, end=self._end,\
+                         extent_type=self.extent_type, spatial_extent=self._spat_extent, **kwargs)
 
-        return self._subsetparams
+        return self._subsetparams.fmted_keys
     
     #DevGoal: add to tests
     #DevGoal: add statements to the following vars properties to let the user know if they've got a mismatched source and vars type

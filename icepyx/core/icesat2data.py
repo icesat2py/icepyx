@@ -249,6 +249,8 @@ class Icesat2Data():
 
         if not hasattr(self, '_CMRparams'): 
             self._CMRparams = apifmt.Parameters('CMR')
+        # print(self._CMRparams)
+        # print(self._CMRparams.fmted_keys)
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(dataset=self.dataset, version=self._version,\
@@ -256,6 +258,7 @@ class Icesat2Data():
 
         return self._CMRparams.fmted_keys
 
+    #DevGoal: make sure that if the user updates page size, page num is updated so that all granules would be ordered...
     @property
     def reqparams(self):
         """
@@ -265,7 +268,7 @@ class Icesat2Data():
         if not hasattr(self, '_reqparams'):
             self._reqparams = apifmt.Parameters('required', reqtype='search')
             self._reqparams.build_params()
-                       
+              
         return self._reqparams.fmted_keys
 
     @property
@@ -414,9 +417,9 @@ class Icesat2Data():
     # Methods - Login and Granules (NSIDC-API)
 
     def earthdata_login(self,uid,email):
-        if not hasattr(self,'reqparams'):
-            self.reqparams={}
-        self.reqparams.update({'email': email}) #REFACTOR-need this?, 'token': token})
+        # if not hasattr(self,'reqparams'):
+        #     self.reqparams={}
+        # self.reqparams.update({'email': email}) #REFACTOR-need this?, 'token': token})
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         self._session = Earthdata(uid,email,capability_url).login()
 
@@ -429,6 +432,7 @@ class Icesat2Data():
         --------
         granules.avail
         """
+        
         #REFACTOR: add test to make sure there's a session
         #DevGoal: I think I can remove much of this code by creating attributes for these...
         try: return granules.info(self._granules.avail)
@@ -460,11 +464,16 @@ class Icesat2Data():
         # self.CMRparams = apifmt.build_CMR_params(self.CMRparams, dataset=self.dataset, version=self._version,\
         #                 start=self._start, end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent)
         
-        # if not hasattr(self, 'reqparams'): self.reqparams = {}
+        if not hasattr(self, 'reqparams'): self.reqparams
         # self.reqparams = apifmt.build_reqconfig_params(self.reqparams,'download')
 
         # if self._geom_filepath == None: print('evaluating correctly here')
         
+        
+        if self._reqparams._reqtype == 'search':
+            self._reqparams._reqtype = 'download'
+            self._reqparams.build_params()
+
         if subset is False:
             self.subsetparams=None
         # else:
@@ -479,9 +488,9 @@ class Icesat2Data():
         #                             end=self._end, extent_type=self.extent_type, spatial_extent=self._spat_extent, **kwargs)
 
         #REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
+        
         if not hasattr(self, '_granules'): self.granules
-        self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, \
-                                verbose, subset, session=self._session, geom_filepath=self._geom_filepath, **kwargs)
+        self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, verbose, subset, session=self._session, geom_filepath=self._geom_filepath, **kwargs)
 
         #DELETE? DevNote: this may cause issues if you're trying to add to - but not replace - the variable list... should overall make that handle-able
 #         try:
@@ -512,9 +521,9 @@ class Icesat2Data():
             Unzip the downloaded granules.
         """
      
-        if not os.path.exists(path):
-            os.mkdir(path)
-        os.chdir(path)
+        # if not os.path.exists(path):
+        #     os.mkdir(path)
+        # os.chdir(path)
 
         if not hasattr(self, '_granules'): self.granules
             

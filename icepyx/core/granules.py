@@ -103,6 +103,8 @@ class Granules():
 
             results = json.loads(response.content)
 
+            # print(results)
+            
             if len(results['feed']['entry']) == 0:
                 # Out of results, so break out of loop
                 break
@@ -111,10 +113,15 @@ class Granules():
             self.avail.extend(results['feed']['entry'])
             reqparams['page_num'] += 1
 
+        print(reqparams['page_num'])
+        reqparams['page_num'] = int(np.ceil(len(self.avail)/reqparams['page_size']))
+        print(reqparams['page_num'])
+
         assert len(self.avail)>0, "Your search returned no results; try different search parameters"
 
     
-    def place_order(self, CMRparams, reqparams, subsetparams, verbose, subset=True, session=None, geom_filepath=None, **kwargs):
+    def place_order(self, CMRparams, reqparams, subsetparams, verbose, 
+                    subset=True, session=None, geom_filepath=None, **kwargs):
         """
         Place an order for the available granules for the ICESat-2 data object.
         Adds the list of zipped files (orders) to the data object.
@@ -147,14 +154,14 @@ class Granules():
         base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
         #DevGoal: get the base_url from the granules?
 
-        granules=self.get_avail(CMRparams, reqparams) #this way the reqparams['page_num'] is updated
+
+        self.get_avail(CMRparams, reqparams) #this way the reqparams['page_num'] is updated
 
         if subset is False:
             request_params = apifmt.combine_params(CMRparams, reqparams, {'agent':'NO'})
         else:
             request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
 
-        
         # Request data service for each page number, and unzip outputs
         for i in range(request_params['page_num']):
             page_val = i + 1
@@ -168,7 +175,7 @@ class Granules():
             if subset is True and geom_filepath is not None: #hasattr(self, '_geom_filepath'):
                 #post polygon file to OGR for geojson conversion
                 #DevGoal: what is this doing under the hood, and can we do it locally?
-                print(open(str(kwargs['geom_filepath']), 'rb'))
+                print(open(str(geom_filepath), 'rb'))
                 request = session.post(base_url, params=request_params, \
                                        files={'shapefile': open(str(geom_filepath), 'rb')})
             else:

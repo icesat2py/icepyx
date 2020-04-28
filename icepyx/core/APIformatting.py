@@ -132,7 +132,7 @@ class Parameters():
 
     """
 
-    def __init__(self, partype, values={}, reqtype=None):
+    def __init__(self, partype, values=None, reqtype=None):
         
         assert partype in ['CMR','required','subset'], "You need to submit a valid parametery type."
         self.partype = partype
@@ -142,7 +142,11 @@ class Parameters():
         self._reqtype = reqtype
         
         # self._wanted = wanted
-        self._fmted_keys = values
+        self._fmted_keys = values if values is not None else {}
+
+        # print('init values')
+        # print(self.partype)
+        # print(values)
 
         # if wanted == None and values is not None:
         #     self._wanted = values.keys()
@@ -228,7 +232,6 @@ class Parameters():
                 reqkeys = self.poss_keys[self._reqtype]
                 defaults={'page_size':10,'page_num':1,'request_mode':'async','include_meta':'Y'}
                 for key in reqkeys:
-                    print(key)
                     if key in kwargs:
                         self._fmted_keys.update({key:kwargs[key]})
         #                 elif key in defaults:
@@ -244,9 +247,7 @@ class Parameters():
                         pass
 
                 self._fmted_keys['page_num'] = 1
-                print(self._fmted_keys)
 
-        
         else:
             if self.check_values==True and kwargs==None: pass
             else:
@@ -283,12 +284,14 @@ class Parameters():
                     self._fmted_keys.update(_fmt_spatial(kwargs['extent_type'],kwargs['spatial_extent']))
             
             elif self.partype == 'subset':
-                if any(keys in self._fmted_keys for keys in spatial_keys) or not hasattr(kwargs,'geom_filepath'):
+                if any(keys in self._fmted_keys for keys in spatial_keys) or 'geom_filepath' in kwargs.keys():
+                    if 'geom_filepath' in kwargs.keys():
+                        print('Your geometry file will be submitted as a subset parameter unless you set subsetting to False during ordering')
                     pass
                 else:
                     if kwargs['extent_type'] == 'bounding_box':
                         k = 'bbox'
                     elif kwargs['extent_type'] == 'polygon':
                         k = 'bounding_shape'
-                    self._fmted_keys.update.update(_fmt_spatial(k,kwargs['spatial_extent']))
+                    self._fmted_keys.update(_fmt_spatial(k,kwargs['spatial_extent']))
             

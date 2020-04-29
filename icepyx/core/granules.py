@@ -12,7 +12,7 @@ import icepyx.core.APIformatting as apifmt
 def info(grans):
     """
     Return some basic information about a set of granules for an 
-    ICESat-2 data object. Granule info may be from a list of those available
+    icesat2data object. Granule info may be from a list of those available
     from NSIDC (for ordering/download) or a list of granules present on the
     file system.
 
@@ -37,18 +37,7 @@ class Granules():
     """
     Interact with ICESat-2 data granules. This includes finding,
     ordering, and downloading them as well as (not yet implemented) getting already
-    downloaded granules into the ICESat-2 data object.
-
-    Parameters
-    ----------
-    avail : dict?
-        Earthdata Login user name (user ID).
-    orderIDs : list of strings
-
-    files : list of filename strings
-
-    session : need to put here?
-
+    downloaded granules into the icesat2data object.
 
     Returns
     -------
@@ -72,19 +61,25 @@ class Granules():
         # self.orderIDs = orderIDs
         # self.files = files
         # session = session
-
-        # assert isinstance(uid, str), "Enter your login user id as a string"
-        # assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
-
-        # print(session)
-    
     
     # ----------------------------------------------------------------------
     # Methods
 
     def get_avail(self, CMRparams, reqparams):
         """
-        Get a list of available granules for the ICESat-2 data object's parameters
+        Get a list of available granules for the icesat2data object's parameters.
+
+        Parameters
+        ----------
+        CMRparams : dictionary
+            Dictionary of properly formatted CMR search parameters.
+        reqparams : dictionary
+            Dictionary of properly formatted parameters required for searching, ordering,
+            or downloading from NSIDC.
+
+        See Also
+        --------
+        APIformatting.Parameters
         """
 
         assert CMRparams is not None and reqparams is not None, "Missing required input parameter dictionaries"
@@ -114,7 +109,6 @@ class Granules():
             reqparams['page_num'] += 1
 
         #DevNote: The above calculated page_num is wrong when mod(granule number, page_size)=0. 
-        #         The fix below is a brute force though. 
         # print(reqparams['page_num'])
         reqparams['page_num'] = int(np.ceil(len(self.avail)/reqparams['page_size']))
         # print(reqparams['page_num'])
@@ -125,29 +119,37 @@ class Granules():
     def place_order(self, CMRparams, reqparams, subsetparams, verbose, 
                     subset=True, session=None, geom_filepath=None, **kwargs):
         """
-        Place an order for the available granules for the ICESat-2 data object.
-        Adds the list of zipped files (orders) to the data object.
+        Place an order for the available granules for the icesat2data object.
+        Adds the list of zipped files (orders) to the granules data object (which is
+        stored as the `granules` attribute of the icesat2data object).
         DevGoal: add additional kwargs to allow subsetting and more control over request options.
-        Note: This currently uses paging to download data - this may not be the best method
-        You must already be logged in to Earthdata to use this function.
+        You must be logged in to Earthdata to use this function.
 
         Parameters
         ----------
-        session : requests.session object
-            A session object authenticating the user to download data using their Earthdata login information.
-            The session object can be obtained using is2_data.earthdata_login(uid, email) and entering your
-            Earthdata login password when prompted. You must have previously registered for an Earthdata account.
-
+        CMRparams : dictionary
+            Dictionary of properly formatted CMR search parameters.
+        reqparams : dictionary
+            Dictionary of properly formatted parameters required for searching, ordering,
+            or downloading from NSIDC.
+        subsetparams : dictionary
+            Dictionary of properly formatted subsetting parameters. An empty dictionary
+            is passed as input here when subsetting is set to False in icesat2data methods.
         verbose : boolean, default False
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
-
         subset : boolean, default True
             Use input temporal and spatial search parameters to subset each granule and return only data
             that is actually within those parameters (rather than complete granules which may contain only
             a small area of interest).
-
+        session : requests.session object
+            A session object authenticating the user to order data using their Earthdata login information.
+            The session object will automatically be passed from the icesat2data object if you
+            have successfully logged in there.
+        geom_filepath : string, default None
+            String of the full filename and path when the spatial input is a file.
         kwargs...
+        
         """
 
         if session is None:
@@ -179,7 +181,7 @@ class Granules():
         # For all requests other than spatial file upload, use get function
         #add line here for using post instead of get with polygon and subset
         #also, make sure to use the full polygon, not the simplified one used for finding granules
-            if subset is True and geom_filepath is not None: #hasattr(self, '_geom_filepath'):
+            if subset is True and geom_filepath is not None:
                 #post polygon file to OGR for geojson conversion
                 #DevGoal: what is this doing under the hood, and can we do it locally?
                 print(open(str(geom_filepath), 'rb'))
@@ -276,17 +278,20 @@ class Granules():
     
     def download(self, verbose, path, session=None):
         """
-        Downloads the data ordered using order_granules.
+        Downloads the data for the object's orderIDs, which are generated by ordering data
+        from the NSIDC.
 
         Parameters
         ----------
+        verbose : boolean, default False
+            Print out all feedback available from the order process.
+            Progress information is automatically printed regardless of the value of verbose.
+        path : string
+            String with complete path to desired download directory and location.
         session : requests.session object
             A session object authenticating the user to download data using their Earthdata login information.
-            The session object can be obtained using is2_data.earthdata_login(uid, email) and entering your
-            Earthdata login password when prompted. You must have previously registered for an Earthdata account.
-        verbose : boolean, default False
-            Print out all feedback available from the download process.
-            Progress information is automatically printed regardless of the value of verbose.
+            The session object will automatically be passed from the icesat2data object if you
+            have successfully logged in there.
         """
         """
         extract : boolean, default False
@@ -299,12 +304,6 @@ class Granules():
             #DevGoal: make this a more robust check for an active session
 
         if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
-            # print('got into the if')
-            # try:
-            #     self.place_order(verbose=verbose)
-            # except:
-            #     if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
-            #         raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
             raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
 
         

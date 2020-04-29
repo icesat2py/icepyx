@@ -5,6 +5,9 @@ import warnings
 import icepyx.core.APIformatting as apifmt
 
 def dset_version(latest_vers, version):
+    """
+    Check if the submitted dataset version is valid, and warn the user if a newer version is available.
+    """
     if version is None:
         vers = latest_vers
     else:
@@ -24,6 +27,9 @@ def dset_version(latest_vers, version):
 
 #DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
 def spatial(spatial_extent):
+    """
+    Validate the input spatial extent and return the needed parameters to the icesat2data object.
+    """
     if isinstance(spatial_extent, list):
         #bounding box
         if len(spatial_extent)==4 and all(type(i) in [int, float] for i in spatial_extent):
@@ -81,6 +87,9 @@ def spatial(spatial_extent):
     return extent_type, _spat_extent, _geom_filepath
 
 def temporal(date_range, start_time, end_time):
+    """
+    Validate the input temporal parameters and return the needed parameters to the icesat2data object.
+    """
     if isinstance(date_range, list):
         if len(date_range)==2:
             _start = dt.datetime.strptime(date_range[0], '%Y-%m-%d')

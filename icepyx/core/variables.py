@@ -3,7 +3,6 @@ import numpy as np
 import os
 import pprint
 
-# from icepyx.core.is2class import Icesat2Data as is2d
 import icepyx.core.is2ref as is2ref
 
 #DEVGOAL: use h5py to simplify some of these tasks, if possible!
@@ -16,11 +15,25 @@ class Variables():
 
     Parameters
     ----------
-    source : path to directory, list of files, or ICESat-2 data object
-        Inputs for the source of variables...
     vartype : string
         One of ['order', 'file'] to indicate the source of the input variables.
-        This field will be auto-populated...
+        This field will be auto-populated when a variable object is created as an
+        attribute of an icesat2data object.
+    avail : dictionary, default None
+        Dictionary (key:values) of available variable names (keys) and paths (values).
+    wanted : dictionary, default None
+        As avail, but for the desired list of variables
+    session : requests.session object
+        A session object authenticating the user to download data using their Earthdata login information.
+        The session object will automatically be passed from the icesat2data object if you
+        have successfully logged in there.
+    dataset : string, default None
+        Properly formatted string specifying a valid ICESat-2 dataset
+    version : string, default None
+        Properly formatted string specifying a valid version of the ICESat-2 dataset
+    source : string, default None
+        For vartype file, a path to a directory or single input source files (not yet implemented)
+
     
     Examples
     --------
@@ -160,7 +173,6 @@ class Variables():
     
     #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
     #DevGoal: we need to re-introduce, if possible, the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc. Right now, they would get all latitude paths and all profile_1 paths. Maybe we can have a inclusive/exclusive boolean trigger?
-    #DEVGOAL: we need to be explicit about our handling of existing variables. Does this function append new paths or replace any previously existing list? I think trying to make it so that it can remove paths would be too much, but the former distinction could easily be done with a boolean flag.
     #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
     #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
     #DevGoal: actuall implement use of the inclusive flag!
@@ -312,9 +324,8 @@ class Variables():
     # print(self.wanted)  
     
     
- #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
+    #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
     #DevGoal: we need to re-introduce, if possible, the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc. Right now, they would get all latitude paths and all profile_1 paths. Maybe we can have a inclusive/exclusive boolean trigger?
-    #DEVGOAL: we need to be explicit about our handling of existing variables. Does this function append new paths or replace any previously existing list? I think trying to make it so that it can remove paths would be too much, but the former distinction could easily be done with a boolean flag.
     #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
     #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
     def remove(self, all=False, inclusive=False, var_list=None, beam_list=None, keyword_list=None):

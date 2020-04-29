@@ -85,8 +85,6 @@ class Earthdata():
         If the login fails, it will ask the user to re-enter their
         username and password up to five times to try and log in.
 
-
-
         """
         self.pswd = getpass.getpass('Earthdata Login password: ')
         for i in range(5):

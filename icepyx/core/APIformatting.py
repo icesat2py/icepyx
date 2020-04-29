@@ -45,7 +45,7 @@ def _fmt_spatial(ext_type,extent):
 
     Parameters
     ----------
-    extent_type : string
+    ext_type : string
         Spatial extent type. Must be one of ['bounding_box', 'polygon'] for data searching
         or one of ['bbox, 'bounding_shape'] for subsetting.
     extent : list
@@ -110,6 +110,9 @@ def _fmt_var_subset_list(vdict):
 
 
 def combine_params(*param_dicts):
+    """
+    Combine multiple dictionaries into one.
+    """
     params={}
     for dictionary in param_dicts:
         params.update(dictionary)
@@ -127,9 +130,13 @@ class Parameters():
     partype : string
         Type of parameter list. Must be one of ['CMR','required','subset']
     
-    wanted : list of strings
-        List of wanted keys to format.
+    values : dictionary, default None
+        Dictionary of already-formatted parameters, if there are any, to avoid
+        re-creating them.
 
+    reqtype : string, default None
+        For `partype=='required'`, indicates which parameters are required based
+        on the type of query. Must be one of ['search','download']
     """
 
     def __init__(self, partype, values=None, reqtype=None):
@@ -141,25 +148,20 @@ class Parameters():
             assert reqtype in ['search','download'], "A valid require parameter type is needed"
         self._reqtype = reqtype
         
-        # self._wanted = wanted
         self._fmted_keys = values if values is not None else {}
-
-        # print('init values')
-        # print(self.partype)
-        # print(values)
-
-        # if wanted == None and values is not None:
-        #     self._wanted = values.keys()
 
 
     @property
     def poss_keys(self):
+        """
+        Returns a list of possible input keys for the given parameter object.
+        Possible input keys depend on the parameter type (partype).
+        """
+
         if not hasattr(self,'_poss_keys'):
             self._get_possible_keys()
         
         return self._poss_keys
-
-        # return pprint(self._poss_keys)
 
     # @property
     # def wanted_keys(self):
@@ -170,13 +172,17 @@ class Parameters():
     
     @property
     def fmted_keys(self):
-        # if not hasattr(self,'_fmted_keys'):
-        #     self._fmted_keys = {}
-        
+        """
+        Returns the dictionary of formated keys associated with the
+        parameter object.
+        """    
         return self._fmted_keys
 
 
     def _get_possible_keys(self):
+        """
+        Use the parameter type to get a list of possible parameter keys.
+        """
         
         if self.partype == 'CMR':
             self._poss_keys = {'default': ['short_name','version','temporal'], 'spatial': ['bounding_box','polygon'], 'optional': []}
@@ -187,26 +193,36 @@ class Parameters():
 
 
     def _check_valid_keys(self):
+        """
+        Checks that any keys passed in with values are valid keys.
+        """
         
         # if self._wanted == None:
         #     raise ValueError("No desired parameter list was passed")
-        
-        if not hasattr(self, '_poss_keys'): self._get_possible_keys()
-        
-        for key in self._fmted_keys.values():
-            assert key in self._poss_keys.values(), "An invalid key was passed"
+            
+        for key in self.fmted_keys.keys():
+            assert key in self.poss_keys.values(), "An invalid key was passed"
 
     
     def check_req_values(self):
+        """
+        Check that all of the required keys have values, if the key was passed in with
+        the values parameter.
+        """
         reqkeys = self.poss_keys[self._reqtype]
 
-        if all(keys in self._fmted_keys.keys() for keys in reqkeys):
-            assert all(values in self._fmted_keys.values() for keys in reqkeys), "One of your formated parameters is missing a value"
+        if all(keys in self.fmted_keys.keys() for keys in reqkeys):
+            assert all(values in self.fmted_keys.values() for keys in reqkeys), "One of your formated parameters is missing a value"
             return True
         else:
             return False
 
+
     def check_values(self):
+        """
+        Check the values of the non-required keys have values, if the key was
+        passed in with the values parameter.
+        """
         default_keys = self.poss_keys['default']
     
         spatial_keys = self.poss_keys['spatial']
@@ -223,6 +239,9 @@ class Parameters():
             return False
 
     def build_params(self, **kwargs):
+        """
+        Build the parameter dictionary of formatted key:value pairs.
+        """
         
         if not kwargs: kwargs={}
 

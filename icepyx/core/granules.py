@@ -113,6 +113,8 @@ class Granules():
             self.avail.extend(results['feed']['entry'])
             reqparams['page_num'] += 1
 
+        #DevNote: The above calculated page_num is wrong when mod(granule number, page_size)=0. 
+        #         The fix below is a brute force though. 
         print(reqparams['page_num'])
         reqparams['page_num'] = int(np.ceil(len(self.avail)/reqparams['page_size']))
         print(reqparams['page_num'])
@@ -163,7 +165,10 @@ class Granules():
             request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
 
         # Request data service for each page number, and unzip outputs
-        for i in range(request_params['page_num']):
+        #DevNote: This was a temporary fix for the issue that the page_num in request_params is not updated, which is still one. 
+        #         It seems still the case here. But this way, the subsetparams update above is lost.
+        #         So it might be better to keep using request_params below but update its page_num before loop.
+        for i in range(reqparams['page_num']):
             page_val = i + 1
             if verbose is True:
                 print('Order: ', page_val)
@@ -295,7 +300,7 @@ class Granules():
             #         raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
             raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
 
-
+        
         for order in self.orderIDs:
             downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + order + '.zip'
             #DevGoal: get the download_url from the granules

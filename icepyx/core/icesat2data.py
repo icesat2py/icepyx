@@ -355,9 +355,9 @@ class Icesat2Data():
 
         See Also
         --------
-        avail_granules()
-        order_granules()
-        download_granules()
+        self.avail_granules()
+        self.order_granules()
+        self.download_granules()
         granules.Granules
 
         Examples
@@ -493,7 +493,7 @@ class Icesat2Data():
 
         if subset is False:
             self._subsetparams=None
-        elif subset==True and self._subsetparams==None:
+        elif subset==True and hasattr(self, '_subsetparams') and self._subsetparams==None:
             del self._subsetparams
      
         #REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
@@ -533,6 +533,7 @@ class Icesat2Data():
     #DevGoal: add testing? What do we test, and how, given this is a visualization.
     #DevGoal(long term): modify this to accept additional inputs, etc.
     #DevGoal: move this to it's own module for visualizing, etc.
+    #DevGoal: see Amy's data access notebook for a zoomed in map - implement here?
     def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
         """
         Creates a map displaying the input spatial extent

@@ -84,7 +84,8 @@ class Granules():
 
         assert CMRparams is not None and reqparams is not None, "Missing required input parameter dictionaries"
 
-        if not hasattr(self, 'avail'): self.avail=[]
+        # if not hasattr(self, 'avail'): 
+        self.avail=[]
 
         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
 
@@ -166,7 +167,7 @@ class Granules():
         else:
             request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
 
-        print(request_params)
+        # print(request_params)
 
         # Request data service for each page number, and unzip outputs
         #DevNote: This was a temporary fix for the issue that the page_num in request_params is not updated, which is still one. 

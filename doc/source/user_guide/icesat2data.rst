@@ -48,7 +48,3 @@ Methods
    Icesat2Data.order_granules
    Icesat2Data.show_custom_options
    Icesat2Data.visualize_spatial_extent
-   Icesat2Data.build_CMR_params
-   Icesat2Data.build_reqconfig_params
-   Icesat2Data.build_subset_params
-   Icesat2Data.geodataframe

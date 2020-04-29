@@ -275,15 +275,18 @@ class Icesat2Data():
     def subsetparams(self, **kwargs):
         if not hasattr(self, '_subsetparams'): self._subsetparams = apifmt.Parameters('subset')
         
-        if self._geom_filepath is not None:
-            self._subsetparams.build_params(geom_filepath = self._geom_filepath, \
-                                start=self._start, end=self._end, extent_type=self.extent_type, \
-                                spatial_extent=self._spat_extent, **kwargs)
+        if self._subsetparams==None:
+            return {}
         else:
-            self._subsetparams.build_params(start=self._start, end=self._end,\
-                         extent_type=self.extent_type, spatial_extent=self._spat_extent, **kwargs)
+            if self._geom_filepath is not None:
+                self._subsetparams.build_params(geom_filepath = self._geom_filepath, \
+                                    start=self._start, end=self._end, extent_type=self.extent_type, \
+                                    spatial_extent=self._spat_extent, **kwargs)
+            else:
+                self._subsetparams.build_params(start=self._start, end=self._end,\
+                            extent_type=self.extent_type, spatial_extent=self._spat_extent, **kwargs)
 
-        return self._subsetparams.fmted_keys
+            return self._subsetparams.fmted_keys
     
     #DevGoal: add to tests
     #DevGoal: add statements to the following vars properties to let the user know if they've got a mismatched source and vars type
@@ -475,7 +478,9 @@ class Icesat2Data():
             self._reqparams.build_params()
 
         if subset is False:
-            self.subsetparams=None
+            self._subsetparams=None
+        elif subset==True and self._subsetparams==None:
+            del self._subsetparams
         # else:
         #     if not hasattr(self, 'subsetparams'): self.subsetparams = {}
             

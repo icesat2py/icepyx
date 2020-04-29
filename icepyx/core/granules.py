@@ -115,9 +115,9 @@ class Granules():
 
         #DevNote: The above calculated page_num is wrong when mod(granule number, page_size)=0. 
         #         The fix below is a brute force though. 
-        print(reqparams['page_num'])
+        # print(reqparams['page_num'])
         reqparams['page_num'] = int(np.ceil(len(self.avail)/reqparams['page_size']))
-        print(reqparams['page_num'])
+        # print(reqparams['page_num'])
 
         assert len(self.avail)>0, "Your search returned no results; try different search parameters"
 
@@ -164,6 +164,8 @@ class Granules():
         else:
             request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
 
+        print(request_params)
+
         # Request data service for each page number, and unzip outputs
         #DevNote: This was a temporary fix for the issue that the page_num in request_params is not updated, which is still one. 
         #         It seems still the case here. But this way, the subsetparams update above is lost.
@@ -186,6 +188,7 @@ class Granules():
             else:
                 request = session.get(base_url, params=request_params)
             
+            print(request.content)
             root=ET.fromstring(request.content)
             print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
 
@@ -263,6 +266,10 @@ class Granules():
 
                 self.orderIDs.append(orderID)
             else: print('Request failed.')
+
+            if subset is True and geom_filepath is not None:
+                close(str(geom_filepath))
+
 
         return self.orderIDs
 

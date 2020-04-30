@@ -22,6 +22,7 @@ def geodataframe(extent_type, spatial_extent):
             #DevGoal: check to see that the box is actually correctly constructed; have not checked actual location of test coordinates
             gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx,boxy)))])
 
+        #DevGoal: Currently this if/else within this elif are not tested...
         elif extent_type == 'polygon':
             if isinstance(spatial_extent,str):
                 spat_extent = spatial_extent.split(',')

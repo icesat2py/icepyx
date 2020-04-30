@@ -67,7 +67,7 @@ def spatial(spatial_extent):
         else:
             raise ValueError('Your spatial extent does not meet minimum input criteria')
         
-        #DevGoal: write a test for this
+        #DevGoal: write a test for this?
         #make sure there is nothing set to _geom_filepath since its existence determines later steps
         try: del _geom_filepath
         except: UnboundLocalError
@@ -83,6 +83,7 @@ def spatial(spatial_extent):
         else:
             raise TypeError('Input spatial extent file must be a kml, shp, or gpkg')
 
+    #DevGoal: currently no specific test for this if statement...
     if '_geom_filepath' not in locals(): _geom_filepath = None
     return extent_type, _spat_extent, _geom_filepath
 

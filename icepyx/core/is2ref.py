@@ -29,8 +29,8 @@ def about_dataset(dset):
     results = json.loads(response.content)
     return results
 
-#DevGoal: add a test to compare the generated list with an existing [checked] one (right now this is done explicitly for keywords, but not for values)?
-#DevGoal: use a mock of this ping to test later functions, such as displaying options and widgets, etc.
+
+#DevGoal: use a mock of this output to test later functions, such as displaying options and widgets, etc.
 def _get_custom_options(session, dataset, version):
     """
     Get lists of what customization options are available for the dataset from NSIDC.

@@ -184,7 +184,7 @@ class Icesat2Data():
         if self.extent_type == 'bounding_box':
             return ['bounding box', self._spat_extent]
         elif self.extent_type == 'polygon':
-            return ['polygon', [self._spat_extent[0::2], self._spat_extent[1::2]]]
+            return ['polygon', self._spat_extent] #[self._spat_extent[0::2], self._spat_extent[1::2]]]
         else:
             return ['unknown spatial type', None]
 
@@ -355,9 +355,9 @@ class Icesat2Data():
 
         See Also
         --------
-        self.avail_granules()
-        self.order_granules()
-        self.download_granules()
+        avail_granules
+        order_granules
+        download_granules
         granules.Granules
 
         Examples
@@ -461,18 +461,15 @@ class Icesat2Data():
         """
         Get a list of available granules for the icesat2data object's parameters.
 
-        See Also
-        --------
-        granules.avail
         """
         
         #REFACTOR: add test to make sure there's a session
-        try: return granules.info(self._granules.avail)
+        if not hasattr(self, '_granules'): self.granules
+        try: return self.granules.avail
         except AttributeError:
-            if not hasattr(self, '_granules'): self.granules
-            self._granules.get_avail(self.CMRparams,self.reqparams)
+            self.granules.get_avail(self.CMRparams,self.reqparams)
 
-            return granules.info(self._granules.avail)
+        return granules.info(self.granules.avail)
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     #DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.

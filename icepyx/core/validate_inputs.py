@@ -1,8 +1,10 @@
 import datetime as dt
 import os
 import warnings
+import geopandas as gpd
 
 import icepyx.core.APIformatting as apifmt
+import icepyx.core.geospatial as geospatial
 
 def dset_version(latest_vers, version):
     """
@@ -72,12 +74,18 @@ def spatial(spatial_extent):
         try: del _geom_filepath
         except: UnboundLocalError
 
+    #DevGoal: revisit this section + geospatial.geodataframe. There might be some good ways to combine the functionality in these checks with that
     elif isinstance(spatial_extent, str):
         assert os.path.exists(spatial_extent), "Check that the path and filename of your geometry file are correct"
         #DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
         if spatial_extent.split('.')[-1] in ['kml','shp','gpkg']:
             extent_type = 'polygon'
-            _spat_extent = apifmt._fmt_polygon(spatial_extent)
+            gdf = geospatial.geodataframe(extent_type, spatial_extent, file=True)
+            # print(gdf.iloc[0].geometry)
+            #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
+            #RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
+            _spat_extent = gdf.iloc[0].geometry
+            # _spat_extent = apifmt._fmt_polygon(spatial_extent)
             _geom_filepath = spatial_extent
 
         else:

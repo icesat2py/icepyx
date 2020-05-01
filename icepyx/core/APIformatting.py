@@ -39,7 +39,7 @@ def _fmt_temporal(start,end,key):
     return {key:fmt_timerange}
 
 
-def _fmt_spatial(ext_type,extent):
+def _fmt_spatial(ext_type, extent):
     """
     Format the spatial extent input into a spatial CMR search or subsetting key value.
 
@@ -47,46 +47,37 @@ def _fmt_spatial(ext_type,extent):
     ----------
     ext_type : string
         Spatial extent type. Must be one of ['bounding_box', 'polygon'] for data searching
-        or one of ['bbox, 'bounding_shape'] for subsetting.
+        or one of ['bbox, 'Boundingshape'] for subsetting.
     extent : list
         Spatial extent, with input format dependent on the extent type and search.
         Bounding box (bounding_box, bbox) coordinates should be provided in decimal degrees as
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon (polygon, bounding_shape) coordinates should be provided in decimal degrees as
+        Polygon (polygon, Boundingshape) coordinates should be provided in decimal degrees as
         [longitude, latitude, longitude2, latitude2... longituden, latituden].
     """
 
     #CMR keywords: ['bounding_box', 'polygon']
-    #subsetting keywords: ['bbox','bounding_shape']
-    assert ext_type in ['bounding_box', 'polygon'] or ext_type in ['bbox','bounding_shape'],\
+    #subsetting keywords: ['bbox','Boundingshape']
+    assert ext_type in ['bounding_box', 'polygon'] or ext_type in ['bbox','Boundingshape'],\
     "Invalid spatial extent type."
 
-    fmt_extent = ','.join(map(str, extent))
+    if ext_type in ['bounding_box', 'bbox']:
+        fmt_extent = ','.join(map(str, extent))
+
+    elif ext_type == 'polygon':
+        #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
+        poly = extent.simplify(0.05, preserve_topology=False)
+        poly = orient(poly, sign=1.0)
+
+        #Format dictionary to polygon coordinate pairs for API submission
+        polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
+        extent = [float(i) for i in polygon]
+        fmt_extent = ','.join(map(str, extent))
+
+    elif ext_type == 'Boundingshape':
+        fmt_extent = gpd.GeoSeries(extent).to_json()
 
     return {ext_type: fmt_extent}
-
-
-def _fmt_polygon(spatial_extent):
-    """
-    Formats input spatial file to shapely polygon
-
-    """
-    #polygon formatting code borrowed from Amy Steiker's 03_NSIDCDataAccess_Steiker.ipynb demo.
-    #DevGoal: use new function geodataframe here?
-
-    gdf = gpd.read_file(spatial_extent)
-    #DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
-    #RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
-    poly = gdf.iloc[0].geometry
-    #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-    poly = poly.simplify(0.05, preserve_topology=False)
-    poly = orient(poly, sign=1.0)
-
-    #JESSICA - move this into a separate function/CMR formatting piece, since it will need to be used for an input polygon too?
-    #Format dictionary to polygon coordinate pairs for CMR polygon filtering
-    polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
-    polygon = [float(i) for i in polygon]
-    return polygon
 
 
 def _fmt_var_subset_list(vdict):
@@ -189,7 +180,7 @@ class Parameters():
         elif self.partype == 'required':
             self._poss_keys = {'search': ['page_size','page_num'], 'download': ['page_size','page_num','request_mode','token','email','include_meta']}
         elif self.partype == 'subset':
-            self._poss_keys = {'default': ['time'],'spatial': ['bbox','bounding_shape'],'optional': ['format','projection','projection_parameters','Coverage']}
+            self._poss_keys = {'default': ['time'],'spatial': ['bbox','Boundingshape'],'optional': ['format','projection','projection_parameters','Coverage']}
 
 
     def _check_valid_keys(self):
@@ -295,22 +286,16 @@ class Parameters():
                     else:
                         pass
             
-
-            if self.partype == 'CMR':
+                
                 if any(keys in self._fmted_keys for keys in spatial_keys):
                     pass
                 else:
-                    self._fmted_keys.update(_fmt_spatial(kwargs['extent_type'],kwargs['spatial_extent']))
-            
-            elif self.partype == 'subset':
-                if any(keys in self._fmted_keys for keys in spatial_keys) or 'geom_filepath' in kwargs.keys():
-                    if 'geom_filepath' in kwargs.keys():
-                        print('Your geometry file will be submitted as a subset parameter unless you set subsetting to False during ordering')
-                    pass
-                else:
-                    if kwargs['extent_type'] == 'bounding_box':
-                        k = 'bbox'
-                    elif kwargs['extent_type'] == 'polygon':
-                        k = 'bounding_shape'
+                    if self.partype =='CMR':
+                        k = kwargs['extent_type']
+                    elif self.partype == 'subset':
+                        if kwargs['extent_type'] == 'bounding_box':
+                            k = 'bbox'
+                        elif kwargs['extent_type'] == 'polygon':
+                            k = 'Boundingshape'
+                    
                     self._fmted_keys.update(_fmt_spatial(k,kwargs['spatial_extent']))
-            

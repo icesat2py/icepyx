@@ -166,9 +166,7 @@ class Granules():
             request_params = apifmt.combine_params(CMRparams, reqparams, {'agent':'NO'})
         else:
             request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
-
-        # print(request_params)
-
+  
         # Request data service for each page number, and unzip outputs
         #DevNote: This was a temporary fix for the issue that the page_num in request_params is not updated, which is still one. 
         #         It seems still the case here. But this way, the subsetparams update above is lost.
@@ -179,19 +177,13 @@ class Granules():
                 print('Order: ', page_val)
             request_params.update( {'page_num': page_val} )
 
-        # For all requests other than spatial file upload, use get function
-        #add line here for using post instead of get with polygon and subset
-        #also, make sure to use the full polygon, not the simplified one used for finding granules
-            if subset is True and geom_filepath is not None:
-                #post polygon file to OGR for geojson conversion
-                #DevGoal: what is this doing under the hood, and can we do it locally?
-                print(open(str(geom_filepath), 'rb'))
-                request = session.post(base_url, params=request_params, \
-                                       files={'shapefile': open(str(geom_filepath), 'rb')})
-            else:
-                request = session.get(base_url, params=request_params)
+            #DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
+            #into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general
+            #solution does, so the geospatial parameters are included in the parameter dictionaries.
+            request = session.get(base_url, params=request_params)
             
-            print(request.content)
+            #DevGoal: use the request response/number to do some error handling/give the user better messaging for failures
+            # print(request.content)
             root=ET.fromstring(request.content)
             print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
 
@@ -269,10 +261,6 @@ class Granules():
 
                 self.orderIDs.append(orderID)
             else: print('Request failed.')
-
-            if subset is True and geom_filepath is not None:
-                close(str(geom_filepath))
-
 
         return self.orderIDs
 

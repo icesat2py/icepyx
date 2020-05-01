@@ -1,7 +1,7 @@
 import geopandas as gpd
 from shapely.geometry import Polygon
  
-def geodataframe(extent_type, spatial_extent):
+def geodataframe(extent_type, spatial_extent, file=False):
         """
         Return a geodataframe of the spatial extent
 
@@ -23,13 +23,18 @@ def geodataframe(extent_type, spatial_extent):
             gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx,boxy)))])
 
         #DevGoal: Currently this if/else within this elif are not tested...
-        elif extent_type == 'polygon':
+        #DevGoal: the crs setting and management needs to be improved
+        elif extent_type == 'polygon' and file==False:
             if isinstance(spatial_extent,str):
                 spat_extent = spatial_extent.split(',')
+                spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
             else:
-                spat_extent = spatial_extent
-            spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
+                spatial_extent_geom = spatial_extent
+            
             gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
+
+        elif extent_type == 'polygon' and file==True:
+            gdf = gpd.read_file(spatial_extent)
 
         else:
             raise TypeError("Your spatial extent type (" + extent_type + ") is not an accepted input and a geodataframe cannot be constructed")

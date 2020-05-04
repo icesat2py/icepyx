@@ -19,6 +19,7 @@ def _validate_dataset(dataset):
     return dataset
 #DevGoal: See if there's a way to dynamically get this list so it's automatically updated
     
+#DevNote: test for this function is commented out; dates in some of the values were causing the test to fail...
 def about_dataset(dset):
     """
     Ping Earthdata to get metadata about the dataset of interest (the collection).

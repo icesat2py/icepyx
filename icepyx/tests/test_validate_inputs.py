@@ -1,5 +1,6 @@
 import pytest
 import warnings
+import datetime as dt
 
 import icepyx.core.validate_inputs as val
 
@@ -35,37 +36,38 @@ def test_old_version():
 def test_intlist_bbox():
     obs = val.spatial([-64, 66, -55, 72])
     expected = ['bounding_box', [-64, 66, -55, 72], None]
-    for i in len(expected):
+    for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_floatlist_bbox():
     obs = val.spatial([-64.2, 66.2, -55.5, 72.5])
     expected = ['bounding_box', [-64.2, 66.2, -55.5, 72.5], None]
-    for i in len(expected):
+    for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_list_latlon_pairs():
     obs = val.spatial([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
-    expected = ['polygon', [[-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0]], None]
-    for i in len(expected):
+    expected = ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0], None]
+    for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_tuple_latlon_pairs():
     obs = val.spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
-    expected = ['polygon', [[-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0]], None]
-    for i in len(expected):
+    expected = ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0], None]
+    for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_intlist_latlon_coords():
     obs = val.spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68])
-    expected = ['polygon', [[-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0]], None]
-    for i in len(expected):
+    print(obs)
+    expected = ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0], None]
+    for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_floatlist_latlon_coords():
-    obs = val.spatial([-55.0, 68.7, -55.0, 71, -48, 71, -48, 68.7, -55.0, 68])
-    expected = ['polygon', [[-55.0, -55.0, -48.0, -48.0, -55.0], [68.7, 71.0, 71.0, 68.7, 68.7]], None]
-    for i in len(expected):
+    obs = val.spatial([-55.0, 68.7, -55.0, 71, -48, 71, -48, 68.7, -55.0, 68.7])
+    expected = ['polygon', [-55.0, 68.7, -55.0, 71.0, -48.0, 71.0, -48.0, 68.7, -55.0, 68.7], None]
+    for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_spat_input_type():
@@ -86,25 +88,25 @@ def test_poly_spat_file_input():
 def test_date_range_order():
     ermsg = "Your date range is invalid"
     with pytest.raises(AssertionError, match=ermsg):
-        val.temporal(['2019-03-22','2019-02-28'])
+        val.temporal(['2019-03-22','2019-02-28'], None, None)
 
 def test_bad_date_range():
     ermsg = "Your date range list is the wrong length. It should have start and end dates only."
     with pytest.raises(ValueError, match=ermsg):
-        val.temporal(['2019-02-22'])
+        val.temporal(['2019-02-22'], None, None)
 
 def test_time_defaults():
     obs_st, obs_end = val.temporal(['2019-02-22','2019-02-28'], None, None)
-    exp_start = '00:00:00'
-    exp_end = '23:59:59'
-    assert obs_start == exp_start
+    exp_start = dt.datetime(2019,2,22,00,00,00)
+    exp_end = dt.datetime(2019,2,28,23,59,59)
+    assert obs_st == exp_start
     assert obs_end == exp_end
 
 def test_time_validstr():
     obs_st, obs_end = val.temporal(['2019-02-22','2019-02-28'], '13:50:59', '23:15:00')
-    exp_start = '13:50:59'
-    exp_end = '23:15:00'
-    assert obs_start == exp_start
+    exp_start = dt.datetime(2019,2,22,13,50,59)
+    exp_end = dt.datetime(2019,2,28,23,15)
+    assert obs_st == exp_start
     assert obs_end == exp_end
 
 def test_starttime_validstr():
@@ -115,4 +117,4 @@ def test_starttime_validstr():
 def test_endtime_validstr():
     ermsg = "Please enter your end time as a string"
     with pytest.raises(TypeError, match=ermsg):
-        val.temporal(['2019-02-22','2019-02-28'], '00:15:00', '23:59:59')
+        val.temporal(['2019-02-22','2019-02-28'], '00:15:00', 235959)

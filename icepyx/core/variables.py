@@ -8,6 +8,7 @@ import icepyx.core.is2ref as is2ref
 #DEVGOAL: use h5py to simplify some of these tasks, if possible!
 
 #REFACTOR: class needs better docstrings
+#DevNote: currently this class is not tested
 class Variables():
     """
     Get, create, interact, and manipulate lists of variables and variable paths

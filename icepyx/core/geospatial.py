@@ -33,6 +33,7 @@ def geodataframe(extent_type, spatial_extent, file=False):
             
             gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
 
+        #DevGoal: Currently this elif isn't tested...
         elif extent_type == 'polygon' and file==True:
             gdf = gpd.read_file(spatial_extent)
 

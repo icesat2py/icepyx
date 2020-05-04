@@ -54,5 +54,5 @@ def test_correct_granule_list_returned():
     assert set(obs_grans) == set(exp_grans)
 
         
-#CMR temporal and spatial formats --> what's the best way to compare formatted text? character by character comparison of strings?
+
 #check that search results are correct (spatially, temporally, match actually available data)

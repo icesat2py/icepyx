@@ -21,6 +21,7 @@ import icepyx.core.validate_inputs as val
 
 #DevGoal: update docs throughout to allow for polygon spatial extent
 #Note: add files to docstring once implemented
+#DevNote: currently this class is not tested
 class Icesat2Data():
     """
     ICESat-2 Data object to query, obtain, and perform basic operations on
@@ -274,7 +275,7 @@ class Icesat2Data():
 
         See Also
         --------
-        order_granules()
+        order_granules
         """
         if not hasattr(self, '_subsetparams'): self._subsetparams = apifmt.Parameters('subset')
         

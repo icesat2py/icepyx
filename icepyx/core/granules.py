@@ -9,6 +9,7 @@ import zipfile
 
 import icepyx.core.APIformatting as apifmt
 
+#DevNote: currently this fn is not tested
 def info(grans):
     """
     Return some basic information about a set of granules for an 
@@ -33,6 +34,7 @@ def info(grans):
 
 #DevGoal: this will be a great way/place to manage data from the local file system
 #where the user already has downloaded data!
+#DevNote: currently this class is not tested
 class Granules():
     """
     Interact with ICESat-2 data granules. This includes finding,
@@ -117,6 +119,7 @@ class Granules():
         assert len(self.avail)>0, "Your search returned no results; try different search parameters"
 
     
+    #DevNote: currently, default subsetting DOES NOT include variable subsetting, only spatial and temporal
     def place_order(self, CMRparams, reqparams, subsetparams, verbose, 
                     subset=True, session=None, geom_filepath=None, **kwargs):
         """

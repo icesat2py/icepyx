@@ -4,6 +4,7 @@ import socket
 import re
 import json
 
+#DevNote: currently this class is not tested
 class Earthdata():
     """
     Initiate an Earthdata session for interacting

@@ -30,7 +30,8 @@ def _fmt_temporal(start,end,key):
 
     assert isinstance(start, dt.datetime)
     assert isinstance(end, dt.datetime)
-    #DevGoal: add test for proper keys
+    assert key in ['time', 'temporal'], 'An invalid time key was submitted for formatting.'
+
     if key == 'temporal':
         fmt_timerange = start.strftime('%Y-%m-%dT%H:%M:%SZ') +',' + end.strftime('%Y-%m-%dT%H:%M:%SZ')
     elif key == 'time':
@@ -74,6 +75,7 @@ def _fmt_spatial(ext_type, extent):
         extent = [float(i) for i in polygon]
         fmt_extent = ','.join(map(str, extent))
 
+    #DevNote: this elif currently does not have a test (seems like it would just be testing geopandas?)
     elif ext_type == 'Boundingshape':
         fmt_extent = gpd.GeoSeries(extent).to_json()
 
@@ -111,6 +113,7 @@ def combine_params(*param_dicts):
 
 
 # ----------------------------------------------------------------------
+#DevNote: Currently, this class is not tested!!
 #DevGoal: this could be expanded, similar to the variables class, to provide users with valid options if need be
 class Parameters():
     """

@@ -115,4 +115,4 @@ def test_starttime_validstr():
 def test_endtime_validstr():
     ermsg = "Please enter your end time as a string"
     with pytest.raises(TypeError, match=ermsg):
-        val.temporal(['2019-02-22','2019-02-28'], '00:15:00', 23:59:59)
+        val.temporal(['2019-02-22','2019-02-28'], '00:15:00', '23:59:59')

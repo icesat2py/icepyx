@@ -104,7 +104,8 @@ class Earthdata():
 
 
 #DevGoal: try turning this into a class that uses super... an initial attempt at portions of this is below
-"""class Earthdata(requests.Session):
+"""
+class Earthdata(requests.Session):
         
     def __init__(self, uid = uid, email = email,pswd = None):
         super(Earthdata, self).__init__() 
@@ -112,4 +113,3 @@ class Earthdata():
         assert isinstance(uid, str), "Enter your login user id as a string"
         assert re.match(r'[^@]+@[^@]+\.[^@]+',email), "Enter a properly formatted email address"
 """
-

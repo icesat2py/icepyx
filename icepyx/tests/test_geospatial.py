@@ -21,6 +21,6 @@ def test_gdf_from_bbox():
 
 
 def test_bad_extent_input():
-    ermsg = "Your spatial extent type (polybox) is not an accepted input and a geodataframe cannot be constructed")
+    ermsg = "Your spatial extent type (polybox) is not an accepted input and a geodataframe cannot be constructed"
     with pytest.raises(TypeError, match=ermsg):
         geospatial.geodataframe('polybox',[1,2,3,4])

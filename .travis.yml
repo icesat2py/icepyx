@@ -10,9 +10,12 @@ stages:
 jobs:
   include:
     - stage: basic tests
-      script: pytest icepyx/tests/test_is2class_inputs.py icepyx/tests/test_is2class_query.py icepyx/tests/test_is2class_methods.py
+      script: pytest icepyx/tests/test_APIformatting.py
+              icepyx/tests/geospatial.py
+              icepyx/tests/test_is2ref.py
+              icepyx/tests/test_validate_inputs
         
-    - stage: behind Earthdata
-      script: 
-        - export NSIDC_LOGIN=$NSIDC_LOGIN
-        - pytest icepyx/tests/test_is2class_NSIDC-API.py
+    # - stage: behind Earthdata
+    #   script: 
+    #     - export NSIDC_LOGIN=$NSIDC_LOGIN
+    #     - pytest icepyx/tests/behind_NSIDC_API_login.py

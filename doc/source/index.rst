@@ -15,7 +15,7 @@ icepyx
    getting_started/install
    getting_started/resources
    example_link
-   user_guide/is2class
+   user_guide/icesat2data
    development/contact
    development/contribution_guidelines
    development/development_plan

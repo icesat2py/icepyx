@@ -502,6 +502,7 @@ class Icesat2Data():
         self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, verbose, subset, session=self._session, geom_filepath=self._geom_filepath, **kwargs)
 
 
+    #DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
     def download_granules(self, path, verbose=False): #, extract=False):
         """
         Downloads the data ordered using order_granules.

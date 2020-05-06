@@ -10,14 +10,39 @@ icepyx
 .. toctree::
    :maxdepth: 2
    :hidden:
+   :caption: Community
 
-   getting_started/origin_purpose
+   community/origin_purpose
+   community/resources
+   community/contact
+   community/code_of_conduct
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Getting Started
+
    getting_started/install
-   getting_started/resources
-   example_link
-   user_guide/icesat2data
-   development/contact
-   development/contribution_guidelines
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Learn icepyx
+
+   learn_icepyx/example_link
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Documentation
+
+   icepyx
+
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Development
+
    development/development_plan
-   attribution_link
-   citation_link
+   development/contribution_guidelines

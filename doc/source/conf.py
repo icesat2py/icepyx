@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 import datetime
 
 import icepyx
+import recommonmark
 
 
 # -- Project information -----------------------------------------------------
@@ -34,9 +35,14 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "numpydoc",
     "nbsphinx",
-    "m2r"
-]
+    "recommonmark"
 
+]
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
+}
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

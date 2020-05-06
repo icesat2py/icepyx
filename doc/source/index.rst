@@ -33,8 +33,8 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    contributing/contribution_guidelines
    contributing/attribution_guidelines
    contributing/development_plan
+   contributing/code_of_conduct
 
-   learn_icepyx/example_link
 .. toctree::
    :maxdepth: 2
    :hidden:

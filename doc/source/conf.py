@@ -78,11 +78,10 @@ html_favicon = '_static/icepyx_v2_oval_tiny-uml_nobackgr.png'
 html_static_path = ['_static']
 
 html_context = {
-    'menu_links_name': 'Outside Resources',
+    'menu_links_name': '',
     'menu_links': [
         ('<i class="fa fa-github fa-fw"></i> icepyx Github', 'https://github.com/icesat2py/icepyx'),
-        ('<i class="fa fa-comments fa-fw"></i> Pangeo Discourse', 'https://discourse.pangeo.io/t/icepyx-python-tools-for-icesat-2-data/404/2'),
-        ('<i class="fa fa-archive fa-fw"></i> NSIDC Icesat-II Documentation', 'https://nsidc.org/data/icesat-2')
+        ('<i class="fa fa-comments fa-fw"></i> Pangeo Discourse', 'https://discourse.pangeo.io/t/icepyx-python-tools-for-icesat-2-data/404/2')
 
     ]
 }

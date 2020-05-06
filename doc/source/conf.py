@@ -67,8 +67,8 @@ html_theme_options = {
     'navigation_depth': 4,
     'collapse_navigation': True
 }
-html_logo = '_static/icepyx_logo.png'
-html_favicon = '_static/icepyx_v2_oval_small.png'
+html_logo = '_static/icepyx_v2_oval_orig_nobackgr.png'
+html_favicon = '_static/icepyx_v2_oval_tiny-uml_nobackgr.png'
 html_static_path = ['_static']
 
 html_context = {

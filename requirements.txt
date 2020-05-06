@@ -4,4 +4,5 @@ geopandas
 h5py
 matplotlib
 numpy
+requests
 shapely

@@ -108,7 +108,8 @@ class Variables():
         """
 
         if self._vartype == 'order':
-            if not hasattr(self, 'avail'): self.avail = is2ref._get_custom_options(self._session, self.dataset, self._version)['variables']
+            if not hasattr(self, 'avail') or self.avail==None:
+                self.avail = is2ref._get_custom_options(self._session, self.dataset, self._version)['variables']
 
         elif self._vartype == 'file':
             pass
@@ -230,7 +231,7 @@ class Variables():
     
         req_vars = {}
 
-        if not hasattr(self, 'avail'): self.get_avail()
+        if not hasattr(self, 'avail') or self.avail==None: self.get_avail()
         vgrp, paths = self._parse_var_list(self.avail) 
         allpaths = []
         [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]

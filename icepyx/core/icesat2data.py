@@ -323,6 +323,12 @@ class Icesat2Data():
                 else:
                     self._order_vars = Variables(self._source, session=self._session, dataset=self.dataset, version=self._version)
 
+        # I think this is where property setters come in, and one should be used here? Right now order_vars.avail is only filled in 
+        #if _cust_options exists when the class is initialized, but not if _cust_options is filled in prior to another call to order_vars
+        # if self._order_vars.avail == None and hasattr(self, '_cust_options'):
+        #     print('got into the loop')
+        #     self._order_vars.avail = self._cust_options['variables']
+
         return self._order_vars
 
 

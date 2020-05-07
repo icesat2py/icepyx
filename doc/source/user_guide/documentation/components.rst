@@ -1,5 +1,5 @@
-Icesat2Data Component Classes
-=============================
+Icesat2Data Components
+======================
 
 
 

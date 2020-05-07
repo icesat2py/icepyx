@@ -5,4 +5,5 @@ icepyx API Reference
 
 .. toctree::
 
-   icepyx.core
+   icesat2data
+   components

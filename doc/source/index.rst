@@ -23,7 +23,7 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    :caption: User Guide
 
    .. user_guide/Gallery
-   icepyx
+   user_guide/documentation/icepyx
 
 .. toctree::
    :maxdepth: 2

@@ -150,7 +150,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
+   "execution_count": 6,
    "metadata": {
     "scrolled": true
    },
@@ -710,114 +710,21 @@
    "metadata": {},
    "source": [
     "### ICESat-2 data variables\n",
-    "ICESat-2 data is natively stored in a nested file format called hdf5. Much like a directory-file system on a computer, each variable (file) has a unique path through the heirarchy (directories) within the file. Thus, some variables (e.g. 'lat', 'lon') have multiple paths (one for each of the six beams in most datasets). The clearest way to view the 200+ variable + path combinations is usually a dictionary where the keys are variable names and the values are the paths to that variable.\n",
+    "ICESat-2 data is natively stored in a nested file format called hdf5. Much like a directory-file system on a computer, each variable (file) has a unique path through the heirarchy (directories) within the file. Thus, some variables (e.g. 'lat', 'lon') have multiple paths (one for each of the six beams in most datasets). \n",
+    "\n",
+    "To increase readability, some display options (2 and 3, below) show the 200+ variable + path combinations as a dictionary where the keys are variable names and the values are the paths to that variable.\n",
     "\n",
     "### Determine what variables are available\n",
-    "There are several ways to get a complete list of available variables.\n",
+    "There are multiple ways to get a complete list of available variables.\n",
     "\n",
-    "1. `region_a.order_vars.avail`\n",
-    "2. `region_a.show_custom_options()`, which shows all available subsetting options\n",
-    "3. `region_a.show_custom_options()['variables']`, which shows only the variable list\n",
-    "\n",
-    "\n",
-    "DELETE: Should you need to access them outside of the methods we provide, the data variables are stored in ```region_a._cust_options['variables']```. "
+    "1. `region_a.order_vars.avail`, a list of all valid path+variable strings\n",
+    "2. `region_a.show_custom_options(dictview=True)`, all available subsetting options\n",
+    "3. `region_a.order_vars.parse_var_list(region_a.order_vars.avail)`, a dictionary of variable:paths key:value pairs"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "#test each method independently to make sure all work!! Then, leave only the first one for the tutorial\n",
-    "region_a.order_vars.avail"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.show_custom_options()"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.show_custom_options(dictview=True)['variables']"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### _Why not just download all the data and subset locally? What if I need more variables/granules?_\n",
-    "\n",
-    "Taking advantage of the NSIDC subsetter is a great way to reduce your download size and thus your download time and the amount of storage required if you're storing your data locally during analysis. By downloading your data using `icepyx`, it is easy to go back and get additional data with the same, similar, or different parameters (e.g. you can keep the same spatial and temporal bounds but change the variable list). Related tools (`captoolkit`) will let you easily merge files if you're uncomfortable merging them during read-in for processing."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Other FAQs About Subsetting\n",
-    "\n",
-    "\n",
-    "### Why does the subsetter say no matching data was found?\n",
-    "Sometimes chunks returned in our initial search end up not containing any useful data."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 11,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.order_vars.get_avail()"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### TESTING SECTION:\n",
-    "##### Setup the user provided variable list to subset variables: Please TRY OUT the tests below. "
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Options for inputting variables:\n",
-    "1. Use a default list for the dataset (not yet fully implemented across all datasets)\n",
-    "2. Provide a list of variable names, which will return all path-variable combinations (e.g. longitude will return longitude for both beams for all profiles)\n",
-    "3. Provide a list of variable names and/or specific profiles/beams (not yet implemented).\n",
-    "\n",
-    "An example of each type of input is below."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Test 1:\n",
-    "Add ```latitude``` for profile 1 and 2"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 17,
+   "execution_count": 47,
    "metadata": {
     "collapsed": true,
     "jupyter": {
@@ -855,7 +762,15 @@
        " 'ancillary_data/start_rgt',\n",
        " 'ancillary_data/version',\n",
        " 'ancillary_data/atmosphere/aclr_use_atlas',\n",
-       " 'ancillary_data/atmosphere/alpha',\n",
+       " 'ancillary_data/atmosphere/alpha_day_pce1',\n",
+       " 'ancillary_data/atmosphere/alpha_day_pce2',\n",
+       " 'ancillary_data/atmosphere/alpha_day_pce3',\n",
+       " 'ancillary_data/atmosphere/alpha_night_pce1',\n",
+       " 'ancillary_data/atmosphere/alpha_night_pce2',\n",
+       " 'ancillary_data/atmosphere/alpha_night_pce3',\n",
+       " 'ancillary_data/atmosphere/alpha_twilight_pce1',\n",
+       " 'ancillary_data/atmosphere/alpha_twilight_pce2',\n",
+       " 'ancillary_data/atmosphere/alpha_twilight_pce3',\n",
        " 'ancillary_data/atmosphere/a_m1',\n",
        " 'ancillary_data/atmosphere/a_m2',\n",
        " 'ancillary_data/atmosphere/asr_cal_factor',\n",
@@ -874,7 +789,6 @@
        " 'ancillary_data/atmosphere/cal_lat_bound',\n",
        " 'ancillary_data/atmosphere/cal_select',\n",
        " 'ancillary_data/atmosphere/cal_top_ht',\n",
-       " 'ancillary_data/atmosphere/cloud_det_layer_thick',\n",
        " 'ancillary_data/atmosphere/cutoff1',\n",
        " 'ancillary_data/atmosphere/cutoff2',\n",
        " 'ancillary_data/atmosphere/detector_efficiency',\n",
@@ -886,6 +800,7 @@
        " 'ancillary_data/atmosphere/layer_flag_cp2',\n",
        " 'ancillary_data/atmosphere/layer_sep',\n",
        " 'ancillary_data/atmosphere/layer_thick',\n",
+       " 'ancillary_data/atmosphere/lr_bsnow_fac',\n",
        " 'ancillary_data/atmosphere/max_layers',\n",
        " 'ancillary_data/atmosphere/neighborhood1',\n",
        " 'ancillary_data/atmosphere/neighborhood2',\n",
@@ -931,6 +846,7 @@
        " 'profile_1/bckgrd_atlas/pce_mframe_cnt',\n",
        " 'profile_1/high_rate/aclr_true',\n",
        " 'profile_1/high_rate/apparent_surf_reflec',\n",
+       " 'profile_1/high_rate/asr_cloud_probability',\n",
        " 'profile_1/high_rate/backg_c',\n",
        " 'profile_1/high_rate/backg_theoret',\n",
        " 'profile_1/high_rate/beam_azimuth',\n",
@@ -939,6 +855,7 @@
        " 'profile_1/high_rate/bsnow_dens',\n",
        " 'profile_1/high_rate/bsnow_h',\n",
        " 'profile_1/high_rate/bsnow_h_dens',\n",
+       " 'profile_1/high_rate/bsnow_intensity',\n",
        " 'profile_1/high_rate/bsnow_od',\n",
        " 'profile_1/high_rate/bsnow_psc',\n",
        " 'profile_1/high_rate/cab_prof',\n",
@@ -995,6 +912,7 @@
        " 'profile_1/high_rate/tx_pulse_energy',\n",
        " 'profile_1/low_rate/bsnow_con',\n",
        " 'profile_1/low_rate/bsnow_h',\n",
+       " 'profile_1/low_rate/bsnow_intensity',\n",
        " 'profile_1/low_rate/bsnow_od',\n",
        " 'profile_1/low_rate/bsnow_prob',\n",
        " 'profile_1/low_rate/bsnow_psc',\n",
@@ -1038,6 +956,7 @@
        " 'profile_2/bckgrd_atlas/pce_mframe_cnt',\n",
        " 'profile_2/high_rate/aclr_true',\n",
        " 'profile_2/high_rate/apparent_surf_reflec',\n",
+       " 'profile_2/high_rate/asr_cloud_probability',\n",
        " 'profile_2/high_rate/backg_c',\n",
        " 'profile_2/high_rate/backg_theoret',\n",
        " 'profile_2/high_rate/beam_azimuth',\n",
@@ -1046,6 +965,7 @@
        " 'profile_2/high_rate/bsnow_dens',\n",
        " 'profile_2/high_rate/bsnow_h',\n",
        " 'profile_2/high_rate/bsnow_h_dens',\n",
+       " 'profile_2/high_rate/bsnow_intensity',\n",
        " 'profile_2/high_rate/bsnow_od',\n",
        " 'profile_2/high_rate/bsnow_psc',\n",
        " 'profile_2/high_rate/cab_prof',\n",
@@ -1102,6 +1022,7 @@
        " 'profile_2/high_rate/tx_pulse_energy',\n",
        " 'profile_2/low_rate/bsnow_con',\n",
        " 'profile_2/low_rate/bsnow_h',\n",
+       " 'profile_2/low_rate/bsnow_intensity',\n",
        " 'profile_2/low_rate/bsnow_od',\n",
        " 'profile_2/low_rate/bsnow_prob',\n",
        " 'profile_2/low_rate/bsnow_psc',\n",
@@ -1145,6 +1066,7 @@
        " 'profile_3/bckgrd_atlas/pce_mframe_cnt',\n",
        " 'profile_3/high_rate/aclr_true',\n",
        " 'profile_3/high_rate/apparent_surf_reflec',\n",
+       " 'profile_3/high_rate/asr_cloud_probability',\n",
        " 'profile_3/high_rate/backg_c',\n",
        " 'profile_3/high_rate/backg_theoret',\n",
        " 'profile_3/high_rate/beam_azimuth',\n",
@@ -1153,6 +1075,7 @@
        " 'profile_3/high_rate/bsnow_dens',\n",
        " 'profile_3/high_rate/bsnow_h',\n",
        " 'profile_3/high_rate/bsnow_h_dens',\n",
+       " 'profile_3/high_rate/bsnow_intensity',\n",
        " 'profile_3/high_rate/bsnow_od',\n",
        " 'profile_3/high_rate/bsnow_psc',\n",
        " 'profile_3/high_rate/cab_prof',\n",
@@ -1209,6 +1132,7 @@
        " 'profile_3/high_rate/tx_pulse_energy',\n",
        " 'profile_3/low_rate/bsnow_con',\n",
        " 'profile_3/low_rate/bsnow_h',\n",
+       " 'profile_3/low_rate/bsnow_intensity',\n",
        " 'profile_3/low_rate/bsnow_od',\n",
        " 'profile_3/low_rate/bsnow_prob',\n",
        " 'profile_3/low_rate/bsnow_psc',\n",
@@ -1300,7 +1224,7 @@
        " 'quality_assessment/profile_3/surf_pct']"
       ]
      },
-     "execution_count": 17,
+     "execution_count": 47,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -1310,400 +1234,50 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": 34,
+   "cell_type": "markdown",
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "{'apparent_surf_reflec': ['profile_3/high_rate/apparent_surf_reflec',\n",
-      "                          'profile_1/high_rate/apparent_surf_reflec',\n",
-      "                          'profile_2/high_rate/apparent_surf_reflec'],\n",
-      " 'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
-      " 'bsnow_con': ['profile_3/high_rate/bsnow_con',\n",
-      "               'profile_3/low_rate/bsnow_con',\n",
-      "               'profile_1/high_rate/bsnow_con',\n",
-      "               'profile_1/low_rate/bsnow_con',\n",
-      "               'profile_2/high_rate/bsnow_con',\n",
-      "               'profile_2/low_rate/bsnow_con'],\n",
-      " 'bsnow_dens': ['profile_3/high_rate/bsnow_dens',\n",
-      "                'profile_1/high_rate/bsnow_dens',\n",
-      "                'profile_2/high_rate/bsnow_dens'],\n",
-      " 'bsnow_h': ['profile_3/high_rate/bsnow_h',\n",
-      "             'profile_3/low_rate/bsnow_h',\n",
-      "             'profile_1/high_rate/bsnow_h',\n",
-      "             'profile_1/low_rate/bsnow_h',\n",
-      "             'profile_2/high_rate/bsnow_h',\n",
-      "             'profile_2/low_rate/bsnow_h'],\n",
-      " 'bsnow_od': ['profile_3/high_rate/bsnow_od',\n",
-      "              'profile_3/low_rate/bsnow_od',\n",
-      "              'profile_1/high_rate/bsnow_od',\n",
-      "              'profile_1/low_rate/bsnow_od',\n",
-      "              'profile_2/high_rate/bsnow_od',\n",
-      "              'profile_2/low_rate/bsnow_od'],\n",
-      " 'bsnow_psc': ['profile_3/high_rate/bsnow_psc',\n",
-      "               'profile_3/low_rate/bsnow_psc',\n",
-      "               'profile_1/high_rate/bsnow_psc',\n",
-      "               'profile_1/low_rate/bsnow_psc',\n",
-      "               'profile_2/high_rate/bsnow_psc',\n",
-      "               'profile_2/low_rate/bsnow_psc'],\n",
-      " 'cloud_flag_asr': ['profile_3/high_rate/cloud_flag_asr',\n",
-      "                    'profile_1/high_rate/cloud_flag_asr',\n",
-      "                    'profile_2/high_rate/cloud_flag_asr'],\n",
-      " 'cloud_flag_atm': ['profile_3/high_rate/cloud_flag_atm',\n",
-      "                    'profile_1/high_rate/cloud_flag_atm',\n",
-      "                    'profile_2/high_rate/cloud_flag_atm'],\n",
-      " 'cloud_fold_flag': ['profile_3/high_rate/cloud_fold_flag',\n",
-      "                     'profile_1/high_rate/cloud_fold_flag',\n",
-      "                     'profile_2/high_rate/cloud_fold_flag'],\n",
-      " 'column_od_asr': ['profile_3/high_rate/column_od_asr',\n",
-      "                   'profile_1/high_rate/column_od_asr',\n",
-      "                   'profile_2/high_rate/column_od_asr'],\n",
-      " 'column_od_asr_qf': ['profile_3/high_rate/column_od_asr_qf',\n",
-      "                      'profile_1/high_rate/column_od_asr_qf',\n",
-      "                      'profile_2/high_rate/column_od_asr_qf'],\n",
-      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
-      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
-      " 'delta_time': ['profile_3/bckgrd_atlas/delta_time',\n",
-      "                'profile_3/high_rate/delta_time',\n",
-      "                'profile_3/low_rate/delta_time',\n",
-      "                'quality_assessment/profile_3/delta_time',\n",
-      "                'profile_1/bckgrd_atlas/delta_time',\n",
-      "                'profile_1/high_rate/delta_time',\n",
-      "                'profile_1/low_rate/delta_time',\n",
-      "                'profile_2/bckgrd_atlas/delta_time',\n",
-      "                'profile_2/high_rate/delta_time',\n",
-      "                'profile_2/low_rate/delta_time',\n",
-      "                'quality_assessment/profile_1/delta_time',\n",
-      "                'quality_assessment/profile_2/delta_time'],\n",
-      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
-      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
-      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude',\n",
-      "              'profile_2/low_rate/latitude',\n",
-      "              'profile_3/high_rate/latitude',\n",
-      "              'profile_3/low_rate/latitude',\n",
-      "              'profile_1/high_rate/latitude',\n",
-      "              'profile_1/low_rate/latitude'],\n",
-      " 'layer_attr': ['profile_3/high_rate/layer_attr',\n",
-      "                'profile_1/high_rate/layer_attr',\n",
-      "                'profile_2/high_rate/layer_attr'],\n",
-      " 'layer_bot': ['profile_3/high_rate/layer_bot',\n",
-      "               'profile_1/high_rate/layer_bot',\n",
-      "               'profile_2/high_rate/layer_bot'],\n",
-      " 'layer_dens': ['profile_3/high_rate/layer_dens',\n",
-      "                'profile_1/high_rate/layer_dens',\n",
-      "                'profile_2/high_rate/layer_dens'],\n",
-      " 'layer_flag': ['profile_3/high_rate/layer_flag',\n",
-      "                'profile_1/high_rate/layer_flag',\n",
-      "                'profile_2/high_rate/layer_flag'],\n",
-      " 'layer_ib': ['profile_3/high_rate/layer_ib',\n",
-      "              'profile_1/high_rate/layer_ib',\n",
-      "              'profile_2/high_rate/layer_ib'],\n",
-      " 'layer_top': ['profile_3/high_rate/layer_top',\n",
-      "               'profile_1/high_rate/layer_top',\n",
-      "               'profile_2/high_rate/layer_top'],\n",
-      " 'longitude': ['profile_3/high_rate/longitude',\n",
-      "               'profile_3/low_rate/longitude',\n",
-      "               'profile_1/high_rate/longitude',\n",
-      "               'profile_1/low_rate/longitude',\n",
-      "               'profile_2/high_rate/longitude',\n",
-      "               'profile_2/low_rate/longitude'],\n",
-      " 'msw_flag': ['profile_3/high_rate/msw_flag',\n",
-      "              'profile_1/high_rate/msw_flag',\n",
-      "              'profile_2/high_rate/msw_flag'],\n",
-      " 'prof_dist_x': ['profile_3/high_rate/prof_dist_x',\n",
-      "                 'profile_1/high_rate/prof_dist_x',\n",
-      "                 'profile_2/high_rate/prof_dist_x'],\n",
-      " 'prof_dist_y': ['profile_3/high_rate/prof_dist_y',\n",
-      "                 'profile_1/high_rate/prof_dist_y',\n",
-      "                 'profile_2/high_rate/prof_dist_y'],\n",
-      " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
-     ]
-    }
-   ],
    "source": [
-    "#default variables\n",
-    "var_dict = region_a.order_vars.append(beam_list=['profile_1','profile_2'],var_list=['latitude'], inclusive=True)\n",
-    "pprint(region_a.order_vars.wanted)"
+    "### _Why not just download all the data and subset locally? What if I need more variables/granules?_\n",
+    "\n",
+    "Taking advantage of the NSIDC subsetter is a great way to reduce your download size and thus your download time and the amount of storage required if you're storing your data locally during analysis. By downloading your data using `icepyx`, it is easy to go back and get additional data with the same, similar, or different parameters (e.g. you can keep the same spatial and temporal bounds but change the variable list). Related tools (`captoolkit`) will let you easily merge files if you're uncomfortable merging them during read-in for processing."
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### Test 2:\n",
-    "Add ```latitude``` for profile 2 and overwrite"
+    "### Building your wanted variable list\n",
+    "\n",
+    "Now that you know which variables are available for your dataset, you need to build a list of the ones you'd like included in your dataset. There are several options for generating your initial list as well as modifying it, giving the user complete control over the list submitted.\n",
+    "\n",
+    "The options for building your initial list are:\n",
+    "1. Use a default list for the dataset (not yet fully implemented across all datasets)\n",
+    "2. Provide a list of variable names\n",
+    "3. Provide a list of profiles/beams or other path keywords\n",
+    "\n",
+    "Note: all datasets have a short list of \"mandatory\" variables/paths (containing uncertainty information) that are automatically added to any built list.\n",
+    "\n",
+    "Examples of using each method to build and modify your wanted variable list are below."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 96,
+   "execution_count": 27,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "None\n",
-      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
-      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
-      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
-      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
-      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
-      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude', 'profile_2/low_rate/latitude'],\n",
-      " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
-     ]
+   "outputs": [],
+   "source": [
+    "region_a.order_vars.wanted"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
     }
-   ],
-   "source": [
-    "region_a.order_vars.remove(all=True)\n",
-    "pprint(region_a.order_vars.wanted)\n",
-    "region_a.order_vars.append(beam_list=['profile_2'],var_list=['latitude'])\n",
-    "pprint(region_a.order_vars.wanted)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Test 2B:\n",
-    "Add ```latitude``` for profile 3 and overwrite (so profile_2 should be removed)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 88,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
-      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
-      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
-      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
-      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
-      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude',\n",
-      "              'profile_2/low_rate/latitude',\n",
-      "              'profile_3/high_rate/latitude',\n",
-      "              'profile_3/low_rate/latitude'],\n",
-      " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
-     ]
-    }
-   ],
-   "source": [
-    "region_a.order_vars.append(beam_list=['profile_3'],var_list=['latitude'])\n",
-    "pprint(region_a.order_vars.wanted)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Test 3:\n",
-    "Add ```latitude``` for all profiles and with keyword ```low_rate``` and append"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 89,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
-      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
-      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
-      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
-      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
-      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude',\n",
-      "              'profile_2/low_rate/latitude',\n",
-      "              'profile_3/high_rate/latitude',\n",
-      "              'profile_3/low_rate/latitude',\n",
-      "              'profile_1/low_rate/latitude'],\n",
-      " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
-     ]
-    }
-   ],
-   "source": [
-    "region_a.order_vars.append(var_list=['latitude'],keyword_list=['low_rate'])\n",
-    "pprint(region_a.order_vars.wanted)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Before Test 4:\n",
-    "Go back to test 2. Overwrite ```latitude``` for profile 2 only."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 98,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
-      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
-      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
-      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
-      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
-      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude', 'profile_2/low_rate/latitude'],\n",
-      " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
-     ]
-    }
-   ],
-   "source": [
-    "region_a.order_vars.remove(beam_list=['profile_1', 'profile_3'], var_list=['latitude'])\n",
-    "pprint(region_a.order_vars.wanted)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Test 5:\n",
-    "Append ```latitude``` for profile 3 and ```high_rate``` only"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 91,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
-      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
-      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
-      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
-      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
-      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude',\n",
-      "              'profile_2/low_rate/latitude',\n",
-      "              'profile_3/low_rate/latitude'],\n",
-      " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
-     ]
-    }
-   ],
-   "source": [
-    "region_a.order_vars.append(beam_list=['profile_3'],var_list=['latitude'],keyword_list=['low_rate'])\n",
-    "pprint(region_a.order_vars.wanted)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Test 6:\n",
-    "Add ```sc_orient_time``` under ```orbit_info```."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 92,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
-      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
-      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
-      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
-      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
-      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude',\n",
-      "              'profile_2/low_rate/latitude',\n",
-      "              'profile_3/low_rate/latitude'],\n",
-      " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'sc_orient_time': ['orbit_info/sc_orient_time'],\n",
-      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
-     ]
-    }
-   ],
-   "source": [
-    "region_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time'])\n",
-    "pprint(region_a.order_vars.wanted)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Test 7:\n",
-    "Add all variables under ```orbit_info``` but path to ```sc_orient_time``` should not be duplicated."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 94,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
-      " 'crossing_time': ['orbit_info/crossing_time'],\n",
-      " 'cycle_number': ['orbit_info/cycle_number'],\n",
-      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
-      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
-      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
-      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
-      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'lan': ['orbit_info/lan'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude',\n",
-      "              'profile_2/low_rate/latitude',\n",
-      "              'profile_3/low_rate/latitude'],\n",
-      " 'orbit_number': ['orbit_info/orbit_number'],\n",
-      " 'rgt': ['orbit_info/rgt'],\n",
-      " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'sc_orient_time': ['orbit_info/sc_orient_time'],\n",
-      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
-     ]
-    }
-   ],
-   "source": [
-    "region_a.order_vars.append(keyword_list=['orbit_info'],inclusive=True)\n",
-    "pprint(region_a.order_vars.wanted)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Test 8:\n",
-    "Add all defaults for all beams and all keywords. After this, have to reinitialize ```region_a``` and regenerate variable dictionary to run the above tests again (unless you set ```append=False```). "
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 95,
-   "metadata": {},
+   },
    "outputs": [
     {
      "name": "stdout",
@@ -1755,8 +1329,6 @@
       " 'column_od_asr_qf': ['profile_1/high_rate/column_od_asr_qf',\n",
       "                      'profile_2/high_rate/column_od_asr_qf',\n",
       "                      'profile_3/high_rate/column_od_asr_qf'],\n",
-      " 'crossing_time': ['orbit_info/crossing_time'],\n",
-      " 'cycle_number': ['orbit_info/cycle_number'],\n",
       " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
       " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
       " 'delta_time': ['profile_1/bckgrd_atlas/delta_time',\n",
@@ -1774,13 +1346,12 @@
       " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
       " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
       " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
-      " 'lan': ['orbit_info/lan'],\n",
-      " 'latitude': ['profile_2/high_rate/latitude',\n",
-      "              'profile_2/low_rate/latitude',\n",
-      "              'profile_3/low_rate/latitude',\n",
-      "              'profile_1/high_rate/latitude',\n",
+      " 'latitude': ['profile_1/high_rate/latitude',\n",
       "              'profile_1/low_rate/latitude',\n",
-      "              'profile_3/high_rate/latitude'],\n",
+      "              'profile_2/high_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude',\n",
+      "              'profile_3/high_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude'],\n",
       " 'layer_attr': ['profile_1/high_rate/layer_attr',\n",
       "                'profile_2/high_rate/layer_attr',\n",
       "                'profile_3/high_rate/layer_attr'],\n",
@@ -1808,16 +1379,13 @@
       " 'msw_flag': ['profile_1/high_rate/msw_flag',\n",
       "              'profile_2/high_rate/msw_flag',\n",
       "              'profile_3/high_rate/msw_flag'],\n",
-      " 'orbit_number': ['orbit_info/orbit_number'],\n",
       " 'prof_dist_x': ['profile_1/high_rate/prof_dist_x',\n",
       "                 'profile_2/high_rate/prof_dist_x',\n",
       "                 'profile_3/high_rate/prof_dist_x'],\n",
       " 'prof_dist_y': ['profile_1/high_rate/prof_dist_y',\n",
       "                 'profile_2/high_rate/prof_dist_y',\n",
       "                 'profile_3/high_rate/prof_dist_y'],\n",
-      " 'rgt': ['orbit_info/rgt'],\n",
       " 'sc_orient': ['orbit_info/sc_orient'],\n",
-      " 'sc_orient_time': ['orbit_info/sc_orient_time'],\n",
       " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
      ]
     }
@@ -1828,99 +1396,505 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": null,
+   "cell_type": "markdown",
    "metadata": {},
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
    "source": [
-    "#variable names + beams/profiles\n",
-    "###STILL NEED TO MAKE THE BELOW POSSIBLE IN THE CODE"
+    "### Modifying your wanted variable list\n",
+    "\n",
+    "Generating and modifying your variable request list, which is stored in `region_a.order_vars.wanted`, is controlled by the `append` and `remove` functions that operate on `region_a.order_vars.wanted`. The input options to `append` are as follows (the full documentation for this function can be found by executing `help(region_a.order_vars.append)`).\n",
+    "* `defaults` (default False) - include the default variable list for your dataset (not yet fully implemented for all datasets; please submit your default variable list for inclusion!)\n",
+    "* `inclusive` (default True) - when you provide a variable and/or beam/keyword, include ALL combinations that include ANY of those inputs. For instance, if you want to add longitude for only profile 1, you must specify inputs to `append` as `(inclusive=False, var_list=['longitude'], beam_list=['profile_1'])`.\n",
+    "* `var_list` (default None) - list of variables (entered as strings)\n",
+    "* `beam_list` (default None) - list of beams/profiles (entered as strings)\n",
+    "* `keyword_list` (default None) - list of keywords (entered as strings); use `keyword_list=['']` to obtain a list of available keywords\n",
+    "\n",
+    "Similarly, the options for `remove` are:\n",
+    "* `all` (default False) - reset `region_a.order_vars.wanted` to None\n",
+    "* `inclusive` (as above)\n",
+    "* `var_list` (as above)\n",
+    "* `beam_list` (as above)\n",
+    "* `keyword_list` (as above)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "None\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_vars.remove(all=True)\n",
+    "pprint(region_a.order_vars.wanted)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Setting params and download"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.build_CMR_params()\n",
-    "region_a.build_reqconfig_params('download')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.build_subset_params(**{'Coverage':var_dict})\n",
-    "region_a.subsetparams"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "#Identical to above block, but enters the keywords with a different style\n",
-    "region_a.build_subset_params(Coverage=var_dict)\n",
-    "region_a.subsetparams"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.order_granules(session, verbose=True)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.download_granules(session,'.')"
+    "### Examples\n",
+    "Below are a series of examples to show how you can use `append` and `remove` to modify your wanted variable list. For clarity, `region_a.order_vars.wanted` is cleared at the start of many examples. However, multiple `append` and `remove` commands can be called in succession to build your wanted variable list (see Examples x+)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Examine downloaded subset data file \n"
+    "#### Example 1\n",
+    "Add all `latitude` and `longitude` variables"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 44,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'latitude': ['profile_1/high_rate/latitude',\n",
+      "              'profile_1/low_rate/latitude',\n",
+      "              'profile_2/high_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude',\n",
+      "              'profile_3/high_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude'],\n",
+      " 'longitude': ['profile_1/high_rate/longitude',\n",
+      "               'profile_1/low_rate/longitude',\n",
+      "               'profile_2/high_rate/longitude',\n",
+      "               'profile_2/low_rate/longitude',\n",
+      "               'profile_3/high_rate/longitude',\n",
+      "               'profile_3/low_rate/longitude'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_vars.append(defaults=False, var_list=['latitude','longitude'])\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Example 2:\n",
+    "Add `latitude` for only `profile_1` and `profile_2`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 95,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "None\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_vars.remove(all=True)\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 96,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'latitude': ['profile_1/high_rate/latitude',\n",
+      "              'profile_1/low_rate/latitude',\n",
+      "              'profile_2/high_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "var_dict = region_a.order_vars.append(beam_list=['profile_1','profile_2'],var_list=['latitude'], inclusive=True)\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Example 3:\n",
+    "Add `latitude` for `profile_3` and remove it for `profile_2`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 97,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'latitude': ['profile_1/high_rate/latitude',\n",
+      "              'profile_1/low_rate/latitude',\n",
+      "              'profile_3/high_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_vars.append(beam_list=['profile_3'],var_list=['latitude'])\n",
+    "region_a.order_vars.remove(beam_list=['profile_2'], var_list=['latitude'])\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Example 4:\n",
+    "Add `latitude` for all profiles and with keyword `low_rate`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 98,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'latitude': ['profile_1/high_rate/latitude',\n",
+      "              'profile_1/low_rate/latitude',\n",
+      "              'profile_3/high_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_vars.append(var_list=['latitude'],keyword_list=['low_rate'])\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Example 5:\n",
+    "Remove `profile_1` `latitude` with keyword `high_rate` (but keep `profile_3` `latitude` with `high_rate`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 99,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'latitude': ['profile_1/low_rate/latitude',\n",
+      "              'profile_3/high_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_vars.remove(beam_list=['profile_1'], var_list=['latitude'], keyword_list=['high_rate'], inclusive=False)\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Example 6:\n",
+    "Append `longitude` for all profiles and `high_rate` (two methods)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 115,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'latitude': ['profile_1/low_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude'],\n",
+      " 'longitude': ['profile_1/high_rate/longitude',\n",
+      "               'profile_2/high_rate/longitude',\n",
+      "               'profile_3/high_rate/longitude'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "#Method 1\n",
+    "region_a.order_vars.append(var_list=['longitude'],beam_list=['profile_1','profile_2','profile_3'],keyword_list=['high_rate'])\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 117,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'latitude': ['profile_1/low_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude'],\n",
+      " 'longitude': ['profile_1/high_rate/longitude',\n",
+      "               'profile_2/high_rate/longitude',\n",
+      "               'profile_3/high_rate/longitude'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "#Method 2\n",
+    "region_a.order_vars.append(var_list=['longitude'],keyword_list=['high_rate'], inclusive=True)\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Example 7:\n",
+    "Add `sc_orient_time` under `orbit_info`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 118,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'latitude': ['profile_1/low_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude'],\n",
+      " 'longitude': ['profile_1/high_rate/longitude',\n",
+      "               'profile_2/high_rate/longitude',\n",
+      "               'profile_3/high_rate/longitude'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'sc_orient_time': ['orbit_info/sc_orient_time'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time'])\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Example 8:\n",
+    "Add all variables under `orbit_info` but path to `sc_orient_time` should not be duplicated."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 119,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],\n",
+      " 'crossing_time': ['orbit_info/crossing_time'],\n",
+      " 'cycle_number': ['orbit_info/cycle_number'],\n",
+      " 'data_end_utc': ['ancillary_data/data_end_utc'],\n",
+      " 'data_start_utc': ['ancillary_data/data_start_utc'],\n",
+      " 'end_delta_time': ['ancillary_data/end_delta_time'],\n",
+      " 'granule_end_utc': ['ancillary_data/granule_end_utc'],\n",
+      " 'granule_start_utc': ['ancillary_data/granule_start_utc'],\n",
+      " 'lan': ['orbit_info/lan'],\n",
+      " 'latitude': ['profile_1/low_rate/latitude',\n",
+      "              'profile_3/low_rate/latitude',\n",
+      "              'profile_2/low_rate/latitude'],\n",
+      " 'longitude': ['profile_1/high_rate/longitude',\n",
+      "               'profile_2/high_rate/longitude',\n",
+      "               'profile_3/high_rate/longitude'],\n",
+      " 'orbit_number': ['orbit_info/orbit_number'],\n",
+      " 'rgt': ['orbit_info/rgt'],\n",
+      " 'sc_orient': ['orbit_info/sc_orient'],\n",
+      " 'sc_orient_time': ['orbit_info/sc_orient_time'],\n",
+      " 'start_delta_time': ['ancillary_data/start_delta_time']}\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_vars.append(keyword_list=['orbit_info'],inclusive=True)\n",
+    "pprint(region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Applying variable subsetting to your order and download\n",
+    "\n",
+    "In order to have your wanted variable list included with your order, you must pass it as a keyword argument to the `order_granules` or `download_granules` (which calls `order_granules` under the hood if you have not already placed your order) function."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 128,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'Coverage': {'sc_orient': ['orbit_info/sc_orient'], 'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'], 'data_start_utc': ['ancillary_data/data_start_utc'], 'data_end_utc': ['ancillary_data/data_end_utc'], 'granule_start_utc': ['ancillary_data/granule_start_utc'], 'granule_end_utc': ['ancillary_data/granule_end_utc'], 'start_delta_time': ['ancillary_data/start_delta_time'], 'end_delta_time': ['ancillary_data/end_delta_time'], 'latitude': ['profile_1/low_rate/latitude', 'profile_3/low_rate/latitude', 'profile_2/low_rate/latitude'], 'longitude': ['profile_1/high_rate/longitude', 'profile_2/high_rate/longitude', 'profile_3/high_rate/longitude'], 'sc_orient_time': ['orbit_info/sc_orient_time'], 'crossing_time': ['orbit_info/crossing_time'], 'cycle_number': ['orbit_info/cycle_number'], 'lan': ['orbit_info/lan'], 'orbit_number': ['orbit_info/orbit_number'], 'rgt': ['orbit_info/rgt']}}\n",
+      "[]\n",
+      "order ID:  5000000666138\n",
+      "Data request  1  is submitting...\n",
+      "Initial request status is  pending\n",
+      "Status is not complete. Trying again.\n",
+      "Retry request status is:  processing\n",
+      "Status is not complete. Trying again.\n",
+      "Retry request status is:  processing\n",
+      "Status is not complete. Trying again.\n",
+      "Retry request status is:  processing\n",
+      "Status is not complete. Trying again.\n",
+      "Retry request status is:  complete\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.order_granules(Coverage=region_a.order_vars.wanted)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 131,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Beginning download of zipped output...\n",
+      "Data request 5000000666138 of  1  order(s) is complete.\n"
+     ]
+    }
+   ],
+   "source": [
+    "region_a.download_granules('/home/jovyan/icepyx/dev-notebooks/vardata') # <-- you do not need to include the 'Coverage' kwarg to\n",
+    "                             # download if you have already submitted it with your order"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### _Why does the subsetter say no matching data was found?_\n",
+    "Sometimes, chunks (granules) returned in our initial search end up not containing any data in our specified area of interest. This is because the initial search is completed using summary metadata for a chunk. You've likely encountered this before when viewing available imagery online: your spatial search turns up a bunch of images with only a few border or corner pixels, maybe even in no data regions, in your area of interest. Thus, when you go to extract the data from the area you want (i.e. spatially subset it), you don't get any usable data from that image."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Check the variable list in your downloaded file\n",
+    "\n",
+    "Compare the available variables associated with the full dataset relative to those in your downloaded data file."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 144,
    "metadata": {},
    "outputs": [],
    "source": [
-    "fn = '166458094/processed_ATL09_20190222003738_08490201_002_01.h5'"
+    "# put the full filepath to a data file here. You can get this in JupyterHub by navigating to the file,\n",
+    "# right clicking, and selecting copy path. Then you can paste the path in the quotes below.\n",
+    "fn = ''"
    ]
   },
   {
@@ -1928,17 +1902,26 @@
    "metadata": {},
    "source": [
     "#### Check the downloaded dataset\n",
-    "Take ```latitude``` for example,"
+    "Get all `latitude` variables in your downloaded file:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 135,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "profile_1/low_rate/latitude\n",
+      "profile_2/low_rate/latitude\n",
+      "profile_3/low_rate/latitude\n"
+     ]
+    }
+   ],
    "source": [
     "varname = 'latitude'\n",
-    "#varname = 'sc_orient'\n",
     "\n",
     "varlist = []\n",
     "def IS2h5walk(vname, h5node):\n",
@@ -1958,117 +1941,33 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### Compare the varaible ```latitude``` in the original data and the subsetted dat"
+    "#### Compare to the variable paths available in the original data"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.variables['latitude']"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "', '.join(x) for x in ['gt1l','gt1r']"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 6,
-   "metadata": {},
-   "outputs": [
-    {
-     "ename": "AttributeError",
-     "evalue": "'Icesat2Data' object has no attribute '_order_vars'",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mAttributeError\u001b[0m                            Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-6-bf4141ca88df>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mregion_a\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_order_vars\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
-      "\u001b[0;31mAttributeError\u001b[0m: 'Icesat2Data' object has no attribute '_order_vars'"
-     ]
-    }
-   ],
-   "source": [
-    "region_a._order_vars"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 143,
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "<icepyx.core.variables.Variables at 0x7ff06e083490>"
+       "['profile_1/high_rate/latitude',\n",
+       " 'profile_1/low_rate/latitude',\n",
+       " 'profile_2/high_rate/latitude',\n",
+       " 'profile_2/low_rate/latitude',\n",
+       " 'profile_3/high_rate/latitude',\n",
+       " 'profile_3/low_rate/latitude']"
       ]
      },
-     "execution_count": 6,
+     "execution_count": 143,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "region_a.order_vars"
+    "region_a.order_vars.parse_var_list(region_a.order_vars.avail)[0][varname]"
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 7,
-   "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "text/plain": [
-       "<bound method Icesat2Data.show_custom_options of <icepyx.core.icesat2data.Icesat2Data object at 0x7fc5fdf69ca0>>"
-      ]
-     },
-     "execution_count": 7,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
-   "source": [
-    "region_a.show_custom_options"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 11,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "region_a.order_vars.avail"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {

@@ -270,7 +270,8 @@ class Icesat2Data():
               
         return self._reqparams.fmted_keys
 
-    @property
+    # @property
+    #DevQuestion: if I make this a property, I get a "dict" object is not callable when I try to give input kwargs... what approach should I be taking?
     def subsetparams(self, **kwargs):
         """
         Display the subsetting key:value pairs that will be submitted. It generates the dictionary if it does not already exist
@@ -444,7 +445,7 @@ class Icesat2Data():
         for h,k in zip(headers,keys):
             print(h)
             if k=='variables' and dictview:
-                vgrp,paths = Variables._parse_var_list(self._cust_options[k])
+                vgrp,paths = Variables.parse_var_list(self._cust_options[k])
                 pprint.pprint(vgrp)
             else:
                 pprint.pprint(self._cust_options[k])
@@ -510,6 +511,7 @@ class Icesat2Data():
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
             Acceptable key values are ['format','projection','projection_parameters','Coverage'].
+            The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
             At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
         
         See Also
@@ -555,6 +557,7 @@ class Icesat2Data():
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
             Acceptable key values are ['format','projection','projection_parameters','Coverage'].
+            The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
             At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
 
         See Also

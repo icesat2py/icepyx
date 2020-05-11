@@ -69,7 +69,7 @@ class Variables():
     #     return self._wanted
 
     @staticmethod
-    def _parse_var_list(varlist):
+    def parse_var_list(varlist):
         """
         Parse a list of path strings into tiered lists and names of variables
         """
@@ -232,7 +232,7 @@ class Variables():
         req_vars = {}
 
         if not hasattr(self, 'avail') or self.avail==None: self.get_avail()
-        vgrp, paths = self._parse_var_list(self.avail) 
+        vgrp, paths = self.parse_var_list(self.avail) 
         allpaths = []
         [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
         allpaths = np.unique(allpaths)
@@ -384,8 +384,8 @@ class Variables():
         req_vars = {}
         
         # if not hasattr(self, 'avail'): self.get_avail()
-        # vgrp, paths = self._parse_var_list(self.avail) 
-        # # vgrp, paths = self._parse_var_list(self._cust_options['variables']) 
+        # vgrp, paths = self.parse_var_list(self.avail) 
+        # # vgrp, paths = self.parse_var_list(self._cust_options['variables']) 
         # allpaths = []
         # [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
         # allpaths = np.unique(allpaths)
@@ -417,7 +417,7 @@ class Variables():
                 
                 # nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
                 #             'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
-                for vkey in self.wanted.keys():
+                for vkey in tuple(self.wanted.keys()):
                     if inclusive==True:
                         if vkey in var_list:
                             del self.wanted[vkey]
@@ -436,10 +436,14 @@ class Variables():
                         for vpath in tuple(self.wanted[vkey]):
                             vpath_kws = vpath.split('/')
 
-                            for kw in combined_list:
-                                if kw in vpath_kws and vkey in var_list:
-                                    self.wanted[vkey].remove(vpath)
-                
-                    if len(self.wanted[vkey])==0:
-                        del self.wanted[vkey]
+                            try:
+                                for bkw in beam_list:
+                                    if bkw in vpath_kws:
+                                        for kw in keyword_list:
+                                            if kw in vpath_kws:
+                                                    self.wanted[vkey].remove(vpath)
+                            except TypeError:
+                                for kw in combined_list:
+                                    if kw in vpath_kws and vkey in var_list:
+                                        self.wanted[vkey].remove(vpath)             
                                 

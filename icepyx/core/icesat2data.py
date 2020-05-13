@@ -291,9 +291,10 @@ class Icesat2Data():
         """
         if not hasattr(self, '_subsetparams'): self._subsetparams = apifmt.Parameters('subset')
         
-        if self._subsetparams==None:
+        if self._subsetparams==None and not kwargs:
             return {}
         else:
+            if self._subsetparams==None: self._subsetparams = apifmt.Parameters('subset')
             if self._geom_filepath is not None:
                 self._subsetparams.build_params(geom_filepath = self._geom_filepath, \
                                     start=self._start, end=self._end, extent_type=self.extent_type, \

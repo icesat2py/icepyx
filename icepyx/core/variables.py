@@ -50,14 +50,14 @@ class Variables():
         
         self._vartype = vartype
         self.dataset = dataset
-        self.avail = avail
+        self._avail = avail
         self.wanted = wanted
         self._session = session
 
         #DevGoal: put some more/robust checks here to assess validity of inputs
 
         if self._vartype == 'order':
-            if self.avail == None:
+            if self._avail == None:
                 self._version = version
         elif self._vartype == 'file':
             #DevGoal: check that the list or string are valid dir/files
@@ -67,6 +67,34 @@ class Variables():
     # @property
     # def wanted(self):
     #     return self._wanted
+    
+    def avail(self, options=False, internal=False):
+        """
+        Get the list of available variables and variable paths from the input dataset
+
+        """
+        # if hasattr(self, '_avail'):
+        #         return self._avail
+        # else:
+        if not hasattr(self, '_avail') or self._avail==None:     
+            if self._vartype == 'order':
+                    self._avail = is2ref._get_custom_options(self._session, self.dataset, self._version)['variables']
+
+            elif self._vartype == 'file':
+                self._avail = None
+
+        if options==True:
+            vgrp, paths = self.parse_var_list(self._avail) 
+            allpaths = []
+            [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
+            allpaths = np.unique(allpaths)
+            if internal==False:
+                print('var_list inputs: ' + ', '.join(vgrp.keys()))
+                print('keyword_list and beam_list inputs: ' + ', '.join(allpaths))
+            elif internal==True:
+                return vgrp,allpaths
+        else:
+            return self._avail
 
     @staticmethod
     def parse_var_list(varlist):
@@ -98,22 +126,9 @@ class Variables():
                     paths[i].append('none')
                     i=i+1
                     
-        return vgrp, paths  
+        return vgrp, paths
 
-    
-    def get_avail(self):
-        """
-        Get the list of available variables and variable paths from the input dataset
-
-        """
-
-        if self._vartype == 'order':
-            if not hasattr(self, 'avail') or self.avail==None:
-                self.avail = is2ref._get_custom_options(self._session, self.dataset, self._version)['variables']
-
-        elif self._vartype == 'file':
-            pass
-
+        
     def _check_valid_lists(self, vgrp, allpaths, var_list=None, beam_list=None, keyword_list=None):
         """
         Check that the user is requesting valid paths and/or variables for their dataset.
@@ -166,6 +181,8 @@ class Variables():
         if keyword_list is not None:
             for kw in keyword_list:
 #                 assert kw in allpaths, "Invalid keyword. Please select from: " + ', '.join(allpaths)
+                
+                #DevGoal: update here to not include profiles/beams in the allpaths list
                 if kw not in allpaths:
                     err_msg_kw = "Invalid keyword: " + kw + '. '
                     err_msg_kw = err_msg_kw + 'Please select from this list: '
@@ -190,7 +207,7 @@ class Variables():
     @staticmethod
     def _get_combined_list(beam_list, keyword_list):
         '''
-        Get the combined list of beams and/or keywords to add or iterate through, depending on value of inclusive.
+        Get the combined list of beams and/or keywords to add or iterate through.
         '''
         combined_list = []
         if beam_list==None:
@@ -223,16 +240,6 @@ class Variables():
             for vpath in vgrp[vkey]:
                 vpath_kws = vpath.split('/')
                 
-                # if inclusive==True:
-                #     # print('made it into the inclusive if')
-                #     # print(vkey)
-                #     # print(vgrp[vkey])
-                #     for kw in combined_list:
-                #         if kw in vpath_kws:
-                #             # print(True)
-                #             if vkey not in req_vars: req_vars[vkey] = []  
-                #             if vpath not in req_vars[vkey]: req_vars[vkey].append(vpath)
-                # else:
                 try:
                     for bkw in beam_list:
                         if bkw in vpath_kws:
@@ -249,11 +256,7 @@ class Variables():
 
 
     #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
-    #DevGoal: we need to re-introduce, if possible, the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc. Right now, they would get all latitude paths and all profile_1 paths. Maybe we can have a inclusive/exclusive boolean trigger?
-    #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
-    #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
-    #DevGoal: actuall implement use of the inclusive flag!
-    def append(self, defaults=False, inclusive=False, var_list=None, beam_list=None, keyword_list=None):
+    def append(self, defaults=False, var_list=None, beam_list=None, keyword_list=None):
         '''
         Add to the list of desired variables using user specified beams and variable list. 
         A pregenerated default variable list can be used by setting defaults to True. 
@@ -266,12 +269,6 @@ class Variables():
             When specified in conjuction with a var_list, default variables not on the user-
             specified list will be added to the order.
 
-        inclusive : boolean, default False
-            Add variable/beam/path combinations that match the values specified. Leaving any input 
-            list option set to 'None' will include all possible values for that list.
-            Setting to true will include all variables and variable paths that contain any of the 
-            specified variables, beams, and keywords.
-                
         var_list : list of strings, default None
             A list of variables to request, if not all available variables are wanted. 
             A list of available variables can be obtained by entering `var_list=['']` into the function.
@@ -306,11 +303,11 @@ class Variables():
     
         req_vars = {}
 
-        if not hasattr(self, 'avail') or self.avail==None: self.get_avail()
-        vgrp, paths = self.parse_var_list(self.avail) 
-        allpaths = []
-        [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
-        allpaths = np.unique(allpaths)
+        # if not hasattr(self, 'avail') or self.avail==None: self.get_avail()
+        # vgrp, paths = self.parse_var_list(self.avail) 
+        # allpaths = []
+        # [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
+        vgrp,allpaths = self.avail(options=True, internal=True)
 
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
@@ -327,13 +324,6 @@ class Variables():
 
         #generate a list of variable names to include, depending on user input
         sum_varlist = self._get_sum_varlist(var_list, vgrp.keys(), defaults)
-
-        #Case inclusive is set to true
-        if inclusive==True:
-            if var_list is not None:
-                req_vars.update(self._iter_vars(sum_varlist, req_vars, vgrp))
-            #reset the sum_varlist so all variables are iterated over during path checking
-            sum_varlist = vgrp.keys()
                 
         #Case only variables (but not keywords or beams) are specified
         if beam_list==None and keyword_list==None:
@@ -351,14 +341,10 @@ class Variables():
             else:
                 for vpath in req_vars[vkey]:
                     if vpath not in self.wanted[vkey]: self.wanted[vkey].append(vpath)
-    # print(self.wanted)  
     
     
     #DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
-    #DevGoal: we need to re-introduce, if possible, the flexibility to not have all possible variable paths used, eg if the user only wants latitude for profile_1, etc. Right now, they would get all latitude paths and all profile_1 paths. Maybe we can have a inclusive/exclusive boolean trigger?
-    #DevNote: Question: Does it make more sense to set defaults to False. It is likely default vars are only added once, 
-    #                   but fine tunes may take more calls to this function. On the other hand, I'd like the function to return some default results withtout input. 
-    def remove(self, all=False, inclusive=False, var_list=None, beam_list=None, keyword_list=None):
+    def remove(self, all=False, var_list=None, beam_list=None, keyword_list=None):
         '''
         Remove the variables and paths from the wanted list using user specified beam, keyword,
          and variable lists. 
@@ -367,13 +353,6 @@ class Variables():
         -----------
         all : boolean, default False
             Remove all variables and paths from the wanted list.
-        
-        inclusive : boolean, default False
-            Remove variable/beam/path combinations that match the values specified. Leaving any input 
-            list option set to 'None' will include all possible values for that list.
-            Setting to true will include all variables and variable paths that contain any of the 
-            specified variables, beams, and keywords.
- 
         
         var_list : list of strings, default None
             A list of variables to request, if not all available variables are wanted. 
@@ -409,7 +388,6 @@ class Variables():
         assert not (all==False and var_list==None and beam_list==None and keyword_list==None), \
         "You must specify which variables/paths/beams you would like to remove from your wanted list."
 
-        req_vars = {}
         
         # if not hasattr(self, 'avail'): self.get_avail()
         # vgrp, paths = self.parse_var_list(self.avail) 
@@ -437,40 +415,27 @@ class Variables():
             #Case a beam and/or keyword list is specified (with or without variables)
             else: 
                 combined_list = self._get_combined_list(beam_list, keyword_list)
+                if var_list==None: var_list=self.wanted.keys()
                 
                 # nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
                 #             'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
                 for vkey in tuple(self.wanted.keys()):
-                    if inclusive==True:
-                        if var_list is not None and vkey in var_list:
-                            del self.wanted[vkey]
-                        else:
-                            vpaths = self.wanted[vkey]
-                            for vpath in tuple(vpaths):
-                                vpath_kws = vpath.split('/')
+                    for vpath in tuple(self.wanted[vkey]):
+                        vpath_kws = vpath.split('/')
+
+                        try:
+                            for bkw in beam_list:
+                                if bkw in vpath_kws:
+                                    for kw in keyword_list:
+                                        if kw in vpath_kws:
+                                                self.wanted[vkey].remove(vpath)
+                        except TypeError:
+                            for kw in combined_list:
+                                if kw in vpath_kws and vkey in var_list:
+                                    self.wanted[vkey].remove(vpath)
+
+                try:
+                    if self.wanted[vkey] == []: del self.wanted[vkey]  
+                except KeyError:
+                    pass           
                             
-                                for kw in combined_list: 
-                                    if kw in vpath_kws:
-                                        self.wanted[vkey].remove(vpath)
-                                       
-                    
-                    else:
-                        for vpath in tuple(self.wanted[vkey]):
-                            vpath_kws = vpath.split('/')
-
-                            try:
-                                for bkw in beam_list:
-                                    if bkw in vpath_kws:
-                                        for kw in keyword_list:
-                                            if kw in vpath_kws:
-                                                    self.wanted[vkey].remove(vpath)
-                            except TypeError:
-                                for kw in combined_list:
-                                    if kw in vpath_kws and vkey in var_list:
-                                        self.wanted[vkey].remove(vpath)
-
-                    try:
-                        if self.wanted[vkey] == []: del self.wanted[vkey]  
-                    except KeyError:
-                        pass           
-                                

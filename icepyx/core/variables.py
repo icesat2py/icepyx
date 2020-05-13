@@ -315,7 +315,7 @@ class Variables():
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
         #add the mandatory variables to the data object
-        nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
+        nec_varlist = ['sc_orient','sc_orient_time','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
                        'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
 
         if not hasattr(self, 'wanted') or self.wanted==None:

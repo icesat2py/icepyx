@@ -5,28 +5,28 @@ class Icesat2Data {
     reqparams
     extent_type
     subsetparams
-    _subsetparams
-    _version
+ '   _subsetparams
+ '   _version
     file_vars
-    _cust_options
+ '   _cust_options
     start_time
     dates 
     dataset_version
     granules 
-    _granules
+ '   _granules
     spatial_extent
-    _session
-    _about_dataset
-    _dset 
-    _file_vars
+ '   _session
+ '   _about_dataset
+ '   _dset 
+ '   _file_vars
     CMRparams
-    _CMRparams
+ '   _CMRparams
     dataset 
     order_vars
-    _start 
-    _order_vars
+ '   _start 
+ '   _order_vars
     end_time
-    _source
+ '   _source
     subsetparams()
     avail_granules()
     order_granules()
@@ -45,13 +45,13 @@ class Earthdata {
     pswd
     capability_url
     login()
-    _start_session()
+'    _start_session()
 }
 
 class Granules {
     orderIDS
-    _session 
-    files 
+ '   _session 
+ '   files 
     avail 
     get_avail()
     place_order()
@@ -59,19 +59,19 @@ class Granules {
 }
 
 class Variables {
-    _vartype
-    _session
+'    _vartype
+'    _session
     dataset
     wanted
-    _version
+'    _version
     source
-    _avail
+'    _avail
     append()
     avail()
     remove()
-    _check_valid_lists()
-    _iter_paths()
-    _get_sum_varlist()
+'    _check_valid_lists()
+'    _iter_paths()
+'    _get_sum_varlist()
 }
 
 
@@ -81,15 +81,15 @@ package "ICESat-2 Reference (is2ref)" {
     }
     hide about_dataset circle
     
-    class _validate_dataset {
+ '   class _validate_dataset {
 
-    }
-    hide _validate_dataset circle
+ '   }
+ '   hide _validate_dataset circle
 
-    class _get_custom_options {
+ '   class _get_custom_options {
 
-    }
-    hide _get_custom_options circle
+ '   }
+ '   hide _get_custom_options circle
 }
 
 package "Validation (val)" {
@@ -121,20 +121,20 @@ package "Validation (val)" {
 ' hide APIformatting.build_CMR_params circle
 
 package "Format for API (apifmt)" {
-    class _fmt_temporal {
+ '   class _fmt_temporal {
 
-    }
-    hide _fmt_temporal circle
+ '   }
+ '   hide _fmt_temporal circle
 
-    class _fmt_spatial {
+ '   class _fmt_spatial {
 
-    }
-    hide _fmt_spatial circle
+ '   }
+ '   hide _fmt_spatial circle
 
-    class  _fmt_var_subset_list {
+ '   class  _fmt_var_subset_list {
 
-    }
-    hide  _fmt_var_subset_list circle
+ '   }
+ '   hide  _fmt_var_subset_list circle
 
     class combine_params {
 
@@ -143,13 +143,13 @@ package "Format for API (apifmt)" {
 
     class Parameters {
     partype 
-    _reqtype
-    _fmted_keys
+ '   _reqtype
+ '   _fmted_keys
     poss_keys
-    _fmted_keys
-    _poss_keys
-    _get_possible_keys()
-    _check_valid_keys()
+ '   _fmted_keys
+ '   _poss_keys
+ '   _get_possible_keys()
+ '   _check_valid_keys()
     check_req_values()
     check_values()
     build_params()
@@ -160,27 +160,27 @@ package "Format for API (apifmt)" {
 Icesat2Data *-left- Granules 
 Icesat2Data *-right- Variables 
 
-'Icesat2Data -right-> about_dataset : is2ref.about_dataset
-'Icesat2Data -right-> _get_custom_options : is2ref._get_custom_options
-'Icesat2Data -right-> _validate_dataset : is2ref._validate_dataset
+''Icesat2Data -right-> about_dataset : is2ref.about_dataset
+''Icesat2Data -right-> _get_custom_options : is2ref._get_custom_options
+''Icesat2Data -right-> _validate_dataset : is2ref._validate_dataset
 Icesat2Data -right-> "ICESat-2 Reference (is2ref)"
 
 Icesat2Data -right-> "Validation (val)"
-'Icesat2Data --> dset_version : val.dset_version
-'Icesat2Data --> spatial : val.spatial
-'Icesat2Data --> temporal: val.temporal
+''Icesat2Data --> dset_version : val.dset_version
+''Icesat2Data --> spatial : val.spatial
+''Icesat2Data --> temporal: val.temporal
 
 Icesat2Data -left-> "Format for API (apifmt)"
-'Icesat2Data --> build_CMR_params: apifmt.build_CMR_params
-'Icesat2Data -->  build_reqconfig_params : apifmt.build_reqconfig_params
-' Icesat2Data -left-> APIformatting
+''Icesat2Data --> build_CMR_params: apifmt.build_CMR_params
+''Icesat2Data -->  build_reqconfig_params : apifmt.build_reqconfig_params
+'' Icesat2Data -left-> APIformatting
 
 Icesat2Data .down. Earthdata
 
-Variables -down-> _get_custom_options
+' Variables -down-> _get_custom_options
 
-' Granules -[hidden]- APIformatting
-' Earthdata -[hidden]- APIformatting
+'' Granules -[hidden]- APIformatting
+'' Earthdata -[hidden]- APIformatting
 Granules -[hidden]- "Format for API (apifmt)"
 Earthdata -[hidden]- "Format for API (apifmt)"
 "ICESat-2 Reference (is2ref)" -[hidden]- "Validation (val)"

@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 import datetime
 
 import icepyx
+import recommonmark
 
 
 # -- Project information -----------------------------------------------------
@@ -33,9 +34,15 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
     "numpydoc",
-    "nbsphinx"
-]
+    "nbsphinx",
+    "recommonmark"
 
+]
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
+}
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -60,13 +67,24 @@ autosummary_generate = True
 # html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-    'logo_only': False,
+    'logo_only': True,
     'display_version': False,
     'prev_next_buttons_location': None,
     'navigation_depth': 4,
     'collapse_navigation': True
-}# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
-html_static_path = []
+}
+html_logo = '_static/icepyx_v2_oval_orig_nobackgr.png'
+html_favicon = '_static/icepyx_v2_oval_tiny-uml_nobackgr.png'
+html_static_path = ['_static']
+
+html_context = {
+    'menu_links_name': '',
+    'menu_links': [
+        ('<i class="fa fa-github fa-fw"></i> icepyx Github', 'https://github.com/icesat2py/icepyx'),
+        ('<i class="fa fa-comments fa-fw"></i> Pangeo Discourse', 'https://discourse.pangeo.io/t/icepyx-python-tools-for-icesat-2-data/404/2')
+
+    ]
+}
+
+def setup(app):
+    app.add_stylesheet("style.css")

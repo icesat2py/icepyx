@@ -1,9 +1,21 @@
 import geopandas as gpd
 from shapely.geometry import Polygon
  
+#DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 def geodataframe(extent_type, spatial_extent, file=False):
         """
         Return a geodataframe of the spatial extent
+
+        Parameters
+        ----------
+        extent_type : string
+            One of the acceptable extent types, either 'bounding_box' or 'polygon'
+
+        spatial_extent : list of coordinates
+            List of coordinates in the format of floats or ints (not strings of numbers).
+
+        file : boolean, default False
+            Whether or not a file is being used as input to get the geodataframe
 
         Examples
         --------
@@ -25,11 +37,16 @@ def geodataframe(extent_type, spatial_extent, file=False):
         #DevGoal: Currently this if/else within this elif are not tested...
         #DevGoal: the crs setting and management needs to be improved
         elif extent_type == 'polygon' and file==False:
-            if isinstance(spatial_extent,str):
-                spat_extent = spatial_extent.split(',')
-                spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
-            else:
+            #DevGoal: look into when/if this if is even called. I think all the incoming spatial_extents without a file will be floats...
+            #DEL: I don't think this if is ever used, so long as the spatial extent always comes in as a list of floats
+            # if isinstance(spatial_extent,str):
+            #     print('this string instance is needed')
+            #     spat_extent = spatial_extent.split(',')
+            #     spatial_extent_geom = Polygon(zip(spat_extent[0::2], spat_extent[1::2]))
+            if isinstance(spatial_extent, Polygon):
                 spatial_extent_geom = spatial_extent
+            else:
+                spatial_extent_geom = Polygon(zip(spatial_extent[0::2], spatial_extent[1::2]))  #spatial_extent
             
             gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
 

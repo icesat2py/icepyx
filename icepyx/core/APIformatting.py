@@ -65,8 +65,10 @@ def _fmt_spatial(ext_type, extent):
     if ext_type in ['bounding_box', 'bbox']:
         fmt_extent = ','.join(map(str, extent))
 
+
     elif ext_type == 'polygon':
         #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
+        print(type(extent))
         poly = extent.simplify(0.05, preserve_topology=False)
         poly = orient(poly, sign=1.0)
 
@@ -74,10 +76,14 @@ def _fmt_spatial(ext_type, extent):
         polygon = (','.join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])).split(",")
         extent = [float(i) for i in polygon]
         fmt_extent = ','.join(map(str, extent))
+        print('this is the polygon formatting')
 
     #DevNote: this elif currently does not have a test (seems like it would just be testing geopandas?)
     elif ext_type == 'Boundingshape':
-        fmt_extent = gpd.GeoSeries(extent).to_json()
+        print(type(extent))
+        print(extent)
+        poly = orient(extent, sign=1.0)
+        fmt_extent = gpd.GeoSeries(poly).to_json()
 
     return {ext_type: fmt_extent}
 
@@ -238,7 +244,7 @@ class Parameters():
         """
         Build the parameter dictionary of formatted key:value pairs.
         """
-        
+
         if not kwargs: kwargs={}
 
         if self.partype == 'required':
@@ -302,5 +308,8 @@ class Parameters():
                             k = 'bbox'
                         elif kwargs['extent_type'] == 'polygon':
                             k = 'Boundingshape'
+
+                    print(k)
+                    print(kwargs['spatial_extent'])
                     
                     self._fmted_keys.update(_fmt_spatial(k,kwargs['spatial_extent']))

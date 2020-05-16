@@ -115,6 +115,8 @@ def combine_params(*param_dicts):
 # ----------------------------------------------------------------------
 #DevNote: Currently, this class is not tested!!
 #DevGoal: this could be expanded, similar to the variables class, to provide users with valid options if need be
+#DevGoal: currently this does not do much by way of checking/formatting of other subsetting options (reprojection or formats)
+#it would be great to incorporate that so that people can't just feed any keywords in...
 class Parameters():
     """
     Build and update the parameter lists needed to submit a data order

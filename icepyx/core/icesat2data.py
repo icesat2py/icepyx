@@ -270,21 +270,31 @@ class Icesat2Data():
               
         return self._reqparams.fmted_keys
 
-    @property
+    # @property
+    #DevQuestion: if I make this a property, I get a "dict" object is not callable when I try to give input kwargs... what approach should I be taking?
     def subsetparams(self, **kwargs):
         """
         Display the subsetting key:value pairs that will be submitted. It generates the dictionary if it does not already exist
         and returns an empty dictionary if subsetting is set to False during ordering.
 
+        Parameters
+        ----------
+        **kwargs : key-value pairs
+            Additional parameters to be passed to the subsetter.
+            By default temporal and spatial subset keys are passed.
+            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
+            At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
+        
         See Also
         --------
         order_granules
         """
         if not hasattr(self, '_subsetparams'): self._subsetparams = apifmt.Parameters('subset')
         
-        if self._subsetparams==None:
+        if self._subsetparams==None and not kwargs:
             return {}
         else:
+            if self._subsetparams==None: self._subsetparams = apifmt.Parameters('subset')
             if self._geom_filepath is not None:
                 self._subsetparams.build_params(geom_filepath = self._geom_filepath, \
                                     start=self._start, end=self._end, extent_type=self.extent_type, \
@@ -322,6 +332,12 @@ class Icesat2Data():
                     self._order_vars = Variables(self._source, session=self._session, dataset=self.dataset, avail=self._cust_options['variables'])
                 else:
                     self._order_vars = Variables(self._source, session=self._session, dataset=self.dataset, version=self._version)
+
+        # I think this is where property setters come in, and one should be used here? Right now order_vars.avail is only filled in 
+        #if _cust_options exists when the class is initialized, but not if _cust_options is filled in prior to another call to order_vars
+        # if self._order_vars.avail == None and hasattr(self, '_cust_options'):
+        #     print('got into the loop')
+        #     self._order_vars.avail = self._cust_options['variables']
 
         return self._order_vars
 
@@ -430,7 +446,7 @@ class Icesat2Data():
         for h,k in zip(headers,keys):
             print(h)
             if k=='variables' and dictview:
-                vgrp,paths = Variables._parse_var_list(self._cust_options[k])
+                vgrp,paths = Variables.parse_var_list(self._cust_options[k])
                 pprint.pprint(vgrp)
             else:
                 pprint.pprint(self._cust_options[k])
@@ -480,6 +496,24 @@ class Icesat2Data():
     def order_granules(self, verbose=False, subset=True, **kwargs):
         """
         Place an order for the available granules for the icesat2data object.
+
+        Parameters
+        ----------
+        verbose : boolean, default False
+            Print out all feedback available from the order process.
+            Progress information is automatically printed regardless of the value of verbose.
+        subset : boolean, default True
+            Apply subsetting to the data order from the NSIDC, returning only data that meets the
+            subset parameters. Spatial and temporal subsetting based on the input parameters happens
+            by default when subset=True, but additional subsetting options are available.
+            Spatial subsetting returns all data that are within the area of interest (but not complete
+            granules. This eliminates false-positive granules returned by the metadata-level search)
+        **kwargs : key-value pairs
+            Additional parameters to be passed to the subsetter.
+            By default temporal and spatial subset keys are passed.
+            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
+            The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
+            At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
         
         See Also
         --------
@@ -499,10 +533,11 @@ class Icesat2Data():
      
         #REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, '_granules'): self.granules
-        self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams, verbose, subset, session=self._session, geom_filepath=self._geom_filepath, **kwargs)
+        self._granules.place_order(self.CMRparams, self.reqparams, self.subsetparams(**kwargs), verbose, subset, session=self._session, geom_filepath=self._geom_filepath)
 
 
-    def download_granules(self, path, verbose=False): #, extract=False):
+    #DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
+    def download_granules(self, path, verbose=False, subset=True, **kwargs): #, extract=False):
         """
         Downloads the data ordered using order_granules.
 
@@ -510,6 +545,21 @@ class Icesat2Data():
         ----------
         path : string
             String with complete path to desired download location.
+        verbose : boolean, default False
+            Print out all feedback available from the order process.
+            Progress information is automatically printed regardless of the value of verbose.
+        subset : boolean, default True
+            Apply subsetting to the data order from the NSIDC, returning only data that meets the
+            subset parameters. Spatial and temporal subsetting based on the input parameters happens
+            by default when subset=True, but additional subsetting options are available.
+            Spatial subsetting returns all data that are within the area of interest (but not complete
+            granules. This eliminates false-positive granules returned by the metadata-level search)
+        **kwargs : key-value pairs
+            Additional parameters to be passed to the subsetter.
+            By default temporal and spatial subset keys are passed.
+            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
+            The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
+            At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
 
         See Also
         --------
@@ -526,7 +576,7 @@ class Icesat2Data():
 
         if not hasattr(self, '_granules'): self.granules
             
-        if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose)
+        if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose=verbose, subset=subset, **kwargs)
     
         self._granules.download(verbose, path, session=self._session)
   

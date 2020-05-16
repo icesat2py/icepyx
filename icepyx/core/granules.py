@@ -143,9 +143,11 @@ class Granules():
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
         subset : boolean, default True
-            Use input temporal and spatial search parameters to subset each granule and return only data
-            that is actually within those parameters (rather than complete granules which may contain only
-            a small area of interest).
+            Apply subsetting to the data order from the NSIDC, returning only data that meets the
+            subset parameters. Spatial and temporal subsetting based on the input parameters happens
+            by default when subset=True, but additional subsetting options are available.
+            Spatial subsetting returns all data that are within the area of interest (but not complete
+            granules. This eliminates false-positive granules returned by the metadata-level search)
         session : requests.session object
             A session object authenticating the user to order data using their Earthdata login information.
             The session object will automatically be passed from the icesat2data object if you

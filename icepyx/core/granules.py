@@ -12,14 +12,10 @@ import icepyx.core.APIformatting as apifmt
 #DevNote: currently this fn is not tested
 def info(grans):
     """
-    Return some basic information about a set of granules for an 
+    Return some basic summary information about a set of granules for an 
     icesat2data object. Granule info may be from a list of those available
     from NSIDC (for ordering/download) or a list of granules present on the
     file system.
-
-    Examples
-    --------
-    >>>
     """
     assert len(grans)>0, "Your data object has no granules associated with it"
     gran_info = {}
@@ -44,11 +40,6 @@ class Granules():
     Returns
     -------
     Granules object
-
-    Examples
-    --------
-    >>> example
-    result
     """
         
     def __init__(
@@ -70,6 +61,7 @@ class Granules():
     def get_avail(self, CMRparams, reqparams):
         """
         Get a list of available granules for the icesat2data object's parameters.
+        Generates the `avail` attribute of the granules object.
 
         Parameters
         ----------
@@ -79,9 +71,15 @@ class Granules():
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
 
+        Notes
+        -----
+        This function is used by icesat2data.Icesat2Data.avail_granules(), which automatically
+        feeds in the required parameters.
+        
         See Also
         --------
         APIformatting.Parameters
+        icesat2data.Icesat2Data.avail_granules
         """
 
         assert CMRparams is not None and reqparams is not None, "Missing required input parameter dictionaries"
@@ -120,13 +118,13 @@ class Granules():
 
     
     #DevNote: currently, default subsetting DOES NOT include variable subsetting, only spatial and temporal
+    #DevGoal: add kwargs to allow subsetting and more control over request options.
     def place_order(self, CMRparams, reqparams, subsetparams, verbose, 
-                    subset=True, session=None, geom_filepath=None, **kwargs):
+                    subset=True, session=None, geom_filepath=None): #, **kwargs):
         """
         Place an order for the available granules for the icesat2data object.
         Adds the list of zipped files (orders) to the granules data object (which is
         stored as the `granules` attribute of the icesat2data object).
-        DevGoal: add additional kwargs to allow subsetting and more control over request options.
         You must be logged in to Earthdata to use this function.
 
         Parameters
@@ -154,8 +152,15 @@ class Granules():
             have successfully logged in there.
         geom_filepath : string, default None
             String of the full filename and path when the spatial input is a file.
-        kwargs...
         
+        Notes
+        -----
+        This function is used by icesat2data.Icesat2Data.order_granules(), which automatically
+        feeds in the required parameters.
+        
+        See Also
+        --------
+        icesat2data.Icesat2Data.order_granules
         """
 
         if session is None:
@@ -286,6 +291,15 @@ class Granules():
             A session object authenticating the user to download data using their Earthdata login information.
             The session object will automatically be passed from the icesat2data object if you
             have successfully logged in there.
+
+        Notes
+        -----
+        This function is used by icesat2data.Icesat2Data.download_granules(), which automatically
+        feeds in the required parameters.
+        
+        See Also
+        --------
+        icesat2data.Icesat2Data.download_granules
         """
         """
         extract : boolean, default False

@@ -574,7 +574,9 @@ class Icesat2Data():
     #DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self):
         """
-        Get a list of available granules for the icesat2data object's parameters.
+        Obtain information about the available granules for the icesat2data 
+        object's parameters. By default, a complete list of available granules is
+        obtained and stored in the object, but only summary information is printed.
 
         Examples
         --------

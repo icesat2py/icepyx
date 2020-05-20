@@ -24,12 +24,6 @@ class Earthdata():
     Returns
     -------
     Earthdata session object after a successful login
-
-    Examples
-    --------
-    >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-    >>> reg_a.earthdata_login('sam.smith','sam.smith@domain.com')
-    Earthdata Login password:  ········
     """
         
     def __init__(
@@ -86,6 +80,10 @@ class Earthdata():
         If the login fails, it will ask the user to re-enter their
         username and password up to five times to try and log in.
 
+        Examples
+        --------
+        >>> icepyx.core.Earthdata.Earthdata.login('sam.smith','sam.smith@domain.com')
+        Earthdata Login password:  ········
         """
         self.pswd = getpass.getpass('Earthdata Login password: ')
         for i in range(5):

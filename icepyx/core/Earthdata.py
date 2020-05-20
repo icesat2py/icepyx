@@ -27,8 +27,8 @@ class Earthdata():
 
     Examples
     --------
-    >>> region_a = [define that here]
-    >>> region_a.earthdata_login('sam.smith','sam.smith@domain.com')
+    >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+    >>> reg_a.earthdata_login('sam.smith','sam.smith@domain.com')
     Earthdata Login password:  ········
     """
         

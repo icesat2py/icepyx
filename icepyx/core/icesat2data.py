@@ -69,9 +69,6 @@ class Icesat2Data():
     -------
     icesat2data object
 
-    See Also
-    --------
-
 
     Examples
     --------
@@ -284,7 +281,7 @@ class Icesat2Data():
 
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
-        Earthdata Login password: ..........
+        Earthdata Login password:  ········
         >>> reg_a.order_granules()
         >>> reg_a.reqparams
         {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y'}
@@ -353,7 +350,7 @@ class Icesat2Data():
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
-        Earthdata Login password: ..........
+        Earthdata Login password:  ········
         >>> reg_a.order_vars
         <icepyx.core.variables.Variables at [location]>
         """
@@ -389,7 +386,7 @@ class Icesat2Data():
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
-        Earthdata Login password: ..........
+        Earthdata Login password:  ········
         >>> reg_a.file_vars
         <icepyx.core.variables.Variables at [location]>
         """
@@ -497,7 +494,7 @@ class Icesat2Data():
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
-        Earthdata Login password: ..........
+        Earthdata Login password:  ········
         >>> reg_a.show_custom_options(dictview=True):
         Subsetting options
         [{'id': 'ICESAT2',
@@ -568,7 +565,7 @@ class Icesat2Data():
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
-        Earthdata Login password: ..........
+        Earthdata Login password:  ········
         """
     
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
@@ -628,7 +625,7 @@ class Icesat2Data():
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
-        Earthdata Login password: ..........        
+        Earthdata Login password:  ········        
         >>> reg_a.order_granules()
         order ID: [###############]
         [order status output]
@@ -693,7 +690,7 @@ class Icesat2Data():
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
-        Earthdata Login password: ..........
+        Earthdata Login password:  ········
         >>> reg_a.download_granules('/path/to/download/folder')
         Beginning download of zipped output...
         Data request [##########] of x order(s) is complete.

@@ -34,17 +34,10 @@ class Variables():
         Properly formatted string specifying a valid version of the ICESat-2 dataset
     source : string, default None
         For vartype file, a path to a directory or single input source files (not yet implemented)
-
-    
-    Examples
-    --------
-    >>> 
-
-
-    """
+   """
 
     def __init__(self, vartype, avail=None, wanted=None, session=None,
-                dataset=None, version=None, source=None):#vartype=None):
+                dataset=None, version=None, source=None):
         
         assert vartype in ['order','file'], "Please submit a valid variables type flag"
         
@@ -72,6 +65,20 @@ class Variables():
         """
         Get the list of available variables and variable paths from the input dataset
 
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
+        >>> reg_a.order_vars.avail()
+       ['ancillary_data/atlas_sdp_gps_epoch',
+        'ancillary_data/control',
+        'ancillary_data/data_end_utc',
+        'ancillary_data/data_start_utc',
+        .
+        .
+        .
+        'quality_assessment/gt3r/signal_selection_source_fraction_3']
         """
         # if hasattr(self, '_avail'):
         #         return self._avail
@@ -100,6 +107,64 @@ class Variables():
     def parse_var_list(varlist):
         """
         Parse a list of path strings into tiered lists and names of variables
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
+        >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail())
+        >>> var_dict
+        {'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],
+        .
+        .
+        .
+        'latitude': ['gt1l/land_ice_segments/latitude',
+        'gt1r/land_ice_segments/latitude',
+        'gt2l/land_ice_segments/latitude',
+        'gt2r/land_ice_segments/latitude',
+        'gt3l/land_ice_segments/latitude',
+        'gt3r/land_ice_segments/latitude'],
+        .
+        .
+        .
+        }
+        >>> var_dict.keys()
+        dict_keys(['atlas_sdp_gps_epoch', 'control', 'data_end_utc', 'data_start_utc',
+        'end_cycle', 'end_delta_time', 'end_geoseg', 'end_gpssow', 'end_gpsweek',
+        'end_orbit', 'end_region', 'end_rgt', 'granule_end_utc', 'granule_start_utc', 
+        'qa_at_interval', 'release', 'start_cycle', 'start_delta_time', 'start_geoseg', 
+        'start_gpssow', 'start_gpsweek', 'start_orbit', 'start_region', 'start_rgt', 
+        'version', 'dt_hist', 'fit_maxiter', 'fpb_maxiter', 'maxiter', 'max_res_ids', 
+        'min_dist', 'min_gain_th', 'min_n_pe', 'min_n_sel', 'min_signal_conf', 'n_hist', 
+        'nhist_bins', 'n_sigmas', 'proc_interval', 'qs_lim_bsc', 'qs_lim_hrs', 'qs_lim_hsigma', 
+        'qs_lim_msw', 'qs_lim_snr', 'qs_lim_sss', 'rbin_width', 'sigma_beam', 'sigma_tx', 
+        't_dead', 'atl06_quality_summary', 'delta_time', 'h_li', 'h_li_sigma', 'latitude', 
+        'longitude', 'segment_id', 'sigma_geo_h', 'fpb_mean_corr', 'fpb_mean_corr_sigma', 
+        'fpb_med_corr', 'fpb_med_corr_sigma', 'fpb_n_corr', 'med_r_fit', 'tx_mean_corr', 
+        tx_med_corr', 'dem_flag', 'dem_h', 'geoid_h', 'dh_fit_dx', 'dh_fit_dx_sigma', '
+        dh_fit_dy', 'h_expected_rms', 'h_mean', 'h_rms_misfit', 'h_robust_sprd', 
+        'n_fit_photons', 'n_seg_pulses', 'sigma_h_mean', 'signal_selection_source', 
+        'signal_selection_source_status', 'snr', 'snr_significance', 'w_surface_window_final', 
+        ckgrd', 'bsnow_conf', 'bsnow_h', 'bsnow_od', 'cloud_flg_asr', 'cloud_flg_atm', 'dac', 
+        'e_bckgrd', 'layer_flag', 'msw_flag', 'neutat_delay_total', 'r_eff', 'solar_azimuth', 
+        'solar_elevation', 'tide_earth', 'tide_equilibrium', 'tide_load', 'tide_ocean', 
+        'tide_pole', 'ref_azimuth', 'ref_coelv', 'seg_azimuth', 'sigma_geo_at', 'sigma_geo_r', 
+        igma_geo_xt', 'x_atc', 'y_atc', 'bckgrd_per_m', 'bin_top_h', 'count', 'ds_segment_id', 
+        'lat_mean', 'lon_mean', 'pulse_count', 'segment_id_list', 'x_atc_mean', 'record_number', 
+        'reference_pt_lat', 'reference_pt_lon', 'signal_selection_status_all', 
+        'signal_selection_status_backup', 'signal_selection_status_confident', 'crossing_time', 
+        'cycle_number', 'lan', 'orbit_number', 'rgt', 'sc_orient', 'sc_orient_time', 
+        'qa_granule_fail_reason', 'qa_granule_pass_fail', 'signal_selection_source_fraction_0', 
+        'signal_selection_source_fraction_1', 'signal_selection_source_fraction_2', 
+        'signal_selection_source_fraction_3'])
+        >>> import numpy
+        >>> numpy.unique(paths)
+        array(['ancillary_data', 'bias_correction', 'dem', 'fit_statistics',
+       'geophysical', 'ground_track', 'gt1l', 'gt1r', 'gt2l', 'gt2r',
+       'gt3l', 'gt3r', 'land_ice', 'land_ice_segments', 'none',
+       'orbit_info', 'quality_assessment', 'residual_histogram',
+       'segment_quality', 'signal_selection_status'], dtype='<U23')
         """
 
         # create a dictionary of variable names and paths
@@ -262,8 +327,8 @@ class Variables():
         A pregenerated default variable list can be used by setting defaults to True. 
         Note: The calibrated backscatter cab_prof is not in the default list for ATL09
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         defaults : boolean, default False
             Include the variables in the default variable list. Defaults are defined per-data product. 
             When specified in conjuction with a var_list, default variables not on the user-
@@ -283,19 +348,27 @@ class Variables():
             the dataset that include that keyword in their path. A list of availble keywords can be obtained by
             entering `keyword_list=['']` into the function.
 
-        Examples:
-        ---------
-            For ATL07 to add variables related to IS2 beams:
-            >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'],defaults=True)
-            
-            To exclude the default variables:
-            >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'])
+        See Also
+        --------
+        ICESat-2_DAAC_DataAccess2_Subsetting.ipynb example notebook
+        
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
 
-            To add additional variables in ancillary_data, orbit_info, or quality_assessment, etc., 
-            >>> region_a.build_wanted_var_list(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
+        To add all variables related to a specific ICESat-2 beam
+        >>> reg_a.order_vars.append(beam_list=['gt1r'])
+        
+        To include the default variables:
+        >>> reg_a.order_vars.append(defaults=True)
 
-            To add all variables in ancillary_data
-            >>> region_a.build_wanted_var_list(keyword_list=['ancillary_data'])
+        To add specific variables in orbit_info
+        >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
+
+        To add all variables and paths in ancillary_data
+        >>> reg_a.order_vars.append(keyword_list=['ancillary_data'])
         '''
 
         assert not (defaults==False and var_list==None and beam_list==None and keyword_list==None), \
@@ -367,19 +440,27 @@ class Variables():
             A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
             the dataset that include that keyword in their path.
 
-        Examples:
-        ---------
-            For ATL07 to add variables related to IS2 beams:
-            >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'],defaults=True)
-            
-            To exclude the default variables:
-            >>> region_a.build_wanted_var_list(var_list=['latitude'],beam_list=['gt1r'])
+        See Also
+        --------
+        ICESat-2_DAAC_DataAccess2_Subsetting.ipynb example notebook
+        
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
 
-            To add additional variables in ancillary_data, orbit_info, or quality_assessment, etc., 
-            >>> region_a.build_wanted_var_list(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
+        To clear the list of wanted variables
+        >>> reg_a.order_vars.remove(all=True)
+        
+        To remove all variables related to a specific ICESat-2 beam
+        >>> reg_a.order_vars.remove(beam_list=['gt1r'])
 
-            To add all variables in ancillary_data
-            >>> region_a.build_wanted_var_list(keyword_list=['ancillary_data'])
+        To remove specific variables in orbit_info
+        >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
+
+        To remove all variables and paths in ancillary_data
+        >>> reg_a.order_vars.remove(keyword_list=['ancillary_data'])
         '''
 
         if not hasattr(self, 'wanted') or self.wanted==None:

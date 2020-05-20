@@ -23,6 +23,10 @@ def _validate_dataset(dataset):
 def about_dataset(dset):
     """
     Ping Earthdata to get metadata about the dataset of interest (the collection).
+
+    See Also
+    --------
+    icepyx.icesat2data.Icesat2Data.dataset_all_info()
     """
 
     cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'

@@ -8,16 +8,16 @@ import time
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
-from icepyx.icesat2data.core.Earthdata import Earthdata
-import icepyx.icesat2data.core.APIformatting as apifmt
-import icepyx.icesat2data.core.is2ref as is2ref
-import icepyx.icesat2data.core.granules as granules
-from icepyx.icesat2data.core.granules import Granules as Granules
-#QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.icesat2data.core.granules?
-# from icepyx.icesat2data.core.granules import Granules
-from icepyx.icesat2data.core.variables import Variables as Variables
-import icepyx.icesat2data.core.geospatial as geospatial
-import icepyx.icesat2data.core.validate_inputs as val
+from icepyx.core.Earthdata import Earthdata
+import icepyx.core.APIformatting as apifmt
+import icepyx.core.is2ref as is2ref
+import icepyx.core.granules as granules
+from icepyx.core.granules import Granules as Granules
+#QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
+# from icepyx.core.granules import Granules
+from icepyx.core.variables import Variables as Variables
+import icepyx.core.geospatial as geospatial
+import icepyx.core.validate_inputs as val
 
 #DevGoal: update docs throughout to allow for polygon spatial extent
 #Note: add files to docstring once implemented
@@ -75,23 +75,23 @@ class Icesat2Data():
     Initializing Icesat2Data with a bounding box.
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
-    >>> reg_a = icepyx.icesat2data.icesat2data.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
+    >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
     >>> reg_a
-    <icepyx.icesat2data.core.icesat2data.Icesat2Data at [location]>
+    <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
-    >>> reg_a = icepyx.icesat2data.icesat2data.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
+    >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
     >>> reg_a
-   <icepyx.icesat2data.core.icesat2data.Icesat2Data at [location]>
+   <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a geospatial polygon file.
     >>> aoi = '/User/name/location/aoi.shp'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a = icepyx.icesat2data.icesat2data.Icesat2Data('ATL06', aoi, reg_a_dates)
+    >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', aoi, reg_a_dates)
     >>> reg_a
-    <icepyx.icesat2data.core.icesat2data.Icesat2Data at [location]>
+    <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     """
 

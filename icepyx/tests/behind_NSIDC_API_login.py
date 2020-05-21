@@ -12,13 +12,13 @@ import os
 #check that downloaded data is subset
 
 @pytest.fixture
-def reg_a():
+def reg_a(scope='module'):
     return ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-22','2019-02-28'])
 
 #@patch('my_module.__get_input', return_value='y')
 
 @pytest.fixture
-def session(reg_a):
+def session(reg_a, scope='module'):
     return reg_a._start_earthdata_session('icepyx_devteam', 'icepyx.dev@gmail.com', os.getenv('NSIDC_LOGIN'))
 
 #QUESTION: should we be testing to make sure the session starts? If so, how? The below doesn't work because the 'requests.sessions.Session' isn't recognized... is this a case where I'd need to have a mock session to compare it to?

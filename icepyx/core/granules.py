@@ -9,7 +9,6 @@ import zipfile
 
 import icepyx.core.APIformatting as apifmt
 
-#DevNote: currently this fn is not tested
 def info(grans):
     """
     Return some basic summary information about a set of granules for an 

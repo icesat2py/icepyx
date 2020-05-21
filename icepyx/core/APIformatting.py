@@ -230,20 +230,23 @@ class Parameters():
             assert key in self.poss_keys.values(), "An invalid key was passed"
 
     
+    #DevGoal: this function needs fixing - it's not actually checking for the presence of values!
     def check_req_values(self):
         """
         Check that all of the required keys have values, if the key was passed in with
         the values parameter.
         """
+        # if self._reqtype == None: return False
+        # else:
         reqkeys = self.poss_keys[self._reqtype]
-
+    
         if all(keys in self.fmted_keys.keys() for keys in reqkeys):
             assert all(values in self.fmted_keys.values() for keys in reqkeys), "One of your formated parameters is missing a value"
             return True
         else:
             return False
 
-
+   #DevGoal: this function needs fixing - it's not actually checking for the presence of values!
     def check_values(self):
         """
         Check that the non-required keys have values, if the key was
@@ -272,8 +275,14 @@ class Parameters():
         Parameters
         ----------
         **kwargs
-            optional keyword arguments to be passed to the subsetter. Valid keywords are
-            time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
+            Keyword inputs containing the needed information to build the parameter list, depending on
+            parameter type, if the already formatted key:value is not submitted as a kwarg. 
+            May include optional keyword arguments to be passed to the subsetter. Valid keywords 
+            are time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
+
+            Keyword argument inputs for 'CMR' may include: dataset, version, start, end, extent_type, spatial_extent
+            Keyword argument inputs for 'required' may include: page_size, page_num, request_mode, include_meta
+            Keyword argument inputs for 'subset' may include: geom_filepath, start, end, extent_type, spatial_extent
 
         """
         

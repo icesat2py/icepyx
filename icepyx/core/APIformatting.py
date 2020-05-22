@@ -230,38 +230,38 @@ class Parameters():
             assert key in self.poss_keys.values(), "An invalid key was passed"
 
     
-    #DevGoal: this function needs fixing - it's not actually checking for the presence of values!
     def check_req_values(self):
         """
         Check that all of the required keys have values, if the key was passed in with
         the values parameter.
         """
-        # if self._reqtype == None: return False
-        # else:
+        
+        assert self.partype == 'required', "You cannot call this function for your parameter type"
         reqkeys = self.poss_keys[self._reqtype]
     
         if all(keys in self.fmted_keys.keys() for keys in reqkeys):
-            assert all(values in self.fmted_keys.values() for keys in reqkeys), "One of your formated parameters is missing a value"
+            assert all(self.fmted_keys.get(key, -9999) != -9999 for key in reqkeys),"One of your formated parameters is missing a value"
             return True
         else:
             return False
 
-   #DevGoal: this function needs fixing - it's not actually checking for the presence of values!
+
     def check_values(self):
         """
         Check that the non-required keys have values, if the key was
         passed in with the values parameter.
         """
+        assert self.partype != 'required', "You cannot call this function for your parameter type"
+        
         default_keys = self.poss_keys['default']
-    
         spatial_keys = self.poss_keys['spatial']
 
         if all(keys in self._fmted_keys.keys() for keys in default_keys):
-            assert all(values in self._fmted_keys.values() for keys in default_keys), "One of your formated parameters is missing a value"
-
+            assert all(self.fmted_keys.get(key, -9999) != -9999 for key in default_keys),"One of your formated parameters is missing a value"
+            
             #not the most robust check, but better than nothing...
             if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
-                assert any(values in self._fmted_keys.values() for keys in default_keys), "One of your formated parameters is missing a value"
+                assert any(self.fmted_keys.get(key, -9999) != -9999 for key in default_keys),"One of your formated parameters is missing a value"
                 return True
             else: return False
         else:

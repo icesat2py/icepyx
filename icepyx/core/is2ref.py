@@ -26,7 +26,7 @@ def about_dataset(dset):
 
     See Also
     --------
-    icepyx.icesat2data.Icesat2Data.dataset_all_info()
+    icepyx.core.icesat2data.Icesat2Data.dataset_all_info()
     """
 
     cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'

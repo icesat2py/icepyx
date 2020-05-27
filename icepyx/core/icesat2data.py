@@ -71,7 +71,6 @@ class Icesat2Data():
 
     Examples
     --------
-
     Initializing Icesat2Data with a bounding box.
 
     >>> reg_a_bbox = [-55, 68, -48, 71]
@@ -574,11 +573,18 @@ class Icesat2Data():
         self._email = email
 
     #DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self):
+    def avail_granules(self, ids=False):
         """
         Obtain information about the available granules for the icesat2data 
         object's parameters. By default, a complete list of available granules is
-        obtained and stored in the object, but only summary information is printed.
+        obtained and stored in the object, but only summary information is returned.
+        A list of granule IDs can be obtained using the boolean trigger.
+
+        Parameters
+        ----------
+        ids : boolean, default False
+            Indicates whether the function should return summary granule information (default)
+            or a list of granule IDs.
 
         Examples
         --------
@@ -587,15 +593,25 @@ class Icesat2Data():
         {'Number of available granules': 4,
         'Average size of granules (MB)': 48.975419759750004,
         'Total size of all granules (MB)': 195.90167903900002}
+
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.avail_granules(ids=True)
+
         """
         
         #REFACTOR: add test to make sure there's a session
         if not hasattr(self, '_granules'): self.granules
-        try: return self.granules.avail
+        try: self.granules.avail
         except AttributeError:
             self.granules.get_avail(self.CMRparams,self.reqparams)
 
-        return granules.info(self.granules.avail)
+        if ids==True:
+            return granules.gran_IDs(self.granules.avail)
+        else:
+            return granules.info(self.granules.avail)
+
+
+
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     #DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.

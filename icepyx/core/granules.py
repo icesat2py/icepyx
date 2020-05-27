@@ -27,6 +27,20 @@ def info(grans):
 
     return gran_info
 
+#DevNote: currently this fn is not tested
+def gran_IDs(grans):
+    """
+    Returns a list of the granule IDs for the granule dictionary.
+    Granule info may be from a list of those available from NSIDC (for ordering/download)
+    or a list of granules present on the file system.
+    """
+    assert len(grans)>0, "Your data object has no granules associated with it"
+    gran_ids = []
+    for gran in grans:
+        gran_ids.append(gran['producer_granule_id']) 
+    
+    return gran_ids
+
 
 #DevGoal: this will be a great way/place to manage data from the local file system
 #where the user already has downloaded data!

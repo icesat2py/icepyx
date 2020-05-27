@@ -361,15 +361,19 @@ class Variables():
         Earthdata Login password:  ········
 
         To add all variables related to a specific ICESat-2 beam
+        
         >>> reg_a.order_vars.append(beam_list=['gt1r'])
         
         To include the default variables:
+        
         >>> reg_a.order_vars.append(defaults=True)
 
         To add specific variables in orbit_info
+        
         >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
 
         To add all variables and paths in ancillary_data
+        
         >>> reg_a.order_vars.append(keyword_list=['ancillary_data'])
         '''
 
@@ -455,15 +459,19 @@ class Variables():
         Earthdata Login password:  ········
 
         To clear the list of wanted variables
+        
         >>> reg_a.order_vars.remove(all=True)
         
         To remove all variables related to a specific ICESat-2 beam
+        
         >>> reg_a.order_vars.remove(beam_list=['gt1r'])
 
         To remove specific variables in orbit_info
+        
         >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
 
         To remove all variables and paths in ancillary_data
+        
         >>> reg_a.order_vars.remove(keyword_list=['ancillary_data'])
         '''
 

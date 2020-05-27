@@ -71,7 +71,9 @@ class Icesat2Data():
 
     Examples
     --------
+
     Initializing Icesat2Data with a bounding box.
+
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
@@ -79,6 +81,7 @@ class Icesat2Data():
     <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
+   
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
@@ -86,6 +89,7 @@ class Icesat2Data():
     <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a geospatial polygon file.
+   
     >>> aoi = '/User/name/location/aoi.shp'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', aoi, reg_a_dates)

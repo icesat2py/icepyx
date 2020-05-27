@@ -1,6 +1,7 @@
 import requests
 from xml.etree import ElementTree as ET
 import json
+import icepyx.core.icesat2data as icepyx
 
 #ICESat-2 specific reference functions
 #options to get customization options for ICESat-2 data (though could be used generally)
@@ -26,7 +27,7 @@ def about_dataset(dset):
 
     See Also
     --------
-    icepyx.core.icesat2data.Icesat2Data.dataset_all_info()
+    icepyx.Icesat2Data.dataset_all_info()
     """
 
     cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'

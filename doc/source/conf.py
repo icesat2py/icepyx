@@ -57,6 +57,7 @@ master_doc = 'index'
 
 # -- Configuration options ---------------------------------------------------
 autosummary_generate = True
+numpydoc_show_class_members = False
 
 
 # -- Options for HTML output -------------------------------------------------

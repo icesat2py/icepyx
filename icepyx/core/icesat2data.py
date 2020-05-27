@@ -69,7 +69,6 @@ class Icesat2Data():
     -------
     icesat2data object
 
-
     Examples
     --------
     Initializing Icesat2Data with a bounding box.
@@ -92,7 +91,6 @@ class Icesat2Data():
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', aoi, reg_a_dates)
     >>> reg_a
     <icepyx.core.icesat2data.Icesat2Data at [location]>
-
     """
 
 
@@ -416,7 +414,6 @@ class Icesat2Data():
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.granules
        <icepyx.core.granules.Granules at [location]>
-        >>>
         """
 
         if not hasattr(self, '_granules'):

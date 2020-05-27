@@ -570,6 +570,7 @@ class Icesat2Data():
     
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         self._session = Earthdata(uid,email,capability_url).login()
+        self._email = email
 
     #DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self):
@@ -643,7 +644,7 @@ class Icesat2Data():
         
         if self._reqparams._reqtype == 'search':
             self._reqparams._reqtype = 'download'
-            self._reqparams.build_params()
+            self._reqparams.build_params(email=self._email)
 
         if subset is False:
             self._subsetparams=None

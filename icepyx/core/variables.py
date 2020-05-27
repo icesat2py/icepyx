@@ -442,9 +442,11 @@ class Variables():
             A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
             the dataset that include that keyword in their path.
 
-        See Also
-        --------
-        ICESat-2_DAAC_DataAccess2_Subsetting.ipynb example notebook
+        Notes
+        -----
+        See also the `ICESat-2_DAAC_DataAccess2_Subsetting 
+        <https://github.com/icesat2py/icepyx/blob/master/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        example notebook
         
         Examples
         --------

@@ -656,7 +656,7 @@ class Icesat2Data():
 
 
     #DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
-    def download_granules(self, path, verbose=False, subset=True, **kwargs): #, extract=False):
+    def download_granules(self, path, verbose=False, subset=True, restart=False, **kwargs): #, extract=False):
         """
         Downloads the data ordered using order_granules.
 
@@ -673,6 +673,8 @@ class Icesat2Data():
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
+        restart: boolean, default false
+            If previous download was terminated unexpectedly. Run again with restart set to True to continue. 
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
@@ -706,7 +708,7 @@ class Icesat2Data():
             
         if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose=verbose, subset=subset, **kwargs)
     
-        self._granules.download(verbose, path, session=self._session)
+        self._granules.download(verbose, path, session=self._session, restart=restart)
   
    
     #DevGoal: add testing? What do we test, and how, given this is a visualization.

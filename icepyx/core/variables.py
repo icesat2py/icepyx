@@ -348,9 +348,11 @@ class Variables():
             the dataset that include that keyword in their path. A list of availble keywords can be obtained by
             entering `keyword_list=['']` into the function.
 
-        See Also
-        --------
-        ICESat-2_DAAC_DataAccess2_Subsetting.ipynb example notebook
+        Notes
+        -----
+        See also the `ICESat-2_DAAC_DataAccess2_Subsetting 
+        <https://github.com/icesat2py/icepyx/blob/master/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        example notebook
         
         Examples
         --------
@@ -359,15 +361,19 @@ class Variables():
         Earthdata Login password:  ········
 
         To add all variables related to a specific ICESat-2 beam
+        
         >>> reg_a.order_vars.append(beam_list=['gt1r'])
         
         To include the default variables:
+        
         >>> reg_a.order_vars.append(defaults=True)
 
         To add specific variables in orbit_info
+        
         >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
 
         To add all variables and paths in ancillary_data
+        
         >>> reg_a.order_vars.append(keyword_list=['ancillary_data'])
         '''
 
@@ -440,9 +446,11 @@ class Variables():
             A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
             the dataset that include that keyword in their path.
 
-        See Also
-        --------
-        ICESat-2_DAAC_DataAccess2_Subsetting.ipynb example notebook
+        Notes
+        -----
+        See also the `ICESat-2_DAAC_DataAccess2_Subsetting 
+        <https://github.com/icesat2py/icepyx/blob/master/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        example notebook
         
         Examples
         --------
@@ -451,15 +459,19 @@ class Variables():
         Earthdata Login password:  ········
 
         To clear the list of wanted variables
+        
         >>> reg_a.order_vars.remove(all=True)
         
         To remove all variables related to a specific ICESat-2 beam
+        
         >>> reg_a.order_vars.remove(beam_list=['gt1r'])
 
         To remove specific variables in orbit_info
+        
         >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
 
         To remove all variables and paths in ancillary_data
+        
         >>> reg_a.order_vars.remove(keyword_list=['ancillary_data'])
         '''
 

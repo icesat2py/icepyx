@@ -16,6 +16,7 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    getting_started/origin_purpose
    getting_started/install
    getting_started/example_link
+   getting_started/citation_link
 
 .. toctree::
    :maxdepth: 2
@@ -31,7 +32,7 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    :caption: Contributing
 
    contributing/contribution_guidelines
-   attribution_link
+   contributing/attribution_link
    contributing/development_plan
    contributing/code_of_conduct_link
 

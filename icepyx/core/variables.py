@@ -348,9 +348,11 @@ class Variables():
             the dataset that include that keyword in their path. A list of availble keywords can be obtained by
             entering `keyword_list=['']` into the function.
 
-        See Also
-        --------
-        ICESat-2_DAAC_DataAccess2_Subsetting.ipynb example notebook
+        Notes
+        -----
+        See also the `ICESat-2_DAAC_DataAccess2_Subsetting 
+        <https://github.com/icesat2py/icepyx/blob/master/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        example notebook
         
         Examples
         --------

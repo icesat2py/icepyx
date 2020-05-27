@@ -83,7 +83,7 @@ class Icesat2Data():
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
     >>> reg_a
-   <icepyx.core.icesat2data.Icesat2Data at [location]>
+    <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a geospatial polygon file.
     >>> aoi = '/User/name/location/aoi.shp'
@@ -413,7 +413,7 @@ class Icesat2Data():
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.granules
-       <icepyx.core.granules.Granules at [location]>
+        <icepyx.core.granules.Granules at [location]>
         """
 
         if not hasattr(self, '_granules'):

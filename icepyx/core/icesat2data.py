@@ -174,7 +174,7 @@ class Icesat2Data():
         Spatial extent is returned as an input type (which depends on how
         you initially entered your spatial data) followed by the geometry data.
         Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon data is [[list of longitudes],[list of corresponding latitudes]].
+        Polygon data is [[array of longitudes],[array of corresponding latitudes]].
 
         Examples
         --------
@@ -187,10 +187,13 @@ class Icesat2Data():
         ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]]
         """
 
+
         if self.extent_type == 'bounding_box':
             return ['bounding box', self._spat_extent]
         elif self.extent_type == 'polygon':
-            return ['polygon', self._spat_extent] #[self._spat_extent[0::2], self._spat_extent[1::2]]]
+            # return ['polygon', self._spat_extent]
+            # Note: self._spat_extent is a shapely geometry object
+            return ['polygon', self._spat_extent.exterior.coords.xy]
         else:
             return ['unknown spatial type', None]
 

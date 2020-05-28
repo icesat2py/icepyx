@@ -57,7 +57,7 @@ def geodataframe(extent_type, spatial_extent, file=False):
             else:
                 spatial_extent_geom = Polygon(zip(spatial_extent[0::2], spatial_extent[1::2]))  #spatial_extent
             
-            gdf = gpd.GeoDataFrame(index=[0],crs={'init':'epsg:4326'}, geometry=[spatial_extent_geom])
+            gdf = gpd.GeoDataFrame(index=[0],crs='epsg:4326', geometry=[spatial_extent_geom])
 
         #DevGoal: Currently this elif isn't tested...
         elif extent_type == 'polygon' and file==True:

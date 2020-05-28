@@ -69,33 +69,31 @@ class Icesat2Data():
     -------
     icesat2data object
 
-    See Also
-    --------
-
-
     Examples
     --------
     Initializing Icesat2Data with a bounding box.
-    >>> reg_a_bbox = [-64, 66, -55, 72]
-    >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
-    >>> region_a
-    [show output here after inputting above info and running it]
+
+    >>> reg_a_bbox = [-55, 68, -48, 71]
+    >>> reg_a_dates = ['2019-02-20','2019-02-28']
+    >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
+    >>> reg_a
+    <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
-    >>> reg_a_poly = [(-64, 66), (-64, 72), (-55, 72), (-55, 66), (-64, 66)]
-    >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> region_a = icepyx.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
-    >>> region_a
-    [show output here after inputting above info and running it]
+   
+    >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
+    >>> reg_a_dates = ['2019-02-20','2019-02-28']
+    >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
+    >>> reg_a
+    <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a geospatial polygon file.
+   
     >>> aoi = '/User/name/location/aoi.shp'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> region_a = icepyx.Icesat2Data('ATL06', aoi, reg_a_dates)
-    >>> region_a
-    [show output here after inputting above info and running it]
-
+    >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', aoi, reg_a_dates)
+    >>> reg_a
+    <icepyx.core.icesat2data.Icesat2Data at [location]>
     """
 
 
@@ -114,7 +112,7 @@ class Icesat2Data():
     ):
 
         warnings.filterwarnings("always")
-        warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
+        warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.icesat2data code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
         
         if (dataset is None or spatial_extent is None or date_range is None) and files is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
@@ -146,9 +144,9 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.dataset
-        ATL06
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.dataset
+        'ATL06'
         """
         return self._dset
 
@@ -159,13 +157,13 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.dataset_version
-        002
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.dataset_version
+        '003'
 
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], version='1')
-        >>> region_a.dataset_version
-        001
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
+        >>> reg_a.dataset_version
+        '001'
         """
         return self._version
 
@@ -180,9 +178,13 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.spatial_extent
-        ['bounding box', [-64, 66, -55, 72]]
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.spatial_extent
+        ['bounding box', [-55, 68, -48, 71]]
+
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
+        >>> reg_a.spatial_extent
+        ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]]
         """
 
 
@@ -203,9 +205,9 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.dates
-        ['2019-02-22', '2019-02-28']
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.dates
+        ['2019-02-20', '2019-02-28']
         """
         return [self._start.strftime('%Y-%m-%d'), self._end.strftime('%Y-%m-%d')] #could also use self._start.date()
 
@@ -216,13 +218,13 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.start_time
-        00:00:00
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.start_time
+        '00:00:00'
 
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], start_time='12:30:30')
-        >>> region_a.start_time
-        12:30:30
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], start_time='12:30:30')
+        >>> reg_a.start_time
+        '12:30:30'
         """
         return self._start.strftime('%H:%M:%S')
 
@@ -233,13 +235,13 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.end_time
-        23:59:59
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.end_time
+        '23:59:59'
 
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'], end_time='10:20:20')
-        >>> region_a.end_time
-        10:20:20
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], end_time='10:20:20')
+        >>> reg_a.end_time
+        '10:20:20'
         """
         return self._end.strftime('%H:%M:%S')
 
@@ -247,6 +249,15 @@ class Icesat2Data():
     def CMRparams(self):
         """
         Display the CMR key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
+        
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.CMRparams
+        {'short_name': 'ATL06',
+        'version': '002',
+        'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+        'bounding_box': '-55,68,-48,71'}
         """
 
         if not hasattr(self, '_CMRparams'): 
@@ -265,6 +276,19 @@ class Icesat2Data():
     def reqparams(self):
         """
         Display the required key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
+        
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.reqparams
+        {'page_size': 10, 'page_num': 1}
+
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
+        >>> reg_a.order_granules()
+        >>> reg_a.reqparams
+        {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y'}
         """
 
         if not hasattr(self, '_reqparams'):
@@ -291,6 +315,12 @@ class Icesat2Data():
         See Also
         --------
         order_granules
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.subsetparams()
+        {'time': '2019-02-20T00:00:00,2019-02-28T23:59:59', 'bbox': '-55,68,-48,71'}
         """
         if not hasattr(self, '_subsetparams'): self._subsetparams = apifmt.Parameters('subset')
         
@@ -322,10 +352,11 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> region_a.earthdata_login(user_id,user_email)
-        >>> region_a.order_granules()
-        >>> region_a.order_vars
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
+        >>> reg_a.order_vars
+        <icepyx.core.variables.Variables at [location]>
         """
         
         if not hasattr(self, '_order_vars'):
@@ -357,10 +388,11 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> region_a = icepyx.Icesat2Data('ATL06',[-64, 66, -55, 72],['2019-02-22','2019-02-28'])
-        >>> session = region_a.earthdata_login(user_id,user_email)
-        >>> region_a.order_granules(session)
-        >>> region_a.variables
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
+        >>> reg_a.file_vars
+        <icepyx.core.variables.Variables at [location]>
         """
         
         if not hasattr(self, '_file_vars'):
@@ -385,7 +417,9 @@ class Icesat2Data():
 
         Examples
         --------
-        >>>
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.granules
+        <icepyx.core.granules.Granules at [location]>
         """
 
         if not hasattr(self, '_granules'):
@@ -403,6 +437,18 @@ class Icesat2Data():
         """
         Display a summary of selected metadata for the specified version of the dataset 
         of interest (the collection).
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.dataset_summary_info()
+        dataset_id :  ATLAS/ICESat-2 L3A Land Ice Height V002
+        short_name :  ATL06
+        version_id :  002
+        time_start :  2018-10-14T00:00:00.000Z
+        coordinate_system :  CARTESIAN
+        summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
+        orbit_parameters :  {'swath_width': '36.0', 'period': '94.29', 'inclination_angle': '92.0', 'number_of_orbits': '0.071428571', 'start_circular_latitude': '0.0'}
         """
         if not hasattr(self, '_about_dataset'): self._about_dataset=is2data(self._dset)
         summ_keys = ['dataset_id', 'short_name', 'version_id', 'time_start', 'coordinate_system', 'summary', 'orbit_parameters']
@@ -412,6 +458,13 @@ class Icesat2Data():
     def dataset_all_info(self):
         """
         Display all metadata about the dataset of interest (the collection).
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.dataset_all_info()
+        {very long prettily-formatted dictionary output}
+
         """
         if not hasattr(self, '_about_dataset'): self._about_dataset=is2data(self._dset)
         pprint.pprint(self._about_dataset)
@@ -419,6 +472,12 @@ class Icesat2Data():
     def latest_version(self):
         """
         Determine the most recent version available for the given dataset.
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.latest_version()
+        '003'
         """
         if not hasattr(self, '_about_dataset'): self._about_dataset=is2ref.about_dataset(self._dset)
         return max([entry['version_id'] for entry in self._about_dataset['feed']['entry']])
@@ -433,7 +492,37 @@ class Icesat2Data():
             Show the variable portion of the custom options list as a dictionary with key:value
             pairs representing variable:paths-to-variable rather than as a long list of full
             variable paths.
-        
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
+        >>> reg_a.show_custom_options(dictview=True):
+        Subsetting options
+        [{'id': 'ICESAT2',
+        'maxGransAsyncRequest': '2000',
+        'maxGransSyncRequest': '100',
+        'spatialSubsetting': 'true',
+        'spatialSubsettingShapefile': 'true',
+        'temporalSubsetting': 'true',
+        'type': 'both'}]
+        Data File Formats (Reformatting Options)
+        ['TABULAR_ASCII', 'NetCDF4-CF', 'Shapefile', 'NetCDF-3']
+        Reprojection Options
+        []
+        Data File (Reformatting) Options Supporting Reprojection
+        ['TABULAR_ASCII', 'NetCDF4-CF', 'Shapefile', 'NetCDF-3', 'No reformatting']
+        Data File (Reformatting) Options NOT Supporting Reprojection
+        []
+        Data Variables (also Subsettable)
+        ['ancillary_data/atlas_sdp_gps_epoch',
+        'ancillary_data/control',
+        'ancillary_data/data_end_utc',
+        .
+        .
+        .
+        'quality_assessment/gt3r/signal_selection_source_fraction_3']
         """
         headers=['Subsetting options', 'Data File Formats (Reformatting Options)', 'Reprojection Options',
                  'Data File (Reformatting) Options Supporting Reprojection',
@@ -474,25 +563,58 @@ class Icesat2Data():
         See Also
         --------
         Earthdata.Earthdata
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
         """
     
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         self._session = Earthdata(uid,email,capability_url).login()
+        self._email = email
 
     #DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self):
+    def avail_granules(self, ids=False):
         """
-        Get a list of available granules for the icesat2data object's parameters.
+        Obtain information about the available granules for the icesat2data 
+        object's parameters. By default, a complete list of available granules is
+        obtained and stored in the object, but only summary information is returned.
+        A list of granule IDs can be obtained using the boolean trigger.
+
+        Parameters
+        ----------
+        ids : boolean, default False
+            Indicates whether the function should return summary granule information (default)
+            or a list of granule IDs.
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.avail_granules()
+        {'Number of available granules': 4,
+        'Average size of granules (MB)': 48.975419759750004,
+        'Total size of all granules (MB)': 195.90167903900002}
+
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.avail_granules(ids=True)
 
         """
         
         #REFACTOR: add test to make sure there's a session
         if not hasattr(self, '_granules'): self.granules
-        try: return self.granules.avail
+        try: self.granules.avail
         except AttributeError:
             self.granules.get_avail(self.CMRparams,self.reqparams)
 
-        return granules.info(self.granules.avail)
+        if ids==True:
+            return granules.gran_IDs(self.granules.avail)
+        else:
+            return granules.info(self.granules.avail)
+
+
+
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     #DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
@@ -521,13 +643,28 @@ class Icesat2Data():
         See Also
         --------
         granules.place_order
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········        
+        >>> reg_a.order_granules()
+        order ID: [###############]
+        [order status output]
+        error messages:
+        [if any were returned from the NSIDC subsetter, e.g. No data found that matched subset constraints.]
+        .
+        .
+        .
+        Retry request status is: complete
         """
         
         if not hasattr(self, 'reqparams'): self.reqparams
         
         if self._reqparams._reqtype == 'search':
             self._reqparams._reqtype = 'download'
-            self._reqparams.build_params()
+            self._reqparams.build_params(email=self._email)
 
         if subset is False:
             self._subsetparams=None
@@ -571,6 +708,15 @@ class Icesat2Data():
         """
         extract : boolean, default False
             Unzip the downloaded granules.
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
+        >>> reg_a.download_granules('/path/to/download/folder')
+        Beginning download of zipped output...
+        Data request [##########] of x order(s) is complete.
         """
      
         # if not os.path.exists(path):
@@ -594,8 +740,9 @@ class Icesat2Data():
 
         Examples
         --------
-        >>> icepyx.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
-        >>> region_a.visualize_spatial_extent
+        >>> icepyx.icesat2data.Icesat2Data('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
+        >>> reg_a.visualize_spatial_extent
+        [visual map output]
         """
 
         world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))

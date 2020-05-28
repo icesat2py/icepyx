@@ -26,6 +26,10 @@ def _fmt_temporal(start,end,key):
     key : string
         Dictionary key, entered as a string, indicating which temporal format is needed.
         Must be one of ['temporal','time'] for data searching and subsetting, respectively.
+
+    Returns
+    -------
+    dictionary with properly formatted temporal parameter for CMR search or subsetting
     """
 
     assert isinstance(start, dt.datetime)
@@ -55,6 +59,11 @@ def _fmt_spatial(ext_type, extent):
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
         Polygon (polygon, Boundingshape) coordinates should be provided in decimal degrees as
         [longitude, latitude, longitude2, latitude2... longituden, latituden].
+
+    Returns
+    -------
+    dictionary with properly formatted spatial parameter for CMR search or subsetting
+
     """
 
     #CMR keywords: ['bounding_box', 'polygon']
@@ -111,6 +120,27 @@ def _fmt_var_subset_list(vdict):
 def combine_params(*param_dicts):
     """
     Combine multiple dictionaries into one.
+
+    Parameters
+    ----------
+    params : dictionaries
+        Unlimited number of dictionaries to combine
+
+    Returns
+    -------
+    single dictionary of all input dictionaries combined
+
+    Examples
+    --------
+    >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
+    >>> reqparams = {'page_size': 10, 'page_num': 1}
+    >>> icepyx.core.APIformatting.combine_params(CMRparams, reqparams)
+    {'short_name': 'ATL06',
+    'version': '002',
+    'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+    'bounding_box': '-55,68,-48,71',
+    'page_size': 10,
+    'page_num': 1}
     """
     params={}
     for dictionary in param_dicts:
@@ -222,7 +252,7 @@ class Parameters():
 
     def check_values(self):
         """
-        Check the values of the non-required keys have values, if the key was
+        Check that the non-required keys have values, if the key was
         passed in with the values parameter.
         """
         default_keys = self.poss_keys['default']
@@ -242,7 +272,15 @@ class Parameters():
 
     def build_params(self, **kwargs):
         """
-        Build the parameter dictionary of formatted key:value pairs.
+        Build the parameter dictionary of formatted key:value pairs for submission to NSIDC
+        in the data request.
+
+        Parameters
+        ----------
+        **kwargs
+            optional keyword arguments to be passed to the subsetter. Valid keywords are
+            time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
+
         """
 
         if not kwargs: kwargs={}

@@ -1,6 +1,6 @@
 .. _contact_ref_label:
 Contact Us
-======================
+==========
 
 Working with ICESat-2 data and have ideas you want to share?
 Have a great suggestion or recommendation of something you'd like to see

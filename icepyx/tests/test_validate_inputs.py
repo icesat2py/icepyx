@@ -1,6 +1,7 @@
 import pytest
 import warnings
 import datetime as dt
+import numpy as np
 
 import icepyx.core.validate_inputs as val
 
@@ -46,27 +47,32 @@ def test_floatlist_bbox():
         assert obs[i] == expected[i]
 
 def test_list_latlon_pairs():
-    obs = val.spatial([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
-    expected = ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0], None]
+    out = val.spatial([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+    obs = [out[0], out[1].exterior.coords.xy[0].tolist(), out[1].exterior.coords.xy[1].tolist(), out[2]]
+    # expected = ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0], None]
+    # expected = ['polygon', [[-55.0, 68.0], [-55.0, 71.0], [-48.0, 71.0], [-48.0, 68.0], [-55.0, 68.0]], None]
+    expected = ['polygon', [-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0], None]
     for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_tuple_latlon_pairs():
-    obs = val.spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
-    expected = ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0], None]
+    out = val.spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
+    obs = [out[0], out[1].exterior.coords.xy[0].tolist(), out[1].exterior.coords.xy[1].tolist(), out[2]]
+    expected = ['polygon', [-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0], None]
     for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_intlist_latlon_coords():
-    obs = val.spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68])
-    print(obs)
-    expected = ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0], None]
+    out = val.spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68])
+    obs = [out[0], out[1].exterior.coords.xy[0].tolist(), out[1].exterior.coords.xy[1].tolist(), out[2]]
+    expected = ['polygon', [-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0], None]
     for i in range(len(expected)):
         assert obs[i] == expected[i]
 
 def test_floatlist_latlon_coords():
-    obs = val.spatial([-55.0, 68.7, -55.0, 71, -48, 71, -48, 68.7, -55.0, 68.7])
-    expected = ['polygon', [-55.0, 68.7, -55.0, 71.0, -48.0, 71.0, -48.0, 68.7, -55.0, 68.7], None]
+    out = val.spatial([-55.0, 68.7, -55.0, 71, -48, 71, -48, 68.7, -55.0, 68.7])
+    obs = [out[0], out[1].exterior.coords.xy[0].tolist(), out[1].exterior.coords.xy[1].tolist(), out[2]]
+    expected = ['polygon', [-55.0, -55.0, -48.0, -48.0, -55.0], [68.7, 71.0, 71.0, 68.7, 68.7], None]
     for i in range(len(expected)):
         assert obs[i] == expected[i]
 

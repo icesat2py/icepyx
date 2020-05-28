@@ -50,7 +50,6 @@ def spatial(spatial_extent):
             assert spatial_extent[0][0] == spatial_extent[-1][0], "Starting longitude doesn't match ending longitude"
             assert spatial_extent[0][1] == spatial_extent[-1][1], "Starting latitude doesn't match ending latitude"
             polygon = (','.join([str(c) for xy in spatial_extent for c in xy])).split(",")
-            print(polygon)
             
             extent_type = 'polygon'
             polygon = [float(i) for i in polygon]

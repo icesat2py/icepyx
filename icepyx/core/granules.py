@@ -3,11 +3,10 @@ import time
 import io
 import json
 import numpy as np
+import os
 import pprint
 from xml.etree import ElementTree as ET
 import zipfile
-
-import os
 
 import icepyx.core.APIformatting as apifmt
 

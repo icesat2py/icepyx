@@ -267,7 +267,6 @@ class Icesat2Data():
 
         return self._CMRparams.fmted_keys
 
-    #DevGoal: make sure that if the user updates page size, page num is updated so that all granules would be ordered...
     @property
     def reqparams(self):
         """
@@ -587,7 +586,7 @@ class Icesat2Data():
         'Total size of all granules (MB)': 195.90167903900002}
         """
         
-        #REFACTOR: add test to make sure there's a session
+#         REFACTOR: add test to make sure there's a session
         if not hasattr(self, '_granules'): self.granules
         try: return self.granules.avail
         except AttributeError:
@@ -643,7 +642,7 @@ class Icesat2Data():
         
         if self._reqparams._reqtype == 'search':
             self._reqparams._reqtype = 'download'
-            self._reqparams.build_params()
+        self._reqparams.build_params(**self._reqparams.fmted_keys)
 
         if subset is False:
             self._subsetparams=None

@@ -225,9 +225,11 @@ class Parameters():
         
         # if self._wanted == None:
         #     raise ValueError("No desired parameter list was passed")
-            
+        
+        val_list = list(set(val for lis in self.poss_keys.values() for val in lis))
+        
         for key in self.fmted_keys.keys():
-            assert key in self.poss_keys.values(), "An invalid key was passed"
+            assert key in val_list, "An invalid key (" + key + ") was passed. Please remove it using `del`"
 
     
     def check_req_values(self):
@@ -235,10 +237,12 @@ class Parameters():
         Check that all of the required keys have values, if the key was passed in with
         the values parameter.
         """
+        
+        assert self.partype == 'required', "You cannot call this function for your parameter type"
         reqkeys = self.poss_keys[self._reqtype]
-
+    
         if all(keys in self.fmted_keys.keys() for keys in reqkeys):
-            assert all(values in self.fmted_keys.values() for keys in reqkeys), "One of your formated parameters is missing a value"
+            assert all(self.fmted_keys.get(key, -9999) != -9999 for key in reqkeys),"One of your formated parameters is missing a value"
             return True
         else:
             return False
@@ -249,16 +253,17 @@ class Parameters():
         Check that the non-required keys have values, if the key was
         passed in with the values parameter.
         """
+        assert self.partype != 'required', "You cannot call this function for your parameter type"
+        
         default_keys = self.poss_keys['default']
-    
         spatial_keys = self.poss_keys['spatial']
 
         if all(keys in self._fmted_keys.keys() for keys in default_keys):
-            assert all(values in self._fmted_keys.values() for keys in default_keys), "One of your formated parameters is missing a value"
-
+            assert all(self.fmted_keys.get(key, -9999) != -9999 for key in default_keys),"One of your formated parameters is missing a value"
+            
             #not the most robust check, but better than nothing...
             if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
-                assert any(values in self._fmted_keys.values() for keys in default_keys), "One of your formated parameters is missing a value"
+                assert any(self.fmted_keys.get(key, -9999) != -9999 for key in default_keys),"One of your formated parameters is missing a value"
                 return True
             else: return False
         else:
@@ -278,7 +283,9 @@ class Parameters():
         """
         
         if not kwargs: kwargs={}
-
+        else:
+            self._check_valid_keys()
+        
         if self.partype == 'required':
             if self.check_req_values==True and kwargs=={}: pass
             else:

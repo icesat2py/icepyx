@@ -50,11 +50,17 @@ def spatial(spatial_extent):
             assert spatial_extent[0][0] == spatial_extent[-1][0], "Starting longitude doesn't match ending longitude"
             assert spatial_extent[0][1] == spatial_extent[-1][1], "Starting latitude doesn't match ending latitude"
             polygon = (','.join([str(c) for xy in spatial_extent for c in xy])).split(",")
-            polygon = [float(i) for i in polygon]
-            _spat_extent = polygon
+            
             extent_type = 'polygon'
-            #DevGoal: properly format this input type (and any polygon type) so that it is clockwise (and only contains 1 pole)!!
-            warnings.warn("this type of input is not yet well handled and you may not be able to find data")
+            polygon = [float(i) for i in polygon]
+
+            gdf = geospatial.geodataframe(extent_type, polygon, file=False)
+            _spat_extent = gdf.iloc[0].geometry
+
+            # _spat_extent = polygon
+            # extent_type = 'polygon'
+            # #DevGoal: properly format this input type (and any polygon type) so that it is clockwise (and only contains 1 pole)!!
+            # warnings.warn("this type of input is not yet well handled and you may not be able to find data")
 
         #user-entered polygon as a single list of lon and lat coordinates
         elif all(type(i) in [int, float] for i in spatial_extent):
@@ -62,9 +68,14 @@ def spatial(spatial_extent):
             assert len(spatial_extent)%2 == 0, "Your spatial extent polygon list should have an even number of entries"
             assert spatial_extent[0] == spatial_extent[-2], "Starting longitude doesn't match ending longitude"
             assert spatial_extent[1] == spatial_extent[-1], "Starting latitude doesn't match ending latitude"
-            polygon = [float(i) for i in spatial_extent]
-            _spat_extent = polygon
             extent_type = 'polygon'
+            polygon = [float(i) for i in spatial_extent]
+
+            gdf = geospatial.geodataframe(extent_type, polygon, file=False)
+            _spat_extent = gdf.iloc[0].geometry
+
+            # _spat_extent = polygon
+
 
         else:
             raise ValueError('Your spatial extent does not meet minimum input criteria')

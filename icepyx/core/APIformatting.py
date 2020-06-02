@@ -74,6 +74,7 @@ def _fmt_spatial(ext_type, extent):
     if ext_type in ['bounding_box', 'bbox']:
         fmt_extent = ','.join(map(str, extent))
 
+
     elif ext_type == 'polygon':
         #Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
         poly = extent.simplify(0.05, preserve_topology=False)
@@ -86,7 +87,9 @@ def _fmt_spatial(ext_type, extent):
 
     #DevNote: this elif currently does not have a test (seems like it would just be testing geopandas?)
     elif ext_type == 'Boundingshape':
-        fmt_extent = gpd.GeoSeries(extent).to_json()
+        poly = orient(extent, sign=1.0)
+        fmt_extent = gpd.GeoSeries(poly).to_json()
+        fmt_extent = fmt_extent.replace(' ', '') #remove spaces for API call
 
     return {ext_type: fmt_extent}
 
@@ -281,7 +284,7 @@ class Parameters():
             time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
 
         """
-        
+
         if not kwargs: kwargs={}
         else:
             self._check_valid_keys()

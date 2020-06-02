@@ -69,10 +69,10 @@ class Icesat2Data():
     -------
     icesat2data object
 
-
     Examples
     --------
     Initializing Icesat2Data with a bounding box.
+
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_bbox, reg_a_dates)
@@ -80,19 +80,20 @@ class Icesat2Data():
     <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
+   
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
     >>> reg_a
-   <icepyx.core.icesat2data.Icesat2Data at [location]>
+    <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a geospatial polygon file.
+   
     >>> aoi = '/User/name/location/aoi.shp'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', aoi, reg_a_dates)
     >>> reg_a
     <icepyx.core.icesat2data.Icesat2Data at [location]>
-
     """
 
 
@@ -173,7 +174,7 @@ class Icesat2Data():
         Spatial extent is returned as an input type (which depends on how
         you initially entered your spatial data) followed by the geometry data.
         Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon data is [[list of longitudes],[list of corresponding latitudes]].
+        Polygon data is [[array of longitudes],[array of corresponding latitudes]].
 
         Examples
         --------
@@ -186,10 +187,13 @@ class Icesat2Data():
         ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]]
         """
 
+
         if self.extent_type == 'bounding_box':
             return ['bounding box', self._spat_extent]
         elif self.extent_type == 'polygon':
-            return ['polygon', self._spat_extent] #[self._spat_extent[0::2], self._spat_extent[1::2]]]
+            # return ['polygon', self._spat_extent]
+            # Note: self._spat_extent is a shapely geometry object
+            return ['polygon', self._spat_extent.exterior.coords.xy]
         else:
             return ['unknown spatial type', None]
 
@@ -414,8 +418,7 @@ class Icesat2Data():
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.granules
-       <icepyx.core.granules.Granules at [location]>
-        >>>
+        <icepyx.core.granules.Granules at [location]>
         """
 
         if not hasattr(self, '_granules'):
@@ -569,13 +572,21 @@ class Icesat2Data():
     
         capability_url = f'https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml'
         self._session = Earthdata(uid,email,capability_url).login()
+        self._email = email
 
     #DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self):
+    def avail_granules(self, ids=False):
         """
         Obtain information about the available granules for the icesat2data 
         object's parameters. By default, a complete list of available granules is
-        obtained and stored in the object, but only summary information is printed.
+        obtained and stored in the object, but only summary information is returned.
+        A list of granule IDs can be obtained using the boolean trigger.
+
+        Parameters
+        ----------
+        ids : boolean, default False
+            Indicates whether the function should return summary granule information (default)
+            or a list of granule IDs.
 
         Examples
         --------
@@ -584,15 +595,25 @@ class Icesat2Data():
         {'Number of available granules': 4,
         'Average size of granules (MB)': 48.975419759750004,
         'Total size of all granules (MB)': 195.90167903900002}
+
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.avail_granules(ids=True)
+
         """
         
 #         REFACTOR: add test to make sure there's a session
         if not hasattr(self, '_granules'): self.granules
-        try: return self.granules.avail
+        try: self.granules.avail
         except AttributeError:
             self.granules.get_avail(self.CMRparams,self.reqparams)
 
-        return granules.info(self.granules.avail)
+        if ids==True:
+            return granules.gran_IDs(self.granules.avail)
+        else:
+            return granules.info(self.granules.avail)
+
+
+
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     #DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
@@ -642,7 +663,9 @@ class Icesat2Data():
         
         if self._reqparams._reqtype == 'search':
             self._reqparams._reqtype = 'download'
-        self._reqparams.build_params(**self._reqparams.fmted_keys)
+
+        self._reqparams.build_params(**self._reqparams.fmted_keys, email=self._email)
+
 
         if subset is False:
             self._subsetparams=None

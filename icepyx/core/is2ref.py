@@ -26,7 +26,7 @@ def about_dataset(dset):
 
     See Also
     --------
-    icepyx.icesat2data.Icesat2Data.dataset_all_info()
+    icesat2data.Icesat2Data.dataset_all_info
     """
 
     cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'
@@ -104,20 +104,34 @@ def _default_varlists(dataset):
     """
     common_list = ['delta_time','latitude','longitude']
     
-    if dataset == 'ATL09':
+    if dataset == 'ATL06':
+        return common_list + ['h_li','h_li_sigma','atl06_quality_summary','segment_id','sigma_geo_h',
+                    'x_atc', 'y_atc','seg_azimuth','sigma_geo_at','sigma_geo_xt', 'dh_fit_dx','dh_fit_dx_sigma',
+                    'h_mean', 'dh_fit_dy','h_rms_misfit','h_robust_sprd','n_fit_photons','signal_selection_source',
+                    'snr_significance','w_surface_window_final','bsnow_conf','bsnow_h','cloud_flg_asr',
+                    'cloud_flg_atm','r_eff','tide_ocean']
+
+ 
+    elif dataset == 'ATL07':
+        return common_list + ['seg_dist_x',
+                                'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
+                                'height_segment_type', 'height_segment_quality', 'height_segment_confidence' ]
+    
+
+    elif dataset == 'ATL09':
         return common_list + ['bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
                     'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
                     'column_od_asr','column_od_asr_qf',
                     'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
                     'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
     
-    if dataset == 'ATL07':
-        return common_list + ['seg_dist_x',
-                                'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
-                                'height_segment_type', 'height_segment_quality', 'height_segment_confidence' ]
-    
-    if dataset == 'ATL10':
+
+    elif dataset == 'ATL10':
         return common_list + ['seg_dist_x','lead_height','lead_length',
                                 'beam_fb_height', 'beam_fb_length', 'beam_fb_confidence', 'beam_fb_quality_flag',
                                 'height_segment_height','height_segment_length_seg','height_segment_ssh_flag',
                                 'height_segment_type', 'height_segment_confidence']
+
+    else:
+        print("THE REQUESTED DATASET DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUTDE, AND LONGITUDE WILL BE RETURNED")
+        return common_list

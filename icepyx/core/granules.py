@@ -28,6 +28,20 @@ def info(grans):
 
     return gran_info
 
+#DevNote: currently this fn is not tested
+def gran_IDs(grans):
+    """
+    Returns a list of the granule IDs for the granule dictionary.
+    Granule info may be from a list of those available from NSIDC (for ordering/download)
+    or a list of granules present on the file system.
+    """
+    assert len(grans)>0, "Your data object has no granules associated with it"
+    gran_ids = []
+    for gran in grans:
+        gran_ids.append(gran['producer_granule_id']) 
+    
+    return gran_ids
+
 
 #DevGoal: this will be a great way/place to manage data from the local file system
 #where the user already has downloaded data!
@@ -190,8 +204,8 @@ class Granules():
         #for i in range(reqparams['page_num']):
         for i in range(request_params['page_num']):
             page_val = i + 1
-            if verbose is True:
-                print('Order: ', page_val)
+            
+            print('Data request ', page_val, ' of ', reqparams['page_num'],' is submitting to NSIDC')
             request_params.update( {'page_num': page_val} )
 
             #DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
@@ -202,11 +216,11 @@ class Granules():
             #DevGoal: use the request response/number to do some error handling/give the user better messaging for failures
             # print(request.content)
             root=ET.fromstring(request.content)
-            print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
+            #print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
 
             if verbose is True:
                 print('Request HTTP response: ', request.status_code)
-                print('Order request URL: ', request.url)
+                # print('Order request URL: ', request.url)
 
         # Raise bad request: Loop will stop for bad response code.
             request.raise_for_status()
@@ -218,8 +232,8 @@ class Granules():
         #Look up order ID
             orderlist = []
             for order in esir_root.findall("./order/"):
-                if verbose is True:
-                    print(order)
+                # if verbose is True:
+                #     print(order)
                 orderlist.append(order.text)
             orderID = orderlist[0]
             print('order ID: ', orderID)
@@ -241,12 +255,12 @@ class Granules():
             for status in request_root.findall("./requestStatus/"):
                 statuslist.append(status.text)
             status = statuslist[0]
-            print('Data request ', page_val, ' is submitting...')
-            print('Initial request status is ', status)
+            print('Initial status of your order request at NSIDC is: ', status)
 
         #Continue loop while request is still processing
             while status == 'pending' or status == 'processing':
-                print('Status is not complete. Trying again.')
+                print('Your order status is still ', status, ' at NSIDC. Please continue waiting... this may take a few moments.')
+                # print('Status is not complete. Trying again')
                 time.sleep(10)
                 loop_response = session.get(statusURL)
 
@@ -259,7 +273,7 @@ class Granules():
                 for status in loop_root.findall("./requestStatus/"):
                     statuslist.append(status.text)
                 status = statuslist[0]
-                print('Retry request status is: ', status)
+                # print('Retry request status is: ', status)
                 if status == 'pending' or status == 'processing':
                     continue
 
@@ -269,10 +283,12 @@ class Granules():
                 messagelist = []
                 for message in loop_root.findall("./processInfo/"):
                     messagelist.append(message.text)
-                print('error messages:')
+                print('Your order is: ', status)
+                print('NSIDC provided these error messages:')
                 pprint.pprint(messagelist)
 
             if status == 'complete' or status == 'complete_with_errors':
+                print('Your order is:', status)
                 if not hasattr(self,'orderIDs'):
                     self.orderIDs=[]
 

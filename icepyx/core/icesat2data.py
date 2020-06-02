@@ -664,7 +664,10 @@ class Icesat2Data():
         if self._reqparams._reqtype == 'search':
             self._reqparams._reqtype = 'download'
 
-        self._reqparams.build_params(**self._reqparams.fmted_keys, email=self._email)
+        if 'email' in self._reqparams.fmted_keys.keys():
+            self._reqparams.build_params(**self._reqparams.fmted_keys)
+        else:
+            self._reqparams.build_params(**self._reqparams.fmted_keys, email=self._email)
 
 
         if subset is False:
@@ -727,8 +730,11 @@ class Icesat2Data():
         # os.chdir(path)
 
         if not hasattr(self, '_granules'): self.granules
-            
-        if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose=verbose, subset=subset, **kwargs)
+        
+        if restart == True:
+            pass
+        else:
+            if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose=verbose, subset=subset, **kwargs)
     
         self._granules.download(verbose, path, session=self._session, restart=restart)
   

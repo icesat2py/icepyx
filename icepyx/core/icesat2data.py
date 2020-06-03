@@ -271,7 +271,6 @@ class Icesat2Data():
 
         return self._CMRparams.fmted_keys
 
-    #DevGoal: make sure that if the user updates page size, page num is updated so that all granules would be ordered...
     @property
     def reqparams(self):
         """
@@ -602,7 +601,7 @@ class Icesat2Data():
 
         """
         
-        #REFACTOR: add test to make sure there's a session
+#         REFACTOR: add test to make sure there's a session
         if not hasattr(self, '_granules'): self.granules
         try: self.granules.avail
         except AttributeError:
@@ -664,7 +663,12 @@ class Icesat2Data():
         
         if self._reqparams._reqtype == 'search':
             self._reqparams._reqtype = 'download'
-            self._reqparams.build_params(email=self._email)
+
+        if 'email' in self._reqparams.fmted_keys.keys():
+            self._reqparams.build_params(**self._reqparams.fmted_keys)
+        else:
+            self._reqparams.build_params(**self._reqparams.fmted_keys, email=self._email)
+
 
         if subset is False:
             self._subsetparams=None
@@ -677,7 +681,7 @@ class Icesat2Data():
 
 
     #DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
-    def download_granules(self, path, verbose=False, subset=True, **kwargs): #, extract=False):
+    def download_granules(self, path, verbose=False, subset=True, restart=False, **kwargs): #, extract=False):
         """
         Downloads the data ordered using order_granules.
 
@@ -694,6 +698,8 @@ class Icesat2Data():
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
+        restart: boolean, default false
+            If previous download was terminated unexpectedly. Run again with restart set to True to continue. 
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
@@ -724,10 +730,13 @@ class Icesat2Data():
         # os.chdir(path)
 
         if not hasattr(self, '_granules'): self.granules
-            
-        if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose=verbose, subset=subset, **kwargs)
+        
+        if restart == True:
+            pass
+        else:
+            if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose=verbose, subset=subset, **kwargs)
     
-        self._granules.download(verbose, path, session=self._session)
+        self._granules.download(verbose, path, session=self._session, restart=restart)
   
    
     #DevGoal: add testing? What do we test, and how, given this is a visualization.

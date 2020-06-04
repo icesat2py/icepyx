@@ -361,7 +361,8 @@ class Granules():
             if os.path.exists( downid_fn ):
                 order_start = str(int( np.loadtxt(downid_fn) ) )
                 i_order = self.orderIDs.index(order_start) + 1  
-    
+
+        filepaths = []
         for order in self.orderIDs[i_order:]:
             downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + order + '.zip'
             #DevGoal: get the download_url from the granules
@@ -379,6 +380,7 @@ class Granules():
         #         #Note: extract the dataset to save it locally
         # if extract is True:    
             with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
+                filepaths.extend([os.path.join(path, f.filename) for f in z.filelist])
                 z.extractall(path)
             
             # update the current finished order id and save to file
@@ -389,5 +391,6 @@ class Granules():
         if os.path.exists( order_fn ): os.remove(order_fn)
         if os.path.exists( downid_fn ): os.remove(downid_fn)
         
-        print('Download complete')
+        print('Download complete to', path)
+        return filepaths
         

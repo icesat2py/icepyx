@@ -111,8 +111,8 @@ class Icesat2Data():
         files = None,
     ):
 
-        warnings.filterwarnings("always")
-        warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.icesat2data code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
+        # warnings.filterwarnings("always")
+        # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.icesat2data code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
         
         if (dataset is None or spatial_extent is None or date_range is None) and files is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")

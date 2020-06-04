@@ -67,3 +67,33 @@ def test_combine_params():
 
 ########## Parameters (class) ##########
 
+
+# @pytest.fixture
+# def CMRparams(scope='module'):
+#     return apifmt.Parameters('CMR')
+
+def test_CMRparams_no_other_inputs():
+    CMRparams = apifmt.Parameters('CMR')
+    #TestQuestion: the next statement essentially tests _get_possible_keys as well, so how would I test them independently?
+    assert CMRparams.poss_keys == {'default': ['short_name','version','temporal'], 'spatial': ['bounding_box','polygon'], 'optional': []}
+    assert CMRparams.fmted_keys == {}
+    assert CMRparams._check_valid_keys
+    #Note: this test must be done before the next one
+    if CMRparams.partype == 'required':
+        assert CMRparams.check_req_values() == False
+    else:
+        assert CMRparams.check_values() == False
+    
+    CMRparams.build_params(dataset='ATL06', version='003',
+                            start=dt.datetime(2019, 2, 20, 0, 0), 
+                            end=dt.datetime(2019, 2, 24, 23, 59, 59), 
+                            extent_type='bounding_box',
+                            spatial_extent=[-55, 68, -48, 71])
+    obs_fmted_params = CMRparams.fmted_keys
+    exp_fmted_params = {'short_name': 'ATL06', 'version': '003',
+                        'temporal': '2019-02-20T00:00:00Z,2019-02-24T23:59:59Z',
+                        'bounding_box': '-55,68,-48,71'}
+    assert obs_fmted_params == exp_fmted_params
+
+
+    

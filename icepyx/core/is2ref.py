@@ -2,6 +2,8 @@ import requests
 from xml.etree import ElementTree as ET
 import json
 
+import icepyx
+
 #ICESat-2 specific reference functions
 #options to get customization options for ICESat-2 data (though could be used generally)
 

@@ -280,8 +280,14 @@ class Parameters():
         Parameters
         ----------
         **kwargs
-            optional keyword arguments to be passed to the subsetter. Valid keywords are
-            time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
+            Keyword inputs containing the needed information to build the parameter list, depending on
+            parameter type, if the already formatted key:value is not submitted as a kwarg. 
+            May include optional keyword arguments to be passed to the subsetter. Valid keywords 
+            are time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
+
+            Keyword argument inputs for 'CMR' may include: dataset, version, start, end, extent_type, spatial_extent
+            Keyword argument inputs for 'required' may include: page_size, page_num, request_mode, include_meta
+            Keyword argument inputs for 'subset' may include: geom_filepath, start, end, extent_type, spatial_extent
 
         """
 

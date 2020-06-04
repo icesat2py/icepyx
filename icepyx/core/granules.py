@@ -386,11 +386,11 @@ class Granules():
             # update the current finished order id and save to file
             with open(downid_fn,'w') as fid:
                 fid.write( order )
-        
-        # remove orderID and download id files at the end 
+
+        self.filepaths = filepaths
+
+        # remove orderID and download id files at the end
         if os.path.exists( order_fn ): os.remove(order_fn)
         if os.path.exists( downid_fn ): os.remove(downid_fn)
-        
+
         print('Download complete to', path)
-        return filepaths
-        

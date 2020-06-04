@@ -735,13 +735,9 @@ class Icesat2Data():
             pass
         else:
             if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose=verbose, subset=subset, **kwargs)
-    
-        # Get filepaths to downloaded *.h5 files
-        self.filepaths = self._granules.download(
-            verbose, path, session=self._session, restart=restart
-        )
 
-   
+        self._granules.download(verbose, path, session=self._session, restart=restart)
+
     #DevGoal: add testing? What do we test, and how, given this is a visualization.
     #DevGoal(long term): modify this to accept additional inputs, etc.
     #DevGoal: move this to it's own module for visualizing, etc.

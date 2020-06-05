@@ -9,8 +9,8 @@ Please feel free to add your project or another resource to this guide by submit
 Resources Used in the Initial Development of icepyx
 ---------------------------------------------------
 
-First ICESat-2 Cryospheric Hackweek at the University of Washington
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+First ICESat-2 Cryospheric Hackweek at the University of Washington (June 2019)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This June 2019 event resulted in the production of a series of `tutorials <https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials>`_, developed primarily by members of the ICESat-2 Science Team and early data users, aimed at educating the cryospheric community in obtaining and using ICESat-2 datasets. During the actual Hackweek, teams of researchers and data scientists developed a series of interesting `projects <https://github.com/ICESAT-2HackWeek/projects_2019>`_ related to their interests/research. 
 
 The available tutorials, most of which contain one or more Jupyter Notebooks to illustrate concepts, are listed below. Additional information for citing (including licensing) and running (e.g. through a Pangeo Binder) these tutorials can be found at the above link.
@@ -70,7 +70,7 @@ Though in many cases preliminary, these `project repositories <https://github.co
   - Resolve topography over complex terrain
 
 Complementary GitHub Repositories
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 Here we describe a selection of publicly available Python code posted on GitHub with applicability for working with ICESat-2 data. This includes repositories that are more broadly designed for working with LiDAR/point cloud datasets in general. These repositories represent independent but complimentary projects that we hope to make easily interoperable within icepyx in order to maximize capabilities and minimize duplication of efforts. Conversations about how to best accomplish this have been ongoing since the conception of icepyx, and we welcome everyone to join the conversation (please see our :ref:`contact page<contact_ref_label>`).
 
 *Note: This list is a compilation of publicly available GitHub repositories and includes some annotations to reflect how they relate to icepyx. Please check each repository's licensing information before using or modifying their code. Additional resources having to do specifically with obtaining ICESat-2 data are noted in the last section of this document.*
@@ -117,3 +117,12 @@ icepyx aims to provide intuitive, object-based methods for finding, obtaining, v
 
   - Collaboration between NSIDC, Scripps, and San Diego Supercomputer Center
   - Enables data browsing on a map and selection of tracks and interactive data exploration for the higher level ICESat-2 datasets (i.e. ATL06+)
+  
+
+Ongoing Efforts
+----------------
+In addition to the ongoing development of icepyx itself, the ICESat-2 Cryosphere community continues to grow through a number of workshops and events.
+
+Second [Virtual] ICESat-2 Cryospheric Hackweek Facilitated by the University of Washington
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+COVID-19 forced the in-person event to be cancelled, but we're excited to extend the Hackweek model into a virtual space, ultimately making it more accessible by removing the need to travel. This year's event is scheduled to take place from 15-18 June 2020, with multiple instructional sessions taking place during the preceding week (8-12 June) to limit the daily duration and accomodate multiple time zones. Though only selected participants are able to tune in to the live tutorial sessions, the materials being taught are freely available in the `ICESat-2 Hackweek GitHub Organization <https://github.com/ICESAT-2HackWeek>`_ respositories. Watch here for updates on projects conducted during the hackweek, and feel free to check out the event's `website <https://icesat-2hackweek.github.io/learning-resources/>`_.

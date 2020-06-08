@@ -188,8 +188,9 @@ class Granules():
         if subset is False:
             request_params = apifmt.combine_params(CMRparams, reqparams, {'agent':'NO'})
         else:
-            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)        
         
+        order_fn = '.order_restart'
         
         print('Total number of data order requests is ',request_params['page_num'], ' for ',len(self.avail), ' granules.')
         #DevNote/05/27/20/: Their page_num values are the same, but use the combined version anyway.
@@ -290,10 +291,17 @@ class Granules():
         
         #DevGoal: save orderIDs more frequently than just at the end for large orders (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
         #Save orderIDs to file to avoid resubmitting order in case kernel breaks down.
-        order_fn = '.order_restart'
+            # save orderIDs for every 5 orders when more than 10 orders are submitted. 
+            # DevNote: These numbers are hard coded for now. Consider to allow user to set them in future?
+            if reqparams['page_num']>=10 and i%5==0:
+                with open(order_fn,'w') as fid:
+                    json.dump({'orderIDs':self.orderIDs},fid)
+                    
+        # --- Output the final orderIDs            
         with open(order_fn,'w') as fid:
             json.dump({'orderIDs':self.orderIDs},fid)
-            
+
+
 
         return self.orderIDs
 
@@ -380,8 +388,11 @@ class Granules():
         #         #Note: extract the dataset to save it locally
         # if extract is True:    
             with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
-                filepaths.extend([os.path.join(path, f.filename) for f in z.filelist])
-                z.extractall(path)
+                for zfile in z.filelist:
+                    # Remove the subfolder name from the filepath
+                    zfile.filename = os.path.basename(zfile.filename)
+                    z.extract(member=zfile, path=path)
+                    filepaths.append(os.path.join(path, f.filename))
             
             # update the current finished order id and save to file
             with open(downid_fn,'w') as fid:

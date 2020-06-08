@@ -111,8 +111,8 @@ class Icesat2Data():
         files = None,
     ):
 
-        warnings.filterwarnings("always")
-        warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.icesat2data code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
+        # warnings.filterwarnings("always")
+        # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.icesat2data code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
         
         if (dataset is None or spatial_extent is None or date_range is None) and files is None:
             raise ValueError("Please provide the required inputs. Use help([function]) to view the function's documentation")
@@ -617,7 +617,7 @@ class Icesat2Data():
 
     #DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     #DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(self, verbose=False, subset=True, **kwargs):
+    def order_granules(self, verbose=False, subset=True, email=True, **kwargs):
         """
         Place an order for the available granules for the icesat2data object.
 
@@ -632,6 +632,8 @@ class Icesat2Data():
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
+        email: boolean, default True
+            Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
@@ -664,7 +666,8 @@ class Icesat2Data():
         if self._reqparams._reqtype == 'search':
             self._reqparams._reqtype = 'download'
 
-        if 'email' in self._reqparams.fmted_keys.keys():
+        
+        if 'email' in self._reqparams.fmted_keys.keys() or email==False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
         else:
             self._reqparams.build_params(**self._reqparams.fmted_keys, email=self._email)

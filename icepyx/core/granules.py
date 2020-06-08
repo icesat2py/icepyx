@@ -387,7 +387,10 @@ class Granules():
         #         #Note: extract the dataset to save it locally
         # if extract is True:    
             with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
-                z.extractall(path)
+                for zfile in z.filelist:
+                    # Remove the subfolder name from the filepath
+                    zfile.filename = os.path.basename(zfile.filename)
+                    z.extract(member=zfile, path=path)
             
             # update the current finished order id and save to file
             with open(downid_fn,'w') as fid:

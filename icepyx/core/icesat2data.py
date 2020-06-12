@@ -452,7 +452,7 @@ class Icesat2Data():
         if not hasattr(self, '_about_dataset'): self._about_dataset=is2data(self._dset)
         summ_keys = ['dataset_id', 'short_name', 'version_id', 'time_start', 'coordinate_system', 'summary', 'orbit_parameters']
         for key in summ_keys:
-            print(key,': ',self._about_dataset['feed']['entry'][int(self._version)-1][key])
+            print(key,': ',self._about_dataset['feed']['entry'][-1][key])
 
     def dataset_all_info(self):
         """

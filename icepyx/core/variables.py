@@ -512,23 +512,26 @@ class Variables():
                 
                 # nec_varlist = ['sc_orient','atlas_sdp_gps_epoch','data_start_utc','data_end_utc',
                 #             'granule_start_utc','granule_end_utc','start_delta_time','end_delta_time']
-                for vkey in tuple(self.wanted.keys()):
+
+                for vkey in tuple(var_list): #self.wanted.keys()):
                     for vpath in tuple(self.wanted[vkey]):
                         vpath_kws = vpath.split('/')
-
+                        
                         try:
                             for bkw in beam_list:
                                 if bkw in vpath_kws:
                                     for kw in keyword_list:
+
                                         if kw in vpath_kws:
-                                                self.wanted[vkey].remove(vpath)
+                                            self.wanted[vkey].remove(vpath)
                         except TypeError:
                             for kw in combined_list:
                                 if kw in vpath_kws and vkey in var_list:
                                     self.wanted[vkey].remove(vpath)
 
-                try:
-                    if self.wanted[vkey] == []: del self.wanted[vkey]  
-                except KeyError:
-                    pass           
+
+                    try:
+                        if self.wanted[vkey] == []: del self.wanted[vkey]  
+                    except KeyError:
+                        pass           
                             

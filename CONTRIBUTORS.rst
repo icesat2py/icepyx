@@ -12,5 +12,6 @@ order by last name) and are considered "The icepyx Developers":
 * [Fernando Perez](https://github.com/fperez) - University of California, Berkeley
 * [Jessica Scheick](https://github.com/jessicas11) - Unaffiliated (ORCID: [0000-0002-3421-4459](https://www.orcid.org/0000-0002-3421-4459))
 * [Ben Smith](https://github.com/smithb) - University of Washington
-* [Bidhyananda Yadav](https://github.com/bidhya) - Ohio State University  
+* [Amy Steiker](https://github.com/asteiker) - NSIDC, University of Colorado
+* [Bidhyananda Yadav](https://github.com/bidhya) - Ohio State University
 

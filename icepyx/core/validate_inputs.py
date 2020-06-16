@@ -30,7 +30,7 @@ def dset_version(latest_vers, version):
 #DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
 def spatial(spatial_extent):
     """
-    Validate the input spatial extent and return the needed parameters to the icesat2data object.
+    Validate the input spatial extent and return the needed parameters to the query object.
     """
     if isinstance(spatial_extent, list):
         #bounding box
@@ -108,7 +108,7 @@ def spatial(spatial_extent):
 
 def temporal(date_range, start_time, end_time):
     """
-    Validate the input temporal parameters and return the needed parameters to the icesat2data object.
+    Validate the input temporal parameters and return the needed parameters to the query object.
     """
     if isinstance(date_range, list):
         if len(date_range)==2:

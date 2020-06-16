@@ -28,7 +28,7 @@ def about_dataset(dset):
 
     See Also
     --------
-    icesat2data.Icesat2Data.dataset_all_info
+    query.Query.dataset_all_info
     """
 
     cmr_collections_url = 'https://cmr.earthdata.nasa.gov/search/collections.json'

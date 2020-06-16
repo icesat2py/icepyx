@@ -13,7 +13,7 @@ import icepyx.core.APIformatting as apifmt
 def info(grans):
     """
     Return some basic summary information about a set of granules for an 
-    icesat2data object. Granule info may be from a list of those available
+    query object. Granule info may be from a list of those available
     from NSIDC (for ordering/download) or a list of granules present on the
     file system.
     """
@@ -49,7 +49,7 @@ class Granules():
     """
     Interact with ICESat-2 data granules. This includes finding,
     ordering, and downloading them as well as (not yet implemented) getting already
-    downloaded granules into the icesat2data object.
+    downloaded granules into the query object.
 
     Returns
     -------
@@ -74,7 +74,7 @@ class Granules():
 
     def get_avail(self, CMRparams, reqparams):
         """
-        Get a list of available granules for the icesat2data object's parameters.
+        Get a list of available granules for the query object's parameters.
         Generates the `avail` attribute of the granules object.
 
         Parameters
@@ -87,13 +87,13 @@ class Granules():
 
         Notes
         -----
-        This function is used by icesat2data.Icesat2Data.avail_granules(), which automatically
+        This function is used by query.Query.avail_granules(), which automatically
         feeds in the required parameters.
         
         See Also
         --------
         APIformatting.Parameters
-        icesat2data.Icesat2Data.avail_granules
+        query.Query.avail_granules
         """
 
         assert CMRparams is not None and reqparams is not None, "Missing required input parameter dictionaries"
@@ -135,9 +135,9 @@ class Granules():
     def place_order(self, CMRparams, reqparams, subsetparams, verbose, 
                     subset=True, session=None, geom_filepath=None): #, **kwargs):
         """
-        Place an order for the available granules for the icesat2data object.
+        Place an order for the available granules for the query object.
         Adds the list of zipped files (orders) to the granules data object (which is
-        stored as the `granules` attribute of the icesat2data object).
+        stored as the `granules` attribute of the query object).
         You must be logged in to Earthdata to use this function.
 
         Parameters
@@ -149,7 +149,7 @@ class Granules():
             or downloading from NSIDC.
         subsetparams : dictionary
             Dictionary of properly formatted subsetting parameters. An empty dictionary
-            is passed as input here when subsetting is set to False in icesat2data methods.
+            is passed as input here when subsetting is set to False in query methods.
         verbose : boolean, default False
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
@@ -161,19 +161,19 @@ class Granules():
             granules. This eliminates false-positive granules returned by the metadata-level search)
         session : requests.session object
             A session object authenticating the user to order data using their Earthdata login information.
-            The session object will automatically be passed from the icesat2data object if you
+            The session object will automatically be passed from the query object if you
             have successfully logged in there.
         geom_filepath : string, default None
             String of the full filename and path when the spatial input is a file.
         
         Notes
         -----
-        This function is used by icesat2data.Icesat2Data.order_granules(), which automatically
+        This function is used by query.Query.order_granules(), which automatically
         feeds in the required parameters.
         
         See Also
         --------
-        icesat2data.Icesat2Data.order_granules
+        query.Query.order_granules
         """
 
         if session is None:
@@ -320,21 +320,21 @@ class Granules():
             String with complete path to desired download directory and location.
         session : requests.session object
             A session object authenticating the user to download data using their Earthdata login information.
-            The session object will automatically be passed from the icesat2data object if you
+            The session object will automatically be passed from the query object if you
             have successfully logged in there.
         restart : boolean, default False
             Restart your download if it has been interrupted. If the kernel has been restarted, but you successfully
-            completed your order, you will need to re-initialize your icesat2data class object and log in to Earthdata
+            completed your order, you will need to re-initialize your query class object and log in to Earthdata
             and can then skip immediately to the download_granules method with restart=True.
 
         Notes
         -----
-        This function is used by icesat2data.Icesat2Data.download_granules(), which automatically
+        This function is used by query.Query.download_granules(), which automatically
         feeds in the required parameters.
         
         See Also
         --------
-        icesat2data.Icesat2Data.download_granules
+        query.Query.download_granules
         """
         """
         extract : boolean, default False

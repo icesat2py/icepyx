@@ -1,4 +1,4 @@
-Icesat2Data Components
+Query Components
 ======================
 
 

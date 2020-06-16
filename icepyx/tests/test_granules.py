@@ -1,7 +1,7 @@
 import pytest
 import warnings
 
-from icepyx.core import icesat2data as ipd
+from icepyx.core import query as ipd
 from icepyx.core import granules as granules
 from icepyx.core.granules import Granules as Granules
 
@@ -9,7 +9,7 @@ from icepyx.core.granules import Granules as Granules
 
 # @pytest.fixture
 # def reg_a():
-#     return ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-22','2019-02-28'])
+#     return ipd.Query('ATL06',[-55, 68, -48, 71],['2019-02-22','2019-02-28'])
 
 # #@patch('my_module.__get_input', return_value='y')
 
@@ -20,7 +20,7 @@ from icepyx.core.granules import Granules as Granules
 
 #DevNote: clearly there's a better way that doesn't make the function so long... what is it?
 def test_granules_info():
-    # reg_a = ipd.Icesat2Data('ATL06', [-55, 68, -48, 71], ['2019-02-20','2019-02-24'], version='3')
+    # reg_a = ipd.Query('ATL06', [-55, 68, -48, 71], ['2019-02-20','2019-02-24'], version='3')
     # granules = reg_a.granules.avail
     granules = [{'producer_granule_id': 'ATL06_20190221121851_08410203_003_01.h5',
     'time_start': '2019-02-21T12:19:05.000Z',
@@ -403,10 +403,10 @@ def test_granules_info():
 def test_no_granules_in_search_results():
     ermsg = "Your search returned no results; try different search parameters"
     with pytest.raises(AssertionError, match=ermsg):
-        ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-20'], version='2').avail_granules()
+        ipd.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-20'], version='2').avail_granules()
 
 def test_correct_granule_list_returned():
-    reg_a = ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='2')
+    reg_a = ipd.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='2')
     reg_a.avail_granules()
     obs_grans = [gran['producer_granule_id'] for gran in reg_a.granules]
     exp_grans = ['ATL06_20190221121851_08410203_002_01.h5', 'ATL06_20190222010344_08490205_002_01.h5', 'ATL06_20190225121032_09020203_002_01.h5', 'ATL06_20190226005526_09100205_002_01.h5']

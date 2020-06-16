@@ -10,7 +10,7 @@ stages:
 jobs:
   include:
     - stage: basic tests
-      script: pytest icepyx/
+      script: pytest icepyx/ --ignore icepyx/tests/behind_NSIDC_API_login.py
 
     # - stage: behind Earthdata
     #   script:

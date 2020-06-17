@@ -9,10 +9,11 @@ from xml.etree import ElementTree as ET
 import zipfile
 
 import icepyx.core.APIformatting as apifmt
+import icepyx.core.convert as ipxconvert
 
 def info(grans):
     """
-    Return some basic summary information about a set of granules for an 
+    Return some basic summary information about a set of granules for an
     icesat2data object. Granule info may be from a list of those available
     from NSIDC (for ordering/download) or a list of granules present on the
     file system.
@@ -37,8 +38,8 @@ def gran_IDs(grans):
     assert len(grans)>0, "Your data object has no granules associated with it"
     gran_ids = []
     for gran in grans:
-        gran_ids.append(gran['producer_granule_id']) 
-    
+        gran_ids.append(gran['producer_granule_id'])
+
     return gran_ids
 
 
@@ -55,7 +56,7 @@ class Granules():
     -------
     Granules object
     """
-        
+
     def __init__(
         self,
         # avail=[],
@@ -68,7 +69,7 @@ class Granules():
         # self.orderIDs = orderIDs
         # self.files = files
         # session = session
-    
+
     # ----------------------------------------------------------------------
     # Methods
 
@@ -89,7 +90,7 @@ class Granules():
         -----
         This function is used by icesat2data.Icesat2Data.avail_granules(), which automatically
         feeds in the required parameters.
-        
+
         See Also
         --------
         APIformatting.Parameters
@@ -98,7 +99,7 @@ class Granules():
 
         assert CMRparams is not None and reqparams is not None, "Missing required input parameter dictionaries"
 
-        # if not hasattr(self, 'avail'): 
+        # if not hasattr(self, 'avail'):
         self.avail=[]
 
         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
@@ -114,7 +115,7 @@ class Granules():
             results = json.loads(response.content)
 
             # print(results)
-            
+
             if len(results['feed']['entry']) == 0:
                 # Out of results, so break out of loop
                 break
@@ -123,16 +124,16 @@ class Granules():
             self.avail.extend(results['feed']['entry'])
             reqparams['page_num'] += 1
 
-        #DevNote: The above calculated page_num is wrong when mod(granule number, page_size)=0. 
+        #DevNote: The above calculated page_num is wrong when mod(granule number, page_size)=0.
         # print(reqparams['page_num'])
         reqparams['page_num'] = int(np.ceil(len(self.avail)/reqparams['page_size']))
-    
+
         assert len(self.avail)>0, "Your search returned no results; try different search parameters"
 
-    
+
     #DevNote: currently, default subsetting DOES NOT include variable subsetting, only spatial and temporal
     #DevGoal: add kwargs to allow subsetting and more control over request options.
-    def place_order(self, CMRparams, reqparams, subsetparams, verbose, 
+    def place_order(self, CMRparams, reqparams, subsetparams, verbose,
                     subset=True, session=None, geom_filepath=None): #, **kwargs):
         """
         Place an order for the available granules for the icesat2data object.
@@ -165,12 +166,12 @@ class Granules():
             have successfully logged in there.
         geom_filepath : string, default None
             String of the full filename and path when the spatial input is a file.
-        
+
         Notes
         -----
         This function is used by icesat2data.Icesat2Data.order_granules(), which automatically
         feeds in the required parameters.
-        
+
         See Also
         --------
         icesat2data.Icesat2Data.order_granules
@@ -188,17 +189,17 @@ class Granules():
         if subset is False:
             request_params = apifmt.combine_params(CMRparams, reqparams, {'agent':'NO'})
         else:
-            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)        
-        
+            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+
         order_fn = '.order_restart'
-        
+
         print('Total number of data order requests is ',request_params['page_num'], ' for ',len(self.avail), ' granules.')
         #DevNote/05/27/20/: Their page_num values are the same, but use the combined version anyway.
         #I'm switching back to reqparams, because that value is not changed by the for loop. I shouldn't cause an issue either way, but I've had issues with mutable types in for loops elsewhere.
         for i in range(reqparams['page_num']):
 #         for i in range(request_params['page_num']):
             page_val = i + 1
-            
+
             print('Data request ', page_val, ' of ', reqparams['page_num'],' is submitting to NSIDC')
             request_params.update( {'page_num': page_val} )
 
@@ -206,7 +207,7 @@ class Granules():
             #into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general
             #solution does, so the geospatial parameters are included in the parameter dictionaries.
             request = session.get(base_url, params=request_params)
-            
+
             #DevGoal: use the request response/number to do some error handling/give the user better messaging for failures
             # print(request.content)
             root=ET.fromstring(request.content)
@@ -288,16 +289,16 @@ class Granules():
 
                 self.orderIDs.append(orderID)
             else: print('Request failed.')
-        
+
         #DevGoal: save orderIDs more frequently than just at the end for large orders (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
         #Save orderIDs to file to avoid resubmitting order in case kernel breaks down.
-            # save orderIDs for every 5 orders when more than 10 orders are submitted. 
+            # save orderIDs for every 5 orders when more than 10 orders are submitted.
             # DevNote: These numbers are hard coded for now. Consider to allow user to set them in future?
             if reqparams['page_num']>=10 and i%5==0:
                 with open(order_fn,'w') as fid:
                     json.dump({'orderIDs':self.orderIDs},fid)
-                    
-        # --- Output the final orderIDs            
+
+        # --- Output the final orderIDs
         with open(order_fn,'w') as fid:
             json.dump({'orderIDs':self.orderIDs},fid)
 
@@ -305,8 +306,8 @@ class Granules():
 
         return self.orderIDs
 
-    
-    def download(self, verbose, path, session=None, restart=False):
+
+    def download(self, verbose, path, session=None, restart=False, **output_kwds):
         """
         Downloads the data for the object's orderIDs, which are generated by ordering data
         from the NSIDC.
@@ -331,7 +332,7 @@ class Granules():
         -----
         This function is used by icesat2data.Icesat2Data.download_granules(), which automatically
         feeds in the required parameters.
-        
+
         See Also
         --------
         icesat2data.Icesat2Data.download_granules
@@ -352,29 +353,34 @@ class Granules():
             with open(order_fn,'r') as fid:
                 order_dat = json.load(fid)
                 self.orderIDs = order_dat['orderIDs']
-        
+
         if not hasattr(self,'orderIDs') or len(self.orderIDs)==0:
             raise ValueError('Please confirm that you have submitted a valid order and it has successfully completed.')
-            
-        #DevNote: Temporary. Hard code the orderID info files here. order_fn should be consistent with place_order.         
-        
+
+        #DevNote: Temporary. Hard code the orderID info files here. order_fn should be consistent with place_order.
+
         downid_fn = '.download_ID'
-        
+
         i_order = 0
-        
-        if restart:       
+
+        # output subsetting and reformatting keywords
+        output = output_kwds.copy()
+        # convert data from HDF5 to a new format
+        convert = output['convert'] if 'convert' in output.keys() else None
+
+        if restart:
             print('Restarting download ... ')
-           
-            # --- update the starting point of download list        
+
+            # --- update the starting point of download list
             if os.path.exists( downid_fn ):
                 order_start = str(int( np.loadtxt(downid_fn) ) )
-                i_order = self.orderIDs.index(order_start) + 1  
-    
+                i_order = self.orderIDs.index(order_start) + 1
+
         for order in self.orderIDs[i_order:]:
             downloadURL = 'https://n5eil02u.ecs.nsidc.org/esir/' + order + '.zip'
             #DevGoal: get the download_url from the granules
 
- 
+
             if verbose is True:
                 print('Zip download URL: ', downloadURL)
             print('Beginning download of zipped output...')
@@ -385,20 +391,31 @@ class Granules():
 
         #DevGoal: move this option back out to the is2class level and implement it in an alternate way?
         #         #Note: extract the dataset to save it locally
-        # if extract is True:    
+        # if extract is True:
             with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
                 for zfile in z.filelist:
                     # Remove the subfolder name from the filepath
                     zfile.filename = os.path.basename(zfile.filename)
-                    z.extract(member=zfile, path=path)
-            
+                    if convert in (None,'HDF5'):
+                        # extract HDF5 file from zip and save to path
+                        z.extract(member=zfile, path=path)
+                    elif convert in ('zarr','csv','txt','JPL'):
+                        # extract HDF5 file from zip and convert to new format
+                        # read bytes from zfile and create in-memory file object
+                        hdf5_file = io.BytesIO(z.read(zfile))
+                        # copy filename to BytesIO object
+                        hdf5_file.filename = zfile.filename
+                        # rewind to start of file
+                        hdf5_file.seek(0)
+                        # convert to file format
+                        ipxconvert.file_converter(hdf5_file, path, convert)
+
             # update the current finished order id and save to file
             with open(downid_fn,'w') as fid:
                 fid.write( order )
-        
-        # remove orderID and download id files at the end 
+
+        # remove orderID and download id files at the end
         if os.path.exists( order_fn ): os.remove(order_fn)
         if os.path.exists( downid_fn ): os.remove(downid_fn)
-        
+
         print('Download complete')
-        

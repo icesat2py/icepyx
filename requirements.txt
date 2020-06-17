@@ -2,6 +2,7 @@ datetime
 fiona
 geopandas
 h5py
+zarr
 matplotlib
 numpy
 requests

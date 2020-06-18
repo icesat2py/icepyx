@@ -41,7 +41,7 @@ you should simply be able to add ``import icepyx`` to your Python document.
 
 To clone the repository:
 
-.. code-block:: none
+.. code-block::
 
   git clone https://github.com/icesat2py/icepyx.git
 

@@ -14,4 +14,4 @@ order by last name) and are considered "The icepyx Developers":
 * [Ben Smith](https://github.com/smithb) - University of Washington
 * [Amy Steiker](https://github.com/asteiker) - NSIDC, University of Colorado
 * [Bidhyananda Yadav](https://github.com/bidhya) - Ohio State University
-
+* [Bruce Wallin](https://github.com/wallinb) - University of Colorado - NSIDC

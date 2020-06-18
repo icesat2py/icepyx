@@ -14,7 +14,7 @@ icepyx
 .. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=master
     :target: https://travis-ci.org/icesat2py/icepyx
 
-.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/master/graph/badge.svg 
+.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg 
     :target: https://codecov.io/gh/icesat2py/icepyx
 
 Origin and Purpose

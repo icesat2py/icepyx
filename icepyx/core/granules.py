@@ -96,9 +96,7 @@ class Granules():
         icesat2data.Icesat2Data.avail_granules
         """
 
-        assert (
-            CMRparams is not None and reqparams is not None
-        ), "Missing required input parameter dictionaries"
+        assert (CMRparams is not None and reqparams is not None), "Missing required input parameter dictionaries"
 
         # if not hasattr(self, 'avail'):
         self.avail = []
@@ -106,21 +104,21 @@ class Granules():
         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
 
         headers = {'Accept': 'application/json'}
+        #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
+        #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
         params = apifmt.combine_params(
             CMRparams, {k: reqparams[k] for k in ['page_size']}
         )
         params['scroll'] = 'true'
 
-        # DevGoal: check the below request/response for errors and show them if they're there; then gather the results
-        # note we should also do this whenever we ping NSIDC-API - make a function to check for errors
         cmr_scroll_id = None
         while True:
-            if cmr_scroll_id:
+            if cmr_scroll_id is not None:
                 headers['CMR-Scroll-Id'] = cmr_scroll_id
 
             response = requests.get(granule_search_url, headers=headers, params=params)
 
-            if not cmr_scroll_id:
+            if cmr_scroll_id is None:
                 hits = int(response.headers['CMR-Hits'])
 
             cmr_scroll_id = response.headers['CMR-Scroll-Id']
@@ -194,48 +192,22 @@ class Granules():
         base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
         #DevGoal: get the base_url from the granules?
 
-        self.get_avail(
-            CMRparams, reqparams
-        )
-        total_pages = np.ceil(len(self.avail) / reqparams['page_size'])
+        self.get_avail(CMRparams, reqparams)
 
         if subset is False:
-            request_params = apifmt.combine_params(
-                    CMRparams, reqparams, {'agent': 'NO', 'request_mode': 'async'}
-            )
+            request_params = apifmt.combine_params(CMRparams, reqparams, {'agent': 'NO'})
         else:
             request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)        
         
         order_fn = '.order_restart'
         
-        print('Total number of data order requests is ',request_params['page_num'], ' for ',len(self.avail), ' granules.')
-        #DevNote/05/27/20/: Their page_num values are the same, but use the combined version anyway.
-        #I'm switching back to reqparams, because that value is not changed by the for loop. I shouldn't cause an issue either way, but I've had issues with mutable types in for loops elsewhere.
-        for i in range(reqparams['page_num']):
-#         for i in range(request_params['page_num']):
-            page_val = i + 1
-            
-            print('Data request ', page_val, ' of ', reqparams['page_num'],' is submitting to NSIDC')
-            request_params.update( {'page_num': page_val} )
-
-            #DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
-            #into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general
-            #solution does, so the geospatial parameters are included in the parameter dictionaries.
-            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+        total_pages = int(np.ceil(len(self.avail) / reqparams['page_size']))
+        print('Total number of data order requests is ',total_pages, ' for ',len(self.avail), ' granules.')
+        for page_num in range(1, total_pages+1):
   
-        # Request data service for each page number, and unzip outputs
-        #DevNote: This was a temporary fix for the issue that the page_num in request_params is not updated, which is still one. 
-        #         It seems still the case here. But this way, the subsetparams update above is lost.
-        #         So it might be better to keep using request_params below but update its page_num before loop.
-        for page_num in range(1, total_pages + 1):
-            print(
-                'Data request ',
-                page_num,
-                ' of ',
-                total_pages,
-                ' is submitting to NSIDC',
-            )
-            request_params.update({'page_num': page_num})
+            print('Data request ',page_num,' of ',total_pages,' is submitting to NSIDC',)
+            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+            request_params['page_num'] = page_num
 
             # DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
             # into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general

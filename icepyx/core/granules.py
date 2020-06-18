@@ -89,45 +89,57 @@ class Granules():
         -----
         This function is used by icesat2data.Icesat2Data.avail_granules(), which automatically
         feeds in the required parameters.
-        
+
         See Also
         --------
         APIformatting.Parameters
         icesat2data.Icesat2Data.avail_granules
         """
 
-        assert CMRparams is not None and reqparams is not None, "Missing required input parameter dictionaries"
+        assert (
+            CMRparams is not None and reqparams is not None
+        ), "Missing required input parameter dictionaries"
 
-        # if not hasattr(self, 'avail'): 
-        self.avail=[]
+        # if not hasattr(self, 'avail'):
+        self.avail = []
 
         granule_search_url = 'https://cmr.earthdata.nasa.gov/search/granules'
 
-        headers={'Accept': 'application/json'}
-        #DevGoal: check the below request/response for errors and show them if they're there; then gather the results
-        #note we should also do this whenever we ping NSIDC-API - make a function to check for errors
+        headers = {'Accept': 'application/json'}
+        params = apifmt.combine_params(
+            CMRparams, {k: reqparams[k] for k in ['page_size']}
+        )
+        params['scroll'] = 'true'
+
+        # DevGoal: check the below request/response for errors and show them if they're there; then gather the results
+        # note we should also do this whenever we ping NSIDC-API - make a function to check for errors
+        cmr_scroll_id = None
         while True:
-            response = requests.get(granule_search_url, headers=headers,\
-                                    params=apifmt.combine_params(CMRparams,\
-                                                               {k: reqparams[k] for k in ('page_size','page_num')}))
+            if cmr_scroll_id:
+                headers['CMR-Scroll-Id'] = cmr_scroll_id
+
+            response = requests.get(granule_search_url, headers=headers, params=params)
+
+            if not cmr_scroll_id:
+                hits = int(response.headers['CMR-Hits'])
+
+            cmr_scroll_id = response.headers['CMR-Scroll-Id']
 
             results = json.loads(response.content)
-
-            # print(results)
-            
-            if len(results['feed']['entry']) == 0:
-                # Out of results, so break out of loop
+            granules = results['feed']['entry']
+            if not granules:
+                # Done scrolling
+                assert (
+                    len(self.avail) == hits
+                ), 'Search failure - unexpected number of results'
                 break
 
             # Collect results and increment page_num
-            self.avail.extend(results['feed']['entry'])
-            reqparams['page_num'] += 1
+            self.avail.extend(granules)
 
-        #DevNote: The above calculated page_num is wrong when mod(granule number, page_size)=0. 
-        # print(reqparams['page_num'])
-        reqparams['page_num'] = int(np.ceil(len(self.avail)/reqparams['page_size']))
-    
-        assert len(self.avail)>0, "Your search returned no results; try different search parameters"
+        assert (
+            len(self.avail) > 0
+        ), "Your search returned no results; try different search parameters"
 
     
     #DevNote: currently, default subsetting DOES NOT include variable subsetting, only spatial and temporal

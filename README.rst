@@ -14,6 +14,9 @@ icepyx
 .. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=master
     :target: https://travis-ci.org/icesat2py/icepyx
 
+.. |Code Coverage| image:: https://codecov.io/gh/wallinb/icepyx/branch/master/graph/badge.svg 
+    :target: https://codecov.io/gh/wallinb/icepyx
+
 Origin and Purpose
 ------------------
 icepyx is both a software library and a community composed of ICESat-2 data users, developers, and the scientific community. We are working together to develop a shared library of resources - including existing resources, new code, tutorials, and use-cases/examples - that simplify the process of querying, obtaining, analyzing, and manipulating ICESat-2 datasets to enable scientific discovery.

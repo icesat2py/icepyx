@@ -194,11 +194,15 @@ class Granules():
         base_url = 'https://n5eil02u.ecs.nsidc.org/egi/request'
         #DevGoal: get the base_url from the granules?
 
-
-        self.get_avail(CMRparams, reqparams) #this way the reqparams['page_num'] is updated
+        self.get_avail(
+            CMRparams, reqparams
+        )
+        total_pages = np.ceil(len(self.avail) / reqparams['page_size'])
 
         if subset is False:
-            request_params = apifmt.combine_params(CMRparams, reqparams, {'agent':'NO'})
+            request_params = apifmt.combine_params(
+                    CMRparams, reqparams, {'agent': 'NO', 'request_mode': 'async'}
+            )
         else:
             request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)        
         
@@ -217,6 +221,25 @@ class Granules():
             #DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
             #into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general
             #solution does, so the geospatial parameters are included in the parameter dictionaries.
+            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+  
+        # Request data service for each page number, and unzip outputs
+        #DevNote: This was a temporary fix for the issue that the page_num in request_params is not updated, which is still one. 
+        #         It seems still the case here. But this way, the subsetparams update above is lost.
+        #         So it might be better to keep using request_params below but update its page_num before loop.
+        for page_num in range(1, total_pages + 1):
+            print(
+                'Data request ',
+                page_num,
+                ' of ',
+                total_pages,
+                ' is submitting to NSIDC',
+            )
+            request_params.update({'page_num': page_num})
+
+            # DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
+            # into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general
+            # solution does, so the geospatial parameters are included in the parameter dictionaries.
             request = session.get(base_url, params=request_params)
             
             #DevGoal: use the request response/number to do some error handling/give the user better messaging for failures

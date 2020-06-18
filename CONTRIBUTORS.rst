@@ -8,6 +8,7 @@ order by last name) and are considered "The icepyx Developers":
 * `Shashank Bhushan <https://github.com/ShashankBice>`_ - University of Washington
 * `Raphael Hagen <https://github.com/norlandrhagen>`_ - University of Washington
 * `Scott Henderson <https://github.com/scottyhq>`_ - University of Washington
+* `Thomas Johnson <https://github.com/loudTom>`_ - University College London
 * `Zheng Liu <https://github.com/liuzheng-arctic>`_ - University of Washington
 * `Joachim Meyer <https://github.com/jomey>`_ - University of Utah
 * `Fernando Perez <https://github.com/fperez>`_ - University of California, Berkeley
@@ -17,3 +18,4 @@ order by last name) and are considered "The icepyx Developers":
 * `Amy Steiker <https://github.com/asteiker>`_ - NSIDC, University of Colorado
 * `Tyler Sutterley <https://github.com/tsutterley>`_ - University of Washington
 * `Bidhyananda Yadav <https://github.com/bidhya>`_ - Ohio State University
+* `Anna Valentine <https://github.com/annavalentine>`_ - Colorado School of Mines

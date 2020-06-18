@@ -3,7 +3,7 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|Documentation Status|  |GitHub license|  |Travis CI Status|
+|Documentation Status|  |GitHub license|  |Travis CI Status| |Code Coverage|
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
@@ -13,6 +13,9 @@ icepyx
 
 .. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=master
     :target: https://travis-ci.org/icesat2py/icepyx
+
+.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/master/graph/badge.svg 
+    :target: https://codecov.io/gh/icesat2py/icepyx
 
 Origin and Purpose
 ------------------

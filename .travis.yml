@@ -1,5 +1,9 @@
 language: python
 
+install:
+  - pip install -r requirements.txt -r requirements-dev.txt
+  - pip install -e .
+
 stages:
   - name: basic tests
     if: type = push OR type = pull_request
@@ -14,7 +18,8 @@ jobs:
               icepyx/tests/test_geospatial.py
               icepyx/tests/test_is2ref.py
               icepyx/tests/test_validate_inputs.py
-        
+      after_success: codecov
+
     # - stage: behind Earthdata
     #   script: 
     #     - export NSIDC_LOGIN=$NSIDC_LOGIN

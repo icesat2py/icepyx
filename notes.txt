@@ -1,12 +1,12 @@
-- For Data we don't need many of the inputs or validations needed for Query
+- For Data we probably don't need many of the inputs or validations needed for Query
 
 - Should we have a separate module for all file-specific functions?
 
-- Should we have a separate module with all the definitions (e.g. IS2 data dicts)?
+- Should we have a separate module with all the definitions (e.g. IS2 data dictionaries and defined mappings)?
 
-- Should we have all attrs and funcs in snake_case format, and as expressive as possible (reqparams -> required_params)?
+- Should we enforce all attribute and function names to `snake_case` format, and as expressive as possible (e.g. reqparams -> required_params)?
 
-- Should we have all modules named with single words (for a cleaner file tree structure)?
+- Should we have all modules named with single words (for a cleaner file tree structure)? For example:
 
 core
 ├── __init__.py
@@ -22,22 +22,24 @@ core
 ├── conversion.py
 └── variables.py
 
-- There seem to be same names for different attributes through the code, example:
-    _source = files!order (icesat2data.py)
-    source = '/path/to/file' (variables.py)
+- There seem to be duplicate names for different attributes through the code, for example:
 
-- The use of `files` is abiguous. Should it contain a path or file list?
+    _source == {files, order} (in icesat2data.py)
+    source == '/path/to/file' (in variables.py)
 
-- What do we need to init the data object? Probably very little info as some info can be inferred from the files themselves.
+- The use of `files` is ambiguous. Should it contain a `path` to files or the actual file list?
 
-- `dataset` should be `product`?
+- What do we need to initialize the data object? Probably very little info as some info can be inferred from the files themselves.
 
-- Do we need required `dataset` for `data` object creation? We can get it from file names.
+- `dataset` should be `product` (or `product_name` or `dataset_name`)?
 
-- The file implementation as is break some unit tests. 
+- Do we need a `dataset` for the `data` object creation? We can get it from the file name.
+
+- Note that the 'local file' implementation as is currently breaks some unit tests (this is just a skeleton to start thinking about it).
 
 - Perhaps a logical separation would be:
-    * The class `Query` ivoking functionality from `Granules`
-    * The class `Data` ivoking  functionality from`Files`
 
-- Lets use the zarr project as a ref for clean and readeble code.
+    * The class `Query` evoking functionality from `Granules`
+    * The class `Data` evoking  functionality from`Files`
+
+- As a reference for (good) code formatting, please check the `zarr` github repo. The code base is very clean and easy to read. (I know the developers have paid special attention to this matter)

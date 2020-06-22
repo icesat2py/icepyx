@@ -10,7 +10,7 @@ import h5py
 import numpy as np
 
 
-class Files:
+class Files(object):
     """Interact with ICESat-2 data files locally."""
 
     def __init__(self, files=None, variables=None, outdir=None, orig_files=None):
@@ -60,7 +60,7 @@ class Files:
         if fname is None:
             fname = self.files[0]
 
-        print('\nFile variables:')
+        print("\nFile variables:")
 
         with h5py.File(fname, "r") as f:
             f.visititems(self._print_attrs)

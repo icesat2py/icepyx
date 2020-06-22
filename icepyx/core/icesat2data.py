@@ -915,4 +915,4 @@ class Icesat2Data:
 
         outfiles = files.get_vars(self._files, variables, outdir)
 
-        return files.Files(outfiles, variables, outdir)
+        return files.Files(outfiles, variables, outdir, self._files)

@@ -4,21 +4,23 @@
 # NOTE: Perhaps `Files` below should be the class `Data` itself, and the method
 # `get_vars()` in both classes `Query` and `Data` should return another `Data` object.
 
-import h5py
-import numpy as np
 from pathlib import Path
 
+import h5py
+import numpy as np
 
-class Files():
+
+class Files:
     """Interact with ICESat-2 data files locally."""
 
-    def __init__(self, files=None, variables=None, outdir=None):
+    def __init__(self, files=None, variables=None, outdir=None, orig_files=None):
 
         # TODO: Properly validate all inputs.
 
         self._files = files
         self._variables = variables
         self._outdir = Path(outdir).resolve()
+        self._orig_files = orig_files
 
     @property
     def files(self):
@@ -32,27 +34,48 @@ class Files():
     def outdir(self):
         return self._outdir
 
+    @property
+    def orig_files(self):
+        return self._orig_files
+
     # ----------------------------------------------------------------------
     # Methods
 
     def info(self):
-        print("Input files:\n", self._files)
-        print("Output dir:\n", self._outdir)
-        print("Variables:\n", self._variables)
+        print("\nInput files:\n", [f.name for f in self._orig_files])
+        print("\nOutput files:\n", [f.name for f in self._files])
+        print("\nData folder:\n", self._outdir)
+        print("\nVariables:\n", self._variables)
         # ...
 
     def _print_attrs(self, name, obj):
         print(name)
+
         for key, val in obj.attrs.items():
             print("    %s: %s" % (key, val))
 
-    def print_vars(self):
-        with h5py.File(self.files[0], "r") as f:
+    def print_vars(self, fname=None):
+        """Print attrs and variables of given file or first found."""
+
+        if fname is None:
+            fname = self.files[0]
+
+        print('\nFile variables:')
+
+        with h5py.File(fname, "r") as f:
             f.visititems(self._print_attrs)
 
 
 # --------------------------------------------------------------------------
-# Functions
+# Functions (these might be wrapped as class methods)
+
+# Here we define easy mappings to variables in IS2 files.
+_var_mapping = {
+    "lon": "/gt1l/land_ice_segments/longitude",
+    "lat": "/gt1l/land_ice_segments/latitude",
+    "height": "/gt1l/land_ice_segments/h_li",
+    # ...
+}
 
 
 def get_file_list(path):
@@ -71,16 +94,41 @@ def get_file_list(path):
     return file_list
 
 
-def _get_var_paths(vardict):
+def _get_key_value(vardict):
+    """Return two lists with keys and values, respectively."""
+
     return list(vardict.keys()), list(vardict.values())
 
 
-def _get_vars(ifile=None, variables=None, ofile=None):
+def _construct_var_name(varlist):
+    """Return var name from /path/to/var as `var_path`."""
+
+    return [(v.split("/")[-1] + "_" + v.split("/")[1]) for v in varlist]
+
+
+def _get_name_path(variables, var_mapping):
 
     if isinstance(variables, dict):
-        names, variables = _get_var_paths(variables)
-    else:
-        names = [v.split("/")[-1] for v in variables]
+        # User-defined names and paths
+        names, variables = _get_key_value(variables)
+
+    elif isinstance(variables, list) and all(
+        v in _var_mapping.keys() for v in variables
+    ):
+        # User-provided var keys (to be mapped)
+        subset = {k: v for k, v in var_mapping.items() if k in variables}
+        names, variables = _get_key_value(subset)
+
+    elif isinstance(variables, list):
+        # User-provided paths only
+        names = _construct_var_name(variables)
+
+    return names, variables
+
+
+def _get_vars(ifile=None, variables=None, ofile=None, var_mapping=_var_mapping):
+
+    names, variables = _get_name_path(variables, var_mapping)
 
     dsets = read_h5(ifile, variables)  # list -> list
 
@@ -89,6 +137,7 @@ def _get_vars(ifile=None, variables=None, ofile=None):
     save_h5(ofile, vardict)
 
 
+# TODO: Maybe this should be a method of `Files` that return a `Files` obj (self)?
 def get_vars(files=None, variables=None, outdir=None):
 
     outdir = Path(outdir)
@@ -98,7 +147,7 @@ def get_vars(files=None, variables=None, outdir=None):
 
     for ifile in files:
         ifile = Path(ifile)
-        ofile = outdir / (ifile.name + '_reduced')
+        ofile = outdir / (ifile.name + "_reduced")
 
         _get_vars(ifile, variables, ofile)
 

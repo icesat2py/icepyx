@@ -4,18 +4,42 @@ import icepyx
 data_home = Path("../data")
 data_home.mkdir(exist_ok=True)
 
-files = list(data_home.glob("*.h5"))
-
-# Pine Island Glacier
-
-vardict = {
-    'lon_1l': "/gt1l/land_ice_segments/longitude",
-    'lat_1l': "/gt1l/land_ice_segments/latitude",
-    'h_1l': "/gt1l/land_ice_segments/h_li",
-}
+# Three ways to pass variables
 
 if 0:
-    # Remote
+
+    # 1) User specifies full path and the name it wants
+    # for each extracted var in the reduced files (dict input).
+
+    variables = {
+        "lon_1l": "/gt1l/land_ice_segments/longitude",
+        "lat_1l": "/gt1l/land_ice_segments/latitude",
+        "h_1l": "/gt1l/land_ice_segments/h_li",
+    }
+
+elif 0:
+
+    # 2) User specifies full paths and the code will
+    # name each variable in a "smart" way (list input).
+
+    variables = [
+        "/gt1l/land_ice_segments/longitude",
+        "/gt1l/land_ice_segments/latitude",
+        "/gt1l/land_ice_segments/h_li",
+    ]
+
+else:
+
+    # 3) User specifies key-names that map to variables in the
+    # files. These are defined by us in the code (list input).
+
+    variables = ["lon", "lat", "height"]
+
+
+if 0:
+
+    # Remote, for testing that works independently of local.
+
     region = icepyx.icesat2data.Icesat2Data(
         dataset="ATL06",
         spatial_extent=[-102, -76, -98, -74.5],
@@ -34,30 +58,15 @@ if 0:
     print(region.avail_granules())
 
 else:
-    # Local
-    region = icepyx.icesat2data.Icesat2Data(files='../data')
+
+    # Local, operations on existing data files locally.
+
+    region = icepyx.icesat2data.Icesat2Data(files=data_home)
 
     print(region.path)
     print(region.files)
-    print()
 
-    # xyz = region.get_vars(vardict, outdir='../data/reduced')
+    xyz = region.get_vars(variables, outdir=data_home/'reduced')
 
-    # print(xyz.files)
-    # print(xyz.variables)
-    # print(xyz.outdir)
-    # print()
-
-    # xyz.info()
-    # xyz.print_vars()
-
-
-# print(region.show_custom_options(dictview=True))
-
-# region.visualize_spatial_extent()
-
-# region.dataset_summary_info()
-
-# region.get_vars(ifile)
-
-# region.print_vars(ifile)
+    xyz.info()
+    xyz.print_vars()

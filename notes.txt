@@ -40,4 +40,4 @@ core
     * The class `Query` ivoking functionality from `Granules`
     * The class `Data` ivoking  functionality from`Files`
 
-- Note that kk
+- Lets use the zarr project as a ref for clean and readeble code.

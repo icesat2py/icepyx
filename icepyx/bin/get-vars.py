@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import icepyx
 
 data_home = Path("../data")
@@ -66,7 +67,31 @@ else:
     print(region.path)
     print(region.files)
 
-    xyz = region.get_vars(variables, outdir=data_home/'reduced')
+    xyz = region.get_vars(variables, outdir=data_home / "reduced")
 
     xyz.info()
     xyz.print_vars()
+
+
+"""
+>>> python get-vars.py
+/Users/paolofer/code/icepyx/icepyx/data
+[PosixPath('/Users/paolofer/code/icepyx/icepyx/data/ATL06_20190101003047_00540212_209_01.h5'), PosixPath('/Users/paolofer/code/icepyx/icepyx/data/ATL06_20190101002504_00540211_209_01.h5'), PosixPath('/Users/paolofer/code/icepyx/icepyx/data/ATL06_20190101001723_00540210_209_01.h5')]
+
+Input files:
+ ['ATL06_20190101003047_00540212_209_01.h5', 'ATL06_20190101002504_00540211_209_01.h5', 'ATL06_20190101001723_00540210_209_01.h5']
+
+Output files:
+ ['ATL06_20190101003047_00540212_209_01.h5_reduced', 'ATL06_20190101002504_00540211_209_01.h5_reduced', 'ATL06_20190101001723_00540210_209_01.h5_reduced']
+
+Data folder:
+ /Users/paolofer/code/icepyx/icepyx/data/reduced
+
+Variables:
+ ['lon', 'lat', 'height']
+
+File variables:
+height
+lat
+lon
+"""

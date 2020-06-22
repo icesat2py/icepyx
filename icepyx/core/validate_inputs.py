@@ -85,10 +85,11 @@ def spatial(spatial_extent):
             # _spat_extent = polygon
             # extent_type = 'polygon'
 
-            # DEVGOAL: properly format this input type (and any polygon type) so that
-            # it is clockwise (and only contains 1 pole)!!
-            # warnings.warn("this type of input is not yet well handled and you may not
-            # be able to find data")
+            # DEVGOAL: properly format this input type (and any polygon type) so
+            # that it is clockwise (and only contains 1 pole)!!
+
+            # warnings.warn(("this type of input is not yet well handled "
+            #                "and you may not be able to find data"))
 
         # user-entered polygon as a single list of lon and lat coordinates
         elif all(type(i) in [int, float] for i in spatial_extent):

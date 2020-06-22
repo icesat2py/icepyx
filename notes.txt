@@ -32,10 +32,12 @@ core
 
 - `dataset` should be `product`?
 
-- Do we need required `dataset` for `data` object creation? Or we get it from file names?
+- Do we need required `dataset` for `data` object creation? We can get it from file names.
 
 - The file implementation as is break some unit tests. 
 
 - Perhaps a logical separation would be:
     * The class `Query` ivoking functionality from `Granules`
-    # The class `Data` ivoking  functionality from`Files`
+    * The class `Data` ivoking  functionality from`Files`
+
+- Note that kk

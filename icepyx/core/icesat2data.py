@@ -901,17 +901,18 @@ class Icesat2Data:
     # ----------------------------------------------------------------------
     # Methods - Local data files
 
-    # TODO: This method should go into the `Data` class when implemented.
+    # TODO: This method should be part of the `Data` class when implemented.
 
     def get_vars(self, variables=None, outdir=None):
         """Extract `variables` from files and save to `outdir`
 
         1. Extract selected variables from input files.
         2. Create new `Data` object with extracted variables.
+
         """
 
-        # TODO: Validate `variables` and `outdir`
+        # TODO: Validate input args.
 
-        files.get_vars(self._files, variables, outdir)
+        outfiles = files.get_vars(self._files, variables, outdir)
 
-        return files.Files(self._files, variables, outdir)
+        return files.Files(outfiles, variables, outdir)

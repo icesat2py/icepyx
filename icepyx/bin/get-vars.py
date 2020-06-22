@@ -9,9 +9,9 @@ files = list(data_home.glob("*.h5"))
 # Pine Island Glacier
 
 vardict = {
-    'lon': '/path/to/var/longitude',
-    'lat': '/path/to/var/latitude',
-    'h': '/path/to/var/height',
+    'lon_1l': "/gt1l/land_ice_segments/longitude",
+    'lat_1l': "/gt1l/land_ice_segments/latitude",
+    'h_1l': "/gt1l/land_ice_segments/h_li",
 }
 
 if 0:
@@ -39,14 +39,17 @@ else:
 
     print(region.path)
     print(region.files)
+    print()
 
-    xyz = region.get_vars(vardict, outdir='../data-out')
+    # xyz = region.get_vars(vardict, outdir='../data/reduced')
 
-    print(xyz.files)
-    print(xyz.variables)
-    print(xyz.outdir)
-    print(xyz.info())
+    # print(xyz.files)
+    # print(xyz.variables)
+    # print(xyz.outdir)
+    # print()
 
+    # xyz.info()
+    # xyz.print_vars()
 
 
 # print(region.show_custom_options(dictview=True))

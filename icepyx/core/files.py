@@ -67,7 +67,7 @@ class Files(object):
 
 
 # --------------------------------------------------------------------------
-# Functions (these might be wrapped as class methods)
+# Functions (these may/should be wrapped as class methods)
 
 # Here we define easy mappings to variables in IS2 files.
 _var_mapping = {

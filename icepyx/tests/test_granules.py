@@ -388,8 +388,8 @@ def test_granules_info():
         'href': 'https://doi.org/10.5067/ATLAS/ATL06.003'}]}]
     obs = granules.info(granules)
 
-    exp = {'Number of available granules': 2, /
-            'Average size of granules (MB)': 46.49339485165, /
+    exp = {'Number of available granules': 2,
+            'Average size of granules (MB)': 46.49339485165,
             'Total size of all granules (MB)': 92.9867897033}
 
     assert obs==exp

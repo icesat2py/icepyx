@@ -1,6 +1,7 @@
+import datetime as dt
 import os
 import warnings
-import datetime as dt
+
 import geopandas as gpd
 
 import icepyx.core.APIformatting as apifmt
@@ -8,9 +9,10 @@ import icepyx.core.geospatial as geospatial
 
 
 def dset_version(latest_vers, version):
-    """Check if the submitted dataset version is valid, and warn the user if a newer
-    version is available.
+    """Check if the submitted dataset version is valid, and warn the user
+    if a newer version is available.
     """
+
     if version is None:
         vers = latest_vers
     else:
@@ -28,13 +30,14 @@ def dset_version(latest_vers, version):
     return vers
 
 
-# DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
+# DEVGOAL: clean up; turn into classes (see validate_inputs_classes.py)
 def spatial(spatial_extent):
+    """Validate the input spatial extent and return the needed parameters
+    to the icesat2data object.
     """
-    Validate the input spatial extent and return the needed parameters to the
-    icesat2data object.
-    """
+
     if isinstance(spatial_extent, list):
+
         # bounding box
         if len(spatial_extent) == 4 and all(
             type(i) in [int, float] for i in spatial_extent
@@ -53,6 +56,7 @@ def spatial(spatial_extent):
             assert (
                 spatial_extent[1] <= spatial_extent[3]
             ), "Invalid bounding box latitudes"
+
             _spat_extent = spatial_extent
             extent_type = "bounding_box"
 
@@ -67,6 +71,7 @@ def spatial(spatial_extent):
             assert (
                 spatial_extent[0][1] == spatial_extent[-1][1]
             ), "Starting latitude doesn't match ending latitude"
+
             polygon = (",".join([str(c) for xy in spatial_extent for c in xy])).split(
                 ","
             )
@@ -79,7 +84,8 @@ def spatial(spatial_extent):
 
             # _spat_extent = polygon
             # extent_type = 'polygon'
-            # #DevGoal: properly format this input type (and any polygon type) so that
+
+            # DEVGOAL: properly format this input type (and any polygon type) so that
             # it is clockwise (and only contains 1 pole)!!
             # warnings.warn("this type of input is not yet well handled and you may not
             # be able to find data")
@@ -98,6 +104,7 @@ def spatial(spatial_extent):
             assert (
                 spatial_extent[1] == spatial_extent[-1]
             ), "Starting latitude doesn't match ending latitude"
+
             extent_type = "polygon"
             polygon = [float(i) for i in spatial_extent]
 
@@ -109,7 +116,7 @@ def spatial(spatial_extent):
         else:
             raise ValueError("Your spatial extent does not meet minimum input criteria")
 
-        # DevGoal: write a test for this?
+        # DEVGOAL: write a test for this?
         # make sure there is nothing set to _geom_filepath since its existence
         # determines later steps
         try:
@@ -117,23 +124,28 @@ def spatial(spatial_extent):
         except:
             UnboundLocalError
 
-    # DevGoal: revisit this section + geospatial.geodataframe. There might be some good
+    # DEVGOAL: revisit this section + geospatial.geodataframe. There might be some good
     # ways to combine the functionality in these checks with that
     elif isinstance(spatial_extent, str):
+
         assert os.path.exists(
             spatial_extent
         ), "Check that the path and filename of your geometry file are correct"
-        # DevGoal: more robust polygon inputting (see Bruce's code): correct for
+
+        # DEVGOAL: more robust polygon inputting (see Bruce's code): correct for
         # clockwise/counterclockwise coordinates, deal with simplification, etc.
+
         if spatial_extent.split(".")[-1] in ["kml", "shp", "gpkg"]:
             extent_type = "polygon"
             gdf = geospatial.geodataframe(extent_type, spatial_extent, file=True)
             # print(gdf.iloc[0].geometry)
-            # DevGoal: does the below line mandate that only the first polygon will be
+
+            # DEVGOAL: does the below line mandate that only the first polygon will be
             # read? Perhaps we should require files containing only one polygon?
             # RAPHAEL - It only selects the first polygon if there are multiple. Unless
             # we can supply the CMR params with muliple polygon inputs we should
             # probably req a single polygon.
+
             _spat_extent = gdf.iloc[0].geometry
             # _spat_extent = apifmt._fmt_polygon(spatial_extent)
             _geom_filepath = spatial_extent
@@ -141,16 +153,19 @@ def spatial(spatial_extent):
         else:
             raise TypeError("Input spatial extent file must be a kml, shp, or gpkg")
 
-    # DevGoal: currently no specific test for this if statement...
+    # DEVGOAL: currently no specific test for this if statement...
+
     if "_geom_filepath" not in locals():
         _geom_filepath = None
+
     return extent_type, _spat_extent, _geom_filepath
 
 
 def temporal(date_range, start_time, end_time):
-    """Validate the input temporal parameters and return the needed parameters to the
-    icesat2data object.
+    """Validate the input temporal parameters and return the needed parameters
+    to the icesat2data object.
     """
+
     if isinstance(date_range, list):
         if len(date_range) == 2:
             _start = dt.datetime.strptime(date_range[0], "%Y-%m-%d")
@@ -159,11 +174,11 @@ def temporal(date_range, start_time, end_time):
 
         else:
             raise ValueError(
-                "Your date range list is the wrong length. It should have start and end"
-                " dates only."
+                "Your date range list is the wrong length. "
+                "It should have start and end dates only."
             )
 
-    # DevGoal: accept more date/time input formats
+    # DEVGOAL: accept more date/time input formats
     #         elif isinstance(date_range, date-time object):
     #             print('it is a date-time object')
     #         elif isinstance(date_range, dict):

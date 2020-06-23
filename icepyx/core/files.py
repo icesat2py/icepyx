@@ -107,6 +107,7 @@ def _construct_var_name(varlist):
 
 
 def _get_name_path(variables, var_mapping):
+    """Process user-defined variables/paths."""
 
     if isinstance(variables, dict):
         # User-defined names and paths
@@ -130,6 +131,7 @@ def _get_name_path(variables, var_mapping):
 
 
 def _get_vars(ifile=None, variables=None, ofile=None, var_mapping=_var_mapping):
+    """Extract vars from ifle and save to ofile."""
 
     names, variables = _get_name_path(variables, var_mapping)
 
@@ -142,6 +144,7 @@ def _get_vars(ifile=None, variables=None, ofile=None, var_mapping=_var_mapping):
 
 # TODO: Maybe this should be a method of `Files` that return a `Files` obj (self)?
 def get_vars(files=None, variables=None, outdir=None):
+    """Read multiple files and extract selected variables."""
 
     outdir = Path(outdir)
     outdir.mkdir(exist_ok=True)
@@ -152,6 +155,7 @@ def get_vars(files=None, variables=None, outdir=None):
         ifile = Path(ifile)
         ofile = outdir / (ifile.name + "_reduced")
 
+        # Get vars from ifile and saves to ofile
         _get_vars(ifile, variables, ofile)
 
         ofiles.append(ofile)

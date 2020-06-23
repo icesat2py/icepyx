@@ -123,6 +123,9 @@ def _get_name_path(variables, var_mapping):
         # User-provided paths only
         names = _construct_var_name(variables)
 
+    else:
+        names, variables = [], []
+
     return names, variables
 
 

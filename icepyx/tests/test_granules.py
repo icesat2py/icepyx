@@ -22,7 +22,7 @@ from icepyx.core.granules import Granules as Granules
 def test_granules_info():
     # reg_a = ipd.Icesat2Data('ATL06', [-55, 68, -48, 71], ['2019-02-20','2019-02-24'], version='3')
     # granules = reg_a.granules.avail
-    granules = [{'producer_granule_id': 'ATL06_20190221121851_08410203_003_01.h5',
+    grans = [{'producer_granule_id': 'ATL06_20190221121851_08410203_003_01.h5',
     'time_start': '2019-02-21T12:19:05.000Z',
     'orbit': {'ascending_crossing': '-40.35812957405553',
     'start_lat': '59.5',
@@ -386,18 +386,13 @@ def test_granules_info():
         'rel': 'http://esipfed.org/ns/fedsearch/1.1/documentation#',
         'hreflang': 'en-US',
         'href': 'https://doi.org/10.5067/ATLAS/ATL06.003'}]}]
-    obs = granules.info(granules)
+    obs = granules.info(grans)
 
-    exp = {'Number of available granules': 2, /
-            'Average size of granules (MB)': 46.49339485165, /
+    exp = {'Number of available granules': 2,
+            'Average size of granules (MB)': 46.49339485165,
             'Total size of all granules (MB)': 92.9867897033}
 
     assert obs==exp
-
-
-
-
-
 
 
 def test_no_granules_in_search_results():
@@ -405,10 +400,11 @@ def test_no_granules_in_search_results():
     with pytest.raises(AssertionError, match=ermsg):
         ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-20'], version='2').avail_granules()
 
+
 def test_correct_granule_list_returned():
     reg_a = ipd.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='2')
     reg_a.avail_granules()
-    obs_grans = [gran['producer_granule_id'] for gran in reg_a.granules]
+    obs_grans = [gran['producer_granule_id'] for gran in reg_a.granules.avail]
     exp_grans = ['ATL06_20190221121851_08410203_002_01.h5', 'ATL06_20190222010344_08490205_002_01.h5', 'ATL06_20190225121032_09020203_002_01.h5', 'ATL06_20190226005526_09100205_002_01.h5']
-    
+
     assert set(obs_grans) == set(exp_grans)

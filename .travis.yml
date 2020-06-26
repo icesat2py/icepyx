@@ -14,13 +14,10 @@ stages:
 jobs:
   include:
     - stage: basic tests
-      script: pytest icepyx/tests/test_APIformatting.py
-              icepyx/tests/test_geospatial.py
-              icepyx/tests/test_is2ref.py
-              icepyx/tests/test_validate_inputs.py
+      script: pytest icepyx/ --ignore icepyx/tests/behind_NSIDC_API_login.py
       after_success: codecov
 
     # - stage: behind Earthdata
-    #   script: 
+    #   script:
     #     - export NSIDC_LOGIN=$NSIDC_LOGIN
     #     - pytest icepyx/tests/behind_NSIDC_API_login.py

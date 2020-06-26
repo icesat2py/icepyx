@@ -1,8 +1,12 @@
 language: python
 
+install:
+  - pip install -r requirements.txt -r requirements-dev.txt
+  - pip install -e .
+
 stages:
   - name: basic tests
-    if: type = push
+    if: type = push OR type = pull_request
   - name: behind Earthdata
     if: branch = master OR commit_message =~ nsidc_tests OR type = cron
 
@@ -11,6 +15,7 @@ jobs:
   include:
     - stage: basic tests
       script: pytest icepyx/ --ignore icepyx/tests/behind_NSIDC_API_login.py
+      after_success: codecov
 
     # - stage: behind Earthdata
     #   script:

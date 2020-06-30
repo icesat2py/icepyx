@@ -5,8 +5,15 @@ import json
 import warnings
 import pprint
 import time
+import re
+from itertools import compress
+import pandas as pd
+import numpy as np
 import geopandas as gpd
+from shapely.geometry import Point
 import matplotlib.pyplot as plt
+import concurrent.futures
+from pyproj import CRS
 
 from icepyx.core.Earthdata import Earthdata
 import icepyx.core.APIformatting as apifmt
@@ -740,15 +747,109 @@ class Icesat2Data():
             if not hasattr(self._granules, 'orderIDs') or len(self._granules.orderIDs)==0: self.order_granules(verbose=verbose, subset=subset, **kwargs)
     
         self._granules.download(verbose, path, session=self._session, restart=restart)
-  
+
+    #DevGoal: Uses the NSIDC API to query metadata. Returns trackId, Dates, and cycle within bbox.
+    def generate_OA_request_params(self):
+        """
+        Uses the NSIDC API to query metadata, returns trackId, Dates, cycle number and bbox for ATL06 product
+        Examples
+        --------
+        >>>reg_a = ipd.Icesat2Data('ATL06', [-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
+        >>>reg_a.generate_OA_request_params()
+        ['841', '2019-02-21', '2', [-55, 68, -48, 71]]
+        """
+
+        file_re = re.compile(
+            'ATL06_(?P<date>\d+)_(?P<rgt>\d\d\d\d)(?P<cycle>\d\d)(?P<region>\d\d)_(?P<release>\d\d\d)_(?P<version>\d\d).h5')
+
+        params_lists = []  # list of parameters for API query
+
+        for fname in self.avail_granules(ids=True):
+            temp = file_re.search(fname)
+            rgt = temp['rgt'].strip("0")
+            cycle = temp['cycle'].strip("0")
+            f_date = temp['date']
+            ftime = f_date[:4] + '-' + f_date[4:6] + '-' + f_date[6:8]
+
+            paras = [rgt, ftime, cycle, self._spat_extent]
+            params_lists.append(paras)
+
+        return params_lists
+
+    # DevGoal: Uses the OpenAltimetry API to query ATL06 points
+    def OA_request(self, paralist=None, product='atl06'):
+        """
+        Request data from OpenAltimetry based on API
+        """
+        beamlist = ['gt1r', 'gt1l', 'gt2r', 'gt2l', 'gt3r', 'gt3l']
+        base_url = 'https://openaltimetry.org/data/api/icesat2/level3a'
+
+        points = []  # store all beam data for one RGT
+        trackId, Date, cycle, bbox = paralist[0], paralist[1], paralist[2], paralist[3]
+        # iterate all six beams
+        for beam in beamlist:
+            # Generate API
+            payload = {'product': product,
+                       'endDate': Date,
+                       'minx': str(bbox[0]),
+                       'miny': str(bbox[1]),
+                       'maxx': str(bbox[2]),
+                       'maxy': str(bbox[3]),
+                       'trackId': trackId,
+                       'beamName': beam,
+                       'outputFormat': 'json'}
+
+            # request OpenAltimetry
+            r = requests.get(base_url, params=payload)
+
+            # get elevation data
+            elevation_data = r.json()
+
+            # length of file list
+            file_len = len(elevation_data['data'])
+
+            # file index satifies aqusition time from data file
+            idx = [elevation_data['data'][i]['date'] == Date for i in np.arange(file_len)]
+
+            # get data we need
+            beam_data = list(compress(elevation_data['data'], idx))
+
+            if not beam_data:
+                continue
+
+            # elevation array
+            beam_elev = beam_data[0]['beams'][0]['lat_lon_elev']
+
+            if not beam_elev:  # check if no data
+                continue  # continue to next beam
+
+            for p in beam_elev:
+                points.append({
+                    'lat': p[0],
+                    'lon': p[1],
+                    'h': p[2],
+                    'beam': beam,
+                    'cycle': cycle,
+                    'time': Date}
+                )
+
+        track_df = pd.DataFrame.from_dict(points)
+        return track_df
    
     #DevGoal: add testing? What do we test, and how, given this is a visualization.
     #DevGoal(long term): modify this to accept additional inputs, etc.
     #DevGoal: move this to it's own module for visualizing, etc.
     #DevGoal: see Amy's data access notebook for a zoomed in map - implement here?
-    def visualize_spatial_extent(self): #additional args, basemap, zoom level, cmap, export
+    def visualize_spatial_extent(self, OA_quickplot=False): #additional args, basemap, zoom level, cmap, export
         """
         Creates a map displaying the input spatial extent
+        Plot the elevation of ATL06 data returned from OpenAltimetry API if the extent bounds are less
+        than 5 degrees in either dimension, as OpenAltimetry API will not return data that exceeds bounds of 5 degrees in the lat or lon dimension.
+
+        Parameters
+        ----------
+        OA_quickplot : boolean, default False
+            If True, plot ATL06 elevation
 
         Examples
         --------
@@ -761,4 +862,52 @@ class Icesat2Data():
         f, ax = plt.subplots(1, figsize=(12, 6))
         world.plot(ax=ax, facecolor='lightgray', edgecolor='gray')
         geospatial.geodataframe(self.extent_type,self._spat_extent).plot(ax=ax, color='#FF8C00',alpha = 0.7)
+        #plt.show()
+
+        # Only plot elevations for bounding box as OpenAltimetry only accepts bounding box
+        if OA_quickplot:
+            if self.extent_type == 'bounding_box':
+                bbox = self._spat_extent
+
+                ### spatial extent check and grid bbox
+                lonmax = bbox[2]
+                lonmin = bbox[0]
+                latmax = bbox[3]
+                latmin = bbox[1]
+
+                # check if bounding box satisfies extent thresholds: |maxx - minx| < 5 and maxy - miny < 5
+                extent_flag = ((lonmax - lonmin) > 5) or ((latmax - latmin) > 5)
+
+                if not extent_flag:
+                    print ('Requesting data from OpenAltimetry...')
+                    params_lists = self.generate_OA_request_params()
+                    ### Parallel processing ###
+                    pool = concurrent.futures.ThreadPoolExecutor(max_workers=20)
+                    parallel_data = {pool.submit(self.OA_request, paralist): paralist for paralist in params_lists}
+
+                    results = []
+                    for future in concurrent.futures.as_completed(parallel_data):
+                        r = future.result()
+                        results.append(r)
+
+                    ATL06_DATA = pd.concat(results)
+                    # convert into geodataframe
+                    geometry = [Point(xy) for xy in zip(ATL06_DATA['lon'], ATL06_DATA['lat'])]
+                    gdf_OA = gpd.GeoDataFrame(ATL06_DATA, geometry=geometry, crs=CRS('EPSG:4326'))
+
+                    # plot elevation
+                    fig2= plt.figure(figsize=(8, 8))
+                    ax2 = fig2.add_subplot(111)
+                    cs = plt.scatter(gdf_OA['geometry'].x, gdf_OA['geometry'].y, c=gdf_OA['h'], vmin=gdf_OA['h'].min(),
+                                     vmax=gdf_OA['h'].max(), cmap='RdYlBu_r', s=15, label='OpenAltimetry')
+
+                    colorbar = fig2.colorbar(cs, ax=ax2)
+                    colorbar.set_label('Elevation(m)', fontsize=15)
+                    colorbar.ax.tick_params(labelsize=15)
+                    
+                    self.OA_data = gdf_OA
+
+        plt.tight_layout()
         plt.show()
+
+

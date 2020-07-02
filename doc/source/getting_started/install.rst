@@ -25,7 +25,7 @@ Windows users will need to first install `Fiona`_, please look at the instructio
   pipwin install Fiona 
 
 
-Currently, packages are not automatically generated with each build, this means it is possible that pip will not install the latest release of icepyx. In this case, icepyx is also available for use via the GitHub repository. The contents of the repository can be download as a `zipped file`_ or cloned.
+Currently, updated packages are not automatically generated with each build. This means it is possible that pip will not install the latest release of icepyx. In this case, icepyx is also available for use via the GitHub repository. The contents of the repository can be download as a `zipped file`_ or cloned.
 
 To use icepyx this way, fork this repo to your own account, then git clone the repo onto your system. 
 To clone the repository:

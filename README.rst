@@ -72,12 +72,13 @@ Future developments of icepyx may include conda as another simplified installati
 Examples (Jupyter Notebooks)
 ----------------------------
 
-.. _`ICESat-2_DAAC_DataAccess_Example`: ICESat-2_DAAC_DataAccess_Example.ipynb
-
-
 Listed below are example jupyter-notebooks
 
-ICESat-2_DAAC_DataAccess_Example_
+`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
+
+`ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+
+`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
 
 
 Citing icepyx
@@ -95,7 +96,7 @@ Come join the conversation at: https://discourse.pangeo.io/.
 Search for "icesat-2" under the "science" topic to find us.
 
 .. _`icepyx`: https://github.com/icesat2py/icepyx
-.. _`contribution guidelines`: ./doc/source/development/contribution_guidelines.rst
+.. _`contribution guidelines`: ./doc/source/contributing/contribution_guidelines.rst
 
 Contribute
 ----------

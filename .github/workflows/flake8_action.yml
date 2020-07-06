@@ -8,7 +8,8 @@ on:
       - development
       - master
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Run flake8 on your PR - with annotations!
-      uses: tayfun/flake8-your-pr@1.0.1
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run flake8 on your PR - with annotations!
+        uses: tayfun/flake8-your-pr@1.0.1

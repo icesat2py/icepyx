@@ -7,9 +7,7 @@ on:
     branches:
       - development
       - master
-steps:
-  - name: Run flake8 on your PR - with annotations!
-    uses: tayfun/flake8-your-pr@1.0.1
-
-
-
+jobs:
+  steps:
+    - name: Run flake8 on your PR - with annotations!
+      uses: tayfun/flake8-your-pr@1.0.1

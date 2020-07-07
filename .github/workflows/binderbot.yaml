@@ -1,0 +1,76 @@
+name: Binderbot
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
+  push:
+    branches:
+      - master
+    paths:
+      - '**.ipynb'
+      - 'binder-gallery.yaml'
+      - 'thumbnail.png'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '**.ipynb'
+      - 'binder-gallery.yaml'
+      - 'thumbnail.png'
+
+jobs:
+  build:
+    name: Binderbot Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: parse config
+        id: parse
+        uses: CumulusDS/get-yaml-paths-action@v0.0.3
+        with:
+          file: binder-gallery.yaml
+          gallery_repository: gallery_repository
+          binder_url: binder_url
+          binder_repo: binder_repo
+          binder_ref: binder_ref
+          binderbot_target_branch: binderbot_target_branch
+      - name: Verify output
+        run: |
+          echo gallery_repository: "${{ steps.parse.outputs.gallery_repository }}"
+          echo binder_url: "${{ steps.parse.outputs.binder_url }}"
+          echo binder_repo: "${{ steps.parse.outputs.binder_repo }}"
+          echo binder_ref: "${{ steps.parse.outputs.binder_ref }}"
+          echo binderbot_target_branch: "${{ steps.parse.outputs.binderbot_target_branch }}"
+      - uses: actions/setup-python@v1
+        with:
+          python-version: '3.8'
+          architecture: 'x64'
+      - name: Install Binderbot from github master
+        run: pip install git+https://github.com/pangeo-gallery/binderbot.git
+      - name: Create Clean Branch
+        run: |
+          git checkout --orphan ${{ steps.parse.outputs.binderbot_target_branch }}
+          git rm --cached -r .
+      - name: Build notebooks using Binderbot
+        run: |
+          python -m binderbot.cli \
+          --binder-url ${{ steps.parse.outputs.binder_url }} \
+          --repo ${{ steps.parse.outputs.binder_repo }} \
+          --ref ${{ steps.parse.outputs.binder_ref }} \
+          *.ipynb
+      - name: Commit files
+        if: github.ref == 'refs/heads/master'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add binder-gallery.yaml thumbnail.png *.ipynb
+          git commit -m "Binderbot output"
+      - name: Push commit
+        if: github.ref == 'refs/heads/master'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.parse.outputs.binderbot_target_branch }}
+          force: true
+      - name: Trigger repository dispatch on Pangeo Gallery
+        if: github.ref == 'refs/heads/master'
+        run: curl -f https://pangeo-gallery-bot.herokuapp.com/gallery/submodule-dispatch/${{ github.repository }}

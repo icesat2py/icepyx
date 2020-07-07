@@ -1,0 +1,20 @@
+# use the flake8 linter to annotate improperly formatted code
+# from: https://github.com/marketplace/actions/run-flake8-on-your-pr-with-annotations
+name: Run flake8 linter on PRs
+
+on:
+  pull_request:
+    branches:
+      - development
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Annotate PR after running flake8
+        uses: TrueBrain/actions-flake8@master
+        with:
+          max_line_length: 90
+        # https://github.com/marketplace/actions/run-flake8-on-your-pr-with-annotations?version=1.0.1
+        # uses: tayfun/flake8-your-pr@master
+        # secrets: ["GITHUB_TOKEN"]

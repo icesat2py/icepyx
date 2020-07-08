@@ -10,7 +10,7 @@ stages:
   - name: behind Earthdata
     if: branch = master OR commit_message =~ nsidc_tests OR type = cron
 
-#ultimately move basic tests list into a separate script with the list of files to run (then this can be put into a matrix and paralellized as well)
+#ultimately move basic tests list into a separate script with the list of files to run (then this can be put into a matrix and parallellized as well)
 jobs:
   include:
     - stage: basic tests
@@ -21,3 +21,22 @@ jobs:
     #   script:
     #     - export NSIDC_LOGIN=$NSIDC_LOGIN
     #     - pytest icepyx/tests/behind_NSIDC_API_login.py
+
+deploy:
+  - provider: pypi
+    server: https://test.pypi.org/legacy/ 
+    username: "__token__"
+    password: $test_PyPI_API_Token
+    on:
+      branch: development
+      condition: commit_message = test_pypi
+    skip_existing: true
+  - provider: pypi
+    username: "__token__"
+    password: $PyPI_API_Token
+    on:
+      branch: master
+      tags: true
+    skip_existing: true
+#   script:
+#     - export PyPI_API_Token=$PyPI_API_Token

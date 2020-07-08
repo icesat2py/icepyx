@@ -48,7 +48,7 @@ Windows users will need to first install `Fiona`_, please look at the instructio
   pipwin install Fiona 
 
 
-Currently, packages are not automatically generated with each build, this means it is possible that pip will not install the latest release of icepyx. In this case, icepyx is also available for use via the GitHub repository. The contents of the repository can be download as a `zipped file`_ or cloned.
+Currently, updated packages are not automatically generated with each build. This means it is possible that pip will not install the latest release of icepyx. In this case, icepyx is also available for use via the GitHub repository. The contents of the repository can be download as a `zipped file`_ or cloned.
 
 To use icepyx this way, fork this repo to your own account, then git clone the repo onto your system. 
 To clone the repository:
@@ -72,12 +72,13 @@ Future developments of icepyx may include conda as another simplified installati
 Examples (Jupyter Notebooks)
 ----------------------------
 
-.. _`ICESat-2_DAAC_DataAccess_Example`: ICESat-2_DAAC_DataAccess_Example.ipynb
-
-
 Listed below are example jupyter-notebooks
 
-ICESat-2_DAAC_DataAccess_Example_
+`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
+
+`ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+
+`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
 
 
 Citing icepyx
@@ -95,7 +96,7 @@ Come join the conversation at: https://discourse.pangeo.io/.
 Search for "icesat-2" under the "science" topic to find us.
 
 .. _`icepyx`: https://github.com/icesat2py/icepyx
-.. _`contribution guidelines`: ./doc/source/development/contribution_guidelines.rst
+.. _`contribution guidelines`: ./doc/source/contributing/contribution_guidelines.rst
 
 Contribute
 ----------

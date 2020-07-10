@@ -2,6 +2,7 @@ import datetime as dt
 import os
 import warnings
 import geopandas as gpd
+import numpy as np
 
 import icepyx.core.APIformatting as apifmt
 import icepyx.core.geospatial as geospatial
@@ -33,10 +34,13 @@ def spatial(spatial_extent):
     """
     Validate the input spatial extent and return the needed parameters to the icesat2data object.
     """
-    if isinstance(spatial_extent, list):
+    
+    scalar_types = (np.int, np.float)
+    
+    if isinstance(spatial_extent, (list, np.ndarray)):
         # bounding box
         if len(spatial_extent) == 4 and all(
-            type(i) in [int, float] for i in spatial_extent
+            isinstance(i, scalar_types) for i in spatial_extent
         ):
             assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
             assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"

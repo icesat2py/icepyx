@@ -1,4 +1,4 @@
 Examples
 ========
 
-.. include:: ../../examples/examples.rst
+.. include:: ../../../examples/examples.rst

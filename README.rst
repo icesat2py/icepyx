@@ -3,7 +3,7 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|Documentation Status|  |GitHub license|  |Travis CI Status|
+|Documentation Status|  |GitHub license|  |Travis CI Status| |Code Coverage|
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
@@ -13,6 +13,9 @@ icepyx
 
 .. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=master
     :target: https://travis-ci.org/icesat2py/icepyx
+
+.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg 
+    :target: https://codecov.io/gh/icesat2py/icepyx
 
 Origin and Purpose
 ------------------
@@ -26,35 +29,56 @@ This project combines and generalizes these scripts into a unified framework, ma
 
 
 .. _`zipped file`: https://github.com/icesat2py/icepyx/archive/master.zip
+.. _`Fiona`: https://pypi.org/project/Fiona/
 
 Installation
 ------------
-Currently icepyx is only available for use as a github repository.
-The contents of the repository can be download as a `zipped file`_ or cloned.
+The simplest way to install icepyx is using pip.
 
-To use icepyx, fork this repo to your own account, then ``git clone`` the repo onto your system.
-Provided the location of the repo is part of your $PYTHONPATH,
-you should simply be able to add ``import icepyx`` to your Python document.
+.. code-block::
 
+  pip install icepyx
+
+
+Windows users will need to first install `Fiona`_, please look at the instructions there. Windows users may consider installing Fiona using pipwin
+
+.. code-block::
+
+  pip install pipwin
+  pipwin install Fiona 
+
+
+Currently, updated packages are not automatically generated with each build. This means it is possible that pip will not install the latest release of icepyx. In this case, icepyx is also available for use via the GitHub repository. The contents of the repository can be download as a `zipped file`_ or cloned.
+
+To use icepyx this way, fork this repo to your own account, then git clone the repo onto your system. 
 To clone the repository:
 
-.. code-block:: none
+.. code-block::
 
   git clone https://github.com/icesat2py/icepyx.git
 
 
-Future developments of icepyx may include pip and conda as simplified installation options.
+Provided the location of the repo is part of your $PYTHONPATH, you should simply be able to add import icepyx to your Python document.
+Alternatively, in a command line or terminal, navigate to the folder in your cloned repository containing setup.py and run
+
+.. code-block::
+
+  pip install -e
+
+
+Future developments of icepyx may include conda as another simplified installation option.
 
 
 Examples (Jupyter Notebooks)
 ----------------------------
 
-.. _`ICESat-2_DAAC_DataAccess_Example`: ICESat-2_DAAC_DataAccess_Example.ipynb
-
-
 Listed below are example jupyter-notebooks
 
-ICESat-2_DAAC_DataAccess_Example_
+`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
+
+`ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+
+`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
 
 
 Citing icepyx
@@ -72,7 +96,7 @@ Come join the conversation at: https://discourse.pangeo.io/.
 Search for "icesat-2" under the "science" topic to find us.
 
 .. _`icepyx`: https://github.com/icesat2py/icepyx
-.. _`contribution guidelines`: ./doc/source/development/contribution_guidelines.rst
+.. _`contribution guidelines`: ./doc/source/contributing/contribution_guidelines.rst
 
 Contribute
 ----------

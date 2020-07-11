@@ -38,6 +38,7 @@ def spatial(spatial_extent):
     scalar_types = (np.int, np.float)
     
     if isinstance(spatial_extent, (list, np.ndarray)):
+        
         # bounding box
         if len(spatial_extent) == 4 and all(
             isinstance(i, scalar_types) for i in spatial_extent
@@ -84,7 +85,7 @@ def spatial(spatial_extent):
             # warnings.warn("this type of input is not yet well handled and you may not be able to find data")
 
         # user-entered polygon as a single list of lon and lat coordinates
-        elif all(type(i) in [int, float] for i in spatial_extent):
+        elif all( isinstance(i, scalar_types) for i in spatial_extent):
             assert (
                 len(spatial_extent) >= 8
             ), "Your spatial extent polygon has too few vertices"

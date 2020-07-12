@@ -35,7 +35,7 @@ def spatial(spatial_extent):
     Validate the input spatial extent and return the needed parameters to the icesat2data object.
     """
     
-    scalar_types = (np.int, np.float)
+    scalar_types = (np.int, np.float, np.int64)
     
     if isinstance(spatial_extent, (list, np.ndarray)):
         
@@ -59,7 +59,10 @@ def spatial(spatial_extent):
             extent_type = "bounding_box"
 
         # user-entered polygon as list of lon, lat coordinate pairs
-        elif all(type(i) in [list, tuple] for i in spatial_extent):
+        elif all(type(i) in [list, tuple, np.ndarray] for i in spatial_extent) and all( 
+            all( isinstance(i[j], scalar_types) for j in range(len(i)) ) for i in spatial_extent           ):
+            if any( len(i) != 2 for i in spatial_extent):
+                raise ValueError("Each element in spatial_extent should be a list or tuple of lenght 2")
             assert (
                 len(spatial_extent) >= 4
             ), "Your spatial extent polygon has too few vertices"
@@ -107,7 +110,7 @@ def spatial(spatial_extent):
             # _spat_extent = polygon
 
         else:
-            raise ValueError("Your spatial extent does not meet minimum input criteria")
+            raise ValueError("Your spatial extent does not meet minimum input criteria or the input format is not correct")
 
         # DevGoal: write a test for this?
         # make sure there is nothing set to _geom_filepath since its existence determines later steps

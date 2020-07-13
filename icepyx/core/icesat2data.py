@@ -1,5 +1,6 @@
 import datetime as dt
 import os
+import re
 import requests
 import json
 import warnings
@@ -65,6 +66,12 @@ class Icesat2Data:
     version : string, default most recent version
         Dataset version, given as a 3 digit string. If no version is given, the current
         version is used.
+    cycle : string, default all available orbital cycles
+        Dataset cycle, given as a 2 digit string. If no cycle is given, all available
+        cycles are used.
+    track : string, default all available reference ground tracks (RGTs)
+        Dataset track, given as a 4 digit string. If no track is given, all available
+        reference ground tracks are used.
 
     Returns
     -------
@@ -81,7 +88,7 @@ class Icesat2Data:
     <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a list of polygon vertex coordinate pairs.
-   
+
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', reg_a_poly, reg_a_dates)
@@ -89,7 +96,7 @@ class Icesat2Data:
     <icepyx.core.icesat2data.Icesat2Data at [location]>
 
     Initializing Icesat2Data with a geospatial polygon file.
-   
+
     >>> aoi = '/User/name/location/aoi.shp'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06', aoi, reg_a_dates)
@@ -108,6 +115,9 @@ class Icesat2Data:
         start_time=None,
         end_time=None,
         version=None,
+        cycles=None,
+        tracks=None,
+        orbit_number=None,
         files=None,
     ):
 
@@ -138,6 +148,26 @@ class Icesat2Data:
         self._start, self._end = val.temporal(date_range, start_time, end_time)
 
         self._version = val.dset_version(self.latest_version(), version)
+
+        # list of CMR orbit number parameters
+        self._orbit_number = []
+        # get list of available ICESat-2 cycles and tracks
+        all_cycles,all_tracks = self.avail_granules(cycles=True,tracks=True)
+        self._cycles = val.cycles(all_cycles, cycles)
+        self._tracks = val.tracks(all_tracks, tracks)
+        # build list of available CMR orbit number if reducing by cycle or RGT
+        if cycles or tracks:
+            # for each available cycle of interest
+            for c in self._cycles:
+                # for each available track of interest
+                for t in self._tracks:
+                    self._orbit_number.append(int(t) + (int(c)-1)*1387 + 201)
+            # update the CMR parameters for orbit_number
+            self.CMRparams['orbit_number'] = self.orbit_number
+            # update required parameters (number of pages)
+            self._reqparams.build_params()
+            # update the list of available granules
+            self.granules.get_avail(self.CMRparams, self.reqparams)
 
     # ----------------------------------------------------------------------
     # Properties
@@ -252,11 +282,51 @@ class Icesat2Data:
         """
         return self._end.strftime("%H:%M:%S")
 
+
+    @property
+    def cycles(self):
+        """
+        Return the ICESat-2 orbital cycle.
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.cycles
+        ['02']
+        """
+        return self._cycles
+
+    @property
+    def tracks(self):
+        """
+        Return the ICESat-2 Reference Ground Tracks
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.tracks
+        ['0841', '0849', '0902', '0910']
+        """
+        return self._tracks
+
+
+    @property
+    def orbit_number(self):
+        """
+        Return the ICESat-2 CMR orbit number
+
+        Examples
+        --------
+        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.orbit_number
+        """
+        return ",".join(map(str,self._orbit_number))
+
     @property
     def CMRparams(self):
         """
         Display the CMR key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
-        
+
         Examples
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
@@ -269,8 +339,13 @@ class Icesat2Data:
 
         if not hasattr(self, "_CMRparams"):
             self._CMRparams = apifmt.Parameters("CMR")
-        # print(self._CMRparams)
+        # print(dir(self._CMRparams))
         # print(self._CMRparams.fmted_keys)
+
+        # dictionary of optional CMR parameters
+        kwargs = {}
+        if self._orbit_number:
+            kwargs['orbit_number'] = self.orbit_number
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
@@ -280,6 +355,7 @@ class Icesat2Data:
                 end=self._end,
                 extent_type=self.extent_type,
                 spatial_extent=self._spat_extent,
+                **kwargs
             )
 
         return self._CMRparams.fmted_keys
@@ -288,7 +364,7 @@ class Icesat2Data:
     def reqparams(self):
         """
         Display the required key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
-        
+
         Examples
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
@@ -323,7 +399,7 @@ class Icesat2Data:
             By default temporal and spatial subset keys are passed.
             Acceptable key values are ['format','projection','projection_parameters','Coverage'].
             At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
-        
+
         See Also
         --------
         order_granules
@@ -367,7 +443,7 @@ class Icesat2Data:
     @property
     def order_vars(self):
         """
-        Return the order variables object. 
+        Return the order variables object.
         This instance is generated when data is ordered from the NSIDC.
 
         See Also
@@ -467,7 +543,7 @@ class Icesat2Data:
 
     def dataset_summary_info(self):
         """
-        Display a summary of selected metadata for the specified version of the dataset 
+        Display a summary of selected metadata for the specified version of the dataset
         of interest (the collection).
 
         Examples
@@ -530,7 +606,7 @@ class Icesat2Data:
     def show_custom_options(self, dictview=False):
         """
         Display customization/subsetting options available for this dataset.
-        
+
         Parameters
         ----------
         dictview : boolean, default False
@@ -632,9 +708,9 @@ class Icesat2Data:
         self._email = email
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self, ids=False):
+    def avail_granules(self, ids=False, cycles=False, tracks=False):
         """
-        Obtain information about the available granules for the icesat2data 
+        Obtain information about the available granules for the icesat2data
         object's parameters. By default, a complete list of available granules is
         obtained and stored in the object, but only summary information is returned.
         A list of granule IDs can be obtained using the boolean trigger.
@@ -655,7 +731,10 @@ class Icesat2Data:
 
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.avail_granules(ids=True)
-
+        >>> reg_a.avail_granules(cycles=True)
+        ['02']
+        >>> reg_a.avail_granules(tracks=True)
+        ['0841', '0849', '0902', '0910']
         """
 
         #         REFACTOR: add test to make sure there's a session
@@ -666,8 +745,40 @@ class Icesat2Data:
         except AttributeError:
             self.granules.get_avail(self.CMRparams, self.reqparams)
 
-        if ids == True:
-            return granules.gran_IDs(self.granules.avail)
+        if ids or cycles or tracks:
+            # list of outputs in order of ids, cycles, tracks
+            granule_output = []
+            # get granule ids
+            granule_ids = granules.gran_IDs(self.granules.avail)
+            if ids:
+                granule_output.append(granule_ids)
+            # lists of icesat-2 cycles and tracks
+            cycle_list = []
+            track_list = []
+            # regular expression for extracting parameters from file names
+            rx = re.compile('(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})'
+                   '(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$')
+            for i in granule_ids:
+                # PRD: ICESat-2 product
+                # HEM: Sea Ice Hemisphere flag
+                # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
+                # TRK: Reference Ground Track (RGT)
+                # CYCL: Orbital Cycle
+                # GRAN: Granule region (1-14)
+                # RL: Data Release
+                # VERS: Product Version
+                # AUX: Auxiliary flags
+                # SFX: Suffix (h5)
+                PRD,HEM,YY,MM,DD,HH,MN,SS,TRK,CYCL,GRAN,RL,VERS,AUX,SFX=rx.findall(i).pop()
+                cycle_list.append(CYCL)
+                track_list.append(TRK)
+            # reduce to unique cycles and tracks
+            if cycles:
+                granule_output.append(sorted(set(cycle_list)))
+            if tracks:
+                granule_output.append(sorted(set(track_list)))
+            # return the list
+            return granule_output
         else:
             return granules.info(self.granules.avail)
 
@@ -696,7 +807,7 @@ class Icesat2Data:
             Acceptable key values are ['format','projection','projection_parameters','Coverage'].
             The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
             At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
-        
+
         See Also
         --------
         granules.place_order
@@ -705,7 +816,7 @@ class Icesat2Data:
         --------
         >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
-        Earthdata Login password:  ········        
+        Earthdata Login password:  ········
         >>> reg_a.order_granules()
         order ID: [###############]
         [order status output]
@@ -773,7 +884,7 @@ class Icesat2Data:
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
         restart: boolean, default false
-            If previous download was terminated unexpectedly. Run again with restart set to True to continue. 
+            If previous download was terminated unexpectedly. Run again with restart set to True to continue.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.

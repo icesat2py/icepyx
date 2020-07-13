@@ -27,6 +27,55 @@ def dset_version(latest_vers, version):
 
     return vers
 
+def cycles(all_cycles, cycles):
+    """
+    Check if the submitted cycle is valid, and warn the user if not available.
+    """
+    if cycles is None:
+        cycle_list = all_cycles
+    else:
+        cycle_length = 2
+        if isinstance(cycles, str):
+            assert int(cycles) > 0, "Cycle number must be positive"
+            cycle_list = [cycles.zfill(cycle_length)]
+        elif isinstance(cycles, list):
+            cycle_list = []
+            for c in cycles:
+                assert int(c) > 0, "Cycle number must be positive"
+                cycle_list.append(c.zfill(cycle_length))
+        else:
+            raise TypeError("Please enter the cycle number as a list or string")
+
+        if not set(all_cycles) & set(cycle_list):
+            warnings.filterwarnings("always")
+            warnings.warn("Listed cycle is not presently available")
+
+    return cycle_list
+
+def tracks(all_tracks, tracks):
+    """
+    Check if the submitted RGT is valid, and warn the user if not available.
+    """
+    if tracks is None:
+        track_list = all_tracks
+    else:
+        track_length = 4
+        if isinstance(tracks, str):
+            assert int(tracks) > 0, "Reference Ground Track must be positive"
+            track_list = [tracks.zfill(track_length)]
+        elif isinstance(tracks, list):
+            track_list = []
+            for t in tracks:
+                assert int(t) > 0, "Reference Ground Track must be positive"
+                track_list.append(t.zfill(track_length))
+        else:
+            raise TypeError("Please enter the Reference Ground Track as a list or string")
+
+        if not set(all_tracks) & set(track_list):
+            warnings.filterwarnings("always")
+            warnings.warn("Listed Reference Ground Track is not available")
+
+    return track_list
 
 # DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
 def spatial(spatial_extent):

@@ -60,7 +60,8 @@ def spatial(spatial_extent):
 
         # user-entered polygon as list of lon, lat coordinate pairs
         elif all(type(i) in [list, tuple, np.ndarray] for i in spatial_extent) and all( 
-            all( isinstance(i[j], scalar_types) for j in range(len(i)) ) for i in spatial_extent           ):
+            all( isinstance(i[j], scalar_types) for j in range(len(i)) ) for i in spatial_extent
+        ):
             if any( len(i) != 2 for i in spatial_extent):
                 raise ValueError("Each element in spatial_extent should be a list or tuple of lenght 2")
             assert (

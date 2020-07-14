@@ -6,6 +6,6 @@ class Icesat2Data:
 
         warnings.filterwarnings("always")
         warnings.warn(
-            "Depricated. Please use icepyx.Query to create a download data object (all other functionality is the same)",
-            DepricationWarning,
+            "DEPRECATED. Please use icepyx.Query to create a download data object (all other functionality is the same)",
+            DeprecationWarning,
         )

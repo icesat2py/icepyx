@@ -72,6 +72,32 @@ class Granules:
         # session = session
 
     # ----------------------------------------------------------------------
+    # Properties
+    @property
+    def download_path(self):
+        """
+        The directory where the granule files are downloaded to (or where they
+        are located if already downloaded).
+        """
+        return self._download_path
+
+    @download_path.setter
+    def download_path(self, value):
+        assert os.path.exists(path=value)
+        self._download_path = value
+
+    @property
+    def filepaths(self):
+        """
+        List of filepaths to each of the granule files that have been
+        downloaded.
+        """
+        return [
+            os.path.join(self.download_path, gran["producer_granule_id"])
+            for gran in self.avail
+        ]
+
+    # ----------------------------------------------------------------------
     # Methods
 
     def get_avail(self, CMRparams, reqparams):
@@ -379,6 +405,7 @@ class Granules:
         extract : boolean, default False
             Unzip the downloaded granules.
         """
+        self._download_path = path
 
         # Note: need to test these checks still
         if session is None:
@@ -413,7 +440,7 @@ class Granules:
                 order_start = str(int(np.loadtxt(downid_fn)))
                 i_order = self.orderIDs.index(order_start) + 1
 
-        filepaths = []
+        _filepaths = []
         for order in self.orderIDs[i_order:]:
             downloadURL = "https://n5eil02u.ecs.nsidc.org/esir/" + order + ".zip"
             # DevGoal: get the download_url from the granules
@@ -440,13 +467,14 @@ class Granules:
                     # Remove the subfolder name from the filepath
                     zfile.filename = os.path.basename(zfile.filename)
                     z.extract(member=zfile, path=path)
-                    filepaths.append(os.path.join(path, f.filename))
+                    _filepaths.append(os.path.join(path, f.filename))
 
             # update the current finished order id and save to file
             with open(downid_fn, "w") as fid:
                 fid.write(order)
 
-        self.filepaths = filepaths
+        # ensure we get all the expected granule files
+        assert _filepaths == self.filepaths
 
         # remove orderID and download id files at the end
         if os.path.exists(order_fn):

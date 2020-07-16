@@ -18,14 +18,14 @@ class Variables:
     vartype : string
         One of ['order', 'file'] to indicate the source of the input variables.
         This field will be auto-populated when a variable object is created as an
-        attribute of an icesat2data object.
+        attribute of a query object.
     avail : dictionary, default None
         Dictionary (key:values) of available variable names (keys) and paths (values).
     wanted : dictionary, default None
         As avail, but for the desired list of variables
     session : requests.session object
         A session object authenticating the user to download data using their Earthdata login information.
-        The session object will automatically be passed from the icesat2data object if you
+        The session object will automatically be passed from the query object if you
         have successfully logged in there.
     dataset : string, default None
         Properly formatted string specifying a valid ICESat-2 dataset
@@ -73,7 +73,7 @@ class Variables:
 
         Examples
         --------
-        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
+        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.order_vars.avail()
@@ -118,7 +118,7 @@ class Variables:
 
         Examples
         --------
-        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
+        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail())
@@ -369,7 +369,7 @@ class Variables:
         
         Examples
         --------
-        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
 
@@ -482,7 +482,7 @@ class Variables:
         
         Examples
         --------
-        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
 

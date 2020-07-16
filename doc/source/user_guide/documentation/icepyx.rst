@@ -11,5 +11,5 @@ icepyx class diagram illustrating the library's public-facing classes, their att
 
 .. toctree::
 
-   icesat2data
+   query
    components

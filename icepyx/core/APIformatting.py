@@ -16,7 +16,7 @@ fiona.drvsupport.supported_drivers["LIBKML"] = "rw"
 
 def _fmt_temporal(start, end, key):
     """
-    Format the start and end dates and times into a temporal CMR search 
+    Format the start and end dates and times into a temporal CMR search
     or subsetting key value.
 
     Parameters
@@ -113,7 +113,7 @@ def _fmt_spatial(ext_type, extent):
 def _fmt_var_subset_list(vdict):
     """
     Return the NSIDC-API subsetter formatted coverage string for variable subset request.
-    
+
     Parameters
     ----------
     vdict : dictionary
@@ -175,7 +175,7 @@ class Parameters:
     ----------
     partype : string
         Type of parameter list. Must be one of ['CMR','required','subset']
-    
+
     values : dictionary, default None
         Dictionary of already-formatted parameters, if there are any, to avoid
         re-creating them.
@@ -239,7 +239,7 @@ class Parameters:
             self._poss_keys = {
                 "default": ["short_name", "version", "temporal"],
                 "spatial": ["bounding_box", "polygon"],
-                "optional": [],
+                "optional": ["orbit_number"],
             }
         elif self.partype == "required":
             self._poss_keys = {
@@ -336,8 +336,8 @@ class Parameters:
         ----------
         **kwargs
             Keyword inputs containing the needed information to build the parameter list, depending on
-            parameter type, if the already formatted key:value is not submitted as a kwarg. 
-            May include optional keyword arguments to be passed to the subsetter. Valid keywords 
+            parameter type, if the already formatted key:value is not submitted as a kwarg.
+            May include optional keyword arguments to be passed to the subsetter. Valid keywords
             are time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
 
             Keyword argument inputs for 'CMR' may include: dataset, version, start, end, extent_type, spatial_extent

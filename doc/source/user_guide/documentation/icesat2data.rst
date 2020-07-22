@@ -18,27 +18,29 @@ Attributes
 
 .. autosummary::
    :toctree: ../_icepyx/
-   
+
    Query.CMRparams
+   Query.cycles
    Query.dataset
    Query.dataset_version
    Query.dates
    Query.end_time
    Query.file_vars
    Query.granules
+   Query.orbit_number
    Query.order_vars
    Query.reqparams
    Query.spatial_extent
    Query.subsetparams
    Query.start_time
-
+   Query.tracks
 
 Methods
 -------
 
 .. autosummary::
    :toctree: ../_icepyx/
-   
+
    Query.avail_granules
    Query.dataset_all_info
    Query.dataset_summary_info

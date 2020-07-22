@@ -31,54 +31,32 @@ def info(grans):
 
 
 # DevNote: currently this fn is not tested
-def gran_IDs(grans):
+# DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
+def gran_IDs(grans, ids=True, cycles=False, tracks=False):
     """
-    Returns a list of the granule IDs for the granule dictionary.
+    Returns a list of granule information for the granule dictionary.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
     or a list of granules present on the file system.
+
+    Parameters
+    ----------
+    ids: boolean, default True
+        Return a list of the available granule IDs for the granule dictionary
+    cycles : boolean, default False
+        Return a list of the available orbital cycles for the granule dictionary
+    tracks : boolean, default Fal
+        Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
+    # regular expression for extracting parameters from file names
+    rx = re.compile('(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})'
+           '(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$')
     gran_ids = []
-    for gran in grans:
-        gran_ids.append(gran["producer_granule_id"])
-
-    return gran_ids
-
-def gran_cycles(grans):
-    """
-    Returns a list of the available orbital cycles for the granules
-    """
-    assert len(grans) > 0, "Your data object has no granules associated with it"
-    # regular expression for extracting parameters from file names
-    rx = re.compile('(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})'
-           '(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$')
     gran_cycles = []
-    for gran in grans:
-        # PRD: ICESat-2 product
-        # HEM: Sea Ice Hemisphere flag
-        # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
-        # TRK: Reference Ground Track (RGT)
-        # CYCL: Orbital Cycle
-        # GRAN: Granule region (1-14)
-        # RL: Data Release
-        # VERS: Product Version
-        # AUX: Auxiliary flags
-        # SFX: Suffix (h5)
-        PRD,HEM,YY,MM,DD,HH,MN,SS,TRK,CYCL,GRAN,RL,VERS,AUX,SFX = \
-            rx.findall(gran["producer_granule_id"]).pop()
-        gran_cycles.append(CYCL)
-    return gran_cycles
-
-def gran_RGTs(grans):
-    """
-    Returns a list of the available Reference Ground Tracks (RGTs) for the granules
-    """
-    assert len(grans) > 0, "Your data object has no granules associated with it"
-    # regular expression for extracting parameters from file names
-    rx = re.compile('(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})'
-           '(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$')
     gran_tracks = []
     for gran in grans:
+        producer_granule_id = gran["producer_granule_id"]
+        gran_ids.append(producer_granule_id)
         # PRD: ICESat-2 product
         # HEM: Sea Ice Hemisphere flag
         # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
@@ -90,9 +68,22 @@ def gran_RGTs(grans):
         # AUX: Auxiliary flags
         # SFX: Suffix (h5)
         PRD,HEM,YY,MM,DD,HH,MN,SS,TRK,CYCL,GRAN,RL,VERS,AUX,SFX = \
-            rx.findall(gran["producer_granule_id"]).pop()
+            rx.findall(producer_granule_id).pop()
+        gran_cycles.append(CYCL)
         gran_tracks.append(TRK)
-    return gran_tracks
+    # list of granule parameters
+    gran_list = []
+    # granule IDs
+    if ids:
+        gran_list.append(gran_ids)
+    # orbital cycles
+    if cycles:
+        gran_list.append(gran_cycles)
+    # reference ground tracks (RGTs)
+    if tracks:
+        gran_list.append(gran_tracks)
+    # return the list of granule parameters
+    return gran_list
 
 # DevGoal: this will be a great way/place to manage data from the local file system
 # where the user already has downloaded data!

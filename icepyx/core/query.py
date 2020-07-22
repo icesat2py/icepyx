@@ -151,7 +151,7 @@ class Query:
         # list of CMR orbit number parameters
         self._orbit_number = []
         # get list of available ICESat-2 cycles and tracks
-        all_cycles,all_tracks = self.avail_granules(cycles=True,tracks=True)
+        all_cycles,all_tracks = self.avail_granules(ids=False,cycles=True,tracks=True)
         self._cycles = val.cycles(all_cycles, cycles)
         self._tracks = val.tracks(all_tracks, tracks)
         # build list of available CMR orbit number if reducing by cycle or RGT
@@ -749,14 +749,8 @@ class Query:
 
         if ids or cycles or tracks:
             # list of outputs in order of ids, cycles, tracks
-            granule_output = []
-            if ids:
-                granule_output.append(granules.gran_IDs(self.granules.avail))
-            if cycles:
-                granule_output.append(granules.gran_cycles(self.granules.avail))
-            if tracks:
-                granule_output.append(granules.gran_RGTs(self.granules.avail))
-            return granule_output
+            return granules.gran_IDs(self.granules.avail, ids=ids,
+                cycles=cycles, tracks=tracks)
         else:
             return granules.info(self.granules.avail)
 

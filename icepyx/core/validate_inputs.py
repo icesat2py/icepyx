@@ -2,6 +2,7 @@ import datetime as dt
 import os
 import warnings
 import geopandas as gpd
+import numpy as np
 
 import icepyx.core.APIformatting as apifmt
 import icepyx.core.geospatial as geospatial
@@ -26,6 +27,7 @@ def dset_version(latest_vers, version):
             warnings.warn("You are using an old version of this dataset")
 
     return vers
+
 
 def cycles(all_cycles, cycles):
     """
@@ -52,6 +54,7 @@ def cycles(all_cycles, cycles):
 
     return cycle_list
 
+
 def tracks(all_tracks, tracks):
     """
     Check if the submitted RGT is valid, and warn the user if not available.
@@ -69,13 +72,16 @@ def tracks(all_tracks, tracks):
                 assert int(t) > 0, "Reference Ground Track must be positive"
                 track_list.append(t.zfill(track_length))
         else:
-            raise TypeError("Please enter the Reference Ground Track as a list or string")
+            raise TypeError(
+                "Please enter the Reference Ground Track as a list or string"
+            )
 
         if not set(all_tracks) & set(track_list):
             warnings.filterwarnings("always")
             warnings.warn("Listed Reference Ground Track is not available")
 
     return track_list
+
 
 # DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
 def spatial(spatial_extent):
@@ -90,12 +96,17 @@ def spatial(spatial_extent):
             assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
             assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
             assert (
-                -180 <= spatial_extent[0] <= 360
+                -180 <= spatial_extent[0] <= 180
             ), "Invalid longitude value"  # tighten these ranges depending on actual allowed inputs
-            assert -180 <= spatial_extent[2] <= 360, "Invalid longitude value"
-            assert (
-                spatial_extent[0] <= spatial_extent[2]
-            ), "Invalid bounding box longitudes"
+            assert -180 <= spatial_extent[2] <= 180, "Invalid longitude value"
+            if np.sign(spatial_extent[0]) != np.sign(spatial_extent[2]):
+                assert (
+                    spatial_extent[0] >= spatial_extent[2]
+                ), "Invalid bounding box longitudes"
+            else:
+                assert (
+                    spatial_extent[0] <= spatial_extent[2]
+                ), "Invalid bounding box longitudes"
             assert (
                 spatial_extent[1] <= spatial_extent[3]
             ), "Invalid bounding box latitudes"

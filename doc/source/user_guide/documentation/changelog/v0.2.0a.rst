@@ -1,0 +1,53 @@
+.. _whatsnew_020:
+
+What's new in 0.2.0-alpha (?? 2020)
+-----------------------------------
+
+These are the changes in pandas 0.2.0-alpha See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+-
+-
+
+Bug fixes
+~~~~~~~~~
+
+-
+-
+
+
+Deprecations
+~~~~~~~~~~~~
+
+-
+-
+
+
+Maintenance
+^^^^^^^^^^^
+
+-
+-
+
+
+Documentation
+^^^^^^^^^^^^^
+
+-
+-
+
+
+Other
+^^^^^
+-
+-
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.2.0a..v0.1.0a|HEAD

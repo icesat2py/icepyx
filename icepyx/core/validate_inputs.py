@@ -27,6 +27,7 @@ def dset_version(latest_vers, version):
 
     return vers
 
+
 def cycles(all_cycles, cycles):
     """
     Check if the submitted cycle is valid, and warn the user if not available.
@@ -52,6 +53,7 @@ def cycles(all_cycles, cycles):
 
     return cycle_list
 
+
 def tracks(all_tracks, tracks):
     """
     Check if the submitted RGT is valid, and warn the user if not available.
@@ -69,13 +71,16 @@ def tracks(all_tracks, tracks):
                 assert int(t) > 0, "Reference Ground Track must be positive"
                 track_list.append(t.zfill(track_length))
         else:
-            raise TypeError("Please enter the Reference Ground Track as a list or string")
+            raise TypeError(
+                "Please enter the Reference Ground Track as a list or string"
+            )
 
         if not set(all_tracks) & set(track_list):
             warnings.filterwarnings("always")
             warnings.warn("Listed Reference Ground Track is not available")
 
     return track_list
+
 
 # DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
 def spatial(spatial_extent):
@@ -93,9 +98,9 @@ def spatial(spatial_extent):
                 -180 <= spatial_extent[0] <= 360
             ), "Invalid longitude value"  # tighten these ranges depending on actual allowed inputs
             assert -180 <= spatial_extent[2] <= 360, "Invalid longitude value"
-            assert (
-                spatial_extent[0] <= spatial_extent[2]
-            ), "Invalid bounding box longitudes"
+            # assert (
+            #     spatial_extent[0] <= spatial_extent[2]
+            # ), "Invalid bounding box longitudes"
             assert (
                 spatial_extent[1] <= spatial_extent[3]
             ), "Invalid bounding box latitudes"

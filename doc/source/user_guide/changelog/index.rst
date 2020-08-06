@@ -13,7 +13,7 @@ Version 0.2-alpha
    :maxdepth: 2
    :hidden:
 
-   v0.2.0a
+   v0.2-alpha
    
 Version 0.1-alpha
 -----------------
@@ -22,4 +22,4 @@ Version 0.1-alpha
    :maxdepth: 2
    :hidden:
    
-   v0.1.0a
+   v0.1-alpha

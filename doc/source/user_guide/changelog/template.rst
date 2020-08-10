@@ -50,4 +50,4 @@ Other
 Contributors
 ~~~~~~~~~~~~
 
-.. contributors:: v0.3.0a..v0.2.0a|HEAD
+.. contributors:: v0.3.0..v0.3.1|HEAD

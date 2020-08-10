@@ -1,9 +1,3 @@
-
-
-
-
-
-
 .. _whatsnew_030:
 
 What's new in 0.3.0-alpha (?? DATE ??)
@@ -29,7 +23,7 @@ Bug fixes
 Deprecations
 ~~~~~~~~~~~~
 
--
+- `icesat2data` class is deprecated. The existing functionality to search and obtain data has been migrated to the `query` class, and a new class will be created for subsequent steps of working with data.
 -
 
 
@@ -56,4 +50,4 @@ Other
 Contributors
 ~~~~~~~~~~~~
 
-.. contributors:: v0.3.0a..v0.2.0a|HEAD
+.. contributors:: v0.2-alpha..v0.3.0a|HEAD

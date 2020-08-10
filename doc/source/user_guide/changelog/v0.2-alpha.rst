@@ -52,4 +52,4 @@ Documentation
 Contributors
 ~~~~~~~~~~~~
 
-.. contributors:: v0.2-alpha..v0.1-alpha|HEAD
+.. contributors:: v0.1-alpha..v0.2-alpha

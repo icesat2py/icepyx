@@ -5,7 +5,7 @@ What's new in v0.1-alpha (7 April 2020)
 
 This was the first official "release" of icepyx, after it had been in development since Fall 2019.
 
-This changelog captures the general features of `icepyx` functionality at the time of this initial release, rather than providing a detailed account of all development steps and changes that were made.
+This changelog captures the general features of icepyx functionality at the time of this initial release, rather than providing a detailed account of all development steps and changes that were made.
 
 
 

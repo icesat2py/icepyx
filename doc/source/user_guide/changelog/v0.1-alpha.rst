@@ -51,4 +51,4 @@ Other
 Contributors
 ~~~~~~~~~~~~
 
-.. contributors:: v0.1-alpha
+.. contributors:: 12ba33d..v0.1-alpha

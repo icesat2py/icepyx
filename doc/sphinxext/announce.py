@@ -47,8 +47,8 @@ UTF8Writer = codecs.getwriter("utf8")
 this_repo = Repo(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 author_msg = """\
-A total of %d people contributed patches to this release.  People with a
-"+" by their names contributed a patch for the first time.
+A total of %d people contributed to this release.  People with a
+"+" by their names contributed for the first time.
 """
 
 pull_request_msg = """\

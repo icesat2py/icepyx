@@ -3,7 +3,7 @@
 What's new in 0.3.0-alpha (?? DATE ??)
 -----------------------------------
 
-These are the changes in pandas 0.3.0-alpha See :ref:`release` for a full changelog
+These are the changes in icepyx 0.3.0-alpha See :ref:`release` for a full changelog
 including other versions of icepyx.
 
 

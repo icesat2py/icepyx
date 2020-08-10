@@ -51,4 +51,4 @@ Other
 Contributors
 ~~~~~~~~~~~~
 
-.. contributors:: v0.1-alpha..v0.1-alpha
+.. contributors:: v0.1-alpha

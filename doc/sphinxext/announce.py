@@ -18,7 +18,8 @@ Usage::
 The output is utf8 rst.
 
 Custom extension from the Pandas library: https://github.com/pandas-dev/pandas/blob/1.1.x/doc/sphinxext/announce.py
-Copied 10 August 2020.
+Copied 10 August 2020 and subsequently modified.
+Specifically, get_authors was adjusted to check for a .mailmap file and use the git through the command line in order to utilize it if present. Using a mailmap file is currently not possible in gitpython (from git import Repo), and the recommended solution is to bring in the mailmap file yourself and use it to modify the author list (i.e. replicate the functionality that already exists in git). This felt a bit out of time-scope for right now. Alternatively, the git-fame library (imported as gitfame) uses the mailmap file and compiles statistics, but the python wrapper for this command line tool was taking forever. So, I've reverted to using os.system to use git behind the scenes instead.
 
 Dependencies
 ------------
@@ -74,22 +75,44 @@ def get_authors(revision_range):
     # We need two passes over the log for cur and prev, one to get the
     # "Co-authored by" commits, which come from backports by the bot,
     # and one for regular commits.
-    xpr = re.compile(r"Co-authored-by: (?P<name>[^<]+) ")
-    cur = set(
-        xpr.findall(
-            this_repo.git.log("--grep=Co-authored", "--pretty=%b", revision_range)
+    if ".mailmap" in os.listdir(this_repo.git.working_dir):
+
+        xpr = re.compile(r"Co-authored-by: (?P<name>[^<]+) ")
+
+        gitcur = list(os.popen("git shortlog -s " + revision_range).readlines())
+        cur = []
+        for n in gitcur:
+            n = re.search(r".*?\t(.*)\n.*", n).group(1)
+            cur.append(n)
+        cur = set(cur)
+
+        gitpre = list(os.popen("git shortlog -s " + lst_release).readlines())
+        pre = []
+        for n in gitpre:
+            n = re.search(r".*?\t(.*)\n.*", n).group(1)
+            pre.append(n)
+        pre = set(pre)
+
+    else:
+
+        xpr = re.compile(r"Co-authored-by: (?P<name>[^<]+) ")
+        cur = set(
+            xpr.findall(
+                this_repo.git.log("--grep=Co-authored", "--pretty=%b", revision_range)
+            )
         )
-    )
-    cur |= set(re.findall(pat, this_repo.git.shortlog("-s", revision_range), re.M))
+        cur |= set(re.findall(pat, this_repo.git.shortlog("-se", revision_range), re.M))
 
-    pre = set(
-        xpr.findall(this_repo.git.log("--grep=Co-authored", "--pretty=%b", lst_release))
-    )
-    pre |= set(re.findall(pat, this_repo.git.shortlog("-s", lst_release), re.M))
+        pre = set(
+            xpr.findall(
+                this_repo.git.log("--grep=Co-authored", "--pretty=%b", lst_release)
+            )
+        )
+        pre |= set(re.findall(pat, this_repo.git.shortlog("-se", lst_release), re.M))
 
-    # Homu is the author of auto merges, clean him out.
-    cur.discard("Homu")
-    pre.discard("Homu")
+        # Homu is the author of auto merges, clean him out.
+    #     cur.discard("Homu")
+    #     pre.discard("Homu")
 
     # Append '+' to new authors.
     authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
@@ -163,3 +186,20 @@ if __name__ == "__main__":
     parser.add_argument("revision_range", help="<revision>..<revision>")
     args = parser.parse_args()
     main(args.revision_range)
+
+
+"""
+Early attempts at implementing use of mailmap within this script:
+
+cur = re.compile('|'.join(map(re.escape, ['<*>'])))
+# ------------
+with open(os.path.join(os.path.dirname('[fill in here]'), "[repo_name]/.mailmap")) as f:
+    l = [line.rstrip('\n') for line in f]
+
+m={}
+for line in l:
+    try:
+        m.update(dict(line.split('> ')))
+    except ValueError:
+        m.update({line:''})
+"""

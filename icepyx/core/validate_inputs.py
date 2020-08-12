@@ -2,6 +2,7 @@ import datetime as dt
 import os
 import warnings
 import geopandas as gpd
+import numpy as np
 
 import icepyx.core.APIformatting as apifmt
 import icepyx.core.geospatial as geospatial
@@ -95,12 +96,17 @@ def spatial(spatial_extent):
             assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
             assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
             assert (
-                -180 <= spatial_extent[0] <= 360
+                -180 <= spatial_extent[0] <= 180
             ), "Invalid longitude value"  # tighten these ranges depending on actual allowed inputs
-            assert -180 <= spatial_extent[2] <= 360, "Invalid longitude value"
-            # assert (
-            #     spatial_extent[0] <= spatial_extent[2]
-            # ), "Invalid bounding box longitudes"
+            assert -180 <= spatial_extent[2] <= 180, "Invalid longitude value"
+            if np.sign(spatial_extent[0]) != np.sign(spatial_extent[2]):
+                assert (
+                    spatial_extent[0] >= spatial_extent[2]
+                ), "Invalid bounding box longitudes"
+            else:
+                assert (
+                    spatial_extent[0] <= spatial_extent[2]
+                ), "Invalid bounding box longitudes"
             assert (
                 spatial_extent[1] <= spatial_extent[3]
             ), "Invalid bounding box latitudes"

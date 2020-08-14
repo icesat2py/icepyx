@@ -1,14 +1,14 @@
 import pytest
 import warnings
 
-from icepyx.core import query as ipd
+import icepyx as ipx
 from icepyx.core import granules as granules
 from icepyx.core.granules import Granules as Granules
 
 
 # @pytest.fixture
 # def reg_a():
-#     return ipd.Query('ATL06',[-55, 68, -48, 71],['2019-02-22','2019-02-28'])
+#     return ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-22','2019-02-28'])
 
 # #@patch('my_module.__get_input', return_value='y')
 
@@ -19,7 +19,7 @@ from icepyx.core.granules import Granules as Granules
 
 # DevNote: clearly there's a better way that doesn't make the function so long... what is it?
 def test_granules_info():
-    # reg_a = ipd.Query('ATL06', [-55, 68, -48, 71], ['2019-02-20','2019-02-24'], version='3')
+    # reg_a = ipx.Query('ATL06', [-55, 68, -48, 71], ['2019-02-20','2019-02-24'], version='3')
     # granules = reg_a.granules.avail
     grans = [
         {
@@ -585,13 +585,13 @@ def test_granules_info():
 def test_no_granules_in_search_results():
     ermsg = "Your search returned no results; try different search parameters"
     with pytest.raises(AssertionError, match=ermsg):
-        ipd.Query(
+        ipx.Query(
             "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-20"], version="2"
         ).avail_granules()
 
 
 def test_correct_granule_list_returned():
-    reg_a = ipd.Query(
+    reg_a = ipx.Query(
         "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-28"], version="2"
     )
 

@@ -1,10 +1,10 @@
-from icepyx import is2class as ipd
+import icepyx as ipx
 import pytest
 import warnings
 
 
 def test_CMRparams():
-    reg_a = ipd.Icesat2Data("ATL06", [-64, 66, -55, 72], ["2019-02-22", "2019-02-28"])
+    reg_a = ipx.query("ATL06", [-64, 66, -55, 72], ["2019-02-22", "2019-02-28"])
     reg_a.build_CMR_params()
     obs_keys = reg_a.CMRparams.keys()
     exp_keys_all = ["short_name", "version", "temporal"]
@@ -15,7 +15,7 @@ def test_CMRparams():
 
 
 def test_reqconfig_params():
-    reg_a = ipd.Icesat2Data("ATL06", [-64, 66, -55, 72], ["2019-02-22", "2019-02-28"])
+    reg_a = ipx.query("ATL06", [-64, 66, -55, 72], ["2019-02-22", "2019-02-28"])
 
     # test for search params
     reg_a.build_reqconfig_params("search")
@@ -40,7 +40,7 @@ def test_reqconfig_params():
 
 
 def test_properties():
-    reg_a = ipd.Icesat2Data(
+    reg_a = ipx.query(
         "ATL06",
         [-64, 66, -55, 72],
         ["2019-02-22", "2019-02-28"],

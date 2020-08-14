@@ -1,5 +1,5 @@
-icepyx API Reference
-====================
+icepyx Documentation (API Reference)
+====================================
 
 
 

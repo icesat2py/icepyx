@@ -40,7 +40,7 @@ def test_reqconfig_params():
 
 
 def test_properties():
-    reg_a = ipx.query(
+    reg_a = ipx.Query(
         "ATL06",
         [-64, 66, -55, 72],
         ["2019-02-22", "2019-02-28"],

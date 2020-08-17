@@ -4,7 +4,7 @@ import warnings
 
 
 def test_CMRparams():
-    reg_a = ipx.query("ATL06", [-64, 66, -55, 72], ["2019-02-22", "2019-02-28"])
+    reg_a = ipx.Query("ATL06", [-64, 66, -55, 72], ["2019-02-22", "2019-02-28"])
     reg_a.build_CMR_params()
     obs_keys = reg_a.CMRparams.keys()
     exp_keys_all = ["short_name", "version", "temporal"]

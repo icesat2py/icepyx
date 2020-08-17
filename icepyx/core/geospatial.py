@@ -24,11 +24,11 @@ def geodataframe(extent_type, spatial_extent, file=False):
 
         See Also
         --------
-        icepyx.icesat2data.Icesat2Data
+        icepyx.Query
         
         Examples
         --------
-        >>> reg_a = icepyx.icesat2data.Icesat2Data('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = icepyx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> gdf = geospatial.geodataframe(reg_a.extent_type, reg_a._spat_extent)
         >>> gdf.geometry
         0    POLYGON ((-55.00000 68.00000, -55.00000 71.000...

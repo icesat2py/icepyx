@@ -1,1 +1,1 @@
-from .core import query
+from icepyx.core.query import Query

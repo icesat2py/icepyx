@@ -15,7 +15,7 @@ def test_CMRparams():
 
 
 def test_reqconfig_params():
-    reg_a = ipx.query("ATL06", [-64, 66, -55, 72], ["2019-02-22", "2019-02-28"])
+    reg_a = ipx.Query("ATL06", [-64, 66, -55, 72], ["2019-02-22", "2019-02-28"])
 
     # test for search params
     reg_a.build_reqconfig_params("search")

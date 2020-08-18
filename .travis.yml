@@ -31,6 +31,7 @@ deploy:
     on:
       all_branches: true
 #       condition: commit_message =~ test_pypi
+    skip_clean: true
     skip_existing: true
   - provider: pypi
     username: "__token__"

@@ -1,3 +1,5 @@
+gitpython
 nbsphinx
 numpydoc
+pygithub
 -r requirements.txt

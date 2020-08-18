@@ -1,1 +1,1 @@
-from .core import icesat2data
+from icepyx.core.query import Query

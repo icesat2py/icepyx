@@ -1,0 +1,4 @@
+codecov
+pre_commit
+pytest>=4.6
+pytest-cov

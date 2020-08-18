@@ -28,10 +28,10 @@ deploy:
     username: "__token__"
     password: $test_PyPI_API_Token
     on:
-      branch: test_pypi_travis
+      branch: development
       if: commit_message =~ test_pypi
     skip_existing: true
-    distributions: "bdist_wheel"
+    distributions: "sdist bdist_wheel"
   - provider: pypi
     username: "__token__"
     password: 
@@ -40,4 +40,4 @@ deploy:
       branch: master
       tags: true
     skip_existing: true
-    distributions: "bdist_wheel"
+    distributions: "sdist bdist_wheel"

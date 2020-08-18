@@ -6,14 +6,14 @@ on:
     branches:
       - master
     paths:
-      - '**.ipynb'
+      - 'examples/*.ipynb'
       - 'binder-gallery.yaml'
       - 'thumbnail.png'
   pull_request:
     branches:
       - master
     paths:
-      - '**.ipynb'
+      - 'examples/*.ipynb'
       - 'binder-gallery.yaml'
       - 'thumbnail.png'
 

@@ -30,7 +30,7 @@ deploy:
       secure: test_PyPI_API_Token
     on:
       all_branches: true
-      condition: commit_message =~ test_pypi
+#       condition: commit_message =~ test_pypi
     skip_existing: true
   - provider: pypi
     username: "__token__"

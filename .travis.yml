@@ -28,7 +28,7 @@ deploy:
     username: "__token__"
     password: $test_PyPI_API_Token
     on:
-      branch: development
+#       branch: development
       condition: commit_message = test_pypi
     skip_existing: true
   - provider: pypi

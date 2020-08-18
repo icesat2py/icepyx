@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 setuptools.setup(
     name="icepyx",
-    version="0.0.2",
+    version="0.3.0",
     author="The icepyx Developers",
     author_email="jbscheick@gmail.com",
     maintainer="Jessica Scheick",

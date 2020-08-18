@@ -8,14 +8,14 @@ on:
     paths:
       - 'examples/*.ipynb'
       - 'binder-gallery.yaml'
-      - 'thumbnail.png'
+      - 'doc/source/_static/icepyx_logo.png'
   pull_request:
     branches:
       - master
     paths:
       - 'examples/*.ipynb'
       - 'binder-gallery.yaml'
-      - 'thumbnail.png'
+      - 'doc/source/_static/icepyx_logo.png'
 
 jobs:
   build:
@@ -56,13 +56,13 @@ jobs:
           --binder-url ${{ steps.parse.outputs.binder_url }} \
           --repo ${{ steps.parse.outputs.binder_repo }} \
           --ref ${{ steps.parse.outputs.binder_ref }} \
-          *.ipynb
+          examples/*.ipynb
       - name: Commit files
         if: github.ref == 'refs/heads/master'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add binder-gallery.yaml thumbnail.png *.ipynb
+          git add binder-gallery.yaml doc/source/_static/icepyx_logo.png examples/*.ipynb
           git commit -m "Binderbot output"
       - name: Push commit
         if: github.ref == 'refs/heads/master'

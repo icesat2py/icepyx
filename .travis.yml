@@ -23,7 +23,7 @@ jobs:
     #     - pytest icepyx/tests/behind_NSIDC_API_login.py
 
 deploy:
-  - provider: pypi-test
+  - provider: pypi
     server: https://test.pypi.org/legacy/ 
     username: "__token__"
     password: 
@@ -34,7 +34,8 @@ deploy:
     skip_existing: true
   - provider: pypi
     username: "__token__"
-    password: $PyPI_API_Token
+    password: 
+      secure: PyPI_API_Token
     on:
       branch: master
       tags: true

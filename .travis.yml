@@ -34,8 +34,7 @@ deploy:
     distributions: "sdist bdist_wheel"
   - provider: pypi
     username: "__token__"
-    password: 
-      secure: $PyPI_API_Token
+    password: $PyPI_API_Token
     on:
       branch: master
       tags: true

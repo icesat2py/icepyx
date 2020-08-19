@@ -32,6 +32,8 @@ deploy:
       if: commit_message =~ test_pypi
     skip_existing: true
     distributions: "sdist bdist_wheel"
+
+# NOTE: the API token on Travis must be set to ALL branches, because a tag build is not considered to be on the master branch: https://travis-ci.community/t/pypi-upload-with-api-token-not-working/5338/5
   - provider: pypi
     username: "__token__"
     password: $PyPI_API_Token

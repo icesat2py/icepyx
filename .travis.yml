@@ -32,8 +32,9 @@ deploy:
     password: $test_PyPI_API_Token
     on:
       branch: development
-      condition: commit_message = test_pypi
+      if: commit_message =~ test_pypi
     skip_existing: true
+    distributions: "sdist bdist_wheel"
   - provider: pypi
     username: "__token__"
     password: $PyPI_API_Token
@@ -41,5 +42,4 @@ deploy:
       branch: master
       tags: true
     skip_existing: true
-#   script:
-#     - export PyPI_API_Token=$PyPI_API_Token
+    distributions: "sdist bdist_wheel"

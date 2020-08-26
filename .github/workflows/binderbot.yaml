@@ -4,6 +4,7 @@ on:
   # but only for the master branch
   push:
     branches:
+      - development
       - master
     paths:
       - 'examples/*.ipynb'

@@ -11,6 +11,7 @@ on:
       - 'doc/source/_static/icepyx_logo.png'
   pull_request:
     branches:
+      - development
       - master
     paths:
       - 'examples/*.ipynb'

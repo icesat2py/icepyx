@@ -4,6 +4,7 @@ on:
   # but only for the master branch
   push:
     branches:
+      - enable-gallery
       - development
       - master
     paths:
@@ -12,6 +13,7 @@ on:
       - 'doc/source/_static/icepyx_logo.png'
   pull_request:
     branches:
+      - enable-gallery
       - development
       - master
     paths:

@@ -5,6 +5,7 @@ name: Run flake8 linter on PRs
 on:
   pull_request:
     branches:
+      - enable-gallery
       - development
       - master
 jobs:

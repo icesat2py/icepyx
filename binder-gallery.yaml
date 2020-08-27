@@ -4,6 +4,6 @@ description: >-
   Examples using icepyx Python tools for obtaining and working with ICESat-2 data
 gallery_repository: pangeo-gallery/pangeo-gallery
 binder_url: "https://mybinder.org"
-binder_repo: icesat2py/icepyx
-binder_ref: development
+binder_repo: salvis2/icepyx
+binder_ref: enable-gallery
 binderbot_target_branch: binderbot-built

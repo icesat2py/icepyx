@@ -5,5 +5,5 @@ description: >-
 gallery_repository: pangeo-gallery/pangeo-gallery
 binder_url: "https://mybinder.org"
 binder_repo: icesat2py/icepyx
-binder_ref: master
+binder_ref: development
 binderbot_target_branch: binderbot-built

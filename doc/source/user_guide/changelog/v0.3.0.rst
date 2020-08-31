@@ -1,0 +1,65 @@
+.. _whatsnew_030:
+
+What's new in v0.3.0 (?? August 2020)
+-----------------------------------
+
+This is a summary of the changes in icepyx v0.3.0. See :ref:`release` for a full changelog
+including other versions of icepyx. Note that during this time period we transitioned to master + development branches, with mandatory squash commits to the development branch from working branches in order to simplify the git history.
+
+
+New Features
+~~~~~~~~~~~~
+
+- allow data querying using tracks and cycles
+- transition to use of `query` class object
+- add Black pre-commit hook and flake8 for code formatting and style consistency
+- created a development branch, enabling master to be the stable release branch
+- add icepyx release to PyPI, thereby enabling non-dev installs with pip
+- add code coverage badge for testing
+- enable alternative Earthdata authentication with netrc
+- automatically unzip downloaded files into a single directory
+- save order IDs and enable restart of download for previously ordered data
+- option to suppress order status emails from NSIDC
+- display variables in a dictionary format
+- overall, the variables class was overhauled: generalized, improved, and tested
+
+Bug fixes
+~~~~~~~~~
+
+- update bounding box assertions to allow crossing dateline
+- add try/except for gaierror
+- automatically order polygon vertices properly for submission to CMR and NSIDC APIs
+- fix index error due to NSIDC metadata changes
+- skip straight to variable subsetting without needing to manually run data search first
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- `icesat2data` class is deprecated. The existing functionality to search and obtain data has been migrated to the `query` class. A new class will be created for subsequent steps of working with data.
+- inclusive flag for `variable.append` and `variable.remove` methods has been removed
+
+
+Maintenance
+^^^^^^^^^^^
+
+- add PyPI building to Travis for new releases
+- update class architecture diagram and add to documentation page
+- refactor test suite into multiple modules
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- update and improve installation instructions (especially for Windows users)
+- review and update all docstrings (including examples)
+- move examples to top level directory for easy finding (and make development notebooks harder to find)
+- create subsetting workflow example Jupyter noteobok
+- improve explanations in introductory example notebook
+- reorganized documentation structure to be more intuitive (and categorized)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.2-alpha..v0.3.0a|HEAD

@@ -14,6 +14,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath("../sphinxext"))
 import datetime
 
 import icepyx
@@ -37,7 +38,9 @@ extensions = [
     "numpydoc",
     "nbsphinx",
     "recommonmark",
+    "contributors",  # custom extension, from pandas
 ]
+
 source_suffix = {
     ".rst": "restructuredtext",
     ".txt": "markdown",

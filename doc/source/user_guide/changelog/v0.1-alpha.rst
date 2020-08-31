@@ -1,0 +1,54 @@
+.. _whatsnew_010:
+
+What's new in v0.1-alpha (7 April 2020)
+--------------------------------------
+
+This was the first official "release" of icepyx, after it had been in development since Fall 2019.
+
+This changelog captures the general features of icepyx functionality at the time of this initial release, rather than providing a detailed account of all development steps and changes that were made.
+
+
+
+
+Features
+~~~~~~~~
+
+- Functionality to query and order data from NSIDC using their built-in API and NASA's CMR API
+- Visualization of input spatial parameters
+- Enable subsetting using NSIDC subsetter
+- Variable and variable path viewing and manipulation
+- Set up continuous integration testing with Travis
+
+
+Bug fixes
+~~~~~~~~~
+
+- No known bugs at release
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- is2class became icesat2data
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- Example usage notebooks
+  - using `icepyx` to access ICESat-2 data
+  - subsetting using the NSIDC subsetter
+  - comparing ATLAS altimeter and DEM data in Colombia
+- Generate documentation using Sphinx and automate building/updating to ReadtheDocs
+
+
+Other
+^^^^^
+- Develop attribution and contribution guidelines
+- Provide ICESat-2 Resources Guide
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: 12ba33d..v0.1-alpha

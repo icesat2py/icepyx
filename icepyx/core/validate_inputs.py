@@ -114,7 +114,7 @@ def spatial(spatial_extent):
             assert (
                 spatial_extent[1] <= spatial_extent[3]
             ), "Invalid bounding box latitudes"
-            _spat_extent = spatial_extent
+            _spat_extent = [float(x) for x in spatial_extent]
             extent_type = "bounding_box"
 
         # user-entered polygon as list of lon, lat coordinate pairs

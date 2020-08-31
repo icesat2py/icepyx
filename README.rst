@@ -63,7 +63,7 @@ Alternatively, in a command line or terminal, navigate to the folder in your clo
 
 .. code-block::
 
-  pip install -e
+  pip install -e .
 
 
 Future developments of icepyx may include conda as another simplified installation option.

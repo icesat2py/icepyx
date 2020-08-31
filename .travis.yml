@@ -6,7 +6,7 @@ install:
 
 stages:
   - name: basic tests
-    if: type = push OR type = pull_request
+    if: type = pull_request OR (type = push AND fork = false)
   - name: behind Earthdata
     if: branch = master OR commit_message =~ nsidc_tests OR type = cron
 

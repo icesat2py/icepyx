@@ -122,7 +122,7 @@ def spatial(spatial_extent):
             all( isinstance(i[j], scalar_types) for j in range(len(i)) ) for i in spatial_extent
         ):
             if any( len(i) != 2 for i in spatial_extent):
-                raise ValueError("Each element in spatial_extent should be a list or tuple of lenght 2")
+                raise ValueError("Each element in spatial_extent should be a list or tuple of length 2")
             assert (
                 len(spatial_extent) >= 4
             ), "Your spatial extent polygon has too few vertices"

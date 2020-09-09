@@ -13,6 +13,7 @@ order by last name) and are considered "The icepyx Developers":
 * `Zheng Liu <https://github.com/liuzheng-arctic>`_ - University of Washington
 * `Joachim Meyer <https://github.com/jomey>`_ - University of Utah
 * `Fernando Perez <https://github.com/fperez>`_ - University of California, Berkeley
+* `Romina Piunno <https://github.com/RomiP>`_ - University of Toronto
 * `Facundo Sapienza <https://github.com/facusapienza21>`_ - University of California, Berkeley
 * `Jessica Scheick <https://github.com/jessicas11>`_ - Unaffiliated (ORCID: `0000-0002-3421-4459 <https://www.orcid.org/0000-0002-3421-4459>`_)
 * `David Shean <https://github.com/dshean>`_ - University of Washington

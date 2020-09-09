@@ -11,6 +11,7 @@ order by last name) and are considered "The icepyx Developers":
 * `Scott Henderson <https://github.com/scottyhq>`_ - University of Washington
 * `Thomas Johnson <https://github.com/loudTom>`_ - University College London
 * `Zheng Liu <https://github.com/liuzheng-arctic>`_ - University of Washington
+* `Ted Maksym <https://github.com/tedmaksym>`_ - Woods Hole Oceanographic Institution
 * `Joachim Meyer <https://github.com/jomey>`_ - University of Utah
 * `Fernando Perez <https://github.com/fperez>`_ - University of California, Berkeley
 * `Facundo Sapienza <https://github.com/facusapienza21>`_ - University of California, Berkeley

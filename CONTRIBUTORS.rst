@@ -14,10 +14,12 @@ order by last name) and are considered "The icepyx Developers":
 * `Ted Maksym <https://github.com/tedmaksym>`_ - Woods Hole Oceanographic Institution
 * `Joachim Meyer <https://github.com/jomey>`_ - University of Utah
 * `Fernando Perez <https://github.com/fperez>`_ - University of California, Berkeley
+* `Romina Piunno <https://github.com/RomiP>`_ - University of Toronto
 * `Facundo Sapienza <https://github.com/facusapienza21>`_ - University of California, Berkeley
 * `Jessica Scheick <https://github.com/jessicas11>`_ - Unaffiliated (ORCID: `0000-0002-3421-4459 <https://www.orcid.org/0000-0002-3421-4459>`_)
 * `David Shean <https://github.com/dshean>`_ - University of Washington
 * `Ben Smith <https://github.com/smithb>`_ - University of Washington
 * `Amy Steiker <https://github.com/asteiker>`_ - NSIDC, University of Colorado
-* `Bidhyananda Yadav <https://github.com/bidhya>`_ - Ohio State University
 * `Anna Valentine <https://github.com/annavalentine>`_ - Colorado School of Mines
+* `Molly Wieringa <https://github.com/mollymwieringa>`_ - University of Washington
+* `Bidhyananda Yadav <https://github.com/bidhya>`_ - Ohio State University

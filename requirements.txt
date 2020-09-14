@@ -1,9 +1,17 @@
+datashader
 datetime
 fiona
 geopandas
 h5py
+holoviews
+hvplot
+intake
 matplotlib
 numpy
 pre-commit
 requests
 shapely
+
+
+
+

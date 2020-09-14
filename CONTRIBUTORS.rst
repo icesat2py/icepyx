@@ -8,6 +8,7 @@ order by last name) and are considered "The icepyx Developers":
 * `Anthony Arendt <https://github.com/aaarendt/>`_ - University of Washington
 * `Kelsey Bisson <https://github.com/kelseybisson>`_ - Oregon State University
 * `Shashank Bhushan <https://github.com/ShashankBice>`_ - University of Washington
+* `Alessandro Di Bella <https://github.com/alexdibella>`_ - Technical University of Denmark
 * `Raphael Hagen <https://github.com/norlandrhagen>`_ - University of Washington
 * `Scott Henderson <https://github.com/scottyhq>`_ - University of Washington
 * `Thomas Johnson <https://github.com/loudTom>`_ - University College London

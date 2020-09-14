@@ -4,6 +4,7 @@ Project Contributors
 The following people have made contributions to the project (in alphabetical
 order by last name) and are considered "The icepyx Developers":
 
+* `Nicole Abib <https://github.com/nabib/>`_ - University of Oregon
 * `Anthony Arendt <https://github.com/aaarendt/>`_ - University of Washington
 * `Kelsey Bisson <https://github.com/kelseybisson>`_ - Oregon State University
 * `Shashank Bhushan <https://github.com/ShashankBice>`_ - University of Washington

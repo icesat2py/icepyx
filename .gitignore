@@ -109,3 +109,11 @@ venv.bak/
 
 # directory files
 .DS_Store
+
+# data files
+*.h5
+*.hdf
+*.hdf5
+*.csv
+*.zarr
+*.tif

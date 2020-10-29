@@ -107,9 +107,7 @@ def setup(app):
 # from https://github.com/gimli-org/gimli/blob/22038cbdcecd6236778718aee07b1ccf8d3c8a5d/doc/conf.py
 
 # temporary disable due to python3 pybtex quirks
-for dist in pkg_resources.find_distributions(
-    SPHINXDOC_PATH + "/_templates/pybtex_plugins/"
-):
+for dist in pkg_resources.find_distributions("./_templates/pybtex_plugins/"):
     pkg_resources.working_set.add(dist)
 
 # End pybtex stuff

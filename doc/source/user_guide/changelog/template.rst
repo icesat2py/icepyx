@@ -1,7 +1,7 @@
-.. _whatsnew_030:
+.. _whatsnew_0x0:
 
 What's new in 0.3.0-alpha (?? DATE ??)
------------------------------------
+-------------------------------------
 
 These are the changes in icepyx 0.3.0-alpha See :ref:`release` for a full changelog
 including other versions of icepyx.

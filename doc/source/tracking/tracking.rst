@@ -1,5 +1,5 @@
-Tracking icepyx usage
-=======================
+Tracking icepyx Usage
+======================
 
 Tracking icepyx usage in the community
 
@@ -7,6 +7,7 @@ Tracking icepyx usage in the community
 Projects and Organizations
 --------------------------
 Projects and organizations that use icepyx (this list is still being populated as of Oct 2020)
+
 - `NSIDC <https://nsidc.org/data/icesat-2/tools>`_
 - `University of Washington e-Science institute <https://escience.washington.edu/>`_
 - `ICESat-2 Cryospheric Hackweeks <https://icesat-2hackweek.github.io/learning-resources/>`_

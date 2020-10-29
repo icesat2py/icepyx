@@ -19,6 +19,7 @@ import datetime
 
 import icepyx
 import recommonmark
+import pkg_resources
 
 
 # -- Project information -----------------------------------------------------

@@ -20,6 +20,5 @@ Publications
 ICESat-2 peer-reviewed research that utilizes icepyx (currently a list of presentations that included icepyx for testing the usage of a bib file)
 
 .. bibliography:: icepyx_pubs.bib
-_   :nocite:
     :style: mystyle
     :all:

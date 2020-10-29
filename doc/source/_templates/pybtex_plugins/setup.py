@@ -9,5 +9,5 @@ setup(
         "pybtex.style.formatting": ["mystyle = plugins:MyStyle"],
         "pybtex.style.labels": ["alpha = plugins:Alpha"],
     },
-    py_modules=["pybtex_plugin"],
+    py_modules=["plugins"],
 )

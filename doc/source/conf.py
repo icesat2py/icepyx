@@ -102,13 +102,28 @@ def setup(app):
     app.add_stylesheet("style.css")
 
 
-# -- Options for pybtex output ------------------------------------------------
-# load our plugins for manual bibstyle
-# from https://github.com/gimli-org/gimli/blob/22038cbdcecd6236778718aee07b1ccf8d3c8a5d/doc/conf.py
+# # -- Options for pybtex output ------------------------------------------------
+# # load our plugins for manual bibstyle
+# # from https://github.com/gimli-org/gimli/blob/22038cbdcecd6236778718aee07b1ccf8d3c8a5d/doc/conf.py
 
-# temporary disable due to python3 pybtex quirks
-# print(os.getcwd())
-for dist in pkg_resources.find_distributions("./_templates/pybtex_plugins/"):
-    pkg_resources.working_set.add(dist)
+# # temporary disable due to python3 pybtex quirks
+# # print(os.getcwd())
+# for dist in pkg_resources.find_distributions("./_templates/pybtex_plugins/"):
+#     pkg_resources.working_set.add(dist)
 
-# End pybtex stuff
+# # End pybtex stuff
+
+# -- custom style for pybtex output -------------------------------------------
+from pybtex.style.formatting.unsrt import Style as UnsrtStyle
+from pybtex.style.template import toplevel  # ... and anything else needed
+from pybtex.plugin import register_plugin
+
+
+class MyStyle(UnsrtStyle):
+    name = "mystyle"
+    default_name_style = "lastfirst"  # 'lastfirst' or 'plain'
+    default_label_style = "alpha"  # 'number' or 'alpha'
+    default_sorting_style = "author_year_title"  # 'none' or 'author_year_title'
+
+
+register_plugin("pybtex.style.formatting", "mystyle", MyStyle)

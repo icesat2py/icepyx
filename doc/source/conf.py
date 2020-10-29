@@ -108,7 +108,7 @@ def setup(app):
 
 # temporary disable due to python3 pybtex quirks
 # print(os.getcwd())
-# for dist in pkg_resources.find_distributions("./_templates/pybtex_plugins/"):
-#     pkg_resources.working_set.add(dist)
+for dist in pkg_resources.find_distributions("./_templates/pybtex_plugins/"):
+    pkg_resources.working_set.add(dist)
 
 # End pybtex stuff

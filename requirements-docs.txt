@@ -1,6 +1,5 @@
 bibtexparser
 gitpython
-json
 nbsphinx
 numpydoc
 pybtex

@@ -44,3 +44,10 @@ icepyx is both a software library and a community composed of ICESat-2 data user
 
    community/resources
    community/contact
+   
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Tracking icepyx Usage
+   
+   tracking/tracking

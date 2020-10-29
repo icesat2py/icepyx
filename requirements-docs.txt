@@ -1,5 +1,8 @@
+bibtexparser
 gitpython
+json
 nbsphinx
 numpydoc
+pybtex
 pygithub
 -r requirements.txt

@@ -1,6 +1,7 @@
 # from gimli-org/gimli/doc/_templates/pybtex_plugins/plugins.py: https://github.com/gimli-org/gimli/blob/2e358dc6f5cb62afd696e20457c00e7c164d39af/doc/_templates/pybtex_plugins/plugins.py on 29 Oct 2020
 
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle
+from pybtex.plugin import register_plugin
 
 # from pybtex.style.template import toplevel # ... and anything else needed
 
@@ -17,6 +18,8 @@ class MyStyle(UnsrtStyle):
     # ]
     # return template.format_data(e)
 
+
+register_plugin("pybtex.style.formatting", "mystyle", MyStyle)
 
 from pybtex.style.labels import BaseLabelStyle
 

@@ -40,7 +40,7 @@ extensions = [
     "nbsphinx",
     "recommonmark",
     "contributors",  # custom extension, from pandas
-    "spinxcontrib.bibtex",
+    "sphinxcontrib.bibtex",
 ]
 
 source_suffix = {

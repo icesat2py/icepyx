@@ -109,8 +109,9 @@ from pybtex.plugin import register_plugin
 
 
 class MyLabel(AlphaLabelStyle):
+    #     print(AlphaLabelStyle)
     def format_label(self, entry):
-        return entry.comment
+        return entry.fields.get("comment")
 
 
 class MyStyle(UnsrtStyle):

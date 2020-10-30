@@ -107,11 +107,12 @@ from pybtex.style.formatting.unsrt import Style as UnsrtStyle
 from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
 from pybtex.plugin import register_plugin
 
-
+# I seem to be unable to figure out how to control what is used for the label. It would
+# make sense if it were fed into this function, but I can't figure out from where
 class MyLabel(AlphaLabelStyle):
-    #     print(AlphaLabelStyle)
     def format_label(self, entry):
-        return entry.fields.get("comment")
+        #         return entry.fields.get('comment')
+        return entry.key
 
 
 class MyStyle(UnsrtStyle):

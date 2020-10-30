@@ -108,24 +108,25 @@ from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
 from pybtex.plugin import register_plugin
 
 # I seem to be unable to figure out how to control what is used for the label. It would
-# make sense if it were fed into this function, but I can't figure out from where
-class MyLabel(AlphaLabelStyle):
-    def format_label(self, entry):
-        #         return entry.fields.get('comment')
-        return entry.key
+# make sense if it were fed into this function, which then just formatted it, but I can't figure out from where
+# class MyLabel(AlphaLabelStyle):
+#     def format_label(self, entry):
+# #         return entry.fields.get('comment')
+#         return entry.key
 
 
 class MyStyle(UnsrtStyle):
     name = "mystyle"
     default_name_style = "lastfirst"  # 'lastfirst' or 'plain'
-    default_label_style = "mylabel"  # 'number' or 'alpha'
+    #     default_label_style = "mylabel"  # 'number' or 'alpha'
     default_sorting_style = "author_year_title"  # 'none' or 'author_year_title'
 
     def __init__(self, *args, **kwargs):
         super(MyStyle, self).__init__(*args, **kwargs)
-        self.label_style = MyLabel()
-        self.format_labels = self.label_style.format_label
 
 
-register_plugin("pybtex.style.labels", "mylabel", MyLabel)
+#         self.label_style = MyLabel()
+#         self.format_labels = self.label_style.format_label
+
+# register_plugin("pybtex.style.labels", "mylabel", MyLabel)
 register_plugin("pybtex.style.formatting", "mystyle", MyStyle)

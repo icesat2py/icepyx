@@ -110,7 +110,7 @@ from pybtex.plugin import register_plugin
 
 class MyLabel(AlphaLabelStyle):
     def format_label(self, entry):
-        return "APA"
+        return entry.key
 
 
 class MyStyle(UnsrtStyle):

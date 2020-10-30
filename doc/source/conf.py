@@ -125,5 +125,5 @@ class MyStyle(UnsrtStyle):
         self.format_labels = self.label_style.format_label
 
 
-# register_plugin('pybtex.style.labels', 'mylabel', MyLabel)
+register_plugin("pybtex.style.labels", "mylabel", MyLabel)
 register_plugin("pybtex.style.formatting", "mystyle", MyStyle)

@@ -115,16 +115,23 @@ def setup(app):
 
 # -- custom style for pybtex output -------------------------------------------
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle
+from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
 
 # from pybtex.style.template import toplevel # ... and anything else needed
 from pybtex.plugin import register_plugin
 
 
+class MyLabel(AlphaLabelStyle):
+    def format_label(self, entry):
+        return "APA"
+
+
 class MyStyle(UnsrtStyle):
     name = "mystyle"
     default_name_style = "lastfirst"  # 'lastfirst' or 'plain'
-    default_label_style = "alpha"  # 'number' or 'alpha'
+    default_label_style = "mylabel"  # 'number' or 'alpha'
     default_sorting_style = "author_year_title"  # 'none' or 'author_year_title'
 
 
+register_plugin("pybtex.style.labels", "mylabel", MyLabel)
 register_plugin("pybtex.style.formatting", "mystyle", MyStyle)

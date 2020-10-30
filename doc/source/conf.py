@@ -115,7 +115,8 @@ def setup(app):
 
 # -- custom style for pybtex output -------------------------------------------
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle
-from pybtex.style.template import toplevel  # ... and anything else needed
+
+# from pybtex.style.template import toplevel # ... and anything else needed
 from pybtex.plugin import register_plugin
 
 

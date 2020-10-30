@@ -19,7 +19,6 @@ import datetime
 
 import icepyx
 import recommonmark
-import pkg_resources
 
 
 # -- Project information -----------------------------------------------------
@@ -102,22 +101,10 @@ def setup(app):
     app.add_stylesheet("style.css")
 
 
-# # -- Options for pybtex output ------------------------------------------------
-# # load our plugins for manual bibstyle
-# # from https://github.com/gimli-org/gimli/blob/22038cbdcecd6236778718aee07b1ccf8d3c8a5d/doc/conf.py
-
-# # temporary disable due to python3 pybtex quirks
-# # print(os.getcwd())
-# for dist in pkg_resources.find_distributions("./_templates/pybtex_plugins/"):
-#     pkg_resources.working_set.add(dist)
-
-# # End pybtex stuff
-
+# this should possibly be moved to the sphinxext directory as a standalone .py file
 # -- custom style for pybtex output -------------------------------------------
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle
 from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
-
-# from pybtex.style.template import toplevel # ... and anything else needed
 from pybtex.plugin import register_plugin
 
 
@@ -132,6 +119,11 @@ class MyStyle(UnsrtStyle):
     default_label_style = "mylabel"  # 'number' or 'alpha'
     default_sorting_style = "author_year_title"  # 'none' or 'author_year_title'
 
+    def __init__(self, *args, **kwargs):
+        super(CustomStyle, self).__init__(*args, **kwargs)
+        self.label_style = MyLabel()
+        self.format_labels = self.label_style.format_label
 
-register_plugin("pybtex.style.labels", "mylabel", MyLabel)
+
+# register_plugin('pybtex.style.labels', 'mylabel', MyLabel)
 register_plugin("pybtex.style.formatting", "mystyle", MyStyle)

@@ -152,12 +152,13 @@ class Granules:
         # DevGoal: check the below request/response for errors and show them if they're there; then gather the results
         # note we should also do this whenever we ping NSIDC-API - make a function to check for errors
         while True:
+            params = apifmt.combine_params(
+                CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
+            )
             response = requests.get(
                 granule_search_url,
                 headers=headers,
-                params=apifmt.combine_params(
-                    CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
-                ),
+                params=apifmt.to_string(params),
             )
 
             results = json.loads(response.content)
@@ -295,8 +296,8 @@ class Granules:
             request.raise_for_status()
             esir_root = ET.fromstring(request.content)
             if verbose is True:
-                print("Order request URL: ", request.url)
-                print("Order request response XML content: ", request.content)
+                print("Order request URL: ", requests.utils.unquote(request.url))
+                print("Order request response XML content: ", request.content.decode('utf-8'))
 
             # Look up order ID
             orderlist = []

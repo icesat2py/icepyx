@@ -161,6 +161,35 @@ def combine_params(*param_dicts):
         params.update(dictionary)
     return params
 
+def to_string(params):
+    """
+    Combine a parameter dictionary into a single url string
+
+    Parameters
+    ----------
+    params : dictionary
+
+    Returns
+    -------
+    url string of input dictionary (not encoded)
+
+    Examples
+    --------
+    >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
+    >>> reqparams = {'page_size': 10, 'page_num': 1}
+    >>> params = icepyx.core.APIformatting.combine_params(CMRparams, reqparams)
+    >>> icepyx.core.APIformatting.to_string(params)
+    '&short_name=ATL06&version=002&=temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=10&page_num=1'
+    """
+    param_list = []
+    for k,v in params.items():
+        if isinstance(v,list):
+            for l in v:
+                param_list.append(k+'='+l)
+        else:
+            param_list.append(k+'='+str(v))
+    # return the parameter string
+    return "&".join(param_list)
 
 # ----------------------------------------------------------------------
 # DevNote: Currently, this class is not tested!!
@@ -239,7 +268,10 @@ class Parameters:
             self._poss_keys = {
                 "default": ["short_name", "version", "temporal"],
                 "spatial": ["bounding_box", "polygon"],
-                "optional": ["orbit_number"],
+                "optional": ["orbit_number",
+                    "options[readable_granule_name][pattern]",
+                    "options[spatial][or]",
+                    "readable_granule_name[]"],
             }
         elif self.partype == "required":
             self._poss_keys = {

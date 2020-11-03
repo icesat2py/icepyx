@@ -1040,7 +1040,10 @@ def test_CMRparams_no_other_inputs():
     assert CMRparams.poss_keys == {
         "default": ["short_name", "version", "temporal"],
         "spatial": ["bounding_box", "polygon"],
-        "optional": ["orbit_number"],
+        "optional": ["orbit_number",
+            "options[readable_granule_name][pattern]",
+            "options[spatial][or]",
+            "readable_granule_name[]"],
     }
     assert CMRparams.fmted_keys == {}
     assert CMRparams._check_valid_keys

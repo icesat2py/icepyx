@@ -148,21 +148,28 @@ class Query:
 
         self._version = val.dset_version(self.latest_version(), version)
 
-        # list of CMR orbit number parameters
+        # list of CMR parameters for orbit and granule name
         self._orbit_number = []
+        self._readable_granule_name = []
         # get list of available ICESat-2 cycles and tracks
         all_cycles,all_tracks = self.avail_granules(ids=False,cycles=True,tracks=True)
         self._cycles = val.cycles(all_cycles, cycles)
         self._tracks = val.tracks(all_tracks, tracks)
-        # build list of available CMR orbit number if reducing by cycle or RGT
+        # build list of available CMR parameters if reducing by cycle or RGT
         if cycles or tracks:
             # for each available cycle of interest
             for c in self.cycles:
                 # for each available track of interest
                 for t in self.tracks:
                     self._orbit_number.append(int(t) + (int(c)-1)*1387 + 201)
-            # update the CMR parameters for orbit_number
-            self.CMRparams['orbit_number'] = self.orbit_number
+                    granule_name = '{0}_{1}_{2}{3}??_*'.format(self._dset,14*'?',t,c)
+                    self._readable_granule_name.append(granule_name)
+            # # update the CMR parameters for orbit_number
+            # self.CMRparams['orbit_number'] = self.orbit_number
+            # update the CMR parameters for readable_granule_name
+            self.CMRparams['options[readable_granule_name][pattern]'] = 'true'
+            self.CMRparams['options[spatial][or]'] = 'true'
+            self.CMRparams['readable_granule_name[]'] = self._readable_granule_name
             # update required parameters (number of pages)
             self._reqparams.build_params()
             # update the list of available granules
@@ -319,7 +326,6 @@ class Query:
         """
         return ",".join(map(str,self._orbit_number))
 
-
     @property
     def CMRparams(self):
         """
@@ -342,8 +348,12 @@ class Query:
 
         # dictionary of optional CMR parameters
         kwargs = {}
-        if self._orbit_number:
-            kwargs['orbit_number'] = self.orbit_number
+        # if self._orbit_number:
+        #     kwargs['orbit_number'] = self.orbit_number
+        if self._readable_granule_name:
+            kwargs['options[readable_granule_name][pattern]'] = 'true'
+            kwargs['options[spatial][or]'] = 'true'
+            kwargs['readable_granule_name[]'] = self._readable_granule_name
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
@@ -353,6 +363,7 @@ class Query:
                 end=self._end,
                 extent_type=self.extent_type,
                 spatial_extent=self._spat_extent,
+                **kwargs,
             )
 
         return self._CMRparams.fmted_keys

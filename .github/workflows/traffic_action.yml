@@ -33,5 +33,5 @@ jobs:
       with:
         author_name: Jessica Scheick
         message: "GitHub traffic"
-        add: "./traffic/*"
+        add: "./doc/source/tracking/traffic/*"
         ref: "traffic"  # commits to branch "traffic"

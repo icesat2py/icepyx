@@ -1,15 +1,5 @@
 # temporarily store GitHub traffic data
 # from: https://github.com/marketplace/actions/repository-traffic
-name: Get GitHub traffic
-
-steps:
-    # Calculates traffic and clones and stores in CSV file
-    - name: Repository Traffic 
-      uses: sangonzal/repository-traffic-action@v0.1.2
-      env:
-        TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }} 
-
-
 on:
   push:
     branches:

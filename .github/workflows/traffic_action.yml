@@ -13,7 +13,7 @@ steps:
 on:
   push:
     branches:
-      - docs_tracking
+      - docs-tracking
   schedule: 
     # runs once a week on sunday
     - cron: "55 23 * * 0"

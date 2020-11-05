@@ -98,7 +98,8 @@ html_context = {
 
 
 def setup(app):
-    app.add_stylesheet("style.css")
+    #     app.add_stylesheet("style.css")
+    app.add_css_file("style.css")
 
 
 # this should possibly be moved to the sphinxext directory as a standalone .py file

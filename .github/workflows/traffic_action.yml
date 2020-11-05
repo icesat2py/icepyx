@@ -26,6 +26,7 @@ jobs:
       uses: sangonzal/repository-traffic-action@v0.1.2
       env:
         TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }} 
+        GITHUB_WORKSPACE: "doc/source/tracking"
      
     # Commits files to repository
     - name: Commit changes

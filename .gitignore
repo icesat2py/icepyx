@@ -117,3 +117,7 @@ venv.bak/
 *.csv
 *.zarr
 *.tif
+
+# data file exception for tracking info
+!clones.csv
+!views.csv

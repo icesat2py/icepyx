@@ -8,6 +8,10 @@ on:
     # runs once a week on sunday
     - cron: "55 23 * * 0"
     
+defaults:
+  run:
+    working-directory: ./doc/source/tracking
+
 jobs:
   # This workflow contains a single job called "traffic"
   traffic:
@@ -20,8 +24,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: "traffic"
-      
-    - run: echo "doc/source/tracking" >> $GITHUB_WORKSPACE
     
     # Calculates traffic and clones and stores in CSV file
     - name: GitHub traffic 
@@ -35,5 +37,5 @@ jobs:
       with:
         author_name: Jessica Scheick
         message: "GitHub traffic"
-        add: "./doc/source/tracking/traffic/*"
+        add: "./traffic/*"
         ref: "traffic"  # commits to branch "traffic"

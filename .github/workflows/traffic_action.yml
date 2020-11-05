@@ -1,16 +1,9 @@
 # temporarily store GitHub traffic data
 # from: https://github.com/marketplace/actions/repository-traffic
 on:
-  push:
-    branches:
-      - traffic
   schedule: 
     # runs once a week on sunday
     - cron: "55 23 * * 0"
-    
-defaults:
-  run:
-    working-directory: ./doc/source/tracking
 
 jobs:
   # This workflow contains a single job called "traffic"
@@ -21,6 +14,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    # DevGoal: figure out how to put the traffic data directly into doc/source/tracking
     - uses: actions/checkout@v2
       with:
         ref: "traffic"

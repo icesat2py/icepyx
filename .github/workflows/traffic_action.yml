@@ -20,7 +20,8 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: "traffic"
-      run: echo "doc/source/tracking" >> $GITHUB_WORKSPACE
+      
+    - run: echo "doc/source/tracking" >> $GITHUB_WORKSPACE
     
     # Calculates traffic and clones and stores in CSV file
     - name: GitHub traffic 

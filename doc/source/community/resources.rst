@@ -10,7 +10,7 @@ Resources Used in the Initial Development of icepyx
 ---------------------------------------------------
 
 First ICESat-2 Cryospheric Hackweek at the University of Washington (June 2019)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This June 2019 event resulted in the production of a series of `tutorials <https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials>`_, developed primarily by members of the ICESat-2 Science Team and early data users, aimed at educating the cryospheric community in obtaining and using ICESat-2 datasets. During the actual Hackweek, teams of researchers and data scientists developed a series of interesting `projects <https://github.com/ICESAT-2HackWeek/projects_2019>`_ related to their interests/research. 
 
 The available tutorials, most of which contain one or more Jupyter Notebooks to illustrate concepts, are listed below. Additional information for citing (including licensing) and running (e.g. through a Pangeo Binder) these tutorials can be found at the above link.

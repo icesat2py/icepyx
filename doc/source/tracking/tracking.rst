@@ -3,10 +3,12 @@ Tracking icepyx Usage
 
 How is icepyx being used by the ICESat-2 data user community?
 
+Is your team or project using icepyx but not listed below? Please add your organization to the appropriate list with a link to your project/product (or :ref:`get in touch<contact_ref_label>` and we'll add it)!
+
 
 Projects and Organizations
 --------------------------
-Projects and organizations that use icepyx (this list is still being populated as of Nov 2020)
+Projects and organizations that use icepyx.
 
 - `NSIDC <https://nsidc.org/data/icesat-2/tools>`_
 - `University of Washington e-Science institute <https://escience.washington.edu/>`_
@@ -26,7 +28,7 @@ ICESat-2 peer-reviewed research that utilizes icepyx and presentations that feat
     
 Downloads
 ---------
-Estimating usage of open-source software is a fundamentally difficult task, and "easy" metrics like number of downloads `have the potential to be misleading <https://blog.dask.org/2020/01/14/estimating-users>`_. For icepyx, the number of library downloads further cannot completely capture usage because it is likely downloaded once and then used for multiple data download or analysis sessions.
+Estimating usage of open-source software is a fundamentally difficult task, and "easy" metrics like number of downloads `have the potential to be misleading <https://blog.dask.org/2020/01/14/estimating-users>`_.
 
 We are excited by the enthusiastic adoption of icepyx by the ICESat-2 data user community, and despite these limitations in data tracking metrics, we have begun (November 2020) to track user downloads and page views as shown below.
 

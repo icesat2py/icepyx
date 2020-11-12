@@ -1,7 +1,7 @@
 .. _whatsnew_010:
 
 What's new in v0.1-alpha (7 April 2020)
---------------------------------------
+---------------------------------------
 
 This was the first official "release" of icepyx, after it had been in development since Fall 2019.
 

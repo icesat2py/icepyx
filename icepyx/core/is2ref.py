@@ -81,7 +81,7 @@ def _get_custom_options(session, dataset, version):
     # reprojection only applicable on ICESat-2 L3B products.
 
     # reprojection options
-    projections = [Projection.attrib for Projection in root.iter('Projection')]
+    projections = [Projection.attrib for Projection in root.iter("Projection")]
     proj_vals = []
     for i in range(len(projections)):
         if (projections[i]['value']) != 'NO_CHANGE' :

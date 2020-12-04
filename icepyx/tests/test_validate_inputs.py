@@ -50,7 +50,21 @@ def test_floatlist_bbox():
     expected = ["bounding_box", [-64.2, 66.2, -55.5, 72.5], None]
     for i in range(len(expected)):
         assert obs[i] == expected[i]
+        
 
+def test_numpyfloatarray_bbox():
+    obs = val.spatial(np.array([-64.2, 66.2, -55.5, 72.5]))
+    expected = ["bounding_box", [-64.2, 66.2, -55.5, 72.5], None]
+    for i in range(len(expected)):
+        assert obs[i] == expected[i]
+        
+
+def test_numpyfloatlist_bbox():
+    obs = val.spatial(list(np.array([-64.2, 66.2, -55.5, 72.5])))
+    expected = ["bounding_box", [-64.2, 66.2, -55.5, 72.5], None]
+    for i in range(len(expected)):
+        assert obs[i] == expected[i]
+        
 
 def test_list_latlon_pairs():
     out = val.spatial([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])

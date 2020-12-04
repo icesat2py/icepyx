@@ -77,29 +77,32 @@ def _get_custom_options(session, dataset, version):
     format_vals = [formats[i]["value"] for i in range(len(formats))]
     format_vals.remove("")
     cust_options.update({"fileformats": format_vals})
-
-    # reprojection only applicable on ICESat-2 L3B products, yet to be available.
-
-    # reformatting options that support reprojection
-    normalproj = [Projections.attrib for Projections in root.iter("Projections")]
-    normalproj_vals = []
-    normalproj_vals.append(normalproj[0]["normalProj"])
-    format_proj = normalproj_vals[0].split(",")
-    format_proj.remove("")
-    format_proj.append("No reformatting")
-    cust_options.update({"formatreproj": format_proj})
+    
+    # reprojection only applicable on ICESat-2 L3B products.
 
     # reprojection options
     projections = [Projection.attrib for Projection in root.iter("Projection")]
     proj_vals = []
     for i in range(len(projections)):
-        if (projections[i]["value"]) != "NO_CHANGE":
-            proj_vals.append(projections[i]["value"])
+        if (projections[i]['value']) != 'NO_CHANGE' :
+            proj_vals.append(projections[i]['value'])
     cust_options.update({"reprojectionONLY": proj_vals})
 
     # reformatting options that do not support reprojection
-    no_proj = [i for i in format_vals if i not in format_proj]
+    exclformats_all = []
+    for i in range(len(projections)):
+        if 'excludeFormat' in projections[i]:
+            exclformats_str = projections[i]['excludeFormat'] 
+            exclformats_all.append(exclformats_str.split(','))
+    exclformats_list = [item for sublist in exclformats_all for item in sublist] # list only unique formats
+    no_proj = list(set(exclformats_list))
     cust_options.update({"noproj": no_proj})
+
+    # reformatting options that support reprojection
+    format_proj = []
+    for i in range(len(format_vals)):
+        if format_vals[i] not in no_proj: format_proj.append(format_vals[i])  
+    cust_options.update({"formatreproj": format_proj})
 
     # variable subsetting
     vars_raw = []

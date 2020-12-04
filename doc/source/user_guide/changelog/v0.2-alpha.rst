@@ -1,7 +1,7 @@
 .. _whatsnew_020:
 
 What's new in v0.2-alpha (6 May 2020)
------------------------------------
+-------------------------------------
 
 These are the changes in pandas v0.2-alpha See :ref:`release` for a full changelog
 including other versions of icepyx.

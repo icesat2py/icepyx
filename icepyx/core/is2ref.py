@@ -214,6 +214,14 @@ def _default_varlists(dataset):
             "height_segment_confidence",
         ]
 
+    elif dataset == "ATL11":
+        return common_list + [
+            "h_corr",
+            "h_corr_sigma",
+            "h_corr_sigma_systematic",
+            "quality_summary",
+        ]
+
     else:
         print(
             "THE REQUESTED DATASET DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUTDE, AND LONGITUDE WILL BE RETURNED"

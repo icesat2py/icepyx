@@ -24,6 +24,7 @@ def _validate_dataset(dataset):
             "ATL08",
             "ATL09",
             "ATL10",
+            "ATL11",
             "ATL12",
             "ATL13",
         ], "Please enter a valid dataset"

@@ -24,6 +24,7 @@ def _validate_dataset(dataset):
             "ATL08",
             "ATL09",
             "ATL10",
+            "ATL11",
             "ATL12",
             "ATL13",
         ], "Please enter a valid dataset"
@@ -211,6 +212,14 @@ def _default_varlists(dataset):
             "height_segment_ssh_flag",
             "height_segment_type",
             "height_segment_confidence",
+        ]
+
+    elif dataset == "ATL11":
+        return common_list + [
+            "h_corr",
+            "h_corr_sigma",
+            "h_corr_sigma_systematic",
+            "quality_summary",
         ]
 
     else:

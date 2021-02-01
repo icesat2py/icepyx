@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import os
+import subprocess
 
 trafficpath = "~/icepyx/doc/source/tracking/traffic/"
 clonesfn = "clones.csv"
@@ -46,4 +46,4 @@ views.sort_values("_date").plot(
 
 fig.savefig("plots.png")
 
-os.cmd("rm -rf " + defaultpath)
+subprocess.run(["rm -rf " + defaultpath[1:-1]])

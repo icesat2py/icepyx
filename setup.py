@@ -1,4 +1,5 @@
 import setuptools
+import versioneer
 
 with open("README.rst", "r") as f:
     LONG_DESCRIPTION = f.read()
@@ -8,7 +9,8 @@ with open("requirements.txt") as f:
 
 setuptools.setup(
     name="icepyx",
-    version="0.3.2",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     author="The icepyx Developers",
     author_email="jbscheick@gmail.com",
     maintainer="Jessica Scheick",

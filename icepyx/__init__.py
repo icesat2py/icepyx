@@ -1,5 +1,3 @@
 from icepyx.core.query import Query
 
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
+from _version import version as __version__

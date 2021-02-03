@@ -123,3 +123,6 @@ venv.bak/
 !views.csv
 !downloads_data.csv
 !sys_downloads_data.csv
+
+# setuptools_scm
+_version.py

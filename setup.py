@@ -1,5 +1,4 @@
 import setuptools
-import versioneer
 
 with open("README.rst", "r") as f:
     LONG_DESCRIPTION = f.read()
@@ -9,8 +8,6 @@ with open("requirements.txt") as f:
 
 setuptools.setup(
     name="icepyx",
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
     author="The icepyx Developers",
     author_email="jbscheick@gmail.com",
     maintainer="Jessica Scheick",
@@ -29,4 +26,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Development Status :: 1 - Planning",
     ],
+    use_scm_version={
+        "write_to": "_version.py",
+        "write_to_template": 'version = "{version}"\n',
+    },
+    setup_requires=["setuptools>=30.3.0", "wheel", "setuptools_scm"]
 )

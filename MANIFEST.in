@@ -1,4 +1,2 @@
-include versioneer.py
-include icepyx/_version.py
 include LICENSE
 include requirements.txt

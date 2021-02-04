@@ -44,7 +44,7 @@ def cycles(cycle):
     atlas_UNIX_start_time = (atlas_gps_start_time - delta_time_epochs)
     present_time = dt.datetime.now().timestamp()
     ncycles = np.ceil((present_time - atlas_UNIX_start_time)/(86400*91)).astype('i')
-    all_cycles = [str(c+1).zfill(cycle_length) for c in range(ncycles)]\
+    all_cycles = [str(c+1).zfill(cycle_length) for c in range(ncycles)]
 
     if cycle is None:
         return all_cycles

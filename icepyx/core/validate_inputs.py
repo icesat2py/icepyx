@@ -29,20 +29,32 @@ def dset_version(latest_vers, version):
     return vers
 
 
-def cycles(all_cycles, cycles):
+def cycles(cycle):
     """
     Check if the submitted cycle is valid, and warn the user if not available.
     """
-    if cycles is None:
-        cycle_list = all_cycles
+    cycle_length = 2
+    # number of GPS seconds between the GPS epoch and ATLAS SDP epoch
+    atlas_sdp_gps_epoch = 1198800018.0
+    # number of GPS seconds since the GPS epoch for first ATLAS data point
+    atlas_gps_start_time = atlas_sdp_gps_epoch + 24710205.39202261
+    epoch1 = dt.datetime(1980,1,6,0,0,0)
+    epoch2 = dt.datetime(1970,1,1,0,0,0)
+    delta_time_epochs = (epoch2 - epoch1).total_seconds()
+    atlas_UNIX_start_time = (atlas_gps_start_time - delta_time_epochs)
+    present_time = dt.datetime.now().timestamp()
+    ncycles = np.ceil((present_time - atlas_UNIX_start_time)/(86400*91)).astype('i')
+    all_cycles = [str(c+1).zfill(cycle_length) for c in range(ncycles)]\
+
+    if cycle is None:
+        return all_cycles
     else:
-        cycle_length = 2
-        if isinstance(cycles, str):
-            assert int(cycles) > 0, "Cycle number must be positive"
-            cycle_list = [cycles.zfill(cycle_length)]
-        elif isinstance(cycles, list):
+        if isinstance(cycle, str):
+            assert int(cycle) > 0, "Cycle number must be positive"
+            cycle_list = [cycle.zfill(cycle_length)]
+        elif isinstance(cycle, list):
             cycle_list = []
-            for c in cycles:
+            for c in cycle:
                 assert int(c) > 0, "Cycle number must be positive"
                 cycle_list.append(c.zfill(cycle_length))
         else:
@@ -52,23 +64,25 @@ def cycles(all_cycles, cycles):
             warnings.filterwarnings("always")
             warnings.warn("Listed cycle is not presently available")
 
-    return cycle_list
+        return cycle_list
 
 
-def tracks(all_tracks, tracks):
+def tracks(track):
     """
     Check if the submitted RGT is valid, and warn the user if not available.
     """
-    if tracks is None:
-        track_list = all_tracks
+    track_length = 4
+    all_tracks = [str(tr+1).zfill(track_length) for tr in range(1387)]
+
+    if track is None:
+        return all_tracks
     else:
-        track_length = 4
-        if isinstance(tracks, str):
-            assert int(tracks) > 0, "Reference Ground Track must be positive"
-            track_list = [tracks.zfill(track_length)]
-        elif isinstance(tracks, list):
+        if isinstance(track, str):
+            assert int(track) > 0, "Reference Ground Track must be positive"
+            track_list = [track.zfill(track_length)]
+        elif isinstance(track, list):
             track_list = []
-            for t in tracks:
+            for t in track:
                 assert int(t) > 0, "Reference Ground Track must be positive"
                 track_list.append(t.zfill(track_length))
         else:
@@ -80,7 +94,7 @@ def tracks(all_tracks, tracks):
             warnings.filterwarnings("always")
             warnings.warn("Listed Reference Ground Track is not available")
 
-    return track_list
+        return track_list
 
 
 # DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
@@ -88,11 +102,11 @@ def spatial(spatial_extent):
     """
     Validate the input spatial extent and return the needed parameters to the query object.
     """
-    
+
     scalar_types = (np.int, np.float, np.int64)
-    
+
     if isinstance(spatial_extent, (list, np.ndarray)):
-        
+
         # bounding box
         if len(spatial_extent) == 4 and all(
             isinstance(i, scalar_types) for i in spatial_extent
@@ -118,7 +132,7 @@ def spatial(spatial_extent):
             extent_type = "bounding_box"
 
         # user-entered polygon as list of lon, lat coordinate pairs
-        elif all(type(i) in [list, tuple, np.ndarray] for i in spatial_extent) and all( 
+        elif all(type(i) in [list, tuple, np.ndarray] for i in spatial_extent) and all(
             all( isinstance(i[j], scalar_types) for j in range(len(i)) ) for i in spatial_extent
         ):
             if any( len(i) != 2 for i in spatial_extent):
@@ -197,6 +211,8 @@ def spatial(spatial_extent):
 
         else:
             raise TypeError("Input spatial extent file must be a kml, shp, or gpkg")
+    else:
+        return (None, None, None)
 
     # DevGoal: currently no specific test for this if statement...
     if "_geom_filepath" not in locals():
@@ -218,6 +234,8 @@ def temporal(date_range, start_time, end_time):
             raise ValueError(
                 "Your date range list is the wrong length. It should have start and end dates only."
             )
+    else:
+        return (None, None)
 
     # DevGoal: accept more date/time input formats
     #         elif isinstance(date_range, date-time object):

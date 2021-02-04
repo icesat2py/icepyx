@@ -125,6 +125,8 @@ class Query:
 
         if (
             dataset is None or spatial_extent is None or date_range is None
+        ) and (
+            cycles is None or tracks is None
         ) and files is None:
             raise ValueError(
                 "Please provide the required inputs. Use help([function]) to view the function's documentation"
@@ -152,9 +154,8 @@ class Query:
         self._orbit_number = []
         self._readable_granule_name = []
         # get list of available ICESat-2 cycles and tracks
-        all_cycles,all_tracks = self.avail_granules(ids=False,cycles=True,tracks=True)
-        self._cycles = val.cycles(all_cycles, cycles)
-        self._tracks = val.tracks(all_tracks, tracks)
+        self._cycles = val.cycles(cycles)
+        self._tracks = val.tracks(tracks)
         # build list of available CMR parameters if reducing by cycle or RGT
         if cycles or tracks:
             # for each available cycle of interest
@@ -164,16 +165,6 @@ class Query:
                     self._orbit_number.append(int(t) + (int(c)-1)*1387 + 201)
                     granule_name = '{0}_{1}_{2}{3}??_*'.format(self._dset,14*'?',t,c)
                     self._readable_granule_name.append(granule_name)
-            # # update the CMR parameters for orbit_number
-            # self.CMRparams['orbit_number'] = self.orbit_number
-            # update the CMR parameters for readable_granule_name
-            self.CMRparams['options[readable_granule_name][pattern]'] = 'true'
-            self.CMRparams['options[spatial][or]'] = 'true'
-            self.CMRparams['readable_granule_name[]'] = self._readable_granule_name
-            # update required parameters (number of pages)
-            self._reqparams.build_params()
-            # update the list of available granules
-            self.granules.get_avail(self.CMRparams, self.reqparams)
 
     # ----------------------------------------------------------------------
     # Properties

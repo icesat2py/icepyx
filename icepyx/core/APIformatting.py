@@ -34,6 +34,9 @@ def _fmt_temporal(start, end, key):
     dictionary with properly formatted temporal parameter for CMR search or subsetting
     """
 
+    if (start is None) or (end is None):
+        return dict()
+
     assert isinstance(start, dt.datetime)
     assert isinstance(end, dt.datetime)
     assert key in [
@@ -453,5 +456,8 @@ class Parameters:
                             k = "bbox"
                         elif kwargs["extent_type"] == "polygon":
                             k = "Boundingshape"
+                        else:
+                            k = None
 
-                    self._fmted_keys.update(_fmt_spatial(k, kwargs["spatial_extent"]))
+                    if k and kwargs["spatial_extent"]:
+                        self._fmted_keys.update(_fmt_spatial(k, kwargs["spatial_extent"]))

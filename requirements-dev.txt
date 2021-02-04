@@ -1,5 +1,5 @@
 codecov
-pre_commit
+pre-commit
 pypistats[pandas]
 pytest>=4.6
 pytest-cov

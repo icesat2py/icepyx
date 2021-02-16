@@ -1,2 +1,12 @@
-include LICENSE
+prune .github*
+prune doc*
+prune examples*
+prune icepyx/tests*
+exclude *.yml
+exclude *.yaml
+exclude *.ini
+exclude .coveragerc
+exclude .mailmap
+exclude .gitignore
+exclude *.txt
 include requirements.txt

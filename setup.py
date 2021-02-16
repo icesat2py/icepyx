@@ -26,9 +26,10 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Development Status :: 1 - Planning",
     ],
+    py_modules=["_icepyx_version"],
     use_scm_version={
         "local_scheme": "no-local-version",
-        "write_to": "_version.py",
+        "write_to": "_icepyx_version.py",
         "write_to_template": 'version = "{version}"\n',
     },
     setup_requires=["setuptools>=30.3.0", "wheel", "setuptools_scm"],

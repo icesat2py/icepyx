@@ -23,5 +23,6 @@ order by last name) and are considered "The icepyx Developers":
 * `Ben Smith <https://github.com/smithb>`_ - University of Washington
 * `Amy Steiker <https://github.com/asteiker>`_ - NSIDC, University of Colorado
 * `Anna Valentine <https://github.com/annavalentine>`_ - Colorado School of Mines
+* `Bruce Wallin <https://github.com/wallinb>`_ - NSIDC, University of Colorado
 * `Molly Wieringa <https://github.com/mollymwieringa>`_ - University of Washington
 * `Bidhyananda Yadav <https://github.com/bidhya>`_ - Ohio State University

@@ -58,6 +58,8 @@ exclude_patterns = ["**.ipynb_checkpoints"]
 # location of master document (by default sphinx looks for contents.rst)
 master_doc = "index"
 
+# bibtex file
+bibtex_bibfiles = ["tracking/icepyx_pubs.bib"]
 
 # -- Configuration options ---------------------------------------------------
 autosummary_generate = True

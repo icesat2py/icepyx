@@ -9,10 +9,8 @@ on:
   push:
     branches:
       - development
-  # Runs for pull requests should be disabled other than for testing purposes
-  pull_request:
-    branches:
-      - development
+  # Trigger manually at https://github.com/icesat2py/icepyx/actions/workflows/publish_to_pypi.yml
+  workflow_dispatch:
 
 jobs:
   publish-pypi:

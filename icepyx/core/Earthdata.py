@@ -63,7 +63,7 @@ class Earthdata:
 
         response = None
         response = requests.post(
-            token_api_url, json=data, headers={"Accept": "application/json"}
+            token_api_url, json=data, headers={"Accept": "application/json", "Client-Id": "icepyx"}
         )
 
         # check for a valid login

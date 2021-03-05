@@ -28,6 +28,7 @@ setuptools.setup(
     ],
     py_modules=["_icepyx_version"],
     use_scm_version={
+        "fallback_version": "unknown",
         "local_scheme": "no-local-version",
         "write_to": "_icepyx_version.py",
         "write_to_template": 'version = "{version}"\n',

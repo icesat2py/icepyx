@@ -27,8 +27,10 @@ setuptools.setup(
         "Development Status :: 1 - Planning",
     ],
     use_scm_version={
+        "fallback_version": "unknown",
+        "local_scheme": "node-and-date",
         "write_to": "_version.py",
         "write_to_template": 'version = "{version}"\n',
     },
-    setup_requires=["setuptools>=30.3.0", "wheel", "setuptools_scm"]
+    setup_requires=["setuptools>=30.3.0", "wheel", "setuptools_scm"],
 )

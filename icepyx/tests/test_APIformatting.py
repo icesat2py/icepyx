@@ -1016,6 +1016,17 @@ def test_var_subset_list_fmt():
     exp = "/ancillary_data/atlas_sdp_gps_epoch,/ancillary_data/data_end_utc,/ancillary_data/data_start_utc,/ancillary_data/end_delta_time,/ancillary_data/granule_end_utc,/ancillary_data/granule_start_utc,/profile_2/high_rate/latitude,/profile_2/low_rate/latitude,/orbit_info/sc_orient,/ancillary_data/start_delta_time"
     assert obs == exp
 
+########## _fmt_orbit_numbers ##########
+def test_orbit_numbers():
+    obs = apifmt._fmt_orbit_numbers(['01','02'],['1387'])
+    exp = [1588,2975]
+    assert obs == exp
+
+######## _fmt_readable_granules ########
+def test_readable_granules():
+    obs = apifmt._fmt_readable_granules('ATL06',['02'],['1387'])
+    exp = ['ATL06_??????????????_138702??_*']
+    assert obs == exp
 
 ########## combine_params ##########
 def test_combine_params():
@@ -1038,9 +1049,9 @@ def test_CMRparams_no_other_inputs():
     CMRparams = apifmt.Parameters("CMR")
     # TestQuestion: the next statement essentially tests _get_possible_keys as well, so how would I test them independently?
     assert CMRparams.poss_keys == {
-        "default": ["short_name", "version", "temporal"],
+        "default": ["short_name", "version"],
         "spatial": ["bounding_box", "polygon"],
-        "optional": ["orbit_number",
+        "optional": ["temporal", "orbit_number",
             "options[readable_granule_name][pattern]",
             "options[spatial][or]",
             "readable_granule_name[]"],

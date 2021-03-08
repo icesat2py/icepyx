@@ -44,7 +44,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
         Return a list of the available granule IDs for the granule dictionary
     cycles : boolean, default False
         Return a list of the available orbital cycles for the granule dictionary
-    tracks : boolean, default Fal
+    tracks : boolean, default False
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"

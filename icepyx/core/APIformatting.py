@@ -112,6 +112,57 @@ def _fmt_spatial(ext_type, extent):
 
     return {ext_type: fmt_extent}
 
+def _fmt_orbit_numbers(cycles, tracks):
+    """
+    Create list of CMR orbit numbers
+
+    Parameters
+    ----------
+    cycles : list
+        List of 91-day orbital cycle strings to query
+    tracks : list
+        List of Reference Ground Track (RGT) strings to query
+
+    Returns
+    -------
+    list of CMR orbit numbers for query
+    """
+    # list of orbit numbers
+    orbit_list = []
+    # for each available cycle of interest
+    for c in cycles:
+        # for each available track of interest
+        for t in tracks:
+            # convert from cycle and track to CMR orbit number
+            orbit_list.append(int(t) + (int(c)-1)*1387 + 201)
+    return orbit_list
+
+def _fmt_readable_granules(dset, cycles, tracks):
+    """
+    Create list of readable granule names for CMR queries
+
+    Parameters
+    ----------
+    cycles : list
+        List of 91-day orbital cycle strings to query
+    tracks : list
+        List of Reference Ground Track (RGT) strings to query
+
+    Returns
+    -------
+    list of readable granule names for CMR query
+    """
+    # list of readable granule names
+    readable_granule_list = []
+    # for each available cycle of interest
+    for c in cycles:
+        # for each available track of interest
+        for t in tracks:
+            # use single character wildcards "?" for date strings
+            # and ATLAS granule region number
+            granule_name = '{0}_{1}_{2}{3}??_*'.format(dset,14*'?',t,c)
+            readable_granule_list.append(granule_name)
+    return readable_granule_list
 
 def _fmt_var_subset_list(vdict):
     """
@@ -269,9 +320,9 @@ class Parameters:
 
         if self.partype == "CMR":
             self._poss_keys = {
-                "default": ["short_name", "version", "temporal"],
+                "default": ["short_name", "version"],
                 "spatial": ["bounding_box", "polygon"],
-                "optional": ["orbit_number",
+                "optional": ["temporal", "orbit_number",
                     "options[readable_granule_name][pattern]",
                     "options[spatial][or]",
                     "readable_granule_name[]"],
@@ -291,9 +342,10 @@ class Parameters:
             }
         elif self.partype == "subset":
             self._poss_keys = {
-                "default": ["time"],
+                "default": [],
                 "spatial": ["bbox", "Boundingshape"],
                 "optional": [
+                    "time",
                     "format",
                     "projection",
                     "projection_parameters",
@@ -432,16 +484,16 @@ class Parameters:
                             self._fmted_keys.update({key: kwargs["dataset"]})
                         elif key == "version":
                             self._fmted_keys.update({key: kwargs["version"]})
-                        elif key == "temporal" or key == "time":
-                            self._fmted_keys.update(
-                                _fmt_temporal(kwargs["start"], kwargs["end"], key)
-                            )
 
                 for key in opt_keys:
                     if key == "Coverage" and key in kwargs.keys():
                         # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
                         self._fmted_keys.update(
                             {key: _fmt_var_subset_list(kwargs[key])}
+                        )
+                    elif key == "temporal" or key == "time":
+                        self._fmted_keys.update(
+                            _fmt_temporal(kwargs["start"], kwargs["end"], key)
                         )
                     elif key in kwargs:
                         self._fmted_keys.update({key: kwargs[key]})
@@ -458,8 +510,5 @@ class Parameters:
                             k = "bbox"
                         elif kwargs["extent_type"] == "polygon":
                             k = "Boundingshape"
-                        else:
-                            k = None
 
-                    if k and kwargs["spatial_extent"]:
-                        self._fmted_keys.update(_fmt_spatial(k, kwargs["spatial_extent"]))
+                    self._fmted_keys.update(_fmt_spatial(k, kwargs["spatial_extent"]))

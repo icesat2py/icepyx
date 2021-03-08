@@ -124,9 +124,9 @@ class Query:
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
 
         if (
-            dataset is None or spatial_extent is None or date_range is None
+            dataset is None or spatial_extent is None
         ) and (
-            cycles is None or tracks is None
+            date_range is None or cycles is None or tracks is None
         ) and files is None:
             raise ValueError(
                 "Please provide the required inputs. Use help([function]) to view the function's documentation"
@@ -150,21 +150,19 @@ class Query:
 
         self._version = val.dset_version(self.latest_version(), version)
 
-        # list of CMR parameters for orbit and granule name
-        self._orbit_number = []
-        self._readable_granule_name = []
         # get list of available ICESat-2 cycles and tracks
         self._cycles = val.cycles(cycles)
         self._tracks = val.tracks(tracks)
         # build list of available CMR parameters if reducing by cycle or RGT
         if cycles or tracks:
-            # for each available cycle of interest
-            for c in self.cycles:
-                # for each available track of interest
-                for t in self.tracks:
-                    self._orbit_number.append(int(t) + (int(c)-1)*1387 + 201)
-                    granule_name = '{0}_{1}_{2}{3}??_*'.format(self._dset,14*'?',t,c)
-                    self._readable_granule_name.append(granule_name)
+            # create lists of CMR parameters for orbit number and granule name
+            self._orbit_number = apifmt._fmt_orbit_numbers(self.cycles,self.tracks)
+            self._readable_granule_name = apifmt._fmt_readable_granules(self._dset,
+                self.cycles, self.tracks)
+        else:
+            # list of CMR parameters for orbit number and granule name
+            self._orbit_number = []
+            self._readable_granule_name = []
 
     # ----------------------------------------------------------------------
     # Properties
@@ -558,7 +556,7 @@ class Query:
         orbit_parameters :  {'swath_width': '36.0', 'period': '94.29', 'inclination_angle': '92.0', 'number_of_orbits': '0.071428571', 'start_circular_latitude': '0.0'}
         """
         if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2data(self._dset)
+            self._about_dataset = is2ref.about_dataset(self._dset)
         summ_keys = [
             "dataset_id",
             "short_name",
@@ -583,7 +581,7 @@ class Query:
 
         """
         if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2data(self._dset)
+            self._about_dataset = is2ref.about_dataset(self._dset)
         pprint.pprint(self._about_dataset)
 
     def latest_version(self):

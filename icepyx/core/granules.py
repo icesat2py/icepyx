@@ -148,7 +148,7 @@ class Granules:
 
         granule_search_url = "https://cmr.earthdata.nasa.gov/search/granules"
 
-        headers = {"Accept": "application/json"}
+        headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # DevGoal: check the below request/response for errors and show them if they're there; then gather the results
         # note we should also do this whenever we ping NSIDC-API - make a function to check for errors
         while True:

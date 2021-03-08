@@ -375,7 +375,7 @@ class Query:
         Earthdata Login password:  ········
         >>> reg_a.order_granules()
         >>> reg_a.reqparams
-        {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y'}
+        {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
         if not hasattr(self, "_reqparams"):

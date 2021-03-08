@@ -921,6 +921,7 @@ class Query:
         try:
             from shapely.geometry import Polygon
             import geoviews as gv
+
             gv.extension('bokeh')
 
             line_geoms = Polygon(gdf['geometry'][0]).boundary

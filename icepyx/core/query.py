@@ -928,7 +928,7 @@ class Query:
             tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
             return tile * bbox_poly
 
-        except:
+        except ImportError:
             world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
             f, ax = plt.subplots(1, figsize=(12, 6))
             world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")

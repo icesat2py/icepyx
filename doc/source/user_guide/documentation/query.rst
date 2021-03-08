@@ -1,7 +1,7 @@
 Query Class
 =================
 
-.. currentmodule:: icepyx.query
+.. currentmodule:: icepyx
 
 
 Constructor

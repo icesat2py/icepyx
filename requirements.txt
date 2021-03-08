@@ -8,7 +8,6 @@ hvplot
 intake
 matplotlib
 numpy
-pre-commit
 requests
 shapely
 

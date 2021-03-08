@@ -186,3 +186,17 @@ def test_ATL09_default_varlist():
         "apparent_surf_reflec",
     ]
     assert obs == expected
+
+
+def test_ATL11_default_varlist():
+    obs = is2ref._default_varlists("ATL11")
+    expected = [
+        "delta_time",
+        "latitude",
+        "longitude",
+        "h_corr",
+        "h_corr_sigma",
+        "h_corr_sigma_systematic",
+        "quality_summary",
+    ]
+    assert obs == expected

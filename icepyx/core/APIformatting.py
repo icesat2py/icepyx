@@ -251,6 +251,7 @@ class Parameters:
                     "token",
                     "email",
                     "include_meta",
+                    "client_string",
                 ],
             }
         elif self.partype == "subset":
@@ -341,7 +342,7 @@ class Parameters:
             are time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
 
             Keyword argument inputs for 'CMR' may include: dataset, version, start, end, extent_type, spatial_extent
-            Keyword argument inputs for 'required' may include: page_size, page_num, request_mode, include_meta
+            Keyword argument inputs for 'required' may include: page_size, page_num, request_mode, include_meta, client_string
             Keyword argument inputs for 'subset' may include: geom_filepath, start, end, extent_type, spatial_extent
 
         """
@@ -352,7 +353,7 @@ class Parameters:
             self._check_valid_keys()
 
         if self.partype == "required":
-            if self.check_req_values == True and kwargs == {}:
+            if self.check_req_values() and kwargs == {}:
                 pass
             else:
                 reqkeys = self.poss_keys[self._reqtype]
@@ -361,6 +362,7 @@ class Parameters:
                     "page_num": 1,
                     "request_mode": "async",
                     "include_meta": "Y",
+                    "client_string": "icepyx"
                 }
                 for key in reqkeys:
                     if key in kwargs:

@@ -21,24 +21,3 @@ jobs:
     #   script:
     #     - export NSIDC_LOGIN=$NSIDC_LOGIN
     #     - pytest icepyx/tests/behind_NSIDC_API_login.py
-
-deploy:
-  - provider: pypi
-    server: https://test.pypi.org/legacy/ 
-    username: "__token__"
-    password: $test_PyPI_API_Token
-    on:
-      branch: development
-      if: commit_message =~ test_pypi
-    skip_existing: true
-    distributions: "sdist bdist_wheel"
-
-# NOTE: the API token on Travis must be set to ALL branches, because a tag build is not considered to be on the master branch: https://travis-ci.community/t/pypi-upload-with-api-token-not-working/5338/5
-  - provider: pypi
-    username: "__token__"
-    password: $PyPI_API_Token
-    on:
-      branch: master
-      tags: true
-    skip_existing: true
-    distributions: "sdist bdist_wheel"

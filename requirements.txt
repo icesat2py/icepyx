@@ -1,6 +1,6 @@
 fiona
-geoviews
 geopandas
+geoviews
 h5py
 matplotlib
 numpy

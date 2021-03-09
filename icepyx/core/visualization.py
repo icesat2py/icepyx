@@ -21,10 +21,10 @@ gv.extension('bokeh')
 
 def filelist_latestcycle(filelist, cycle_list):
     """
-    Only get filelist for lastest cycle if multiple cycles are requested
+    Only get filelist for latest cycle if multiple cycles are requested
     """
     if len(cycle_list) > 1:
-        # for multiple repeat cycles, only request data for lastest cycle
+        # for multiple repeat cycles, only request data for latest cycle
         latest_cycle = max(cycle_list)
         new_filelist = [f for f in filelist if int(f[-14:-12]) == latest_cycle]
         return new_filelist
@@ -124,19 +124,19 @@ class Visualize:
 
             for fname in filelist:
 
-                if self.product in ['ATL07', 'ATL10']:
-                    temp = intake.source.utils.reverse_format(
-                        format_string="{product:5d}-{HH:02d}_{datetime:%Y%m%d%H%M%S}_{rgt:04d}{cycle:02d}{"
-                                      "region:02d}_{release:03d}_{version:02d}.h5",
-                        resolved_string=fname,
+                if self.product in ["ATL07", "ATL10"]:
+                    format_string = (
+                        "{product:5d}-{HH:02d}_{datetime:%Y%m%d%H%M%S}_{rgt:04d}{cycle:02d}{"
+                        "region:02d}_{release:03d}_{version:02d}.h5"
                     )
-
                 else:
-                    temp = intake.source.utils.reverse_format(
-                        format_string="{product:5d}_{datetime:%Y%m%d%H%M%S}_{rgt:04d}{cycle:02d}{region:02d}_{"
-                                      "release:03d}_{version:02d}.h5",
-                        resolved_string=fname,
+                    format_string = (
+                        "{product:5d}_{datetime:%Y%m%d%H%M%S}_{rgt:04d}{cycle:02d}{"
+                        "region:02d}_{release:03d}_{version:02d}.h5"
                     )
+                temp = intake.source.utils.reverse_format(
+                    format_string=format_string, resolved_string=fname
+                )
 
                 rgt = temp['rgt']  # Reference Ground Track
                 cycle = temp['cycle']  # Cycle number
@@ -192,10 +192,7 @@ class Visualize:
         if not beam_data:
             return
 
-        data_name = 'lat_lon_elev'
-
-        if product == 'ATL08':
-            data_name = 'lat_lon_elev_canopy'
+        data_name = "lat_lon_elev_canopy" if product == "ATL08" else "lat_lon_elev"
 
         # iterate six beams
         beam_elev = [beam_data[0]['beams'][i][data_name] for i in np.arange(6) if

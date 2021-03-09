@@ -1,5 +1,4 @@
 datashader
-datetime
 fiona
 geopandas
 h5py
@@ -10,7 +9,6 @@ matplotlib
 numpy
 requests
 shapely
-
 
 
 

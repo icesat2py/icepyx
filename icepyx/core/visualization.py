@@ -117,7 +117,7 @@ class Visualize:
         # list of parameters for API query
         paras_list = []
 
-        # t uple of non-empty bbox and ICESat-2 datafiles
+        # tuple of non-empty bbox and ICESat-2 datafiles
         filelist_tuple = self.query_icesat2_filelist()
 
         for bbox_i, filelist in filelist_tuple:

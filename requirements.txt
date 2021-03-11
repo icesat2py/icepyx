@@ -1,9 +1,8 @@
-datetime
 fiona
 geopandas
 h5py
 matplotlib
 numpy
-pre-commit
 requests
 shapely
+xarray

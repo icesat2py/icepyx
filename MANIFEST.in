@@ -1,0 +1,12 @@
+prune .github*
+prune doc*
+prune examples*
+prune icepyx/tests*
+exclude .coveragerc
+exclude .gitignore
+exclude .mailmap
+exclude *.ini
+exclude *.txt
+exclude *.yaml
+exclude *.yml
+include requirements.txt

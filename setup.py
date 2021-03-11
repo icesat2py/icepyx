@@ -8,7 +8,6 @@ with open("requirements.txt") as f:
 
 setuptools.setup(
     name="icepyx",
-    version="0.3.2",
     author="The icepyx Developers",
     author_email="jbscheick@gmail.com",
     maintainer="Jessica Scheick",
@@ -27,4 +26,12 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Development Status :: 1 - Planning",
     ],
+    py_modules=["_icepyx_version"],
+    use_scm_version={
+        "fallback_version": "unknown",
+        "local_scheme": "node-and-date",
+        "write_to": "_icepyx_version.py",
+        "write_to_template": 'version = "{version}"\n',
+    },
+    setup_requires=["setuptools>=30.3.0", "wheel", "setuptools_scm"],
 )

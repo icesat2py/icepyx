@@ -29,8 +29,6 @@ project = "icepyx"
 year = datetime.date.today().year
 copyright = "2019-{}, The icepyx Developers".format(year)
 
-# -- General configuration ---------------------------------------------------
-
 @contextlib.contextmanager
 def chdir(directory):
     curdir = os.curdir
@@ -53,6 +51,8 @@ except DistributionNotFound:
 else:
     release = dist.version
 version = ".".join(release.split(".")[:2])
+
+# -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom

@@ -8,7 +8,7 @@ on:
   pull_request:
     paths:
       - "doc/**"
-      - - "**/doc.yaml"
+      - "**/doc.yaml"
 
 jobs:
   build:

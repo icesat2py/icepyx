@@ -33,4 +33,4 @@ jobs:
           python -m pip install -r "requirements-docs.txt"
           python -m pip install -e "."
       - name: Build documentation
-        run: sphinx-build -a -b html -W doc/source/ doc/build/
+        run: make --directory=doc html

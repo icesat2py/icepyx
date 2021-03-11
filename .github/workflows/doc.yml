@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - "doc/**"
+      - "**/doc.yaml"
   pull_request:
     paths:
       - "doc/**"
+      - - "**/doc.yaml"
 
 jobs:
   build:

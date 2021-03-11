@@ -1,6 +1,7 @@
 gitpython
 nbsphinx
 numpydoc
+pandoc
 pybtex
 pygithub
 sphinxcontrib-bibtex

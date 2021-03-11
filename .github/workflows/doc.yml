@@ -5,10 +5,12 @@ on:
     paths:
       - "doc/**"
       - "**/doc.yml"
+      - "requirements-docs.txt"
   pull_request:
     paths:
       - "doc/**"
       - "**/doc.yml"
+      - "requirements-docs.txt"
 
 jobs:
   build:

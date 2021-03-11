@@ -1,6 +1,10 @@
 gitpython
 nbsphinx
 numpydoc
+pandoc
 pybtex
 pygithub
+recommonmark
+setuptools_scm
 sphinxcontrib-bibtex
+sphinx_rtd_theme

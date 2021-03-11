@@ -10,8 +10,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import contextlib
 import os
 import sys
+from pkg_resources import DistributionNotFound, get_distribution
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../sphinxext"))
@@ -28,6 +30,29 @@ year = datetime.date.today().year
 copyright = "2019-{}, The icepyx Developers".format(year)
 
 # -- General configuration ---------------------------------------------------
+
+@contextlib.contextmanager
+def chdir(directory):
+    curdir = os.curdir
+    try:
+        os.chdir(directory)
+        yield
+    finally:
+        os.chdir(curdir)
+
+
+try:
+    dist = get_distribution(project)
+except DistributionNotFound:
+    # The project is not installed in readthedocs environment (requires LDAP
+    # bindings). Read the version with setuptools_scm.
+    import setuptools_scm
+
+    with chdir("../.."):
+        release = setuptools_scm.get_version()
+else:
+    release = dist.version
+version = ".".join(release.split(".")[:2])
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom

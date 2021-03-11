@@ -4,3 +4,6 @@ numpydoc
 pybtex
 pygithub
 sphinxcontrib-bibtex
+setuptools_scm
+recommonmark
+sphinx_rtd_theme

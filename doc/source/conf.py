@@ -5,14 +5,6 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 
-
-# -- Versioning with setuptools_scm ------------------------------------------
-from pkg_resources import get_distribution
-release = get_distribution('icepyx').version
-# for example take major/minor
-version = '.'.join(release.split('.')[:2])
-
-
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -28,6 +20,13 @@ import datetime
 
 import icepyx
 import recommonmark
+
+
+# -- Versioning with setuptools_scm ------------------------------------------
+from pkg_resources import get_distribution
+release = get_distribution('icepyx').version
+# for example take major/minor
+version = '.'.join(release.split('.')[:2])
 
 
 # -- Project information -----------------------------------------------------

@@ -22,4 +22,4 @@ python:
   install:
     - requirements: requirements-docs.txt
     - requirements: requirements.txt
-  method: setuptools
+    - method: setuptools

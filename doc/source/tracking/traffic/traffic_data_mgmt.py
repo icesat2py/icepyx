@@ -1,32 +1,13 @@
-# from github import Github
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import subprocess
 
-
-# print(os.environ)
-# repo_name = os.environ["GITHUB_REPOSITORY"]
-# github = Github(os.environ["TRAFFIC_ACTION_TOKEN"])
-# # print("Repository name: ", repo_name)
-# repo = github.get_repo(repo_name)
-
-
-# defaultpath = "{}/{}".format(os.environ["GITHUB_WORKSPACE"], "traffic")
-# print("Workplace path: ", defaultpath)
-
-# # views_path = "{}/{}".format(workplace_path, "views.csv")
-# # clones_path = "{}/{}".format(workplace_path, "clones.csv")
-# # plots_path = "{}/{}".format(workplace_path, "plots.png")
-
-# print(repo_name)
-# print(os.environ["GITHUB_WORKSPACE"])
 cwd = os.getcwd()
 
 trafficpath = cwd + "/doc/source/tracking/traffic/"
 clonesfn = "clones.csv"
 viewsfn = "views.csv"
-# defaultpath = "../../../../traffic/" #"~/traffic/"
 defaultpath = "{}/{}/".format(cwd, "traffic")
 
 def update_csv(fn, string):

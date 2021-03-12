@@ -1,7 +1,7 @@
-.. _whatsnew_033:
+.. _whatsnew_034:
 
-What's new in 0.3.4 (12 March 2021)
------------------------------------
+What's new in v0.3.4 (12 March 2021)
+------------------------------------
 
 These are the changes in icepyx 0.3.4 See :ref:`release` for a full changelog
 including other versions of icepyx.
@@ -10,41 +10,36 @@ including other versions of icepyx.
 New Features
 ~~~~~~~~~~~~
 
--
--
+- None
 
 Bug fixes
 ~~~~~~~~~
 
--
--
+- None
 
 
 Deprecations
 ~~~~~~~~~~~~
 
--
--
+- None
 
 
 Maintenance
 ^^^^^^^^^^^
 
--
--
+- fix read the docs build with automatic versioning (#182)
 
 
 Documentation
 ^^^^^^^^^^^^^
 
--
--
+- None
 
 
 Other
 ^^^^^
--
--
+
+- None
 
 
 Contributors

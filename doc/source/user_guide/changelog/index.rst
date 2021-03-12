@@ -18,7 +18,7 @@ Version 0.3.3
 -------------
 
 .. toctree::
-  :maxdepth: 2
+   :maxdepth: 2
 
    v0.3.3
 
@@ -26,7 +26,7 @@ Version 0.3.2
 -------------
 
 .. toctree::
-  :maxdepth: 2
+   :maxdepth: 2
 
    v0.3.2
 

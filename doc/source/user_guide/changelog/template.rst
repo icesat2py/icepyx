@@ -10,41 +10,36 @@ including other versions of icepyx.
 New Features
 ~~~~~~~~~~~~
 
--
--
+- None
 
 Bug fixes
 ~~~~~~~~~
 
--
--
+- None
 
 
 Deprecations
 ~~~~~~~~~~~~
 
--
--
+- None
 
 
 Maintenance
 ^^^^^^^^^^^
 
--
--
+- None
 
 
 Documentation
 ^^^^^^^^^^^^^
 
--
--
+- None
 
 
 Other
 ^^^^^
--
--
+
+- None
 
 
 Contributors

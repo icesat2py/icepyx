@@ -5,30 +5,29 @@ import subprocess
 
 cwd = os.getcwd()
 
-trafficpath = cwd + "/doc/source/tracking/traffic/"
-clonesfn = "clones.csv"
-viewsfn = "views.csv"
-defaultpath = "{}/{}/".format(cwd, "traffic")
+trafficpath = f"{cwd}/doc/source/tracking/traffic/"
+defaultpath = f"{cwd}/traffic/"
 
-def update_csv(fn, string):
+
+def update_csv(string):
     try:
-        existing = pd.read_csv(trafficpath + fn)
-        new = pd.read_csv(defaultpath + fn)
+        existing = pd.read_csv(trafficpath + f"{string}.csv")
+        new = pd.read_csv(defaultpath + f"{string}.csv")
         updated = new.merge(
-            existing, how="outer", on=["_date", "total_" + string, "unique_" + string]
+            existing, how="outer", on=["_date", f"total_{string}", f"unique_{string}"]
         )
     except FileNotFoundError:
-        updated = pd.read_csv(defaultpath + fn)
+        updated = pd.read_csv(defaultpath + string)
 
     updated.sort_values("_date", ignore_index=True).to_csv(
-        trafficpath + fn, index=False
+        trafficpath + f"{string}.csv", index=False
     )
 
     return updated
 
 
-clones = update_csv(clonesfn, "clones")
-views = update_csv(viewsfn, "views")
+clones = update_csv(string="clones")
+views = update_csv(string="views")
 
 fig, ax = plt.subplots(figsize=(10, 4), nrows=2, ncols=1)
 

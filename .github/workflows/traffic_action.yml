@@ -27,7 +27,8 @@ jobs:
     
     # Custom steps to move files to another dir and format plot
     - name: Move files
-      run: traffic_data_mgmt.py
+      run: |
+        python ./doc/source/tracking/traffic/traffic_data_mgmt.py
     
     # Commits files to repository
     - name: Commit changes

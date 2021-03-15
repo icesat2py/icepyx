@@ -46,6 +46,6 @@ views.sort_values("_date").plot(
     ax=ax[1],
 )
 
-fig.savefig(trafficpath + "plots.png")
+fig.savefig(trafficpath + "plots.svg")
 
 subprocess.run(["rm -rf " + defaultpath[:-1]], shell=True)

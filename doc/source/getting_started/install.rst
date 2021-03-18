@@ -18,13 +18,9 @@ The simplest way to install IcePyx is by using the
 package manager. The command below takes care of setting up a virtual
 environment, and installs IcePyx along with all the necessary dependencies::
 
-.. code-block::
-
     conda create --name icepyx-env --channel conda-forge icepyx
 
 To activate the virtual environment, you can do::
-
-.. code-block::
 
     conda activate icepyx-env
 

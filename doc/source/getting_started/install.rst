@@ -43,7 +43,7 @@ To upgrade an installed version of IcePyx to the latest stable release, do::
 Using pip
 ---------
 
-Alternatively, you can also install IcePyx using pip.
+Alternatively, you can also install IcePyx using `pip <https://pip.pypa.io/en/stable/>`__.
 
 .. code-block::
 

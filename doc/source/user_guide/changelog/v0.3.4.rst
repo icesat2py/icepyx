@@ -28,6 +28,7 @@ Maintenance
 ^^^^^^^^^^^
 
 - fix read the docs build with automatic versioning (#182)
+- update tracking metrics and automate github action figure updates (#184)
 
 
 Documentation

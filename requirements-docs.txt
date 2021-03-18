@@ -4,4 +4,3 @@ numpydoc
 pybtex
 pygithub
 sphinxcontrib-bibtex
--r requirements.txt

@@ -40,7 +40,7 @@ package manager.
 
     conda install icepyx
 
- Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__.
+Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__.
 
     pip install icepyx
 

@@ -34,7 +34,7 @@ Maintenance
 Documentation
 ^^^^^^^^^^^^^
 
-- None
+- Add quick instructions for installing icepyx via conda (#187)
 
 
 Other

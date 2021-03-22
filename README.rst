@@ -33,40 +33,19 @@ This project combines and generalizes these scripts into a unified framework, ma
 
 Installation
 ------------
-The simplest way to install icepyx is using pip.
 
-.. code-block::
+The simplest way to install icepyx is by using the
+`conda <https://docs.conda.io/projects/conda/en/latest/user-guide/index.html>`__
+package manager.
 
-  pip install icepyx
+    conda install icepyx
 
+Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__.
 
-Windows users will need to first install `Fiona`_, please look at the instructions there. Windows users may consider installing Fiona using pipwin
+    pip install icepyx
 
-.. code-block::
-
-  pip install pipwin
-  pipwin install Fiona 
-
-
-Currently, updated packages are not automatically generated with each build. This means it is possible that pip will not install the latest release of icepyx. In this case, icepyx is also available for use via the GitHub repository. The contents of the repository can be download as a `zipped file`_ or cloned.
-
-To use icepyx this way, fork this repo to your own account, then git clone the repo onto your system. 
-To clone the repository:
-
-.. code-block::
-
-  git clone https://github.com/icesat2py/icepyx.git
-
-
-Provided the location of the repo is part of your $PYTHONPATH, you should simply be able to add import icepyx to your Python document.
-Alternatively, in a command line or terminal, navigate to the folder in your cloned repository containing setup.py and run
-
-.. code-block::
-
-  pip install -e .
-
-
-Future developments of icepyx may include conda as another simplified installation option.
+More detailed instructions for installing `icepyx` can be found at
+https://icepyx.readthedocs.io/en/latest/getting_started/install.html
 
 
 Examples (Jupyter Notebooks)

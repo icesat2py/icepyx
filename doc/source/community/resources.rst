@@ -126,3 +126,7 @@ In addition to the ongoing development of icepyx itself, the ICESat-2 Cryosphere
 Second [Virtual] ICESat-2 Cryospheric Hackweek Facilitated by the University of Washington
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 COVID-19 forced the in-person event to be cancelled, but we're excited to extend the Hackweek model into a virtual space, ultimately making it more accessible by removing the need to travel. This year's event is scheduled to take place from 15-18 June 2020, with multiple instructional sessions taking place during the preceding week (8-12 June) to limit the daily duration and accomodate multiple time zones. Though only selected participants are able to tune in to the live tutorial sessions, the materials being taught are freely available in the `ICESat-2 Hackweek GitHub Organization <https://github.com/ICESAT-2HackWeek>`_ respositories. Watch here for updates on projects conducted during the hackweek, and feel free to check out the event's `website <https://icesat-2hackweek.github.io/learning-resources/>`_.
+
+Python Learning Resources
+-------------------------
+Icepyx values ongoing learning and development. In spirit of this, the team has begun creating and sharing some resources to help ease the Python learnig curved for new users. Need help understanding programming terminology? The `Python Basics <https://github.com/icesat2py/icepyx/blob/data_access_tutorials/doc/source/community/python_learning_resources/pythonBasics.ipynb>`_ notebook is a good place to start!

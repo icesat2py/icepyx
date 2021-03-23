@@ -1,6 +1,6 @@
 .. _whatsnew_034:
 
-What's new in v0.3.4 (12 March 2021)
+What's new in v0.3.4 (23 March 2021)
 ------------------------------------
 
 These are the changes in icepyx 0.3.4 See :ref:`release` for a full changelog

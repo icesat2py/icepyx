@@ -1,0 +1,53 @@
+.. _whatsnew_033:
+
+What's new in v0.3.3 (11 March 2021)
+------------------------------------
+
+These are the changes in icepyx 0.3.3 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- Add ability to access ATL11 Annual Land Ice Height data (#161)
+
+Bug fixes
+~~~~~~~~~
+
+- re-fix socket error (#163)
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+^^^^^^^^^^^
+
+- Update .gitignore (#180)
+- add second requirements file to rtd.yml (#178)
+- add manifest and update requirements files pre-conda-forge release (#175)
+- Setup GitHub Action for publishing to PyPI and TestPyPI (#174)
+- Add automatic versioning and required files (#168)
+- add bib file to RTD configuration (#164)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- None
+
+
+Other
+^^^^^
+
+- Add automatic versioning and required files (#168)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.3.2..v0.3.3|HEAD

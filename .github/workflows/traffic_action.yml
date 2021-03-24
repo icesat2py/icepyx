@@ -14,7 +14,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    # DevGoal: figure out how to put the traffic data directly into doc/source/tracking
     - uses: actions/checkout@v2
       with:
         ref: "traffic"
@@ -27,6 +26,9 @@ jobs:
     
     # Custom steps to move files to another dir and format plot
     - name: Move files
+      runs:
+        using: 'docker'
+        image: 'Dockerfile'
       run: |
         python ./doc/source/tracking/traffic/traffic_data_mgmt.py
     

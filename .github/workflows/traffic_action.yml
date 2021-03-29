@@ -28,10 +28,8 @@ jobs:
     
     # Custom steps to move files to another dir and format plot
     - name: Move files
-      runs:
-        using: 'docker'
-        image: 'Dockerfile'
       run: |
+        pip install -r requirements.txt
         python ./doc/source/tracking/traffic/traffic_data_mgmt.py
     
     # Commits files to repository
@@ -39,7 +37,7 @@ jobs:
       uses: EndBug/add-and-commit@v4
       with:
         author_name: Jessica Scheick
-        message: "GitHub traffic"
+        message: "GitHub traffic auto-update"
         add: "./doc/source/tracking/traffic/*"
 #         add: "./traffic/*"
         ref: "traffic"  # commits to branch "traffic"

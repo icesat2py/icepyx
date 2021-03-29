@@ -4,6 +4,8 @@ on:
   schedule: 
     # runs once a week on sunday
     - cron: "55 23 * * 0"
+  # Trigger manually at https://github.com/icesat2py/icepyx/actions/workflows/publish_to_pypi.yml
+  workflow_dispatch:
 
 jobs:
   # This workflow contains a single job called "traffic"

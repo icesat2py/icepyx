@@ -1,4 +1,4 @@
-.. _whatsnew_031:
+.. _whatsnew_032:
 
 What's new in v0.3.2 (1 December 2020)
 -------------------------------------

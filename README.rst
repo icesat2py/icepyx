@@ -11,10 +11,10 @@ icepyx
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=master
+.. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=development
     :target: https://travis-ci.org/icesat2py/icepyx
 
-.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg 
+.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx
 
 Origin and Purpose
@@ -28,7 +28,7 @@ at the University of Washington in June 2019 or as scripts written and used by t
 This project combines and generalizes these scripts into a unified framework, making them accessible for everyone.
 
 
-.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/master.zip
+.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
 .. _`Fiona`: https://pypi.org/project/Fiona/
 
 Installation
@@ -53,11 +53,11 @@ Examples (Jupyter Notebooks)
 
 Listed below are example jupyter-notebooks
 
-`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
+`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
 
-`ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+`ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
 
-`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
+`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
 
 
 Citing icepyx

@@ -363,10 +363,10 @@ class Variables:
 
         Notes
         -----
-        See also the `ICESat-2_DAAC_DataAccess2_Subsetting 
-        <https://github.com/icesat2py/icepyx/blob/master/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        See also the `ICESat-2_DAAC_DataAccess2_Subsetting
+        <https://github.com/icesat2py/icepyx/blob/main/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
         example notebook
-        
+
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
@@ -476,10 +476,10 @@ class Variables:
 
         Notes
         -----
-        See also the `ICESat-2_DAAC_DataAccess2_Subsetting 
-        <https://github.com/icesat2py/icepyx/blob/master/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        See also the `ICESat-2_DAAC_DataAccess2_Subsetting
+        <https://github.com/icesat2py/icepyx/blob/main/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
         example notebook
-        
+
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])

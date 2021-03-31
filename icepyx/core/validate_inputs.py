@@ -242,8 +242,6 @@ def temporal(date_range, start_time, end_time):
             raise ValueError(
                 "Your date range list is the wrong length. It should have start and end dates only."
             )
-    else:
-        return (None, None)
 
     # DevGoal: accept more date/time input formats
     #         elif isinstance(date_range, date-time object):

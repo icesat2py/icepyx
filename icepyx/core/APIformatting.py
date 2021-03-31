@@ -34,9 +34,6 @@ def _fmt_temporal(start, end, key):
     dictionary with properly formatted temporal parameter for CMR search or subsetting
     """
 
-    if (start is None) or (end is None):
-        return dict()
-
     assert isinstance(start, dt.datetime)
     assert isinstance(end, dt.datetime)
     assert key in [

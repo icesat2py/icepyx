@@ -4,6 +4,8 @@ on:
   schedule: 
     # runs once a week on sunday
     - cron: "55 23 * * 0"
+  # Trigger manually at https://github.com/icesat2py/icepyx/actions/workflows/publish_to_pypi.yml
+  workflow_dispatch:
 
 jobs:
   # This workflow contains a single job called "traffic"
@@ -14,7 +16,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    # DevGoal: figure out how to put the traffic data directly into doc/source/tracking
     - uses: actions/checkout@v2
       with:
         ref: "traffic"
@@ -28,6 +29,7 @@ jobs:
     # Custom steps to move files to another dir and format plot
     - name: Move files
       run: |
+        pip install -r requirements.txt
         python ./doc/source/tracking/traffic/traffic_data_mgmt.py
     
     # Commits files to repository
@@ -35,7 +37,7 @@ jobs:
       uses: EndBug/add-and-commit@v4
       with:
         author_name: Jessica Scheick
-        message: "GitHub traffic"
+        message: "GitHub traffic auto-update"
         add: "./doc/source/tracking/traffic/*"
 #         add: "./traffic/*"
         ref: "traffic"  # commits to branch "traffic"

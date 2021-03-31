@@ -238,10 +238,13 @@ class Query:
         >>> reg_a.dates
         ['2019-02-20', '2019-02-28']
         """
-        return [
-            self._start.strftime("%Y-%m-%d"),
-            self._end.strftime("%Y-%m-%d"),
-        ]  # could also use self._start.date()
+        if not hasattr(self, "_start"):
+            return ["No temporal parameters set"]
+        else:
+            return [
+                self._start.strftime("%Y-%m-%d"),
+                self._end.strftime("%Y-%m-%d"),
+            ]  # could also use self._start.date()
 
     @property
     def start_time(self):
@@ -258,7 +261,10 @@ class Query:
         >>> reg_a.start_time
         '12:30:30'
         """
-        return self._start.strftime("%H:%M:%S")
+        if not hasattr(self, "_start"):
+            return ["No temporal parameters set"]
+        else:
+            return self._start.strftime("%H:%M:%S")
 
     @property
     def end_time(self):
@@ -275,7 +281,10 @@ class Query:
         >>> reg_a.end_time
         '10:20:20'
         """
-        return self._end.strftime("%H:%M:%S")
+        if not hasattr(self, "_end"):
+            return ["No temporal parameters set"]
+        else:
+            return self._end.strftime("%H:%M:%S")
 
     @property
     def cycles(self):

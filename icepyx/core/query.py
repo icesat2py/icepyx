@@ -116,7 +116,6 @@ class Query:
         version=None,
         cycles=None,
         tracks=None,
-        orbit_number=None,
         files=None,
     ):
 
@@ -146,23 +145,22 @@ class Query:
             spatial_extent
         )
 
-        self._start, self._end = val.temporal(date_range, start_time, end_time)
+        if date_range:
+            self._start, self._end = val.temporal(date_range, start_time, end_time)
 
         self._version = val.dset_version(self.latest_version(), version)
 
-        # get list of available ICESat-2 cycles and tracks
-        self._cycles = val.cycles(cycles)
-        self._tracks = val.tracks(tracks)
         # build list of available CMR parameters if reducing by cycle or RGT
+        # or a list of explicitly named files (full or partial names)
+        # DevGoal: add file name search to optional queries
         if cycles or tracks:
-            # create lists of CMR parameters for orbit number and granule name
-            self._orbit_number = apifmt._fmt_orbit_numbers(self.cycles,self.tracks)
+            # get lists of available ICESat-2 cycles and tracks
+            self._cycles = val.cycles(cycles)
+            self._tracks = val.tracks(tracks)
+            # create list of CMR parameters for granule name
             self._readable_granule_name = apifmt._fmt_readable_granules(self._dset,
-                self.cycles, self.tracks)
-        else:
-            # list of CMR parameters for orbit number and granule name
-            self._orbit_number = []
-            self._readable_granule_name = []
+                cycles=self.cycles, tracks=self.tracks)
+
 
     # ----------------------------------------------------------------------
     # Properties
@@ -313,18 +311,6 @@ class Query:
         return sorted(set(self._tracks))
 
     @property
-    def orbit_number(self):
-        """
-        Return the ICESat-2 CMR orbit number
-
-        Examples
-        --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.orbit_number
-        """
-        return ",".join(map(str,self._orbit_number))
-
-    @property
     def CMRparams(self):
         """
         Display the CMR key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
@@ -346,9 +332,13 @@ class Query:
 
         # dictionary of optional CMR parameters
         kwargs = {}
-        # if self._orbit_number:
-        #     kwargs['orbit_number'] = self.orbit_number
-        if self._readable_granule_name:
+        # temporal CMR parameters
+        if hasattr(self,'_start') and hasattr(self,'_end'):
+            kwargs['start'] = self._start
+            kwargs['end'] = self._end
+        # granule name CMR parameters (orbital or file name)
+        # DevGoal: add to file name search to optional queries
+        if hasattr(self,'_readable_granule_name'):
             kwargs['options[readable_granule_name][pattern]'] = 'true'
             kwargs['options[spatial][or]'] = 'true'
             kwargs['readable_granule_name[]'] = self._readable_granule_name
@@ -357,8 +347,6 @@ class Query:
             self._CMRparams.build_params(
                 dataset=self.dataset,
                 version=self._version,
-                start=self._start,
-                end=self._end,
                 extent_type=self.extent_type,
                 spatial_extent=self._spat_extent,
                 **kwargs,
@@ -419,6 +407,11 @@ class Query:
         if not hasattr(self, "_subsetparams"):
             self._subsetparams = apifmt.Parameters("subset")
 
+        # temporal subsetting parameters
+        if hasattr(self,'_start') and hasattr(self,'_end'):
+            kwargs['start'] = self._start
+            kwargs['end'] = self._end
+
         if self._subsetparams == None and not kwargs:
             return {}
         else:
@@ -427,16 +420,12 @@ class Query:
             if self._geom_filepath is not None:
                 self._subsetparams.build_params(
                     geom_filepath=self._geom_filepath,
-                    start=self._start,
-                    end=self._end,
                     extent_type=self.extent_type,
                     spatial_extent=self._spat_extent,
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
-                    start=self._start,
-                    end=self._end,
                     extent_type=self.extent_type,
                     spatial_extent=self._spat_extent,
                     **kwargs,

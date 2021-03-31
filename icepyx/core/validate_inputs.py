@@ -49,7 +49,7 @@ def cycles(cycle):
     all_cycles = [str(c+1).zfill(cycle_length) for c in range(ncycles)]
 
     if cycle is None:
-        return all_cycles
+        return []
     else:
         if isinstance(cycle, str):
             assert int(cycle) > 0, "Cycle number must be positive"
@@ -82,7 +82,7 @@ def tracks(track):
     all_tracks = [str(tr+1).zfill(track_length) for tr in range(1387)]
 
     if track is None:
-        return all_tracks
+        return []
     else:
         if isinstance(track, str):
             assert int(track) > 0, "Reference Ground Track must be positive"

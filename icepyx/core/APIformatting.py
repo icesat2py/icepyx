@@ -109,32 +109,7 @@ def _fmt_spatial(ext_type, extent):
 
     return {ext_type: fmt_extent}
 
-def _fmt_orbit_numbers(cycles, tracks):
-    """
-    Create list of CMR orbit numbers
-
-    Parameters
-    ----------
-    cycles : list
-        List of 91-day orbital cycle strings to query
-    tracks : list
-        List of Reference Ground Track (RGT) strings to query
-
-    Returns
-    -------
-    list of CMR orbit numbers for query
-    """
-    # list of orbit numbers
-    orbit_list = []
-    # for each available cycle of interest
-    for c in cycles:
-        # for each available track of interest
-        for t in tracks:
-            # convert from cycle and track to CMR orbit number
-            orbit_list.append(int(t) + (int(c)-1)*1387 + 201)
-    return orbit_list
-
-def _fmt_readable_granules(dset, cycles, tracks):
+def _fmt_readable_granules(dset, **kwargs):
     """
     Create list of readable granule names for CMR queries
 
@@ -144,6 +119,8 @@ def _fmt_readable_granules(dset, cycles, tracks):
         List of 91-day orbital cycle strings to query
     tracks : list
         List of Reference Ground Track (RGT) strings to query
+    files : list
+        List of full or partial file name strings to query
 
     Returns
     -------
@@ -151,14 +128,22 @@ def _fmt_readable_granules(dset, cycles, tracks):
     """
     # list of readable granule names
     readable_granule_list = []
-    # for each available cycle of interest
-    for c in cycles:
-        # for each available track of interest
-        for t in tracks:
-            # use single character wildcards "?" for date strings
-            # and ATLAS granule region number
-            granule_name = '{0}_{1}_{2}{3}??_*'.format(dset,14*'?',t,c)
-            readable_granule_list.append(granule_name)
+    # if querying either by 91-day orbital cycle or RGT
+    if 'cycles' in kwargs.keys() or 'tracks' in kwargs.keys():
+        # default character wildcards for cycles and tracks
+        kwargs.setdefault('cycles',['??'])
+        kwargs.setdefault('tracks',['????'])
+        # for each available cycle of interest
+        for c in kwargs['cycles']:
+            # for each available track of interest
+            for t in kwargs['tracks']:
+                # use single character wildcards "?" for date strings
+                # and ATLAS granule region number
+                granule_name = '{0}_{1}_{2}{3}??_*'.format(dset,14*'?',t,c)
+                readable_granule_list.append(granule_name)
+    # extend with explicitly named files (full or partial)
+    kwargs.setdefault('files',[])
+    readable_granule_list.extend(kwargs['files'])
     return readable_granule_list
 
 def _fmt_var_subset_list(vdict):
@@ -230,7 +215,7 @@ def to_string(params):
     >>> reqparams = {'page_size': 10, 'page_num': 1}
     >>> params = icepyx.core.APIformatting.combine_params(CMRparams, reqparams)
     >>> icepyx.core.APIformatting.to_string(params)
-    '&short_name=ATL06&version=002&=temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=10&page_num=1'
+    'short_name=ATL06&version=002&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=10&page_num=1'
     """
     param_list = []
     for k,v in params.items():
@@ -319,7 +304,7 @@ class Parameters:
             self._poss_keys = {
                 "default": ["short_name", "version"],
                 "spatial": ["bounding_box", "polygon"],
-                "optional": ["temporal", "orbit_number",
+                "optional": ["temporal",
                     "options[readable_granule_name][pattern]",
                     "options[spatial][or]",
                     "readable_granule_name[]"],
@@ -488,7 +473,7 @@ class Parameters:
                         self._fmted_keys.update(
                             {key: _fmt_var_subset_list(kwargs[key])}
                         )
-                    elif key == "temporal" or key == "time":
+                    elif (key == "temporal" or key == "time") and ('start' in kwargs.keys() and 'end' in kwargs.keys()):
                         self._fmted_keys.update(
                             _fmt_temporal(kwargs["start"], kwargs["end"], key)
                         )

@@ -109,7 +109,7 @@ def _fmt_spatial(ext_type, extent):
 
     return {ext_type: fmt_extent}
 
-def _fmt_readable_granules(dset, **kwargs):
+def _fmt_readable_granules(dset, **kwds):
     """
     Create list of readable granule names for CMR queries
 
@@ -126,6 +126,8 @@ def _fmt_readable_granules(dset, **kwargs):
     -------
     list of readable granule names for CMR query
     """
+    # copy keyword arguments if valid (not None or empty lists)
+    kwargs = {k:v for k,v in kwds.items() if v}
     # list of readable granule names
     readable_granule_list = []
     # if querying either by 91-day orbital cycle or RGT

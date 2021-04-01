@@ -295,7 +295,10 @@ class Query:
         >>> reg_a.cycles
         ['02']
         """
-        return sorted(set(self._cycles))
+        if not hasattr(self, "_cycles"):
+            return ["No orbital parameters set"]
+        else:
+            return sorted(set(self._cycles))
 
     @property
     def tracks(self):
@@ -308,7 +311,10 @@ class Query:
         >>> reg_a.tracks
         ['0841', '0849', '0902', '0910']
         """
-        return sorted(set(self._tracks))
+        if not hasattr(self, "_tracks"):
+            return ["No orbital parameters set"]
+        else:
+            return sorted(set(self._tracks))
 
     @property
     def CMRparams(self):

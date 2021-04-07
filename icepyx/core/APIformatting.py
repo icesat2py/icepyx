@@ -141,7 +141,13 @@ def _fmt_readable_granules(dset, **kwds):
             for t in kwargs['tracks']:
                 # use single character wildcards "?" for date strings
                 # and ATLAS granule region number
-                granule_name = '{0}_{1}_{2}{3}??_*'.format(dset,14*'?',t,c)
+                if dset in ('ATL07','ATL10','ATL20','ATL21'):
+                    granule_name = '{0}-??_{1}_{2}{3}??_*'.format(dset,14*'?',t,c)
+                elif dset in ('ATL11',):
+                    granule_name = '{0}_{1}??_*'.format(dset,t)
+                else:
+                    granule_name = '{0}_{1}_{2}{3}??_*'.format(dset,14*'?',t,c)
+                # append the granule
                 readable_granule_list.append(granule_name)
     # extend with explicitly named files (full or partial)
     kwargs.setdefault('files',[])

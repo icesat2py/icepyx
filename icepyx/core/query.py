@@ -916,11 +916,22 @@ class Query:
         >>> reg_a.visualize_spatial_extent
         [visual map output]
         """
+        gdf = geospatial.geodataframe(self.extent_type, self._spat_extent)
 
-        world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
-        f, ax = plt.subplots(1, figsize=(12, 6))
-        world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
-        geospatial.geodataframe(self.extent_type, self._spat_extent).plot(
-            ax=ax, color="#FF8C00", alpha=0.7
-        )
-        plt.show()
+        try:
+            from shapely.geometry import Polygon
+            import geoviews as gv
+
+            gv.extension('bokeh')
+
+            line_geoms = Polygon(gdf['geometry'][0]).boundary
+            bbox_poly = gv.Path(line_geoms).opts(color="red", line_color="red")
+            tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
+            return tile * bbox_poly
+
+        except ImportError:
+            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+            f, ax = plt.subplots(1, figsize=(12, 6))
+            world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
+            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
+            plt.show()

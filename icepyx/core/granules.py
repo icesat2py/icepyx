@@ -390,12 +390,19 @@ class Granules:
 
             if status == "complete" or status == "complete_with_errors":
                 print("Your order is:", status)
+                messagelist = []
+                for message in loop_root.findall("./processInfo/info"):
+                    messagelist.append(message.text)
+                if messagelist != []:
+                    print("NSIDC returned these messages")
+                    pprint.pprint(messagelist)
                 if not hasattr(self, "orderIDs"):
                     self.orderIDs = []
 
                 self.orderIDs.append(orderID)
             else:
                 print("Request failed.")
+            
 
             # DevGoal: save orderIDs more frequently than just at the end for large orders (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
             # Save orderIDs to file to avoid resubmitting order in case kernel breaks down.
@@ -486,25 +493,34 @@ class Granules:
             if verbose is True:
                 print("Zip download URL: ", downloadURL)
             print("Beginning download of zipped output...")
-            zip_response = session.get(downloadURL)
-            # Raise bad request: Loop will stop for bad response code.
-            zip_response.raise_for_status()
-            print(
-                "Data request",
-                order,
-                "of ",
-                len(self.orderIDs[i_order:]),
-                " order(s) is downloaded.",
-            )
+            
+            try:
+                zip_response = session.get(downloadURL)
+                # Raise bad request: Loop will stop for bad response code.
+                zip_response.raise_for_status()
+                print(
+                    "Data request",
+                    order,
+                    "of ",
+                    len(self.orderIDs[i_order:]),
+                    " order(s) is downloaded.",
+                )
+                success = True
+            except requests.HTTPError:
+                print(
+                    "Unable to download ",
+                    order,
+                    ". Check granule order for messages.")
+                success = False
 
             # DevGoal: move this option back out to the is2class level and implement it in an alternate way?
             #         #Note: extract the dataset to save it locally
-            # if extract is True:
-            with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
-                for zfile in z.filelist:
-                    # Remove the subfolder name from the filepath
-                    zfile.filename = os.path.basename(zfile.filename)
-                    z.extract(member=zfile, path=path)
+            if success is True:
+                with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
+                    for zfile in z.filelist:
+                        # Remove the subfolder name from the filepath
+                        zfile.filename = os.path.basename(zfile.filename)
+                        z.extract(member=zfile, path=path)
 
             # update the current finished order id and save to file
             with open(downid_fn, "w") as fid:

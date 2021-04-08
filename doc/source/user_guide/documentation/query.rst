@@ -27,7 +27,6 @@ Attributes
    Query.end_time
    Query.file_vars
    Query.granules
-   Query.orbit_number
    Query.order_vars
    Query.reqparams
    Query.spatial_extent

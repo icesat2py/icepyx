@@ -592,16 +592,14 @@ def test_no_granules_in_search_results():
 
 def test_correct_granule_list_returned():
     reg_a = ipx.Query(
-        "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-28"], version="2"
+        "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-28"], version="3",
     )
 
-    reg_a.avail_granules()
-    obs_grans = [gran["producer_granule_id"] for gran in reg_a.granules.avail]
+    obs_grans, = reg_a.avail_granules(ids=True)
     exp_grans = [
-        "ATL06_20190221121851_08410203_002_01.h5",
-        "ATL06_20190222010344_08490205_002_01.h5",
-        "ATL06_20190225121032_09020203_002_01.h5",
-        "ATL06_20190226005526_09100205_002_01.h5",
+        "ATL06_20190221121851_08410203_003_01.h5",
+        "ATL06_20190222010344_08490205_003_01.h5",
+        "ATL06_20190225121032_09020203_003_01.h5",
+        "ATL06_20190226005526_09100205_003_01.h5",
     ]
-
     assert set(obs_grans) == set(exp_grans)

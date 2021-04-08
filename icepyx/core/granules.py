@@ -44,15 +44,13 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
         Return a list of the available granule IDs for the granule dictionary
     cycles : boolean, default False
         Return a list of the available orbital cycles for the granule dictionary
-    tracks : boolean, default Fal
+    tracks : boolean, default False
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
     # regular expression for extracting parameters from file names
-    rx = re.compile(
-        "(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})"
-        "(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$"
-    )
+    rx = re.compile(r'(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})'
+           r'(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$')
     gran_ids = []
     gran_cycles = []
     gran_tracks = []
@@ -170,12 +168,13 @@ class Granules:
         # DevGoal: check the below request/response for errors and show them if they're there; then gather the results
         # note we should also do this whenever we ping NSIDC-API - make a function to check for errors
         while True:
+            params = apifmt.combine_params(
+                CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
+            )
             response = requests.get(
                 granule_search_url,
                 headers=headers,
-                params=apifmt.combine_params(
-                    CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
-                ),
+                params=apifmt.to_string(params),
             )
 
             results = json.loads(response.content)
@@ -320,8 +319,8 @@ class Granules:
             request.raise_for_status()
             esir_root = ET.fromstring(request.content)
             if verbose is True:
-                print("Order request URL: ", request.url)
-                print("Order request response XML content: ", request.content)
+                print("Order request URL: ", requests.utils.unquote(request.url))
+                print("Order request response XML content: ", request.content.decode('utf-8'))
 
             # Look up order ID
             orderlist = []

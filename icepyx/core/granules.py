@@ -100,7 +100,6 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
     # return the list of granule parameters
     return gran_list
 
-
 # DevGoal: this will be a great way/place to manage data from the local file system
 # where the user already has downloaded data!
 # DevNote: currently this class is not tested
@@ -401,7 +400,6 @@ class Granules:
                 self.orderIDs.append(orderID)
             else:
                 print("Request failed.")
-            
 
             # DevGoal: save orderIDs more frequently than just at the end for large orders (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
             # Save orderIDs to file to avoid resubmitting order in case kernel breaks down.

@@ -65,6 +65,9 @@ master_doc = "index"
 bibtex_bibfiles = ["tracking/icepyx_pubs.bib"]
 
 # -- Configuration options ---------------------------------------------------
+# Prefix document path to section labels, to use:
+# `path/to/file:heading` instead of just `heading`
+autosectionlabel_prefix_document = True
 autosummary_generate = True
 jupyter_execute_notebooks = "off"
 

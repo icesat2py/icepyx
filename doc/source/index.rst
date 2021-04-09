@@ -23,7 +23,7 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    :hidden:
    :caption: User Guide
 
-   .. user_guide/Gallery
+   example_notebooks/ICESat-2_DAAC_DataAccess_Example
    user_guide/documentation/icepyx
    user_guide/changelog/index
 
@@ -43,7 +43,7 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    :caption: Community and Resources
 
    community/resources
-   community/contact   
+   community/contact
    tracking/tracking
   
 **Quick Install**

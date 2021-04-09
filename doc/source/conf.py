@@ -18,8 +18,6 @@ sys.path.insert(0, os.path.abspath("../sphinxext"))
 import datetime
 
 import icepyx
-import recommonmark
-
 
 # -- Project information -----------------------------------------------------
 
@@ -35,17 +33,17 @@ copyright = "2019-{}, The icepyx Developers".format(year)
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
+    "myst_nb",
     "numpydoc",
-    "nbsphinx",
-    "recommonmark",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
 ]
 
 source_suffix = {
+    ".ipynb": "myst-nb",
     ".rst": "restructuredtext",
-    ".txt": "markdown",
-    ".md": "markdown",
+    ".txt": "myst-nb",
+    ".md": "myst-nb",
 }
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

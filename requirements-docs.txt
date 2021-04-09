@@ -1,7 +1,6 @@
 gitpython
 myst-nb
 nbsphinx
-numpydoc
 pybtex
 pygithub
 sphinx_rtd_theme

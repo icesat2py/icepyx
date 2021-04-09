@@ -33,8 +33,9 @@ copyright = "2019-{}, The icepyx Developers".format(year)
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
     "myst_nb",
-    "numpydoc",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
 ]

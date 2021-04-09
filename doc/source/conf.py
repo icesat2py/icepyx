@@ -41,8 +41,9 @@ extensions = [
 ]
 
 source_suffix = {
-    ".ipynb": "myst-nb",
+    # Note, put .rst first so that API docs are linked properly
     ".rst": "restructuredtext",
+    ".ipynb": "myst-nb",
     ".txt": "myst-nb",
     ".md": "myst-nb",
 }
@@ -62,9 +63,6 @@ bibtex_bibfiles = ["tracking/icepyx_pubs.bib"]
 
 # -- Configuration options ---------------------------------------------------
 autosummary_generate = True
-numpydoc_show_class_members = False
-
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for

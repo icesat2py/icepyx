@@ -39,6 +39,9 @@ extensions = [
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
 ]
+myst_enable_extensions = [
+    "linkify",
+]
 
 source_suffix = {
     # Note, put .rst first so that API docs are linked properly

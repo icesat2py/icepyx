@@ -1,6 +1,7 @@
 gitpython
 myst-nb
 nbsphinx
+linkify-it-py
 pybtex
 pygithub
 sphinx_rtd_theme

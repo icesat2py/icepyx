@@ -1,10 +1,11 @@
 """
 Interactive visualization of spatial extent and ICESat-2 elevations
 """
-import intake
+import intake.source.utils
 import backoff
 import requests
 import numpy as np
+import pandas as pd
 from shapely.geometry import Polygon
 from itertools import compress
 import concurrent.futures
@@ -51,11 +52,15 @@ class Visualize:
         self.bbox = bbox
         self.date_range = date_range
 
-    def grid_bbox(self, binsize=5):
+    def grid_bbox(self, binsize=5) -> list:
         """
-        Split bounding box into 5 x 5 grids
-        when latitude/longitude range exceeds the default OpenAltimetry 5*5 degree spatial limits
-        :return: a list of 5*5 degree bbox
+        Split bounding box into 5 x 5 grids when latitude/longitude range
+        exceeds the default OpenAltimetry 5*5 degree spatial limits
+
+        Returns
+        -------
+        bbox_list : list
+            A list of bounding boxes with a maximum size of 5*5 degree
         """
         lonmin, latmin, lonmax, latmax = self.bbox
         split_flag = ((lonmax - lonmin) > 5) or ((latmax - latmin) > 5)
@@ -114,11 +119,16 @@ class Visualize:
 
         return filelist_tuple
 
-    def generate_OA_parameters(self):
+    def generate_OA_parameters(self) -> list:
         """
         Get metadata from file lists in each 5*5 bbox
-        :return: a list of parameters for OpenAltimetry API query, including
-                 RGT, cycle number, datetime, bounding box, product name
+
+        Returns
+        -------
+        paras_list : list
+            A list of parameters for OpenAltimetry API query, including the
+            reference ground track (RGT), cycle number, datetime, bounding box,
+            and product name.
         """
         # list of parameters for API query
         paras_list = []
@@ -162,22 +172,24 @@ class Visualize:
         """Make HTTP request"""
         return requests.get(base_url, params=payload)
 
-    def request_OA_data(self, paras):
+    def request_OA_data(self, paras) -> xr.Dataset:
         """
         Request data from OpenAltimetry based on API:
         https://openaltimetry.org/data/swagger-ui/#/
 
-        :param paras: one parameter list for OpenAltimetry API request
-        :return: xarray dataset
+        Parameters
+        ----------
+        paras : list
+            A single parameter list for an OpenAltimetry API data request.
+
+        Returns
+        -------
+        OA_ds : xarray.Dataset
+            An xarray Dataset containing the ICESat-2 data.
         """
 
         base_url = 'https://openaltimetry.org/data/api/icesat2/level3a'
-
-        trackId = paras[0]
-        Date = paras[1]
-        cycle = paras[2]
-        bbox = paras[3]
-        product = paras[4]
+        trackId, Date, cycle, bbox, product = paras
 
         # Generate API
         payload = {'product': product.lower(),

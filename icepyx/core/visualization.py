@@ -6,7 +6,6 @@ import backoff
 import requests
 import numpy as np
 import pandas as pd
-from shapely.geometry import Polygon
 from itertools import compress
 import concurrent.futures
 from tqdm import tqdm
@@ -18,7 +17,6 @@ import holoviews as hv
 from holoviews.operation.datashader import rasterize
 
 import icepyx as ipx
-import icepyx.core.geospatial as geospatial
 
 hv.extension('bokeh')
 gv.extension('bokeh')
@@ -35,7 +33,7 @@ def files_in_latest_n_cycles(files, cycles, n=1):
 
     elif n > 1:
         if len(cycles) >= n:
-            viz_cycle_list = [max(cycles)-i for i in np.arange(n)]
+            viz_cycle_list = [max(cycles) - i for i in np.arange(n)]
         else:
             viz_cycle_list = cycles
         viz_file_list = [f for f in files if int(f.rsplit('_')[-3][4:6]) in viz_cycle_list]
@@ -47,10 +45,12 @@ def files_in_latest_n_cycles(files, cycles, n=1):
 
 class Visualize:
 
-    def __init__(self, product, bbox, date_range):
+    def __init__(self, product, bbox, date_range=None, cycles=None, tracks=None):
         self.product = product
         self.bbox = bbox
         self.date_range = date_range
+        self.cycles = cycles
+        self.tracks = tracks
 
     def grid_bbox(self, binsize=5) -> list:
         """
@@ -104,14 +104,15 @@ class Visualize:
         is2_file_list = []
 
         for bbox_i in bbox_list:
-            ### NEED Change for Track & Cycle Implementation
-            region = ipx.Query(self.product, bbox_i, self.date_range)
-            icesat2_files = region.avail_granules(ids=True, cycles=True, tracks=True)[0]
+
+            region = ipx.Query(self.product, bbox_i, self.date_range, cycles=self.cycles, tracks=self.tracks)
+            icesat2_files = region.avail_granules(ids=True)[0]
+            all_cycles = list(set(region.avail_granules(cycles=True)[0]))
 
             if not icesat2_files:
                 continue
             else:
-                icesat2_files_latest_cycle = files_in_latest_n_cycles(icesat2_files, [int(c) for c in region.cycles])
+                icesat2_files_latest_cycle = files_in_latest_n_cycles(icesat2_files, [int(c) for c in all_cycles])
                 is2_bbox_list.append(bbox_i)
                 is2_file_list.append(icesat2_files_latest_cycle)
 
@@ -313,7 +314,7 @@ class Visualize:
                 print('No data')
 
             else:
-                ddf = OA_ds.to_dask_dataframe().astype({'lat': 'float', 'lon': 'float','elevation': 'float'})
+                ddf = OA_ds.to_dask_dataframe().astype({'lat': 'float', 'lon': 'float', 'elevation': 'float'})
 
                 print('Plot elevation, please wait...')
 
@@ -330,7 +331,8 @@ class Visualize:
                                                                                                   tools=['hover'])
                 map_rgt = tiles * rasterize(raster_rgt, aggregator=ds.mean('elevation')).opts(colorbar=True,
                                                                                               tools=['hover'])
-                lineplot_rgt = rasterize(curve_rgt, aggregator=ds.mean('elevation')).opts(width=450, height=450, cmap=['blue'])
+                lineplot_rgt = rasterize(curve_rgt, aggregator=ds.mean('elevation')).opts(width=450, height=450,
+                                                                                          cmap=['blue'])
 
                 return map_cycle, map_rgt + lineplot_rgt, OA_ds
 

@@ -299,15 +299,6 @@ class Visualize:
             OA_data_ds = xr.merge(requested_OA_data_filtered)
             return OA_data_ds
 
-    def visualize_extent(self):
-        """Show bounding box extent set by users"""
-        region = ipx.Query(self.product, self.bbox, self.date_range)
-        gdf = geospatial.geodataframe(region.extent_type, region._spat_extent)
-        line_geoms = Polygon(gdf['geometry'][0]).boundary
-        bbox_poly = gv.Path(line_geoms).opts(color="red", line_color="red")
-        tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
-        return tile * bbox_poly
-
     def visualize_elevation(self):
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles

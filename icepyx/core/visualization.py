@@ -57,11 +57,7 @@ class Visualize:
         when latitude/longitude range exceeds the default OpenAltimetry 5*5 degree spatial limits
         :return: a list of 5*5 degree bbox
         """
-        lonmin = self.bbox[0]
-        latmin = self.bbox[1]
-        lonmax = self.bbox[2]
-        latmax = self.bbox[3]
-
+        lonmin, latmin, lonmax, latmax = self.bbox
         split_flag = ((lonmax - lonmin) > 5) or ((latmax - latmin) > 5)
 
         if split_flag:

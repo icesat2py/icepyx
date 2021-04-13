@@ -181,12 +181,12 @@ class Granules:
             # print(results)
 
             try:
-                if len(results["feed"]["entry"]) == 0:
+                if not results["feed"]["entry"]:
                     # Out of results, so break out of loop
                     break
             except KeyError:
                 if "errors" in results.keys():
-                    raise ValueError(
+                    raise RuntimeError(
                         "An error was returned from NSIDC in regards to your query: \n"
                         + str(results["errors"])
                     )
@@ -502,17 +502,14 @@ class Granules:
                     len(self.orderIDs[i_order:]),
                     " order(s) is downloaded.",
                 )
-                success = True
             except requests.HTTPError:
                 print(
                     "Unable to download ",
                     order,
                     ". Check granule order for messages.")
-                success = False
-
             # DevGoal: move this option back out to the is2class level and implement it in an alternate way?
             #         #Note: extract the dataset to save it locally
-            if success is True:
+            else:
                 with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
                     for zfile in z.filelist:
                         # Remove the subfolder name from the filepath

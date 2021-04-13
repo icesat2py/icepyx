@@ -10,6 +10,7 @@ from xml.etree import ElementTree as ET
 import zipfile
 
 import icepyx.core.APIformatting as apifmt
+import icepyx.core.exceptions
 
 
 def info(grans):
@@ -186,9 +187,8 @@ class Granules:
                     break
             except KeyError:
                 if "errors" in results.keys():
-                    raise RuntimeError(
-                        "An error was returned from NSIDC in regards to your query: \n"
-                        + str(results["errors"])
+                    raise QueryError.NsidcQueryError(
+                        str(results["errors"])
                     )
 
             # Collect results and increment page_num

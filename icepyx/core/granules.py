@@ -177,8 +177,6 @@ class Granules:
                 granule_search_url, headers=headers, params=apifmt.to_string(params),
             )
 
-            results = json.loads(response.content)
-
             try:
                 response.raise_for_status()
             except requests.HTTPError as e:
@@ -186,11 +184,12 @@ class Granules:
                     b"errors" in response.content
                 ):  # If CMR returns a bad status with extra information, display that
                     raise icepyx.core.exceptions.NsidcQueryError(
-                        str(results["errors"])
+                        e
                     )  # exception chaining will display original exception too
                 else:  # If no 'errors' key, just reraise original exception
                     raise
 
+            results = json.loads(response.content)
             if not results["feed"]["entry"]:
                 # Out of results, so break out of loop
                 break

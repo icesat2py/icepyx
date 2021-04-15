@@ -165,8 +165,7 @@ class Granules:
         granule_search_url = "https://cmr.earthdata.nasa.gov/search/granules"
 
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
-        # DevGoal: check the below request/response for errors and show them if they're there; then gather the results
-        # note we should also do this whenever we ping NSIDC-API - make a function to check for errors
+        # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
         while True:
             params = apifmt.combine_params(
                 CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
@@ -178,18 +177,18 @@ class Granules:
             )
 
             results = json.loads(response.content)
-
-            # print(results)
-
+            
             try:
-                if not results["feed"]["entry"]:
-                    # Out of results, so break out of loop
-                    break
-            except KeyError:
-                if "errors" in results.keys():
-                    raise QueryError.NsidcQueryError(
-                        str(results["errors"])
-                    )
+                response.raise_for_status()
+            except requests.HTTPError as e:
+                if b'errors' in response.content:  # If CMR returns a bad status with extra information, display that
+                    raise icepyx.core.exceptions.NsidcQueryError(str(results["errors"])) # exception chaining will display original exception too 
+                else:  # If no 'errors' key, just reraise original exception
+                    raise
+
+            if not results["feed"]["entry"]:
+                # Out of results, so break out of loop
+                break
 
             # Collect results and increment page_num
             self.avail.extend(results["feed"]["entry"])

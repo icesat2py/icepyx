@@ -603,3 +603,9 @@ def test_correct_granule_list_returned():
         "ATL06_20190226005526_09100205_003_01.h5",
     ]
     assert set(obs_grans) == set(exp_grans)
+
+# def test_avail_granule_CMR_error():
+#     # an example of a "bad input"
+#     response = requests.get("https://cmr.earthdata.nasa.gov/search/granules.json?version=003&temporal=badinput&short_name=ATL08")
+#     # expect it to return an NsidcQueryError
+#     # need to set up a mock to do this test

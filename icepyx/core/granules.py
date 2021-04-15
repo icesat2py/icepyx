@@ -50,8 +50,10 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
     # regular expression for extracting parameters from file names
-    rx = re.compile(r'(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})'
-           r'(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$')
+    rx = re.compile(
+        r"(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})"
+        r"(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$"
+    )
     gran_ids = []
     gran_cycles = []
     gran_tracks = []
@@ -100,6 +102,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
         gran_list.append(gran_tracks)
     # return the list of granule parameters
     return gran_list
+
 
 # DevGoal: this will be a great way/place to manage data from the local file system
 # where the user already has downloaded data!
@@ -171,18 +174,20 @@ class Granules:
                 CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
             )
             response = requests.get(
-                granule_search_url,
-                headers=headers,
-                params=apifmt.to_string(params),
+                granule_search_url, headers=headers, params=apifmt.to_string(params),
             )
 
             results = json.loads(response.content)
-            
+
             try:
                 response.raise_for_status()
             except requests.HTTPError as e:
-                if b'errors' in response.content:  # If CMR returns a bad status with extra information, display that
-                    raise icepyx.core.exceptions.NsidcQueryError(str(results["errors"])) # exception chaining will display original exception too 
+                if (
+                    b"errors" in response.content
+                ):  # If CMR returns a bad status with extra information, display that
+                    raise icepyx.core.exceptions.NsidcQueryError(
+                        str(results["errors"])
+                    )  # exception chaining will display original exception too
                 else:  # If no 'errors' key, just reraise original exception
                     raise
 
@@ -318,7 +323,10 @@ class Granules:
             esir_root = ET.fromstring(request.content)
             if verbose is True:
                 print("Order request URL: ", requests.utils.unquote(request.url))
-                print("Order request response XML content: ", request.content.decode('utf-8'))
+                print(
+                    "Order request response XML content: ",
+                    request.content.decode("utf-8"),
+                )
 
             # Look up order ID
             orderlist = []
@@ -489,7 +497,7 @@ class Granules:
             if verbose is True:
                 print("Zip download URL: ", downloadURL)
             print("Beginning download of zipped output...")
-            
+
             try:
                 zip_response = session.get(downloadURL)
                 # Raise bad request: Loop will stop for bad response code.
@@ -503,9 +511,8 @@ class Granules:
                 )
             except requests.HTTPError:
                 print(
-                    "Unable to download ",
-                    order,
-                    ". Check granule order for messages.")
+                    "Unable to download ", order, ". Check granule order for messages."
+                )
             # DevGoal: move this option back out to the is2class level and implement it in an alternate way?
             #         #Note: extract the dataset to save it locally
             else:

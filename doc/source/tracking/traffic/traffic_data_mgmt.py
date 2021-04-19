@@ -47,4 +47,5 @@ views.sort_values("_date").plot(
 
 fig.savefig(trafficpath + "plots.svg")
 
-subprocess.run(["rm -rf " + defaultpath[:-1]], shell=True)
+# removing the files should not be necessary here since they're not included in the git commit
+#subprocess.run(["rm -rf " + defaultpath[:-1]], shell=True)

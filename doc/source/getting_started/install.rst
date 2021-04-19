@@ -1,7 +1,7 @@
 
 
 
-.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/master.zip
+.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
 .. _`Fiona`: https://pypi.org/project/Fiona/
 
 

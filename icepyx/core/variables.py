@@ -33,7 +33,7 @@ class Variables:
         Properly formatted string specifying a valid version of the ICESat-2 dataset
     source : string, default None
         For vartype file, a path to a directory or single input source files (not yet implemented)
-   """
+    """
 
     def __init__(
         self,
@@ -77,7 +77,7 @@ class Variables:
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.order_vars.avail()
-       ['ancillary_data/atlas_sdp_gps_epoch',
+        ['ancillary_data/atlas_sdp_gps_epoch',
         'ancillary_data/control',
         'ancillary_data/data_end_utc',
         'ancillary_data/data_start_utc',
@@ -140,39 +140,39 @@ class Variables:
         >>> var_dict.keys()
         dict_keys(['atlas_sdp_gps_epoch', 'control', 'data_end_utc', 'data_start_utc',
         'end_cycle', 'end_delta_time', 'end_geoseg', 'end_gpssow', 'end_gpsweek',
-        'end_orbit', 'end_region', 'end_rgt', 'granule_end_utc', 'granule_start_utc', 
-        'qa_at_interval', 'release', 'start_cycle', 'start_delta_time', 'start_geoseg', 
-        'start_gpssow', 'start_gpsweek', 'start_orbit', 'start_region', 'start_rgt', 
-        'version', 'dt_hist', 'fit_maxiter', 'fpb_maxiter', 'maxiter', 'max_res_ids', 
-        'min_dist', 'min_gain_th', 'min_n_pe', 'min_n_sel', 'min_signal_conf', 'n_hist', 
-        'nhist_bins', 'n_sigmas', 'proc_interval', 'qs_lim_bsc', 'qs_lim_hrs', 'qs_lim_hsigma', 
-        'qs_lim_msw', 'qs_lim_snr', 'qs_lim_sss', 'rbin_width', 'sigma_beam', 'sigma_tx', 
-        't_dead', 'atl06_quality_summary', 'delta_time', 'h_li', 'h_li_sigma', 'latitude', 
-        'longitude', 'segment_id', 'sigma_geo_h', 'fpb_mean_corr', 'fpb_mean_corr_sigma', 
-        'fpb_med_corr', 'fpb_med_corr_sigma', 'fpb_n_corr', 'med_r_fit', 'tx_mean_corr', 
+        'end_orbit', 'end_region', 'end_rgt', 'granule_end_utc', 'granule_start_utc',
+        'qa_at_interval', 'release', 'start_cycle', 'start_delta_time', 'start_geoseg',
+        'start_gpssow', 'start_gpsweek', 'start_orbit', 'start_region', 'start_rgt',
+        'version', 'dt_hist', 'fit_maxiter', 'fpb_maxiter', 'maxiter', 'max_res_ids',
+        'min_dist', 'min_gain_th', 'min_n_pe', 'min_n_sel', 'min_signal_conf', 'n_hist',
+        'nhist_bins', 'n_sigmas', 'proc_interval', 'qs_lim_bsc', 'qs_lim_hrs', 'qs_lim_hsigma',
+        'qs_lim_msw', 'qs_lim_snr', 'qs_lim_sss', 'rbin_width', 'sigma_beam', 'sigma_tx',
+        't_dead', 'atl06_quality_summary', 'delta_time', 'h_li', 'h_li_sigma', 'latitude',
+        'longitude', 'segment_id', 'sigma_geo_h', 'fpb_mean_corr', 'fpb_mean_corr_sigma',
+        'fpb_med_corr', 'fpb_med_corr_sigma', 'fpb_n_corr', 'med_r_fit', 'tx_mean_corr',
         tx_med_corr', 'dem_flag', 'dem_h', 'geoid_h', 'dh_fit_dx', 'dh_fit_dx_sigma', '
-        dh_fit_dy', 'h_expected_rms', 'h_mean', 'h_rms_misfit', 'h_robust_sprd', 
-        'n_fit_photons', 'n_seg_pulses', 'sigma_h_mean', 'signal_selection_source', 
-        'signal_selection_source_status', 'snr', 'snr_significance', 'w_surface_window_final', 
-        ckgrd', 'bsnow_conf', 'bsnow_h', 'bsnow_od', 'cloud_flg_asr', 'cloud_flg_atm', 'dac', 
-        'e_bckgrd', 'layer_flag', 'msw_flag', 'neutat_delay_total', 'r_eff', 'solar_azimuth', 
-        'solar_elevation', 'tide_earth', 'tide_equilibrium', 'tide_load', 'tide_ocean', 
-        'tide_pole', 'ref_azimuth', 'ref_coelv', 'seg_azimuth', 'sigma_geo_at', 'sigma_geo_r', 
-        igma_geo_xt', 'x_atc', 'y_atc', 'bckgrd_per_m', 'bin_top_h', 'count', 'ds_segment_id', 
-        'lat_mean', 'lon_mean', 'pulse_count', 'segment_id_list', 'x_atc_mean', 'record_number', 
-        'reference_pt_lat', 'reference_pt_lon', 'signal_selection_status_all', 
-        'signal_selection_status_backup', 'signal_selection_status_confident', 'crossing_time', 
-        'cycle_number', 'lan', 'orbit_number', 'rgt', 'sc_orient', 'sc_orient_time', 
-        'qa_granule_fail_reason', 'qa_granule_pass_fail', 'signal_selection_source_fraction_0', 
-        'signal_selection_source_fraction_1', 'signal_selection_source_fraction_2', 
+        dh_fit_dy', 'h_expected_rms', 'h_mean', 'h_rms_misfit', 'h_robust_sprd',
+        'n_fit_photons', 'n_seg_pulses', 'sigma_h_mean', 'signal_selection_source',
+        'signal_selection_source_status', 'snr', 'snr_significance', 'w_surface_window_final',
+        ckgrd', 'bsnow_conf', 'bsnow_h', 'bsnow_od', 'cloud_flg_asr', 'cloud_flg_atm', 'dac',
+        'e_bckgrd', 'layer_flag', 'msw_flag', 'neutat_delay_total', 'r_eff', 'solar_azimuth',
+        'solar_elevation', 'tide_earth', 'tide_equilibrium', 'tide_load', 'tide_ocean',
+        'tide_pole', 'ref_azimuth', 'ref_coelv', 'seg_azimuth', 'sigma_geo_at', 'sigma_geo_r',
+        igma_geo_xt', 'x_atc', 'y_atc', 'bckgrd_per_m', 'bin_top_h', 'count', 'ds_segment_id',
+        'lat_mean', 'lon_mean', 'pulse_count', 'segment_id_list', 'x_atc_mean', 'record_number',
+        'reference_pt_lat', 'reference_pt_lon', 'signal_selection_status_all',
+        'signal_selection_status_backup', 'signal_selection_status_confident', 'crossing_time',
+        'cycle_number', 'lan', 'orbit_number', 'rgt', 'sc_orient', 'sc_orient_time',
+        'qa_granule_fail_reason', 'qa_granule_pass_fail', 'signal_selection_source_fraction_0',
+        'signal_selection_source_fraction_1', 'signal_selection_source_fraction_2',
         'signal_selection_source_fraction_3'])
         >>> import numpy
         >>> numpy.unique(paths)
         array(['ancillary_data', 'bias_correction', 'dem', 'fit_statistics',
-       'geophysical', 'ground_track', 'gt1l', 'gt1r', 'gt2l', 'gt2r',
-       'gt3l', 'gt3r', 'land_ice', 'land_ice_segments', 'none',
-       'orbit_info', 'quality_assessment', 'residual_histogram',
-       'segment_quality', 'signal_selection_status'], dtype='<U23')
+        'geophysical', 'ground_track', 'gt1l', 'gt1r', 'gt2l', 'gt2r',
+        'gt3l', 'gt3r', 'land_ice', 'land_ice_segments', 'none',
+        'orbit_info', 'quality_assessment', 'residual_histogram',
+        'segment_quality', 'signal_selection_status'], dtype='<U23')
         """
 
         # create a dictionary of variable names and paths
@@ -336,23 +336,23 @@ class Variables:
     # DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
     def append(self, defaults=False, var_list=None, beam_list=None, keyword_list=None):
         """
-        Add to the list of desired variables using user specified beams and variable list. 
-        A pregenerated default variable list can be used by setting defaults to True. 
+        Add to the list of desired variables using user specified beams and variable list.
+        A pregenerated default variable list can be used by setting defaults to True.
         Note: The calibrated backscatter cab_prof is not in the default list for ATL09
-        
+
         Parameters
         ----------
         defaults : boolean, default False
-            Include the variables in the default variable list. Defaults are defined per-data product. 
+            Include the variables in the default variable list. Defaults are defined per-data product.
             When specified in conjuction with a var_list, default variables not on the user-
             specified list will be added to the order.
 
         var_list : list of strings, default None
-            A list of variables to request, if not all available variables are wanted. 
+            A list of variables to request, if not all available variables are wanted.
             A list of available variables can be obtained by entering `var_list=['']` into the function.
 
         beam_list : list of strings, default None
-            A list of beam strings, if only selected beams are wanted (the default value of None will automatically 
+            A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
             For all other datasets, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
@@ -363,10 +363,10 @@ class Variables:
 
         Notes
         -----
-        See also the `ICESat-2_DAAC_DataAccess2_Subsetting 
-        <https://github.com/icesat2py/icepyx/blob/master/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        See also the `ICESat-2_DAAC_DataAccess2_Subsetting
+        <https://github.com/icesat2py/icepyx/blob/main/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
         example notebook
-        
+
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
@@ -374,19 +374,19 @@ class Variables:
         Earthdata Login password:  ········
 
         To add all variables related to a specific ICESat-2 beam
-        
+
         >>> reg_a.order_vars.append(beam_list=['gt1r'])
-        
+
         To include the default variables:
-        
+
         >>> reg_a.order_vars.append(defaults=True)
 
         To add specific variables in orbit_info
-        
+
         >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
 
         To add all variables and paths in ancillary_data
-        
+
         >>> reg_a.order_vars.append(keyword_list=['ancillary_data'])
         """
 
@@ -454,19 +454,19 @@ class Variables:
     def remove(self, all=False, var_list=None, beam_list=None, keyword_list=None):
         """
         Remove the variables and paths from the wanted list using user specified beam, keyword,
-         and variable lists. 
-        
+         and variable lists.
+
         Parameters:
         -----------
         all : boolean, default False
             Remove all variables and paths from the wanted list.
-        
+
         var_list : list of strings, default None
-            A list of variables to request, if not all available variables are wanted. 
+            A list of variables to request, if not all available variables are wanted.
             A list of available variables can be obtained by entering `var_list=['']` into the function.
 
         beam_list : list of strings, default None
-            A list of beam strings, if only selected beams are wanted (the default value of None will automatically 
+            A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
             For all other datasets, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
@@ -476,10 +476,10 @@ class Variables:
 
         Notes
         -----
-        See also the `ICESat-2_DAAC_DataAccess2_Subsetting 
-        <https://github.com/icesat2py/icepyx/blob/master/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        See also the `ICESat-2_DAAC_DataAccess2_Subsetting
+        <https://github.com/icesat2py/icepyx/blob/main/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
         example notebook
-        
+
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
@@ -487,19 +487,19 @@ class Variables:
         Earthdata Login password:  ········
 
         To clear the list of wanted variables
-        
+
         >>> reg_a.order_vars.remove(all=True)
-        
+
         To remove all variables related to a specific ICESat-2 beam
-        
+
         >>> reg_a.order_vars.remove(beam_list=['gt1r'])
 
         To remove specific variables in orbit_info
-        
+
         >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
 
         To remove all variables and paths in ancillary_data
-        
+
         >>> reg_a.order_vars.remove(keyword_list=['ancillary_data'])
         """
 

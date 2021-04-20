@@ -4,12 +4,12 @@ Interactive visualization of spatial extent and ICESat-2 elevations
 import backoff
 import concurrent.futures
 import dask.array as da
+import dask.dataframe as dd
 import datashader as ds
 import geoviews as gv
 import holoviews as hv
 from holoviews.operation.datashader import rasterize
 import intake.source.utils
-from itertools import compress
 import numpy as np
 import pandas as pd
 import requests
@@ -24,7 +24,21 @@ gv.extension("bokeh")
 
 def files_in_latest_n_cycles(files, cycles, n=1):
     """
-    Get list of file names in latest n cycles
+    Get list of file names from latest n cycles
+
+    Parameters
+    ----------
+    files : list
+        A list of file names.
+    cycles: list
+        A list of available cycles
+    n: int, default 1
+        Number of latest cycles
+
+    Returns
+    -------
+    viz_file_list : list
+        A list of file names from latest n cycles
     """
     if n == 1:
         latest_cycle = max(cycles)
@@ -103,7 +117,11 @@ class Visualize:
     def query_icesat2_filelist(self):
         """
         Query list of ICESat-2 files based on splitted bbox
-        :return: tuples of non-empty bbox list and corresponding ICESat-2 file lists
+
+        Returns
+        -------
+        filelist_tuple : tuple
+            A tuple of non-empty list of bounding boxes and corresponding ICESat-2 file lists
         """
         # a list of 5*5 bounding boxes
         bbox_list = self.grid_bbox()
@@ -132,9 +150,9 @@ class Visualize:
                 is2_bbox_list.append(bbox_i)
                 is2_file_list.append(icesat2_files_latest_cycle)
 
-        filelist_tuple = zip(is2_bbox_list, is2_file_list)
+        is2_file_tuple = zip(is2_bbox_list, is2_file_list)
 
-        return filelist_tuple
+        return is2_file_tuple
 
     def generate_OA_parameters(self) -> list:
         """
@@ -183,9 +201,9 @@ class Visualize:
     @backoff.on_exception(
         backoff.expo,
         (
-            requests.exceptions.Timeout,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.ChunkedEncodingError,
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+                requests.exceptions.ChunkedEncodingError,
         ),
         max_tries=5,
     )
@@ -230,25 +248,27 @@ class Visualize:
         # get elevation data
         elevation_data = r.json()
 
-        # length of file list
-        file_len = len(elevation_data["data"])
+        df = pd.json_normalize(data=elevation_data, record_path=["data"])
 
-        # file index satisfies acquisition time from data file
-        idx = [elevation_data["data"][i]["date"] == Date for i in np.arange(file_len)]
+        # get data we need (with the correct date)
+        try:
 
-        # get data we need
-        beam_data = list(compress(elevation_data["data"], idx))
+            df_series = df.query(expr="date == @Date").iloc[0]
+            beam_data = df_series.beams
+
+        except:
+            beam_data = None
 
         if not beam_data:
             return
 
         data_name = "lat_lon_elev_canopy" if product == "ATL08" else "lat_lon_elev"
 
-        # iterate six beams, sampling rate: 1/20
+        sample_rate = 50 if product == "ATL06" else 20
+
+        # iterate six beams
         beam_elev = [
-            beam_data[0]["beams"][i][data_name][::20]
-            for i in np.arange(6)
-            if beam_data[0]["beams"][i][data_name] != []
+            beam_data[i][data_name][::sample_rate] for i in range(6) if beam_data[i][data_name]
         ]
 
         if not beam_elev:
@@ -258,30 +278,13 @@ class Visualize:
         OA_array = np.vstack(beam_elev)
 
         if OA_array.size > 0:
-            # convert numpy to dask array
-            OA_array = np.expand_dims(OA_array, axis=(0, 1, 2))
+            OA_array = np.c_[np.squeeze(OA_array),
+                             np.full(np.size(np.squeeze(OA_array), 0), trackId),
+                             np.full(np.size(np.squeeze(OA_array), 0), cycle)]
+
             OA_darr = da.from_array(OA_array, chunks=1000)
 
-            elevation = OA_darr[:, :, :, :, 2]
-            lat = OA_darr[:, :, :, :, 0]
-            lon = OA_darr[:, :, :, :, 1]
-            index = np.arange(elevation.shape[3])
-            bbox_no = [str(bbox)]
-            rgt_no = [trackId]
-            cycle_no = [cycle]
-
-            # create xarray dataset
-            OA_ds = xr.Dataset(
-                data_vars=dict(
-                    elevation=(["rgt", "cycle", "bbox", "index"], elevation),
-                    lat=(["rgt", "cycle", "bbox", "index"], lat),
-                    lon=(["rgt", "cycle", "bbox", "index"], lon),
-                ),
-                coords=dict(rgt=rgt_no, cycle=cycle_no, index=index, bbox=bbox_no),
-                attrs=dict(description="ICESat-2 Elevation"),
-            )
-
-            return OA_ds
+            return OA_darr
 
     def parallel_request_OA(self):
         """
@@ -292,7 +295,10 @@ class Visualize:
         according to: https://openaltimetry.org/data/swagger-ui/#/Public/getATL08DataByDate,
         with geospatial limitation of 1 degree lat/lon
 
-        :return: all requested ICESat-2 elevation in xarray dataset
+        Returns
+        -------
+        OA_data_da : dask.Array
+            A dask array containing the ICESat-2 data.
         """
         print("Generating urls")
 
@@ -305,7 +311,7 @@ class Visualize:
         requested_OA_data = []
 
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(OA_para_list)
+                max_workers=len(OA_para_list)
         ) as executor:
             parallel_OA_data = {
                 executor.submit(self.request_OA_data, para): para
@@ -313,38 +319,52 @@ class Visualize:
             }
 
             for future in tqdm(
-                iterable=concurrent.futures.as_completed(parallel_OA_data),
-                total=len(parallel_OA_data),
+                    iterable=concurrent.futures.as_completed(parallel_OA_data),
+                    total=len(parallel_OA_data),
             ):
                 r = future.result()
                 if r is not None:
                     requested_OA_data.append(r)
 
-        requested_OA_data_filtered = list(filter(None, requested_OA_data))
-
-        if not requested_OA_data_filtered:
+        if not requested_OA_data:
             return
         else:
-            OA_data_ds = xr.merge(requested_OA_data_filtered)
-            return OA_data_ds
+            OA_data_da = da.concatenate(requested_OA_data, axis=0)
+            return OA_data_da
 
-    def visualize_elevation(self):
+    def viz_elevation(self):
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles
         https://holoviz.org/tutorial/Large_Data.html
+
+        Returns
+        -------
+        map_cycle, map_rgt + lineplot_rgt : Holoviews objects
+            Holoviews data visualization elements
         """
 
         if self.product in ["ATL06", "ATL07", "ATL08", "ATL10", "ATL12", "ATL13"]:
 
-            OA_ds = self.parallel_request_OA()
+            OA_da = self.parallel_request_OA()
 
-            if OA_ds is None:
+            if OA_da is None:
                 print("No data")
+                return (None,) * 2
 
             else:
-                ddf = OA_ds.to_dask_dataframe().astype(
-                    {"lat": "float", "lon": "float", "elevation": "float"}
-                )
+
+                cols = ['lat', 'lon', 'elevation', 'canopy', 'rgt', 'cycle'] if self.product == "ATL08" else ['lat',
+                                                                                                              'lon',
+                                                                                                              'elevation',
+                                                                                                              'rgt',
+                                                                                                              'cycle']
+                ddf = dd.io.from_dask_array(OA_da, columns=cols).astype(
+                    {"lat": "float",
+                     "lon": "float",
+                     "elevation": "float",
+                     "rgt": "int",
+                     "cycle": "int"
+                     })
 
                 print("Plot elevation, please wait...")
 
@@ -379,7 +399,7 @@ class Visualize:
                     curve_rgt, aggregator=ds.mean("elevation")
                 ).opts(width=450, height=450, cmap=["blue"])
 
-                return map_cycle, map_rgt + lineplot_rgt, OA_ds
+                return map_cycle, map_rgt + lineplot_rgt
 
         else:
             print(

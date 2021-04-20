@@ -8,7 +8,7 @@ Constructor
 -----------
 
 .. autosummary::
-   :toctree: ../_icepyx/
+   :toctree: ../../_icepyx/
 
    Query
 
@@ -17,7 +17,7 @@ Attributes
 ----------
 
 .. autosummary::
-   :toctree: ../_icepyx/
+   :toctree: ../../_icepyx/
 
    Query.CMRparams
    Query.cycles
@@ -38,7 +38,7 @@ Methods
 -------
 
 .. autosummary::
-   :toctree: ../_icepyx/
+   :toctree: ../../_icepyx/
 
    Query.avail_granules
    Query.dataset_all_info

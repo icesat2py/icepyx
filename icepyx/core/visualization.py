@@ -208,23 +208,29 @@ class Visualize:
         # get elevation data
         elevation_data = r.json()
 
-        # length of file list
-        file_len = len(elevation_data['data'])
+        df = pd.json_normalize(data=elevation_data, record_path=["data"])
 
-        # file index satisfies acquisition time from data file
-        idx = [elevation_data['data'][i]['date'] == Date for i in np.arange(file_len)]
+        # get data we need (with the correct date)
 
-        # get data we need
-        beam_data = list(compress(elevation_data['data'], idx))
+        try:
+
+            df_series = df.query(expr="date == @Date").iloc[0]
+            beam_data = df_series.beams
+
+        except:
+            beam_data = None
 
         if not beam_data:
             return
 
         data_name = "lat_lon_elev_canopy" if product == "ATL08" else "lat_lon_elev"
 
-        # iterate six beams, sampling rate: 1/20
-        beam_elev = [beam_data[0]['beams'][i][data_name][::20] for i in np.arange(6) if
-                     beam_data[0]['beams'][i][data_name] != []]
+        sample_rate = 50 if product == "ATL06" else 20
+
+        # iterate six beams
+        beam_elev = [
+            beam_data[i][data_name][::sample_rate] for i in range(6) if beam_data[i][data_name]
+        ]
 
         if not beam_elev:
             return
@@ -312,6 +318,7 @@ class Visualize:
 
             if OA_ds is None:
                 print('No data')
+                return (None,)*3
 
             else:
                 ddf = OA_ds.to_dask_dataframe().astype({'lat': 'float', 'lon': 'float', 'elevation': 'float'})

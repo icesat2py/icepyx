@@ -19,6 +19,7 @@ from icepyx.core.granules import Granules as Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
+from icepyx.core.visualization import Visualize
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
@@ -939,3 +940,34 @@ class Query:
             world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
             gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
             plt.show()
+
+    def visualize_elevation(self):
+
+        product = self.dataset
+        if self.extent_type == "bounding_box":
+            bbox = self._spat_extent
+
+        else:
+            mrc_bound = self._spat_extent.minimum_rotated_rectangle
+            # generate bounding box
+            lonmin = min(mrc_bound.exterior.coords.xy[0])
+            lonmax = max(mrc_bound.exterior.coords.xy[0])
+            latmin = min(mrc_bound.exterior.coords.xy[1])
+            latmax = max(mrc_bound.exterior.coords.xy[1])
+
+            bbox = [lonmin, latmin, lonmax, latmax]
+
+        date_range = [self._start.strftime('%Y-%m-%d'),
+                      self._end.strftime('%Y-%m-%d')] if hasattr(self, '_start') else None
+
+        cycles = self._cycles if hasattr(self, '_cycles') else None
+
+        tracks = self._cycles if hasattr(self, '_tracks') else None
+
+        print(product, bbox, date_range, cycles, tracks)
+
+        viz = Visualize(product, bbox, date_range, cycles, tracks)
+
+        cycle_map, rgt_map = viz.viz_elevation()
+
+        return cycle_map, rgt_map

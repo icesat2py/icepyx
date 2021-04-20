@@ -37,6 +37,11 @@ To upgrade an installed version of icepyx to the latest stable release, do::
 
     conda update icepyx
 
+Note: If this is you are doing a 'clean istall' of icepyx (i.e. without any of the required packages already installed in your local envrionment), you may encounter error messages when you try to import icepyx in your code. This is may be caused by the version of the rtree package according `this post <https://github.com/geopandas/geopandas/issues/1812>`__. When you use conda to install geopandas, it automatically installs all the dependencies, including rtree, with their newest version. To fix this issue, do::
+
+    conda remove rtree
+    conda install rtree=0.9.3
+    conda install icepyx
 
 
 Using pip 

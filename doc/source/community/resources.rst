@@ -1,4 +1,5 @@
 .. _resource_ref_label:
+
 ICESat-2 Open-Source Resources Guide
 ====================================
 

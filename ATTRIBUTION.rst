@@ -1,14 +1,15 @@
 .. _attribution_ref_label:
+
 Attribution Guidelines
 ======================
 
 We are extremely grateful to everyone who has contributed to the success of the icepyx community, whether through direct contributions to or feedback about icepyx or as developers or maintainers of complimentary resources that are included within the icepyx ecosystem. This document outlines our goals to give appropriate attribution to all contributors to icepyx in ways that are fair and diverse and supportive of professional goals. To do so, we define broadly *contributions* as:
 
     Efforts towards achieving icepyx's goals, including writing code, tests, or documentation,
-    development of example workflows, development, significant contributions, or maintenance of 
-    a tailored package that broadens the functionality of icepyx, feedback and suggestions, 
+    development of example workflows, development, significant contributions, or maintenance of
+    a tailored package that broadens the functionality of icepyx, feedback and suggestions,
     community building, etc.
-    
+
 We use the terms "contributors", "developers", and "authors" interchangeably. We will recognize contributions in the following ways.
 
 Contributors List
@@ -39,11 +40,11 @@ Authorship on scientific papers currently constitutes an important metric for as
   2. Add themself to the `Contributors List`_.
   3. Contribute ideas, participate in authorship discussions (see next paragraph), write, read, and review the manuscript in a timely manner, and provide feedback (acknowledgement of review is sufficient, but we'd prefer more).
 
-Author order will be determined based on co-author discussion, led by the lead author, during the initial planning stages of manuscript preparation (i.e. as soon as an idea matures into a potential manuscript and before writing begins). Authorship will continue to be evaluated throughout the manuscript preparation process. Discussions will consider authorship norms (e.g. How does author order convey participation and prestige? How critical is first authorship to career advancement for each member of the team? Do an individual's contributions meet authorship criteria or are they more suited to acknowledgements?). Author order determination will also consider metrics such as the number of commits since the last major release with an associated paper (``git shortlog vX.0.0...HEAD -sne``), contributions that do not have associated commits, and contributions to the preparation of the manuscript. 
+Author order will be determined based on co-author discussion, led by the lead author, during the initial planning stages of manuscript preparation (i.e. as soon as an idea matures into a potential manuscript and before writing begins). Authorship will continue to be evaluated throughout the manuscript preparation process. Discussions will consider authorship norms (e.g. How does author order convey participation and prestige? How critical is first authorship to career advancement for each member of the team? Do an individual's contributions meet authorship criteria or are they more suited to acknowledgements?). Author order determination will also consider metrics such as the number of commits since the last major release with an associated paper (``git shortlog vX.0.0...HEAD -sne``), contributions that do not have associated commits, and contributions to the preparation of the manuscript.
 
 
 
-    Disclaimer: These policies are not permanent or fixed and may change to accomodate community growth, 
+    Disclaimer: These policies are not permanent or fixed and may change to accomodate community growth,
     best practices, and feedback.
 
 Copyright notice: This document was inspired by the `authorship guidelines <https://github.com/fatiando/contributing/blob/master/AUTHORSHIP.md>`_ provided by `Fatiando a Terra <https://github.com/fatiando>`_ and encourages potential co-authors to consider the resources provided by the `NASA High Mountain Asia Team (HiMAT) <https://highmountainasia.github.io/team-collaboration/authorship/>`_.

@@ -3,7 +3,7 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|Documentation Status|  |GitHub license|  |Travis CI Status| |Code Coverage|
+|Documentation Status|  |GitHub license|  |Travis CI Status| |Code Coverage| |Conda install| |Pypi install|
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
@@ -16,6 +16,12 @@ icepyx
 
 .. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx
+    
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
+    :target: https://anaconda.org/conda-forge/icepyx
+
+.. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
+    :target: https://pypi.org/project/icepyx/
 
 Origin and Purpose
 ------------------
@@ -36,11 +42,11 @@ Installation
 
 The simplest way to install icepyx is by using the
 `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/index.html>`__
-package manager.
-
+package manager. |Conda install|
+    
     conda install icepyx
 
-Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__.
+Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__. |Pypi install|
 
     pip install icepyx
 

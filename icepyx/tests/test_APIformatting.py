@@ -1021,11 +1021,23 @@ def test_readable_granules():
     obs = apifmt._fmt_readable_granules('ATL06',cycles=['02'],tracks=['1387'])
     exp = ['ATL06_??????????????_138702??_*']
     assert obs == exp
+    obs = apifmt._fmt_readable_granules('ATL07',cycles=['02'],tracks=['1387'])
+    exp = ['ATL07-??_??????????????_138702??_*']
+    assert obs == exp
     obs = apifmt._fmt_readable_granules('ATL06',tracks=['1387'])
     exp = ['ATL06_??????????????_1387????_*']
     assert obs == exp
+    obs = apifmt._fmt_readable_granules('ATL07',tracks=['1387'])
+    exp = ['ATL07-??_??????????????_1387????_*']
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules('ATL11',tracks=['1387'])
+    exp = ['ATL11_1387??_*']
+    assert obs == exp
     obs = apifmt._fmt_readable_granules('ATL06',cycles=['02'])
     exp = ['ATL06_??????????????_????02??_*']
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules('ATL07',cycles=['02'])
+    exp = ['ATL07-??_??????????????_????02??_*']
     assert obs == exp
     obs = apifmt._fmt_readable_granules('ATL06',files=['ATL06_20190329071316_13870211_003_*'])
     exp = ['ATL06_20190329071316_13870211_003_*']

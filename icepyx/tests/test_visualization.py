@@ -1,3 +1,5 @@
+import pytest
+
 from icepyx.core.visualization import Visualize
 
 @pytest.mark.parametrize("short_name, date_range, bbox", [

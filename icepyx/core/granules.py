@@ -184,10 +184,10 @@ class Granules:
                     b"errors" in response.content
                 ):  # If CMR returns a bad status with extra information, display that
                     raise icepyx.core.exceptions.NsidcQueryError(
-                        e
+                        response.json()["errors"]
                     )  # exception chaining will display original exception too
                 else:  # If no 'errors' key, just reraise original exception
-                    raise
+                    raise e
 
             results = json.loads(response.content)
             if not results["feed"]["entry"]:

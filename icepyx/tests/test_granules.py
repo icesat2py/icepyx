@@ -1,4 +1,5 @@
 import pytest
+import re
 import requests
 import responses
 import warnings
@@ -6,7 +7,7 @@ import warnings
 import icepyx as ipx
 from icepyx.core import granules as granules
 from icepyx.core.granules import Granules as Granules
-
+from icepyx.core.exceptions import NsidcQueryError
 
 # @pytest.fixture
 # def reg_a():
@@ -594,10 +595,7 @@ def test_no_granules_in_search_results():
 
 def test_correct_granule_list_returned():
     reg_a = ipx.Query(
-        "ATL06",
-        [-55, 68, -48, 71],
-        ["2019-02-20", "2019-02-28"],
-        version="3",
+        "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-28"], version="3",
     )
 
     (obs_grans,) = reg_a.avail_granules(ids=True)
@@ -612,22 +610,18 @@ def test_correct_granule_list_returned():
 
 @responses.activate
 def test_avail_granule_CMR_error():
-    badreq = "https://cmr.earthdata.nasa.gov/search/granules.json?version=003&temporal=badinput&short_name=ATL08"
+    # badreq = re.compile(re.escape('http://cmr.earthdata.nasa.gov/search/granules.json') + r'.*')
     responses.add(
         responses.GET,
-        badreq,
+        re.compile(re.escape("https://cmr.earthdata.nasa.gov/search/granules") + r".*"),
+        status=400,
         json={
             "errors": "temporal start datetime is invalid: [badinput] is not a valid datetime."
         },
     )
 
-    response = requests.get(badreq)
-
-    assert response.json() == {
-        "errors": "temporal start datetime is invalid: [badinput] is not a valid datetime."
-    }
-    assert responses.calls[0].request.url == badreq
-    assert (
-        responses.calls[0].response.text
-        == '{"errors": "temporal start datetime is invalid: [badinput] is not a valid datetime."}'
-    )
+    ermsg = "An error was returned from NSIDC in regards to your query: temporal start datetime is invalid: [badinput] is not a valid datetime."
+    with pytest.raises(NsidcQueryError, match=ermsg):
+        CMRparams = {"version": "003", "temporal": "badinput", "short_name": "ATL08"}
+        reqparams = {"page_size": 1, "page_num": 1}
+        Granules().get_avail(CMRparams=CMRparams, reqparams=reqparams)

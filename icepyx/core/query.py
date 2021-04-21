@@ -962,7 +962,7 @@ class Query:
 
         cycles = self._cycles if hasattr(self, '_cycles') else None
 
-        tracks = self._cycles if hasattr(self, '_tracks') else None
+        tracks = self._tracks if hasattr(self, '_tracks') else None
 
         print(product, bbox, date_range, cycles, tracks)
 

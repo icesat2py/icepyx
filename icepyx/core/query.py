@@ -964,8 +964,6 @@ class Query:
 
         tracks = self._tracks if hasattr(self, '_tracks') else None
 
-        print(product, bbox, date_range, cycles, tracks)
-
         viz = Visualize(product, bbox, date_range, cycles, tracks)
 
         cycle_map, rgt_map = viz.viz_elevation()

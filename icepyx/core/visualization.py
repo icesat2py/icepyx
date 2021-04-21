@@ -6,7 +6,6 @@ import concurrent.futures
 import dask.array as da
 import dask.dataframe as dd
 import datashader as ds
-import geoviews as gv
 import holoviews as hv
 from holoviews.operation.datashader import rasterize
 import intake.source.utils
@@ -19,7 +18,6 @@ import xarray as xr
 import icepyx as ipx
 
 hv.extension("bokeh")
-gv.extension("bokeh")
 
 
 def files_in_latest_n_cycles(files, cycles, n=1):

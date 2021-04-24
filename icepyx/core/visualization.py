@@ -13,7 +13,6 @@ import numpy as np
 import pandas as pd
 import requests
 from tqdm import tqdm
-import xarray as xr
 
 import icepyx as ipx
 
@@ -57,6 +56,22 @@ def files_in_latest_n_cycles(files, cycles, n=1):
 
     else:
         raise Exception("Wrong n value")
+
+
+def user_check(message):
+    """
+    Check if user wants to proceed visualization when the API request number exceeds 200
+
+    Parameters
+    ----------
+    message : string
+        Message to indicate users the options
+    """
+    check = input(message)
+    if str(check) == 'yes' or str(check) == 'no':
+        return str(check)
+    else:
+        user_check('Wrong input, please enter yes or no')
 
 
 class Visualize:
@@ -209,7 +224,7 @@ class Visualize:
         """Make HTTP request"""
         return requests.get(base_url, params=payload)
 
-    def request_OA_data(self, paras) -> xr.Dataset:
+    def request_OA_data(self, paras) -> da.array:
         """
         Request data from OpenAltimetry based on API:
         https://openaltimetry.org/data/swagger-ui/#/
@@ -221,8 +236,8 @@ class Visualize:
 
         Returns
         -------
-        OA_ds : xarray.Dataset
-            An xarray Dataset containing the ICESat-2 data.
+        OA_darr : da.array
+            A dask array containing the ICESat-2 data.
         """
 
         base_url = "https://openaltimetry.org/data/api/icesat2/level3a"
@@ -275,11 +290,10 @@ class Visualize:
         # elevation for all available beams
         OA_array = np.vstack(beam_elev)
 
-        if OA_array.size > 0:
-            OA_array = np.c_[np.squeeze(OA_array),
-                             np.full(np.size(np.squeeze(OA_array), 0), trackId),
-                             np.full(np.size(np.squeeze(OA_array), 0), cycle)]
-
+        if OA_array.shape[0] > 0:
+            OA_array = np.c_[OA_array,
+                             np.full(np.size(OA_array, 0), trackId),
+                             np.full(np.size(OA_array, 0), cycle)]
             OA_darr = da.from_array(OA_array, chunks=1000)
 
             return OA_darr
@@ -302,6 +316,17 @@ class Visualize:
 
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
+
+        url_number = len(OA_para_list)
+
+        if url_number > 200:
+            answer = user_check("Too many API requests, this may take a long time, do you still want to continue: "
+                                "please enter yes/no\n")
+
+            if answer == 'yes':
+                pass
+            else:
+                return
 
         print("Sending request to OpenAltimetry, please wait...")
 
@@ -401,6 +426,6 @@ class Visualize:
 
         else:
             print(
-                "Oops! Elevation visualization only supports products [ATL06, ATL07, ATL08, ATL10, ATL12, ATL13], "
-                "please try another data product."
+                "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13, "
+                "please try another product."
             )

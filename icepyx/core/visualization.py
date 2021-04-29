@@ -28,9 +28,9 @@ def files_in_latest_n_cycles(files, cycles, n=1) -> list:
     files : list
         A list of file names.
     cycles: list
-        A list of available cycles
+        A list of available ICESat-2 cycles
     n: int, default 1
-        Number of latest cycles
+        Number of latest ICESat-2 cycles to pick
 
     Returns
     -------

@@ -35,6 +35,24 @@ def _validate_dataset(dataset):
 
 # DevGoal: See if there's a way to dynamically get this list so it's automatically updated
 
+def _validate_OA_product(product):
+    """
+    Confirm a valid ICESat-2 product was specified
+    """
+    if isinstance(product, str):
+        product = str.upper(product)
+        assert product in [
+            "ATL06",
+            "ATL07",
+            "ATL08",
+            "ATL10",
+            "ATL12",
+            "ATL13",
+        ], "Please enter a valid product for OpenAltimetry"
+    else:
+        raise TypeError("Please enter a product string")
+    return product
+
 # DevNote: test for this function is commented out; dates in some of the values were causing the test to fail...
 def about_dataset(dset):
     """

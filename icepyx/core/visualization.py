@@ -15,6 +15,7 @@ import requests
 from tqdm import tqdm
 
 import icepyx as ipx
+import icepyx.core.is2ref as is2ref
 
 hv.extension("bokeh")
 
@@ -75,6 +76,10 @@ def user_check(message):
 
 
 class Visualize:
+    """
+    
+    """
+
     def __init__(
         self,
         query_obj=None,
@@ -96,7 +101,9 @@ class Visualize:
                 tracks = tracks,
                 )
 
-        self.product = query_obj.dataset
+        self.product = is2ref._validate_OA_product(query_obj.dataset)
+
+
         
         if query_obj.extent_type == "bounding_box":
             self.bbox = query_obj._spat_extent

@@ -21,7 +21,7 @@ hv.extension("bokeh")
 
 def files_in_latest_n_cycles(files, cycles, n=1) -> list:
     """
-    Get list of file names from latest n cycles
+    Get list of file names from latest n ICESat-2 cycles
 
     Parameters
     ----------

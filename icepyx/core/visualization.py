@@ -35,7 +35,7 @@ def files_in_latest_n_cycles(files, cycles, n=1) -> list:
     Returns
     -------
     viz_file_list : list
-        A list of file names from latest n cycles
+        A list of file names from latest n ICESat-2 cycles
     """
     if n == 1:
         latest_cycle = max(cycles)
@@ -127,7 +127,7 @@ class Visualize:
         else:
             return [self.bbox]
 
-    def query_icesat2_filelist(self):
+    def query_icesat2_filelist(self) -> tuple:
         """
         Query list of ICESat-2 files based on splitted bbox
 
@@ -298,9 +298,9 @@ class Visualize:
 
             return OA_darr
 
-    def parallel_request_OA(self):
+    def parallel_request_OA(self) -> da.array:
         """
-        Requesting elevation data from OpenAltimetry API in parallel
+        Requests elevation data from OpenAltimetry API in parallel.
         Now only supports OA_Products ['ATL06','ATL07','ATL08','ATL10','ATL12','ATL13']
 
         For ATL03 Photon Data, OA only supports single date request
@@ -355,7 +355,7 @@ class Visualize:
             OA_data_da = da.concatenate(requested_OA_data, axis=0)
             return OA_data_da
 
-    def viz_elevation(self):
+    def viz_elevation(self) -> (hv.DynamicMap, hv.Layout):
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles
         https://holoviz.org/tutorial/Large_Data.html

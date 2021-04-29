@@ -69,15 +69,37 @@ def user_check(message):
         Message to indicate users the options
     """
     check = input(message)
-    if str(check) == 'yes' or str(check) == 'no':
+    if str(check) == "yes" or str(check) == "no":
         return str(check)
     else:
-        user_check('Wrong input, please enter yes or no')
+        user_check("Wrong input, please enter yes or no")
 
 
 class Visualize:
     """
-    
+    Object class to quickly visualize elevation data for select ICESat-2 products
+    (ATL06, ATL07, ATL08, ATL10, ATL12, ATL13) based on the query parameters
+    defined by the icepyx Query object. Provides interactive maps that show product
+    elevation on a satellite basemap.
+
+    Parameters
+    ----------
+    query_obj : ipx.Query object, default None
+        icepy Query class object.
+    product : string
+        ICESat-2 product ID; equivalent to the Query object dataset
+    spatial_extent: list or string, default None
+        as in the ipx.Query object
+    date_range : list of 'YYYY-MM-DD' strings, default None
+        as in the ipx.Query object
+    cycle : string, default all available orbital cycles, default None
+        as in the ipx.Query object
+    track : string, default all available reference ground tracks (RGTs), default None
+        as in the ipx.Query object
+
+    See Also
+    --------
+    ipx.Query
     """
 
     def __init__(
@@ -89,22 +111,20 @@ class Visualize:
         cycles=None,
         tracks=None,
     ):
-        
+
         if query_obj:
             pass
         else:
             query_obj = ipx.Query(
-                dataset = product,
-                spatial_extent = spatial_extent,
-                date_range = date_range,
-                cycles = cycles,
-                tracks = tracks,
-                )
+                dataset=product,
+                spatial_extent=spatial_extent,
+                date_range=date_range,
+                cycles=cycles,
+                tracks=tracks,
+            )
 
         self.product = is2ref._validate_OA_product(query_obj.dataset)
 
-
-        
         if query_obj.extent_type == "bounding_box":
             self.bbox = query_obj._spat_extent
 
@@ -118,11 +138,13 @@ class Visualize:
 
             self.bbox = [lonmin, latmin, lonmax, latmax]
 
-        self.date_range = [query_obj._start.strftime('%Y-%m-%d'),
-                      query_obj._end.strftime('%Y-%m-%d')] if hasattr(query_obj, '_start') else None
-        self.cycles = query_obj._cycles if hasattr(query_obj, '_cycles') else None
-        self.tracks = query_obj._tracks if hasattr(query_obj, '_tracks') else None
-
+        self.date_range = (
+            [query_obj._start.strftime("%Y-%m-%d"), query_obj._end.strftime("%Y-%m-%d")]
+            if hasattr(query_obj, "_start")
+            else None
+        )
+        self.cycles = query_obj._cycles if hasattr(query_obj, "_cycles") else None
+        self.tracks = query_obj._tracks if hasattr(query_obj, "_tracks") else None
 
     def grid_bbox(self, binsize=5) -> list:
         """
@@ -171,12 +193,12 @@ class Visualize:
 
     def query_icesat2_filelist(self) -> tuple:
         """
-        Query list of ICESat-2 files based on splitted bbox
+        Query list of ICESat-2 files for each bounding box
 
         Returns
         -------
         filelist_tuple : tuple
-            A tuple of non-empty list of bounding boxes and corresponding ICESat-2 file lists
+            A tuple of non-empty lists of bounding boxes and corresponding ICESat-2 file lists
         """
         # a list of 5*5 bounding boxes
         bbox_list = self.grid_bbox()
@@ -211,7 +233,7 @@ class Visualize:
 
     def generate_OA_parameters(self) -> list:
         """
-        Get metadata from file lists in each 5*5 bbox
+        Get metadata from file lists in each 5*5 bounding box.
 
         Returns
         -------
@@ -256,14 +278,25 @@ class Visualize:
     @backoff.on_exception(
         backoff.expo,
         (
-                requests.exceptions.Timeout,
-                requests.exceptions.ConnectionError,
-                requests.exceptions.ChunkedEncodingError,
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.ChunkedEncodingError,
         ),
         max_tries=5,
     )
     def make_request(self, base_url, payload):
-        """Make HTTP request"""
+        """
+        Make HTTP request
+        
+        Parameters
+        ----------
+        base_url : string
+            OpenAltimetry URL
+
+        See Also
+        --------
+        request_OA_data
+        """
         return requests.get(base_url, params=payload)
 
     def request_OA_data(self, paras) -> da.array:
@@ -279,7 +312,7 @@ class Visualize:
         Returns
         -------
         OA_darr : da.array
-            A dask array containing the ICESat-2 data.
+            A dask array containing the ICESat-2 elevation data.
         """
 
         base_url = "https://openaltimetry.org/data/api/icesat2/level3a"
@@ -323,7 +356,9 @@ class Visualize:
 
         # iterate six beams
         beam_elev = [
-            beam_data[i][data_name][::sample_rate] for i in range(6) if beam_data[i][data_name]
+            beam_data[i][data_name][::sample_rate]
+            for i in range(6)
+            if beam_data[i][data_name]
         ]
 
         if not beam_elev:
@@ -333,9 +368,11 @@ class Visualize:
         OA_array = np.vstack(beam_elev)
 
         if OA_array.shape[0] > 0:
-            OA_array = np.c_[OA_array,
-                             np.full(np.size(OA_array, 0), trackId),
-                             np.full(np.size(OA_array, 0), cycle)]
+            OA_array = np.c_[
+                OA_array,
+                np.full(np.size(OA_array, 0), trackId),
+                np.full(np.size(OA_array, 0), cycle),
+            ]
             OA_darr = da.from_array(OA_array, chunks=1000)
 
             return OA_darr
@@ -343,11 +380,12 @@ class Visualize:
     def parallel_request_OA(self) -> da.array:
         """
         Requests elevation data from OpenAltimetry API in parallel.
-        Now only supports OA_Products ['ATL06','ATL07','ATL08','ATL10','ATL12','ATL13']
+        Currently supports OA_Products ['ATL06','ATL07','ATL08','ATL10','ATL12','ATL13']
 
         For ATL03 Photon Data, OA only supports single date request
         according to: https://openaltimetry.org/data/swagger-ui/#/Public/getATL08DataByDate,
-        with geospatial limitation of 1 degree lat/lon
+        with geospatial limitation of 1 degree lat/lon. Visualization of ATL03 data
+        is not implemented within this module at this time.
 
         Returns
         -------
@@ -362,10 +400,12 @@ class Visualize:
         url_number = len(OA_para_list)
 
         if url_number > 200:
-            answer = user_check("Too many API requests, this may take a long time, do you still want to continue: "
-                                "please enter yes/no\n")
+            answer = user_check(
+                "Too many API requests, this may take a long time, do you still want to continue: "
+                "please enter yes/no\n"
+            )
 
-            if answer == 'yes':
+            if answer == "yes":
                 pass
             else:
                 return
@@ -376,7 +416,7 @@ class Visualize:
         requested_OA_data = []
 
         with concurrent.futures.ThreadPoolExecutor(
-                max_workers=len(OA_para_list)
+            max_workers=len(OA_para_list)
         ) as executor:
             parallel_OA_data = {
                 executor.submit(self.request_OA_data, para): para
@@ -384,8 +424,8 @@ class Visualize:
             }
 
             for future in tqdm(
-                    iterable=concurrent.futures.as_completed(parallel_OA_data),
-                    total=len(parallel_OA_data),
+                iterable=concurrent.futures.as_completed(parallel_OA_data),
+                total=len(parallel_OA_data),
             ):
                 r = future.result()
                 if r is not None:
@@ -408,66 +448,56 @@ class Visualize:
             Holoviews data visualization elements
         """
 
-        if self.product in ["ATL06", "ATL07", "ATL08", "ATL10", "ATL12", "ATL13"]:
+        OA_da = self.parallel_request_OA()
 
-            OA_da = self.parallel_request_OA()
-
-            if OA_da is None:
-                print("No data")
-                return (None,) * 2
-
-            else:
-
-                cols = ['lat', 'lon', 'elevation', 'canopy', 'rgt', 'cycle'] if self.product == "ATL08" else ['lat',
-                                                                                                              'lon',
-                                                                                                              'elevation',
-                                                                                                              'rgt',
-                                                                                                              'cycle']
-                ddf = dd.io.from_dask_array(OA_da, columns=cols).astype(
-                    {"lat": "float",
-                     "lon": "float",
-                     "elevation": "float",
-                     "rgt": "int",
-                     "cycle": "int"
-                     })
-
-                print("Plot elevation, please wait...")
-
-                x, y = ds.utils.lnglat_to_meters(ddf.lon, ddf.lat)
-                ddf_new = ddf.assign(x=x, y=y).persist()
-                dset = hv.Dataset(ddf_new)
-
-                raster_cycle = dset.to(
-                    hv.Points,
-                    ["x", "y"],
-                    ["elevation"],
-                    groupby=["cycle"],
-                    dynamic=True,
-                )
-                raster_rgt = dset.to(
-                    hv.Points, ["x", "y"], ["elevation"], groupby=["rgt"], dynamic=True
-                )
-                curve_rgt = dset.to(
-                    hv.Scatter, ["lat"], ["elevation"], groupby=["rgt"], dynamic=True
-                )
-
-                tiles = hv.element.tiles.EsriImagery().opts(
-                    xaxis=None, yaxis=None, width=450, height=450
-                )
-                map_cycle = tiles * rasterize(
-                    raster_cycle, aggregator=ds.mean("elevation")
-                ).opts(colorbar=True, tools=["hover"])
-                map_rgt = tiles * rasterize(
-                    raster_rgt, aggregator=ds.mean("elevation")
-                ).opts(colorbar=True, tools=["hover"])
-                lineplot_rgt = rasterize(
-                    curve_rgt, aggregator=ds.mean("elevation")
-                ).opts(width=450, height=450, cmap=["blue"])
-
-                return map_cycle, map_rgt + lineplot_rgt
+        if OA_da is None:
+            print("No data")
+            return (None,) * 2
 
         else:
-            print(
-                "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13, "
-                "please try another product."
+
+            cols = (
+                ["lat", "lon", "elevation", "canopy", "rgt", "cycle"]
+                if self.product == "ATL08"
+                else ["lat", "lon", "elevation", "rgt", "cycle"]
             )
+            ddf = dd.io.from_dask_array(OA_da, columns=cols).astype(
+                {
+                    "lat": "float",
+                    "lon": "float",
+                    "elevation": "float",
+                    "rgt": "int",
+                    "cycle": "int",
+                }
+            )
+
+            print("Plot elevation, please wait...")
+
+            x, y = ds.utils.lnglat_to_meters(ddf.lon, ddf.lat)
+            ddf_new = ddf.assign(x=x, y=y).persist()
+            dset = hv.Dataset(ddf_new)
+
+            raster_cycle = dset.to(
+                hv.Points, ["x", "y"], ["elevation"], groupby=["cycle"], dynamic=True,
+            )
+            raster_rgt = dset.to(
+                hv.Points, ["x", "y"], ["elevation"], groupby=["rgt"], dynamic=True
+            )
+            curve_rgt = dset.to(
+                hv.Scatter, ["lat"], ["elevation"], groupby=["rgt"], dynamic=True
+            )
+
+            tiles = hv.element.tiles.EsriImagery().opts(
+                xaxis=None, yaxis=None, width=450, height=450
+            )
+            map_cycle = tiles * rasterize(
+                raster_cycle, aggregator=ds.mean("elevation")
+            ).opts(colorbar=True, tools=["hover"])
+            map_rgt = tiles * rasterize(
+                raster_rgt, aggregator=ds.mean("elevation")
+            ).opts(colorbar=True, tools=["hover"])
+            lineplot_rgt = rasterize(curve_rgt, aggregator=ds.mean("elevation")).opts(
+                width=450, height=450, cmap=["blue"]
+            )
+
+            return map_cycle, map_rgt + lineplot_rgt

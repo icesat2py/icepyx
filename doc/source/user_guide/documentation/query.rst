@@ -49,3 +49,4 @@ Methods
    Query.order_granules
    Query.show_custom_options
    Query.visualize_spatial_extent
+   Query.visualize_elevation

@@ -28,11 +28,7 @@ class Earthdata:
     """
 
     def __init__(
-        self,
-        uid,
-        email,
-        capability_url,
-        pswd=None,
+        self, uid, email, capability_url, pswd=None,
     ):
 
         assert isinstance(uid, str), "Enter your login user id as a string"

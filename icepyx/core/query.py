@@ -942,30 +942,8 @@ class Query:
             plt.show()
 
     def visualize_elevation(self):
-
-        product = self.dataset
-        if self.extent_type == "bounding_box":
-            bbox = self._spat_extent
-
-        else:
-            mrc_bound = self._spat_extent.minimum_rotated_rectangle
-            # generate bounding box
-            lonmin = min(mrc_bound.exterior.coords.xy[0])
-            lonmax = max(mrc_bound.exterior.coords.xy[0])
-            latmin = min(mrc_bound.exterior.coords.xy[1])
-            latmax = max(mrc_bound.exterior.coords.xy[1])
-
-            bbox = [lonmin, latmin, lonmax, latmax]
-
-        date_range = [self._start.strftime('%Y-%m-%d'),
-                      self._end.strftime('%Y-%m-%d')] if hasattr(self, '_start') else None
-
-        cycles = self._cycles if hasattr(self, '_cycles') else None
-
-        tracks = self._tracks if hasattr(self, '_tracks') else None
-
-        viz = Visualize(product, bbox, date_range, cycles, tracks)
-
+        
+        viz = Visualize(self)
         cycle_map, rgt_map = viz.viz_elevation()
 
         return cycle_map, rgt_map

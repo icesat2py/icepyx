@@ -75,12 +75,47 @@ def user_check(message):
 
 
 class Visualize:
-    def __init__(self, product, bbox, date_range=None, cycles=None, tracks=None):
-        self.product = product
-        self.bbox = bbox
-        self.date_range = date_range
-        self.cycles = cycles
-        self.tracks = tracks
+    def __init__(
+        self,
+        query_obj=None,
+        product=None,
+        spatial_extent=None,
+        date_range=None,
+        cycles=None,
+        tracks=None,
+    ):
+        
+        if query_obj:
+            pass
+        else:
+            query_obj = ipx.Query(
+                dataset = product,
+                spatial_extent = spatial_extent,
+                date_range = date_range,
+                cycles = cycles,
+                tracks = tracks,
+                )
+
+        self.product = query_obj.dataset
+        
+        if query_obj.extent_type == "bounding_box":
+            self.bbox = query_obj._spat_extent
+
+        else:
+            mrc_bound = query_obj._spat_extent.minimum_rotated_rectangle
+            # generate bounding box
+            lonmin = min(mrc_bound.exterior.coords.xy[0])
+            lonmax = max(mrc_bound.exterior.coords.xy[0])
+            latmin = min(mrc_bound.exterior.coords.xy[1])
+            latmax = max(mrc_bound.exterior.coords.xy[1])
+
+            self.bbox = [lonmin, latmin, lonmax, latmax]
+
+        self.date_range = [query_obj._start.strftime('%Y-%m-%d'),
+                      query_obj._end.strftime('%Y-%m-%d')] if hasattr(query_obj, '_start') else None
+        self.cycles = query_obj._cycles if hasattr(query_obj, '_cycles') else None
+        self.tracks = query_obj._tracks if hasattr(query_obj, '_tracks') else None
+
 
     def grid_bbox(self, binsize=5) -> list:
         """
@@ -152,11 +187,11 @@ class Visualize:
                 tracks=self.tracks,
             )
             icesat2_files = region.avail_granules(ids=True)[0]
-            all_cycles = list(set(region.avail_granules(cycles=True)[0]))
 
             if not icesat2_files:
                 continue
             else:
+                all_cycles = list(set(region.avail_granules(cycles=True)[0]))
                 icesat2_files_latest_cycle = files_in_latest_n_cycles(
                     icesat2_files, [int(c) for c in all_cycles]
                 )

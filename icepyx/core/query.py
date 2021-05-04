@@ -123,10 +123,10 @@ class Query:
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
 
         if (
-            dataset is None or spatial_extent is None
-        ) and (
-            date_range is None or cycles is None or tracks is None
-        ) and files is None:
+            (dataset is None or spatial_extent is None)
+            and (date_range is None or cycles is None or tracks is None)
+            and files is None
+        ):
             raise ValueError(
                 "Please provide the required inputs. Use help([function]) to view the function's documentation"
             )
@@ -158,9 +158,9 @@ class Query:
             self._cycles = val.cycles(cycles)
             self._tracks = val.tracks(tracks)
             # create list of CMR parameters for granule name
-            self._readable_granule_name = apifmt._fmt_readable_granules(self._dset,
-                cycles=self.cycles, tracks=self.tracks)
-
+            self._readable_granule_name = apifmt._fmt_readable_granules(
+                self._dset, cycles=self.cycles, tracks=self.tracks
+            )
 
     # ----------------------------------------------------------------------
     # Properties
@@ -339,15 +339,15 @@ class Query:
         # dictionary of optional CMR parameters
         kwargs = {}
         # temporal CMR parameters
-        if hasattr(self,'_start') and hasattr(self,'_end'):
-            kwargs['start'] = self._start
-            kwargs['end'] = self._end
+        if hasattr(self, "_start") and hasattr(self, "_end"):
+            kwargs["start"] = self._start
+            kwargs["end"] = self._end
         # granule name CMR parameters (orbital or file name)
         # DevGoal: add to file name search to optional queries
-        if hasattr(self,'_readable_granule_name'):
-            kwargs['options[readable_granule_name][pattern]'] = 'true'
-            kwargs['options[spatial][or]'] = 'true'
-            kwargs['readable_granule_name[]'] = self._readable_granule_name
+        if hasattr(self, "_readable_granule_name"):
+            kwargs["options[readable_granule_name][pattern]"] = "true"
+            kwargs["options[spatial][or]"] = "true"
+            kwargs["readable_granule_name[]"] = self._readable_granule_name
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
@@ -414,9 +414,9 @@ class Query:
             self._subsetparams = apifmt.Parameters("subset")
 
         # temporal subsetting parameters
-        if hasattr(self,'_start') and hasattr(self,'_end'):
-            kwargs['start'] = self._start
-            kwargs['end'] = self._end
+        if hasattr(self, "_start") and hasattr(self, "_end"):
+            kwargs["start"] = self._start
+            kwargs["end"] = self._end
 
         if self._subsetparams == None and not kwargs:
             return {}
@@ -753,8 +753,9 @@ class Query:
 
         if ids or cycles or tracks:
             # list of outputs in order of ids, cycles, tracks
-            return granules.gran_IDs(self.granules.avail, ids=ids,
-                cycles=cycles, tracks=tracks)
+            return granules.gran_IDs(
+                self.granules.avail, ids=ids, cycles=cycles, tracks=tracks
+            )
         else:
             return granules.info(self.granules.avail)
 
@@ -926,9 +927,9 @@ class Query:
             from shapely.geometry import Polygon
             import geoviews as gv
 
-            gv.extension('bokeh')
+            gv.extension("bokeh")
 
-            line_geoms = Polygon(gdf['geometry'][0]).boundary
+            line_geoms = Polygon(gdf["geometry"][0]).boundary
             bbox_poly = gv.Path(line_geoms).opts(color="red", line_color="red")
             tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
             return tile * bbox_poly

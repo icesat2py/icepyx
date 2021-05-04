@@ -196,27 +196,33 @@ def test_endtime_validstr():
     with pytest.raises(TypeError, match=ermsg):
         val.temporal(["2019-02-22", "2019-02-28"], "00:15:00", 235959)
 
+
 ########## orbital ##########
 
+
 def test_cycles():
-    obs = val.cycles([1,2,3,4])
-    exp = ['01','02','03','04']
+    obs = val.cycles([1, 2, 3, 4])
+    exp = ["01", "02", "03", "04"]
     assert obs == exp
 
+
 def test_tracks():
-    obs = val.tracks([1,2,3,4])
-    exp = ['0001','0002','0003','0004']
+    obs = val.tracks([1, 2, 3, 4])
+    exp = ["0001", "0002", "0003", "0004"]
     assert obs == exp
+
 
 def test_cycles_negative():
     ermsg = "Cycle number must be positive"
     with pytest.raises(AssertionError, match=ermsg):
         val.cycles(-1)
 
+
 def test_tracks_negative():
     ermsg = "Reference Ground Track must be positive"
     with pytest.raises(AssertionError, match=ermsg):
         val.tracks(-1)
+
 
 def test_tracks_valid():
     expmsg = "Listed Reference Ground Track is not available"

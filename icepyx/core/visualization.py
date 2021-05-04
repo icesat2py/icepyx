@@ -344,7 +344,7 @@ class Visualize:
             df_series = df.query(expr="date == @Date").iloc[0]
             beam_data = df_series.beams
 
-        except (NameError, KeyError) as error:
+        except (NameError, KeyError, IndexError) as error:
             beam_data = None
 
         if not beam_data:

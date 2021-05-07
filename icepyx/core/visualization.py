@@ -1,17 +1,19 @@
 """
 Interactive visualization of spatial extent and ICESat-2 elevations
 """
-import backoff
 import concurrent.futures
+import datetime
+import re
+
+import backoff
 import dask.array as da
 import dask.dataframe as dd
 import datashader as ds
 import holoviews as hv
-from holoviews.operation.datashader import rasterize
-import intake.source.utils
 import numpy as np
 import pandas as pd
 import requests
+from holoviews.operation.datashader import rasterize
 from tqdm import tqdm
 
 import icepyx as ipx
@@ -57,6 +59,61 @@ def files_in_latest_n_cycles(files, cycles, n=1) -> list:
 
     else:
         raise Exception("Wrong n value")
+
+
+def gran_paras(filename) -> list:
+    """
+    Returns a list of granule information for file name string.
+
+    Parameters
+    ----------
+    filename: String
+        ICESat-2 file name
+
+    Returns
+    -------
+    gran_paras_list : list
+        A list of parameters including RGT, cycle, datetime of ICESat-2 data granule
+    """
+    # regular expression for extracting parameters from file names
+    rx = re.compile(
+        r"(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})"
+        r"(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$"
+    )
+    # PRD: ICESat-2 product
+    # HEM: Sea Ice Hemisphere flag
+    # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
+    # TRK: Reference Ground Track (RGT)
+    # CYCL: Orbital Cycle
+    # GRAN: Granule region (1-14)
+    # RL: Data Release
+    # VERS: Product Version
+    # AUX: Auxiliary flags
+    # SFX: Suffix (h5)
+    (
+        PRD,
+        HEM,
+        YY,
+        MM,
+        DD,
+        HH,
+        MN,
+        SS,
+        TRK,
+        CYCL,
+        GRAN,
+        RL,
+        VERS,
+        AUX,
+        SFX,
+    ) = rx.findall(filename).pop()
+    date_string = str(
+        datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date()
+    )
+
+    gran_paras_list = [int(TRK), int(CYCL), date_string]
+
+    return gran_paras_list
 
 
 def user_check(message):
@@ -249,27 +306,8 @@ class Visualize:
         filelist_tuple = self.query_icesat2_filelist()
 
         for bbox_i, filelist in filelist_tuple:
-
             for fname in filelist:
-
-                if self.product in ["ATL07", "ATL10"]:
-                    format_string = (
-                        "{product:5d}-{HH:02d}_{datetime:%Y%m%d%H%M%S}_{rgt:04d}{cycle:02d}{"
-                        "region:02d}_{release:03d}_{version:02d}.h5"
-                    )
-                else:
-                    format_string = (
-                        "{product:5d}_{datetime:%Y%m%d%H%M%S}_{rgt:04d}{cycle:02d}{"
-                        "region:02d}_{release:03d}_{version:02d}.h5"
-                    )
-                temp = intake.source.utils.reverse_format(
-                    format_string=format_string, resolved_string=fname
-                )
-
-                rgt = temp["rgt"]  # Reference Ground Track
-                cycle = temp["cycle"]  # Cycle number
-                f_date = str(temp["datetime"].date())  # Datetime
-
+                rgt, cycle, f_date = gran_paras(fname)
                 paras = [rgt, f_date, cycle, bbox_i, self.product]
                 paras_list.append(paras)
 
@@ -287,7 +325,7 @@ class Visualize:
     def make_request(self, base_url, payload):
         """
         Make HTTP request
-        
+
         Parameters
         ----------
         base_url : string
@@ -478,7 +516,11 @@ class Visualize:
             dset = hv.Dataset(ddf_new)
 
             raster_cycle = dset.to(
-                hv.Points, ["x", "y"], ["elevation"], groupby=["cycle"], dynamic=True,
+                hv.Points,
+                ["x", "y"],
+                ["elevation"],
+                groupby=["cycle"],
+                dynamic=True,
             )
             raster_rgt = dset.to(
                 hv.Points, ["x", "y"], ["elevation"], groupby=["rgt"], dynamic=True

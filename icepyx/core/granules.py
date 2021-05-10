@@ -1,3 +1,4 @@
+import datetime
 import requests
 import time
 import io
@@ -33,20 +34,24 @@ def info(grans):
 
 # DevNote: currently this fn is not tested
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
-def gran_IDs(grans, ids=True, cycles=False, tracks=False):
+def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False):
     """
-    Returns a list of granule information for the granule dictionary.
+    Returns a list of granule information for each granule dictionary in the input list of granule dictionaries.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
     or a list of granules present on the file system.
 
     Parameters
     ----------
+    grans : list of dictionaries
+        List of input granule json dictionaries. Must have key "producer_granule_id"
     ids: boolean, default True
         Return a list of the available granule IDs for the granule dictionary
     cycles : boolean, default False
         Return a list of the available orbital cycles for the granule dictionary
     tracks : boolean, default False
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
+    dates : boolean, default False
+        Return a list of the available dates for the list of granual dictionaries.
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
     # regular expression for extracting parameters from file names
@@ -57,6 +62,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
     gran_ids = []
     gran_cycles = []
     gran_tracks = []
+    gran_dates = []
     for gran in grans:
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
@@ -89,6 +95,9 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
         ) = rx.findall(producer_granule_id).pop()
         gran_cycles.append(CYCL)
         gran_tracks.append(TRK)
+        gran_dates.append(
+            str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
+        )
     # list of granule parameters
     gran_list = []
     # granule IDs
@@ -100,6 +109,9 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
     # reference ground tracks (RGTs)
     if tracks:
         gran_list.append(gran_tracks)
+    # granule date
+    if dates:
+        gran_list.append(gran_dates)
     # return the list of granule parameters
     return gran_list
 

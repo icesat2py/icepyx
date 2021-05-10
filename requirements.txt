@@ -1,6 +1,11 @@
+backoff
+datashader
 fiona
 geopandas
 h5py
+holoviews
+hvplot
+intake
 matplotlib
 numpy
 requests

@@ -19,6 +19,7 @@ from icepyx.core.granules import Granules as Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
+from icepyx.core.visualization import Visualize
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
@@ -940,3 +941,18 @@ class Query:
             world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
             gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
             plt.show()
+
+    def visualize_elevation(self):
+        """
+        Visualize elevation requested from OpenAltimetry API using datashader based on cycles
+        https://holoviz.org/tutorial/Large_Data.html
+
+        Returns
+        -------
+        map_cycle, map_rgt + lineplot_rgt : Holoviews objects
+            Holoviews data visualization elements
+        """
+        viz = Visualize(self)
+        cycle_map, rgt_map = viz.viz_elevation()
+
+        return cycle_map, rgt_map

@@ -18,6 +18,7 @@ from tqdm import tqdm
 
 import icepyx as ipx
 import icepyx.core.is2ref as is2ref
+import icepyx.core.granules as granules
 
 hv.extension("bokeh")
 
@@ -73,46 +74,18 @@ def gran_paras(filename) -> list:
     Returns
     -------
     gran_paras_list : list
-        A list of parameters including RGT, cycle, datetime of ICESat-2 data granule
+        A list of parameters including RGT, cycle, and datetime of ICESat-2 data granule
     """
-    # regular expression for extracting parameters from file names
-    rx = re.compile(
-        r"(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})"
-        r"(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$"
-    )
-    # PRD: ICESat-2 product
-    # HEM: Sea Ice Hemisphere flag
-    # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
-    # TRK: Reference Ground Track (RGT)
-    # CYCL: Orbital Cycle
-    # GRAN: Granule region (1-14)
-    # RL: Data Release
-    # VERS: Product Version
-    # AUX: Auxiliary flags
-    # SFX: Suffix (h5)
-    (
-        PRD,
-        HEM,
-        YY,
-        MM,
-        DD,
-        HH,
-        MN,
-        SS,
-        TRK,
-        CYCL,
-        GRAN,
-        RL,
-        VERS,
-        AUX,
-        SFX,
-    ) = rx.findall(filename).pop()
-    date_string = str(
-        datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date()
-    )
 
-    gran_paras_list = [int(TRK), int(CYCL), date_string]
-
+    trk, cycl, date_str = granules.gran_IDs(
+        [{"producer_granule_id": filename}],
+        ids=False,
+        cycles=True,
+        tracks=True,
+        dates=True,
+    )[:]
+    gran_paras_list = [int(cycl[0]), int(trk[0]), date_str[0]]
+    print(gran_paras_list)
     return gran_paras_list
 
 
@@ -516,11 +489,7 @@ class Visualize:
             dset = hv.Dataset(ddf_new)
 
             raster_cycle = dset.to(
-                hv.Points,
-                ["x", "y"],
-                ["elevation"],
-                groupby=["cycle"],
-                dynamic=True,
+                hv.Points, ["x", "y"], ["elevation"], groupby=["cycle"], dynamic=True,
             )
             raster_rgt = dset.to(
                 hv.Points, ["x", "y"], ["elevation"], groupby=["rgt"], dynamic=True

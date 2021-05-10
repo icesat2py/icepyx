@@ -64,7 +64,6 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False):
     gran_tracks = []
     gran_dates = []
     for gran in grans:
-        print(gran)
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
         # PRD: ICESat-2 product

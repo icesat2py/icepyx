@@ -85,7 +85,7 @@ def gran_paras(filename) -> list:
         dates=True,
     )[:]
     gran_paras_list = [int(cycl[0]), int(trk[0]), date_str[0]]
-    print(gran_paras_list)
+
     return gran_paras_list
 
 

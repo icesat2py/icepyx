@@ -1,6 +1,6 @@
 .. _whatsnew_0x0:
 
-What's new in 0.4.0 (DD MONTH YYYY)
+What's new in 0.4.0 (13 May 2021)
 -----------------------------------
 
 These are the changes in icepyx 0.4.0 See :ref:`release` for a full changelog

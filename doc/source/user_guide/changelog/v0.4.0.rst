@@ -41,7 +41,7 @@ Other
 - Add geoviews as extra optional dependency in setup.py (#193)
 - Bulk rename master to main (#194)
 - surface NSIDC order and http download errors more effectively to user (#195)
-
+- switch to using a miniconda environment install for travis testing
 
 Contributors
 ~~~~~~~~~~~~

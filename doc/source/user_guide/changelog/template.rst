@@ -45,4 +45,4 @@ Other
 Contributors
 ~~~~~~~~~~~~
 
-.. contributors:: v0.3.3..v0.4.0|HEAD
+.. contributors:: v0.4.0..v0.4.1|HEAD

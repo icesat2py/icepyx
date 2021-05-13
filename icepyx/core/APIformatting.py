@@ -110,6 +110,52 @@ def _fmt_spatial(ext_type, extent):
     return {ext_type: fmt_extent}
 
 
+def _fmt_readable_granules(dset, **kwds):
+    """
+    Create list of readable granule names for CMR queries
+
+    Parameters
+    ----------
+    cycles : list
+        List of 91-day orbital cycle strings to query
+    tracks : list
+        List of Reference Ground Track (RGT) strings to query
+    files : list
+        List of full or partial file name strings to query
+
+    Returns
+    -------
+    list of readable granule names for CMR query
+    """
+    # copy keyword arguments if valid (not None or empty lists)
+    kwargs = {k: v for k, v in kwds.items() if v}
+    # list of readable granule names
+    readable_granule_list = []
+    # if querying either by 91-day orbital cycle or RGT
+    if "cycles" in kwargs.keys() or "tracks" in kwargs.keys():
+        # default character wildcards for cycles and tracks
+        kwargs.setdefault("cycles", ["??"])
+        kwargs.setdefault("tracks", ["????"])
+        # for each available cycle of interest
+        for c in kwargs["cycles"]:
+            # for each available track of interest
+            for t in kwargs["tracks"]:
+                # use single character wildcards "?" for date strings
+                # and ATLAS granule region number
+                if dset in ("ATL07", "ATL10", "ATL20", "ATL21"):
+                    granule_name = "{0}-??_{1}_{2}{3}??_*".format(dset, 14 * "?", t, c)
+                elif dset in ("ATL11",):
+                    granule_name = "{0}_{1}??_*".format(dset, t)
+                else:
+                    granule_name = "{0}_{1}_{2}{3}??_*".format(dset, 14 * "?", t, c)
+                # append the granule
+                readable_granule_list.append(granule_name)
+    # extend with explicitly named files (full or partial)
+    kwargs.setdefault("files", [])
+    readable_granule_list.extend(kwargs["files"])
+    return readable_granule_list
+
+
 def _fmt_var_subset_list(vdict):
     """
     Return the NSIDC-API subsetter formatted coverage string for variable subset request.
@@ -160,6 +206,37 @@ def combine_params(*param_dicts):
     for dictionary in param_dicts:
         params.update(dictionary)
     return params
+
+
+def to_string(params):
+    """
+    Combine a parameter dictionary into a single url string
+
+    Parameters
+    ----------
+    params : dictionary
+
+    Returns
+    -------
+    url string of input dictionary (not encoded)
+
+    Examples
+    --------
+    >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
+    >>> reqparams = {'page_size': 10, 'page_num': 1}
+    >>> params = icepyx.core.APIformatting.combine_params(CMRparams, reqparams)
+    >>> icepyx.core.APIformatting.to_string(params)
+    'short_name=ATL06&version=002&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=10&page_num=1'
+    """
+    param_list = []
+    for k, v in params.items():
+        if isinstance(v, list):
+            for l in v:
+                param_list.append(k + "=" + l)
+        else:
+            param_list.append(k + "=" + str(v))
+    # return the parameter string
+    return "&".join(param_list)
 
 
 # ----------------------------------------------------------------------
@@ -237,9 +314,14 @@ class Parameters:
 
         if self.partype == "CMR":
             self._poss_keys = {
-                "default": ["short_name", "version", "temporal"],
+                "default": ["short_name", "version"],
                 "spatial": ["bounding_box", "polygon"],
-                "optional": ["orbit_number"],
+                "optional": [
+                    "temporal",
+                    "options[readable_granule_name][pattern]",
+                    "options[spatial][or]",
+                    "readable_granule_name[]",
+                ],
             }
         elif self.partype == "required":
             self._poss_keys = {
@@ -256,9 +338,10 @@ class Parameters:
             }
         elif self.partype == "subset":
             self._poss_keys = {
-                "default": ["time"],
+                "default": [],
                 "spatial": ["bbox", "Boundingshape"],
                 "optional": [
+                    "time",
                     "format",
                     "projection",
                     "projection_parameters",
@@ -362,7 +445,7 @@ class Parameters:
                     "page_num": 1,
                     "request_mode": "async",
                     "include_meta": "Y",
-                    "client_string": "icepyx"
+                    "client_string": "icepyx",
                 }
                 for key in reqkeys:
                     if key in kwargs:
@@ -397,16 +480,18 @@ class Parameters:
                             self._fmted_keys.update({key: kwargs["dataset"]})
                         elif key == "version":
                             self._fmted_keys.update({key: kwargs["version"]})
-                        elif key == "temporal" or key == "time":
-                            self._fmted_keys.update(
-                                _fmt_temporal(kwargs["start"], kwargs["end"], key)
-                            )
 
                 for key in opt_keys:
                     if key == "Coverage" and key in kwargs.keys():
                         # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
                         self._fmted_keys.update(
                             {key: _fmt_var_subset_list(kwargs[key])}
+                        )
+                    elif (key == "temporal" or key == "time") and (
+                        "start" in kwargs.keys() and "end" in kwargs.keys()
+                    ):
+                        self._fmted_keys.update(
+                            _fmt_temporal(kwargs["start"], kwargs["end"], key)
                         )
                     elif key in kwargs:
                         self._fmted_keys.update({key: kwargs[key]})

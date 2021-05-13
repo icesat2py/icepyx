@@ -19,6 +19,7 @@ from icepyx.core.granules import Granules as Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
+from icepyx.core.visualization import Visualize
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
@@ -116,7 +117,6 @@ class Query:
         version=None,
         cycles=None,
         tracks=None,
-        orbit_number=None,
         files=None,
     ):
 
@@ -124,8 +124,10 @@ class Query:
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
 
         if (
-            dataset is None or spatial_extent is None or date_range is None
-        ) and files is None:
+            (dataset is None or spatial_extent is None)
+            and (date_range is None or cycles is None or tracks is None)
+            and files is None
+        ):
             raise ValueError(
                 "Please provide the required inputs. Use help([function]) to view the function's documentation"
             )
@@ -144,29 +146,22 @@ class Query:
             spatial_extent
         )
 
-        self._start, self._end = val.temporal(date_range, start_time, end_time)
+        if date_range:
+            self._start, self._end = val.temporal(date_range, start_time, end_time)
 
         self._version = val.dset_version(self.latest_version(), version)
 
-        # list of CMR orbit number parameters
-        self._orbit_number = []
-        # get list of available ICESat-2 cycles and tracks
-        all_cycles,all_tracks = self.avail_granules(ids=False,cycles=True,tracks=True)
-        self._cycles = val.cycles(all_cycles, cycles)
-        self._tracks = val.tracks(all_tracks, tracks)
-        # build list of available CMR orbit number if reducing by cycle or RGT
+        # build list of available CMR parameters if reducing by cycle or RGT
+        # or a list of explicitly named files (full or partial names)
+        # DevGoal: add file name search to optional queries
         if cycles or tracks:
-            # for each available cycle of interest
-            for c in self.cycles:
-                # for each available track of interest
-                for t in self.tracks:
-                    self._orbit_number.append(int(t) + (int(c)-1)*1387 + 201)
-            # update the CMR parameters for orbit_number
-            self.CMRparams['orbit_number'] = self.orbit_number
-            # update required parameters (number of pages)
-            self._reqparams.build_params()
-            # update the list of available granules
-            self.granules.get_avail(self.CMRparams, self.reqparams)
+            # get lists of available ICESat-2 cycles and tracks
+            self._cycles = val.cycles(cycles)
+            self._tracks = val.tracks(tracks)
+            # create list of CMR parameters for granule name
+            self._readable_granule_name = apifmt._fmt_readable_granules(
+                self._dset, cycles=self.cycles, tracks=self.tracks
+            )
 
     # ----------------------------------------------------------------------
     # Properties
@@ -242,10 +237,13 @@ class Query:
         >>> reg_a.dates
         ['2019-02-20', '2019-02-28']
         """
-        return [
-            self._start.strftime("%Y-%m-%d"),
-            self._end.strftime("%Y-%m-%d"),
-        ]  # could also use self._start.date()
+        if not hasattr(self, "_start"):
+            return ["No temporal parameters set"]
+        else:
+            return [
+                self._start.strftime("%Y-%m-%d"),
+                self._end.strftime("%Y-%m-%d"),
+            ]  # could also use self._start.date()
 
     @property
     def start_time(self):
@@ -262,7 +260,10 @@ class Query:
         >>> reg_a.start_time
         '12:30:30'
         """
-        return self._start.strftime("%H:%M:%S")
+        if not hasattr(self, "_start"):
+            return ["No temporal parameters set"]
+        else:
+            return self._start.strftime("%H:%M:%S")
 
     @property
     def end_time(self):
@@ -279,7 +280,10 @@ class Query:
         >>> reg_a.end_time
         '10:20:20'
         """
-        return self._end.strftime("%H:%M:%S")
+        if not hasattr(self, "_end"):
+            return ["No temporal parameters set"]
+        else:
+            return self._end.strftime("%H:%M:%S")
 
     @property
     def cycles(self):
@@ -292,7 +296,10 @@ class Query:
         >>> reg_a.cycles
         ['02']
         """
-        return sorted(set(self._cycles))
+        if not hasattr(self, "_cycles"):
+            return ["No orbital parameters set"]
+        else:
+            return sorted(set(self._cycles))
 
     @property
     def tracks(self):
@@ -305,20 +312,10 @@ class Query:
         >>> reg_a.tracks
         ['0841', '0849', '0902', '0910']
         """
-        return sorted(set(self._tracks))
-
-    @property
-    def orbit_number(self):
-        """
-        Return the ICESat-2 CMR orbit number
-
-        Examples
-        --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.orbit_number
-        """
-        return ",".join(map(str,self._orbit_number))
-
+        if not hasattr(self, "_tracks"):
+            return ["No orbital parameters set"]
+        else:
+            return sorted(set(self._tracks))
 
     @property
     def CMRparams(self):
@@ -342,17 +339,24 @@ class Query:
 
         # dictionary of optional CMR parameters
         kwargs = {}
-        if self._orbit_number:
-            kwargs['orbit_number'] = self.orbit_number
+        # temporal CMR parameters
+        if hasattr(self, "_start") and hasattr(self, "_end"):
+            kwargs["start"] = self._start
+            kwargs["end"] = self._end
+        # granule name CMR parameters (orbital or file name)
+        # DevGoal: add to file name search to optional queries
+        if hasattr(self, "_readable_granule_name"):
+            kwargs["options[readable_granule_name][pattern]"] = "true"
+            kwargs["options[spatial][or]"] = "true"
+            kwargs["readable_granule_name[]"] = self._readable_granule_name
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
                 dataset=self.dataset,
                 version=self._version,
-                start=self._start,
-                end=self._end,
                 extent_type=self.extent_type,
                 spatial_extent=self._spat_extent,
+                **kwargs,
             )
 
         return self._CMRparams.fmted_keys
@@ -410,6 +414,11 @@ class Query:
         if not hasattr(self, "_subsetparams"):
             self._subsetparams = apifmt.Parameters("subset")
 
+        # temporal subsetting parameters
+        if hasattr(self, "_start") and hasattr(self, "_end"):
+            kwargs["start"] = self._start
+            kwargs["end"] = self._end
+
         if self._subsetparams == None and not kwargs:
             return {}
         else:
@@ -418,16 +427,12 @@ class Query:
             if self._geom_filepath is not None:
                 self._subsetparams.build_params(
                     geom_filepath=self._geom_filepath,
-                    start=self._start,
-                    end=self._end,
                     extent_type=self.extent_type,
                     spatial_extent=self._spat_extent,
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
-                    start=self._start,
-                    end=self._end,
                     extent_type=self.extent_type,
                     spatial_extent=self._spat_extent,
                     **kwargs,
@@ -556,7 +561,7 @@ class Query:
         orbit_parameters :  {'swath_width': '36.0', 'period': '94.29', 'inclination_angle': '92.0', 'number_of_orbits': '0.071428571', 'start_circular_latitude': '0.0'}
         """
         if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2data(self._dset)
+            self._about_dataset = is2ref.about_dataset(self._dset)
         summ_keys = [
             "dataset_id",
             "short_name",
@@ -581,7 +586,7 @@ class Query:
 
         """
         if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2data(self._dset)
+            self._about_dataset = is2ref.about_dataset(self._dset)
         pprint.pprint(self._about_dataset)
 
     def latest_version(self):
@@ -749,8 +754,9 @@ class Query:
 
         if ids or cycles or tracks:
             # list of outputs in order of ids, cycles, tracks
-            return granules.gran_IDs(self.granules.avail, ids=ids,
-                cycles=cycles, tracks=tracks)
+            return granules.gran_IDs(
+                self.granules.avail, ids=ids, cycles=cycles, tracks=tracks
+            )
         else:
             return granules.info(self.granules.avail)
 
@@ -916,11 +922,37 @@ class Query:
         >>> reg_a.visualize_spatial_extent
         [visual map output]
         """
+        gdf = geospatial.geodataframe(self.extent_type, self._spat_extent)
 
-        world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
-        f, ax = plt.subplots(1, figsize=(12, 6))
-        world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
-        geospatial.geodataframe(self.extent_type, self._spat_extent).plot(
-            ax=ax, color="#FF8C00", alpha=0.7
-        )
-        plt.show()
+        try:
+            from shapely.geometry import Polygon
+            import geoviews as gv
+
+            gv.extension("bokeh")
+
+            line_geoms = Polygon(gdf["geometry"][0]).boundary
+            bbox_poly = gv.Path(line_geoms).opts(color="red", line_color="red")
+            tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
+            return tile * bbox_poly
+
+        except ImportError:
+            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+            f, ax = plt.subplots(1, figsize=(12, 6))
+            world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
+            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
+            plt.show()
+
+    def visualize_elevation(self):
+        """
+        Visualize elevation requested from OpenAltimetry API using datashader based on cycles
+        https://holoviz.org/tutorial/Large_Data.html
+
+        Returns
+        -------
+        map_cycle, map_rgt + lineplot_rgt : Holoviews objects
+            Holoviews data visualization elements
+        """
+        viz = Visualize(self)
+        cycle_map, rgt_map = viz.viz_elevation()
+
+        return cycle_map, rgt_map

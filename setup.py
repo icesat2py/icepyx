@@ -6,6 +6,9 @@ with open("README.rst", "r") as f:
 with open("requirements.txt") as f:
     INSTALL_REQUIRES = f.read().strip().split("\n")
 
+EXTRAS_REQUIRE = {"viz": ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"]}
+EXTRAS_REQUIRE["complete"] = sorted(set(sum(EXTRAS_REQUIRE.values(), [])))
+
 setuptools.setup(
     name="icepyx",
     author="The icepyx Developers",
@@ -19,6 +22,7 @@ setuptools.setup(
     license="BSD 3-Clause",
     packages=setuptools.find_packages(exclude=["*tests"]),
     install_requires=INSTALL_REQUIRES,
+    extras_require=EXTRAS_REQUIRE,
     python_requires=">=3",
     classifiers=[
         "Programming Language :: Python :: 3",

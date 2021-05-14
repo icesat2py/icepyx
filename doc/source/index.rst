@@ -43,4 +43,16 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    :caption: Community and Resources
 
    community/resources
-   community/contact
+   community/contact   
+   tracking/tracking
+  
+**Quick Install**
+
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
+    :target: https://anaconda.org/conda-forge/icepyx
+    
+.. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
+    :target: https://pypi.org/project/icepyx/
+    
+|Conda install| |Pypi install| 
+

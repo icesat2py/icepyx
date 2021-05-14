@@ -29,58 +29,83 @@ def dset_version(latest_vers, version):
     return vers
 
 
-def cycles(all_cycles, cycles):
+def cycles(cycle):
     """
     Check if the submitted cycle is valid, and warn the user if not available.
     """
-    if cycles is None:
-        cycle_list = all_cycles
+    cycle_length = 2
+    # number of GPS seconds between the GPS epoch and ATLAS SDP epoch
+    atlas_sdp_gps_epoch = 1198800018.0
+    # number of GPS seconds since the GPS epoch for first ATLAS data point
+    atlas_gps_start_time = atlas_sdp_gps_epoch + 24710205.39202261
+    epoch1 = dt.datetime(1980, 1, 6, 0, 0, 0)
+    epoch2 = dt.datetime(1970, 1, 1, 0, 0, 0)
+    # get the total number of seconds since the start of ATLAS and now
+    delta_time_epochs = (epoch2 - epoch1).total_seconds()
+    atlas_UNIX_start_time = atlas_gps_start_time - delta_time_epochs
+    present_time = dt.datetime.now().timestamp()
+    # divide total time by cycle length to get the maximum number of orbital cycles
+    ncycles = np.ceil((present_time - atlas_UNIX_start_time) / (86400 * 91)).astype("i")
+    all_cycles = [str(c + 1).zfill(cycle_length) for c in range(ncycles)]
+
+    if cycle is None:
+        return []
     else:
-        cycle_length = 2
-        if isinstance(cycles, str):
-            assert int(cycles) > 0, "Cycle number must be positive"
-            cycle_list = [cycles.zfill(cycle_length)]
-        elif isinstance(cycles, list):
+        if isinstance(cycle, str):
+            assert int(cycle) > 0, "Cycle number must be positive"
+            cycle_list = [cycle.zfill(cycle_length)]
+        elif isinstance(cycle, int):
+            assert cycle > 0, "Cycle number must be positive"
+            cycle_list = [str(cycle).zfill(cycle_length)]
+        elif isinstance(cycle, list):
             cycle_list = []
-            for c in cycles:
+            for c in cycle:
                 assert int(c) > 0, "Cycle number must be positive"
-                cycle_list.append(c.zfill(cycle_length))
+                cycle_list.append(str(c).zfill(cycle_length))
         else:
             raise TypeError("Please enter the cycle number as a list or string")
 
+        # check if user-entered cycle is outside of currently available range
         if not set(all_cycles) & set(cycle_list):
             warnings.filterwarnings("always")
             warnings.warn("Listed cycle is not presently available")
 
-    return cycle_list
+        return cycle_list
 
 
-def tracks(all_tracks, tracks):
+def tracks(track):
     """
     Check if the submitted RGT is valid, and warn the user if not available.
     """
-    if tracks is None:
-        track_list = all_tracks
+    track_length = 4
+    # total number of ICESat-2 satellite RGTs is 1387
+    all_tracks = [str(tr + 1).zfill(track_length) for tr in range(1387)]
+
+    if track is None:
+        return []
     else:
-        track_length = 4
-        if isinstance(tracks, str):
-            assert int(tracks) > 0, "Reference Ground Track must be positive"
-            track_list = [tracks.zfill(track_length)]
-        elif isinstance(tracks, list):
+        if isinstance(track, str):
+            assert int(track) > 0, "Reference Ground Track must be positive"
+            track_list = [track.zfill(track_length)]
+        elif isinstance(track, int):
+            assert track > 0, "Reference Ground Track must be positive"
+            track_list = [str(track).zfill(track_length)]
+        elif isinstance(track, list):
             track_list = []
-            for t in tracks:
+            for t in track:
                 assert int(t) > 0, "Reference Ground Track must be positive"
-                track_list.append(t.zfill(track_length))
+                track_list.append(str(t).zfill(track_length))
         else:
             raise TypeError(
                 "Please enter the Reference Ground Track as a list or string"
             )
 
+        # check if user-entered RGT is outside of the valid range
         if not set(all_tracks) & set(track_list):
             warnings.filterwarnings("always")
             warnings.warn("Listed Reference Ground Track is not available")
 
-    return track_list
+        return track_list
 
 
 # DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
@@ -88,11 +113,11 @@ def spatial(spatial_extent):
     """
     Validate the input spatial extent and return the needed parameters to the query object.
     """
-    
+
     scalar_types = (np.int, np.float, np.int64)
-    
+
     if isinstance(spatial_extent, (list, np.ndarray)):
-        
+
         # bounding box
         if len(spatial_extent) == 4 and all(
             isinstance(i, scalar_types) for i in spatial_extent
@@ -118,11 +143,14 @@ def spatial(spatial_extent):
             extent_type = "bounding_box"
 
         # user-entered polygon as list of lon, lat coordinate pairs
-        elif all(type(i) in [list, tuple, np.ndarray] for i in spatial_extent) and all( 
-            all( isinstance(i[j], scalar_types) for j in range(len(i)) ) for i in spatial_extent
+        elif all(type(i) in [list, tuple, np.ndarray] for i in spatial_extent) and all(
+            all(isinstance(i[j], scalar_types) for j in range(len(i)))
+            for i in spatial_extent
         ):
-            if any( len(i) != 2 for i in spatial_extent):
-                raise ValueError("Each element in spatial_extent should be a list or tuple of length 2")
+            if any(len(i) != 2 for i in spatial_extent):
+                raise ValueError(
+                    "Each element in spatial_extent should be a list or tuple of length 2"
+                )
             assert (
                 len(spatial_extent) >= 4
             ), "Your spatial extent polygon has too few vertices"
@@ -148,7 +176,7 @@ def spatial(spatial_extent):
             # warnings.warn("this type of input is not yet well handled and you may not be able to find data")
 
         # user-entered polygon as a single list of lon and lat coordinates
-        elif all( isinstance(i, scalar_types) for i in spatial_extent):
+        elif all(isinstance(i, scalar_types) for i in spatial_extent):
             assert (
                 len(spatial_extent) >= 8
             ), "Your spatial extent polygon has too few vertices"
@@ -170,7 +198,9 @@ def spatial(spatial_extent):
             # _spat_extent = polygon
 
         else:
-            raise ValueError("Your spatial extent does not meet minimum input criteria or the input format is not correct")
+            raise ValueError(
+                "Your spatial extent does not meet minimum input criteria or the input format is not correct"
+            )
 
         # DevGoal: write a test for this?
         # make sure there is nothing set to _geom_filepath since its existence determines later steps

@@ -45,15 +45,12 @@ class Earthdata:
     def _start_session(self):
         # Request CMR token using Earthdata credentials
         token_api_url = "https://cmr.earthdata.nasa.gov/legacy-services/rest/tokens"
-        hostname = socket.gethostname()
-        ip = socket.gethostbyname(hostname)
         # try initially with machine hostname
         # revert to using localhost if gaierror exception
         try:
             ip = socket.gethostbyname(socket.gethostname())
         except:
             ip = socket.gethostbyname("localhost")
-
 
         data = {
             "token": {
@@ -66,7 +63,9 @@ class Earthdata:
 
         response = None
         response = requests.post(
-            token_api_url, json=data, headers={"Accept": "application/json"}
+            token_api_url,
+            json=data,
+            headers={"Accept": "application/json", "Client-Id": "icepyx"},
         )
 
         # check for a valid login
@@ -105,7 +104,9 @@ class Earthdata:
         Then change the permissions of that file to 600
         This will allow you to have read and write access to the file
         No other user can access the file
+
             $ chmod 600 ~/.netrc
+
         The function checks for this file to retrieve credentials, prior to
         prompting for manual input.
 

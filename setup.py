@@ -6,9 +6,11 @@ with open("README.rst", "r") as f:
 with open("requirements.txt") as f:
     INSTALL_REQUIRES = f.read().strip().split("\n")
 
+EXTRAS_REQUIRE = {"viz": ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"]}
+EXTRAS_REQUIRE["complete"] = sorted(set(sum(EXTRAS_REQUIRE.values(), [])))
+
 setuptools.setup(
     name="icepyx",
-    version="0.3.0",
     author="The icepyx Developers",
     author_email="jbscheick@gmail.com",
     maintainer="Jessica Scheick",
@@ -20,6 +22,7 @@ setuptools.setup(
     license="BSD 3-Clause",
     packages=setuptools.find_packages(exclude=["*tests"]),
     install_requires=INSTALL_REQUIRES,
+    extras_require=EXTRAS_REQUIRE,
     python_requires=">=3",
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -27,4 +30,12 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Development Status :: 1 - Planning",
     ],
+    py_modules=["_icepyx_version"],
+    use_scm_version={
+        "fallback_version": "unknown",
+        "local_scheme": "node-and-date",
+        "write_to": "_icepyx_version.py",
+        "write_to_template": 'version = "{version}"\n',
+    },
+    setup_requires=["setuptools>=30.3.0", "wheel", "setuptools_scm"],
 )

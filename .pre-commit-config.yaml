@@ -3,9 +3,12 @@ repos:
     rev: stable
     hooks:
     - id: black
-    
+
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0  # Use the ref you want to point at
+    rev: v3.4.0  # Use the ref you want to point at
     hooks:
-    -   id: check-added-large-files
-        args: ["--maxkb=5000"]
+    - id: check-added-large-files
+      args: ["--maxkb=5000"]
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+      args: [--markdown-linebreak-ext=md]

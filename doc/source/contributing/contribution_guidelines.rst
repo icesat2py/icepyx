@@ -59,7 +59,17 @@ By having a *development* branch for daily work, we enable the *main* branch to 
 
 First Steps
 ^^^^^^^^^^^
-Before you begin writing code, please first check out our issues page. Someone may already be working on the same problem, and you may be able to contribute directly to their efforts. If not, create a new issue to describe what you plan to do.
+Before you begin writing code, please first check out our issues page.
+Someone may already be working on the same problem, and you may be able to contribute directly to their efforts.
+If not, create a new issue to describe what you plan to do.
+
+We have included a set of pre-commit formatting hooks that we strongly encourage all contributors to use.
+These hooks will check the files you are committing for format consistency with the library.
+If you do not use the pre-commit hooks, you may be asked to run the formatting checks manually on your PR.
+To enable these hooks, you must have the Python `pre-commit` package installed in your working environment.
+Then simply run `pre-commit install` within the icepyx git repository on your system.
+This will activate the hooks for future commits.
+Note that when reformatting occurs, you will need to re-commit your changes until all pre-commit hooks pass.
 
 General Guidelines
 ^^^^^^^^^^^^^^^^^^
@@ -74,7 +84,8 @@ General Guidelines
 
 Basic Steps to Contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_. In a nutshell, the series of steps required to add new code is:
+We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_.
+In a nutshell, the series of steps required to add new code is:
 (first time only)
 
  - Clone the repository

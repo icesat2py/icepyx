@@ -32,7 +32,7 @@ def test_int_version():
 
 
 def test_old_version():
-    wrng = "You are using an old version of this dataset"
+    wrng = "You are using an old version of this product"
     with pytest.warns(UserWarning, match=wrng):
         val.dset_version("003", "001")
 

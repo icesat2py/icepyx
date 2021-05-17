@@ -49,11 +49,11 @@ def test_properties():
         version="2",
     )
     obs_list = [
-        reg_a.dataset,
+        reg_a.product,
         reg_a.dates,
         reg_a.start_time,
         reg_a.end_time,
-        reg_a.dataset_version,
+        reg_a.product_version,
         reg_a.spatial_extent,
     ]
     exp_list = [

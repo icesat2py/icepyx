@@ -10,7 +10,7 @@ import icepyx.core.geospatial as geospatial
 
 def dset_version(latest_vers, version):
     """
-    Check if the submitted dataset version is valid, and warn the user if a newer version is available.
+    Check if the submitted product version is valid, and warn the user if a newer version is available.
     """
     if version is None:
         vers = latest_vers
@@ -24,7 +24,7 @@ def dset_version(latest_vers, version):
 
         if int(vers) < int(latest_vers):
             warnings.filterwarnings("always")
-            warnings.warn("You are using an old version of this dataset")
+            warnings.warn("You are using an old version of this product")
 
     return vers
 

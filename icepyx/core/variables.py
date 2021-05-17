@@ -31,8 +31,8 @@ class Variables:
         Properly formatted string specifying a valid ICESat-2 product
     version : string, default None
         Properly formatted string specifying a valid version of the ICESat-2 product
-    source : string, default None
-        For vartype file, a path to a directory or single input source files (not yet implemented)
+    path : string, default None
+        For vartype file, a path to a directory of or single input data file (not yet implemented)
     """
 
     def __init__(
@@ -43,7 +43,7 @@ class Variables:
         session=None,
         product=None,
         version=None,
-        source=None,
+        path=None,
     ):
 
         assert vartype in ["order", "file"], "Please submit a valid variables type flag"
@@ -61,7 +61,7 @@ class Variables:
                 self._version = version
         elif self._vartype == "file":
             # DevGoal: check that the list or string are valid dir/files
-            self.source = source
+            self.path = path
 
     # @property
     # def wanted(self):

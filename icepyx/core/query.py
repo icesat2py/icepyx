@@ -117,7 +117,7 @@ class Query:
         version=None,
         cycles=None,
         tracks=None,
-        files=None,
+        files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
     ):
 
         # warnings.filterwarnings("always")

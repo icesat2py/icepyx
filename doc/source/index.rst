@@ -24,6 +24,7 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    :caption: User Guide
 
    example_notebooks/ICESat-2_DAAC_DataAccess_Example
+   example_notebooks/ICESat-2_Data_Visualization_Example
    user_guide/documentation/icepyx
    user_guide/changelog/index
 

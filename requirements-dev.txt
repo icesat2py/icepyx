@@ -5,3 +5,4 @@ pre-commit
 pypistats
 pytest>=4.6
 pytest-cov
+responses

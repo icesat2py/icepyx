@@ -1016,10 +1016,11 @@ def test_var_subset_list_fmt():
     exp = "/ancillary_data/atlas_sdp_gps_epoch,/ancillary_data/data_end_utc,/ancillary_data/data_start_utc,/ancillary_data/end_delta_time,/ancillary_data/granule_end_utc,/ancillary_data/granule_start_utc,/profile_2/high_rate/latitude,/profile_2/low_rate/latitude,/orbit_info/sc_orient,/ancillary_data/start_delta_time"
     assert obs == exp
 
+
 ######## _fmt_readable_granules ########
 def test_readable_granules():
-    obs = apifmt._fmt_readable_granules('ATL06',cycles=['02'],tracks=['1387'])
-    exp = ['ATL06_??????????????_138702??_*']
+    obs = apifmt._fmt_readable_granules("ATL06", cycles=["02"], tracks=["1387"])
+    exp = ["ATL06_??????????????_138702??_*"]
     assert obs == exp
     obs = apifmt._fmt_readable_granules('ATL07',cycles=['02'],tracks=['1387'])
     exp = ['ATL07-??_??????????????_138702??_*']
@@ -1043,6 +1044,7 @@ def test_readable_granules():
     exp = ['ATL06_20190329071316_13870211_003_*']
     assert obs == exp
 
+
 ########## combine_params ##########
 def test_combine_params():
     dict1 = {"key1": 0, "key2": 1}
@@ -1051,18 +1053,25 @@ def test_combine_params():
     expected = {"key1": 0, "key2": 1, "key3": 10}
     assert obs == expected
 
+
 ############ to_string #############
 def test_to_string():
-    CMRparams = {'short_name': 'ATL06', 'version': '002',
-        'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
-        'bounding_box': '-55,68,-48,71'}
-    reqparams = {'page_size': 10, 'page_num': 1}
+    CMRparams = {
+        "short_name": "ATL06",
+        "version": "002",
+        "temporal": "2019-02-20T00:00:00Z,2019-02-28T23:59:59Z",
+        "bounding_box": "-55,68,-48,71",
+    }
+    reqparams = {"page_size": 10, "page_num": 1}
     params = apifmt.combine_params(CMRparams, reqparams)
     obs = apifmt.to_string(params)
-    expected = ('short_name=ATL06&version=002'
-        '&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z'
-        '&bounding_box=-55,68,-48,71&page_size=10&page_num=1')
+    expected = (
+        "short_name=ATL06&version=002"
+        "&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z"
+        "&bounding_box=-55,68,-48,71&page_size=10&page_num=1"
+    )
     assert obs == expected
+
 
 ########## Parameters (class) ##########
 
@@ -1078,10 +1087,12 @@ def test_CMRparams_no_other_inputs():
     assert CMRparams.poss_keys == {
         "default": ["short_name", "version"],
         "spatial": ["bounding_box", "polygon"],
-        "optional": ["temporal",
+        "optional": [
+            "temporal",
             "options[readable_granule_name][pattern]",
             "options[spatial][or]",
-            "readable_granule_name[]"],
+            "readable_granule_name[]",
+        ],
     }
     assert CMRparams.fmted_keys == {}
     assert CMRparams._check_valid_keys

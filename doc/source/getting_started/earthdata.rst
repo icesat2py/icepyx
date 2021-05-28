@@ -30,7 +30,8 @@ Startup Steps for NSIDC
 
     .. code-block:: bash
 
-        export EARTHDATA_PASSWORD=<password>
+        export EARTHDATA_PASSWORD=<password>  # on macOS/Linux
+        set "EARTHDATA_PASSWORD=<password>"  # on Windows
 
 Other Data Access Examples
 ##########################

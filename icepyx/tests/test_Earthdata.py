@@ -21,7 +21,7 @@ def setup_earthdata():
     if os.access(netrc_file,os.F_OK):
         shutil.move(netrc_file,temprc_file)
     yield
-    # clean up
+    # After test - move .netrc file back to original path
     if os.access(temprc_file,os.F_OK):
         shutil.move(temprc_file,netrc_file)
     else:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-u"""
+"""
 test_Earthdata.py (05/2021)
 """
 import os

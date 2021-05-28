@@ -113,7 +113,8 @@ class Earthdata:
 
         Parameters
         ----------
-        attempts : number of retry attempts
+        attempts : int
+            Number of allowed retry attempts.
 
         Examples
         --------

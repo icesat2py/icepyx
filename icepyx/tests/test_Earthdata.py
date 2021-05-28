@@ -64,7 +64,8 @@ class Earthdata:
 
     Returns
     -------
-    True if completed a successful "login"
+    success : bool
+        True if completed a successful "login", else False.
     """
 
     def __init__(

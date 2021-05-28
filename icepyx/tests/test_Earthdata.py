@@ -15,6 +15,7 @@ import posixpath
 # PURPOSE: test different authentication methods
 @pytest.fixture(scope="module", autouse=True)
 def setup_earthdata():
+    # Before test - move .netrc file to a temporary place
     netrc_file = os.path.join(os.path.expanduser('~'),'.netrc')
     temprc_file = f"{netrc_file}.temp"
     if os.access(netrc_file,os.F_OK):

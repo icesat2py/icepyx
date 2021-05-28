@@ -53,13 +53,13 @@ class Earthdata:
 
     Parameters
     ----------
-    uid : string
+    uid : str
         Earthdata Login user name (user ID).
-    email : string
+    email : str
         Complete email address, provided as a string.
-    password : string (encrypted)
+    password : str
         Password for Earthdata registration associated with the uid.
-    capability_url : string
+    capability_url : str
         URL required to access Earthdata
 
     Returns

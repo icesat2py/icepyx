@@ -1,6 +1,6 @@
 name: generate plantuml
 on:
-  push
+  push:
   workflow_dispatch:
   
 jobs:

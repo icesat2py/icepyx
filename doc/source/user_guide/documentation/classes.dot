@@ -1,0 +1,23 @@
+digraph "classes" {
+charset="utf-8"
+rankdir=BT
+"0" [label="{Earthdata|capability_url\lemail\lnetrc : NoneType\lpswd : str, NoneType\lsession : Session\luid\l|login()\l}", shape="record"];
+"1" [label="{Granules|avail : list\lorderIDs : list\l|download(verbose, path, session, restart)\lget_avail(CMRparams, reqparams)\lplace_order(CMRparams, reqparams, subsetparams, verbose, subset, session, geom_filepath)\l}", shape="record"];
+"2" [label="{Icesat2Data|\l|}", shape="record"];
+"3" [fontcolor="red", label="{NsidcQueryError|errmsg\lmsgtxt : str\l|}", shape="record"];
+"4" [label="{Parameters|fmted_keys\lpartype\lposs_keys\l|build_params()\lcheck_req_values()\lcheck_values()\l}", shape="record"];
+"5" [label="{Query|CMRparams\lcycles\ldataset\ldataset_version\ldates\lend_time\lextent_type : str\lfile_vars\lgranules\lorder_vars\lreqparams\lreqparams : NoneType\lspatial_extent\lstart_time\ltracks\l|avail_granules(ids, cycles, tracks)\ldataset_all_info()\ldataset_summary_info()\ldownload_granules(path, verbose, subset, restart)\learthdata_login(uid, email)\llatest_version()\lorder_granules(verbose, subset, email)\lshow_custom_options(dictview)\lsubsetparams()\lvisualize_elevation()\lvisualize_spatial_extent()\l}", shape="record"];
+"6" [fontcolor="red", label="{QueryError|\l|}", shape="record"];
+"7" [label="{Variables|dataset : NoneType\lsource : NoneType\lwanted : NoneType, dict\l|append(defaults, var_list, beam_list, keyword_list)\lavail(options, internal)\lparse_var_list(varlist)\lremove(all, var_list, beam_list, keyword_list)\l}", shape="record"];
+"8" [label="{Visualize|bbox : list\lcycles : NoneType\ldate_range : NoneType\lproduct : NoneType, str\ltracks : NoneType\l|generate_OA_parameters()\lgrid_bbox(binsize)\lmake_request(base_url, payload)\lparallel_request_OA()\lquery_icesat2_filelist()\lrequest_OA_data(paras)\lviz_elevation()\l}", shape="record"];
+"3" -> "6" [arrowhead="empty", arrowtail="none"];
+"1" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_granules", style="solid"];
+"1" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_granules", style="solid"];
+"4" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_CMRparams", style="solid"];
+"4" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_reqparams", style="solid"];
+"4" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_subsetparams", style="solid"];
+"4" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_subsetparams", style="solid"];
+"7" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_order_vars", style="solid"];
+"7" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_order_vars", style="solid"];
+"7" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_file_vars", style="solid"];
+}

@@ -13,6 +13,11 @@ jobs:
       - name: Process diagrams
         uses: Timmy/plantuml-action@v1
         with:
-          args: '-graphvizdot -tutxt ./doc/source/user_guide/documentation/*.dot'
-      - name: Display diagrams
-        run: cat ./doc/source/user_guide/documentation/*.utxt
+          args: '-graphvizdot -tpng ./doc/source/user_guide/documentation/*.dot'
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v4
+        with:
+          author_name: Jessica Scheick
+          message: "GitHub PlantUML generation auto-update"
+          add: "./doc/source/user_guide/documentation/*"
+          ref: "uml_action"  # commits to branch "traffic"

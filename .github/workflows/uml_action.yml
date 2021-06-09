@@ -1,22 +1,18 @@
-name: generate plantuml
+name: Draw diagrams
 on:
   push:
   workflow_dispatch:
-  
+
 jobs:
-  generate_plantuml:
+  diagrams:
+    name: Draw diagrams
     runs-on: ubuntu-latest
-    name: plantuml
     steps:
-    - name: checkout
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-    - name: plantuml
-      id: plantuml
-      uses: grassedge/generate-plantuml-action@v1.5
-      with:
-        path: ./doc/source/user_guide/documentation
-        message: "Render PlantUML files"
-      env:
-        GITHUB_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Process diagrams
+        uses: Timmy/plantuml-action@v1
+        with:
+          args: '-tutxt diagrams/*.txt'
+      - name: Display diagrams
+        run: cat diagrams/*.utxt

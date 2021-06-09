@@ -1,4 +1,4 @@
-@startdot
+@startuml
 digraph "classes" {
 charset="utf-8"
 rankdir=BT
@@ -22,4 +22,4 @@ rankdir=BT
 "7" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_order_vars", style="solid"];
 "7" -> "5" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_file_vars", style="solid"];
 }
-@enddot
+@enduml

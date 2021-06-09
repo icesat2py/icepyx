@@ -15,4 +15,4 @@ jobs:
         with:
           args: '-graphvizdot -tutxt ./doc/source/user_guide/documentation/*.dot'
       - name: Display diagrams
-        run: cat diagrams/*.utxt
+        run: cat ./doc/source/user_guide/documentation/*.utxt

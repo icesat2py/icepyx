@@ -17,7 +17,9 @@ jobs:
           sudo apt-get install graphviz
       - name: run pyreverse
         run: |
-          pyreverse ./icepyx/core -o svg
+          pyreverse ./icepyx/core -p user_uml -o svg
+          pyreverse ./icepyx/core -f ALL -p dev_uml -o svg
+          rm ./packages_dev_uml.svg
           mv ./*.svg ./doc/source/user_guide/documentation/
       - name: Commit changes
         uses: EndBug/add-and-commit@v4

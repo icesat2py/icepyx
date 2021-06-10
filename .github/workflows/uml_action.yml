@@ -10,10 +10,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
-      - name: Process diagrams
-        uses: Timmy/plantuml-action@v1
-        with:
-          args: '-tsvg ./doc/source/user_guide/documentation/*.dot'
+      - name: run pyreverse
+        run: |
+          pyreverse ./icepyx -o svg
+          mv ./icepyx/*.svg ./doc/source/user_guide/documentation/
       - name: Commit changes
         uses: EndBug/add-and-commit@v4
         with:

@@ -23,4 +23,4 @@ jobs:
           author_name: Jessica Scheick
           message: "GitHub PlantUML generation auto-update"
           add: "./doc/source/user_guide/documentation/*"
-          ref: "uml_action"  # commits to branch "traffic"
+          ref: git branch --show-current

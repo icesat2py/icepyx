@@ -12,7 +12,8 @@ jobs:
         uses: actions/checkout@v2
       - name: run pyreverse
         run: |
-          pip install pylint graphviz
+          pip install pylint 
+          apt-get install graphviz
           pyreverse ./icepyx -o svg
           mv ./icepyx/*.svg ./doc/source/user_guide/documentation/
       - name: Commit changes

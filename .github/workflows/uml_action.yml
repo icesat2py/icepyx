@@ -13,9 +13,9 @@ jobs:
       - name: run pyreverse
         run: |
           pip install -r requirements.txt
-          pip install pylint 
+          pip install icepyx pylint 
           sudo apt-get install graphviz
-          pyreverse ./icepyx -o svg
+          pyreverse ./icepyx/core -o svg
           mv ./icepyx/*.svg ./doc/source/user_guide/documentation/
       - name: Commit changes
         uses: EndBug/add-and-commit@v4

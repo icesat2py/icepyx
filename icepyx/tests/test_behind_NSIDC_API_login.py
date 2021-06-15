@@ -2,41 +2,31 @@ import icepyx as ipx
 import pytest
 import warnings
 
-# from unittest.mock import patch
-# import mock
-# import builtins
-# import getpass
-import os
 
+# Misc notes and needed tests
 # test avail data and subsetting success for each input type (kml, shp, list of coords, bbox)
-# check that agent key is added in event of no subsetting
-# check that downloaded data is subset
+# check that downloaded data is subset? or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
 @pytest.fixture
-def reg_a(scope="module"):
+def reg(scope="module"):
     return ipx.Query("ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"])
 
 
-# @patch('my_module.__get_input', return_value='y')
-
-
+# QUESTION: should we be testing independently to make sure the session starts, or is the fixture sufficient test of that?
+# test_earthdata_session_started(an early attempt at the above) doesn't work because the 'requests.sessions.Session' isn't recognized...
+# def test_earthdata_session_started(session):
+#     assert isinstance(session, 'requests.sessions.Session')
 @pytest.fixture
-def session(reg_a, scope="module"):
-    return reg_a._start_earthdata_session(
+def session(reg, scope="module"):
+    return reg.Earthdata._start_session(
         "icepyx_devteam", "icepyx.dev@gmail.com", os.getenv("NSIDC_LOGIN")
     )
 
 
-# QUESTION: should we be testing to make sure the session starts? If so, how? The below doesn't work because the 'requests.sessions.Session' isn't recognized... is this a case where I'd need to have a mock session to compare it to?
-# def test_earthdata_session_started(session):
-#     assert isinstance(session, 'requests.sessions.Session')
-
-
+########## is2ref module ##########
 import icepyx.core.is2ref as is2ref
 
-########## _get_custom_options ##########
-# TestQuestion: should this use a mock rather than an actual call to NSIDC?
 # TestQuestion: is there a better way to deal with this than having the super long dictionary copied here?
 def test_get_custom_options_output(session):
     obs = is2ref._get_custom_options(session, "ATL06", "002")
@@ -629,27 +619,16 @@ def test_get_custom_options_output(session):
         ],
     }
     assert all(keys in obs.keys() for keys in exp.keys())
+    assert all(obs[key] == exp[key] for key in exp.keys())
 
 
-# the next line was causing black to fail. Since it's not being run as a test suite yet anyway, I'm taking the lazy way out
-#    assert obs[key] == exp[key] for key in exp.keys()
-
-
-# NOTE: best this test can do at the moment is a successful download with no errors... need to have more code to check the files themselves
+########## query module ##########
+# NOTE: best this test can do at the moment is a successful download with no errors...
+# see question at top of file
 def test_download_granules_with_subsetting(reg_a, session):
     path = "./downloads_subset"
     reg_a.order_granules(session)
     reg_a.download_granules(session, path)
-
-    # get filename here... not best way to test for successful download though, because also need to unzip and take files out of zipped dirs
-
-
-#     with h5py.File(filename) as h5f:
-#     #now actually check that the max extent of the downloaded granules is subsetted and that the files were downloaded
-
-# #     exp = ???
-# #     assert:
-# #         obs == exp
 
 
 # def test_download_granules_without_subsetting(reg_a, session):

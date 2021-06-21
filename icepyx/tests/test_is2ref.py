@@ -27,6 +27,7 @@ def test_bad_dataset():
 
 ########## about_dataset ##########
 # Note: requires internet connection
+# could the github flat data option be used here? https://octo.github.com/projects/flat-data
 # def test_dataset_info():
 #     obs = is2ref.about_dataset('ATL06')
 #     print(obs)

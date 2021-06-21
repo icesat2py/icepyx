@@ -118,10 +118,17 @@ class Query:
         cycles=None,
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
+        dataset=None,
     ):
 
         # warnings.filterwarnings("always")
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
+
+        if dataset != None:
+            warnings.filterwarnings("always")
+            warnings.warn(
+                "In line with most common usage, the 'dataset' input argument has been replaced by 'product'."
+            )
 
         if (
             (product is None or spatial_extent is None)
@@ -140,7 +147,7 @@ class Query:
             # self.order_vars = Variables(self._source)
         # self.variables = Variables(self._source)
 
-        self._dset = is2ref._validate_product(product)
+        self._prod = is2ref._validate_product(product)
 
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
             spatial_extent
@@ -160,7 +167,7 @@ class Query:
             self._tracks = val.tracks(tracks)
             # create list of CMR parameters for granule name
             self._readable_granule_name = apifmt._fmt_readable_granules(
-                self._dset, cycles=self.cycles, tracks=self.tracks
+                self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
     # ----------------------------------------------------------------------
@@ -177,7 +184,7 @@ class Query:
         >>> reg_a.product
         'ATL06'
         """
-        return self._dset
+        return self._prod
 
     @property
     def product_version(self):
@@ -561,7 +568,7 @@ class Query:
         orbit_parameters :  {'swath_width': '36.0', 'period': '94.29', 'inclination_angle': '92.0', 'number_of_orbits': '0.071428571', 'start_circular_latitude': '0.0'}
         """
         if not hasattr(self, "_about_product"):
-            self._about_product = is2ref.about_product(self._dset)
+            self._about_product = is2ref.about_product(self._prod)
         summ_keys = [
             "product_id",
             "short_name",
@@ -586,7 +593,7 @@ class Query:
 
         """
         if not hasattr(self, "_about_product"):
-            self._about_product = is2ref.about_product(self._dset)
+            self._about_product = is2ref.about_product(self._prod)
         pprint.pprint(self._about_product)
 
     def latest_version(self):
@@ -600,7 +607,7 @@ class Query:
         '003'
         """
         if not hasattr(self, "_about_product"):
-            self._about_product = is2ref.about_product(self._dset)
+            self._about_product = is2ref.about_product(self._prod)
         return max(
             [entry["version_id"] for entry in self._about_product["feed"]["entry"]]
         )

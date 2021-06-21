@@ -114,7 +114,7 @@ def spatial(spatial_extent):
     Validate the input spatial extent and return the needed parameters to the query object.
     """
 
-    scalar_types = (np.int, np.float, np.int64)
+    scalar_types = (int, float, np.int64)
 
     if isinstance(spatial_extent, (list, np.ndarray)):
 

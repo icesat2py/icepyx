@@ -13,10 +13,6 @@ def reg(scope="module"):
     return ipx.Query("ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"])
 
 
-# QUESTION: should we be testing independently to make sure the session starts, or is the fixture sufficient test of that?
-# test_earthdata_session_started(an early attempt at the above) doesn't work because the 'requests.sessions.Session' isn't recognized...
-# def test_earthdata_session_started(session):
-#     assert isinstance(session, 'requests.sessions.Session')
 @pytest.fixture
 def session(reg, scope="module"):
     return reg.Earthdata._start_session(

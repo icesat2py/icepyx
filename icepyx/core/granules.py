@@ -186,7 +186,9 @@ class Granules:
                 CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
             )
             response = requests.get(
-                granule_search_url, headers=headers, params=apifmt.to_string(params),
+                granule_search_url,
+                headers=headers,
+                params=apifmt.to_string(params),
             )
 
             try:
@@ -277,7 +279,8 @@ class Granules:
                 "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
             )
 
-        base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
+        # base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
+        base_url = "https://n5eil01u.ecs.nsidc.org/ATLAS/ATL06.004/"
         # DevGoal: get the base_url from the granules?
 
         self.get_avail(

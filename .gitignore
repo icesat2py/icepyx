@@ -24,7 +24,7 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-_version.py
+_icepyx_version.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -107,6 +107,7 @@ venv.bak/
 
 # downloaded data
 /download/
+/examples/download
 
 # directory files
 .DS_Store

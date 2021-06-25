@@ -63,7 +63,9 @@ class Earthdata:
 
         response = None
         response = requests.post(
-            token_api_url, json=data, headers={"Accept": "application/json"}
+            token_api_url,
+            json=data,
+            headers={"Accept": "application/json", "Client-Id": "icepyx"},
         )
 
         # check for a valid login
@@ -102,7 +104,9 @@ class Earthdata:
         Then change the permissions of that file to 600
         This will allow you to have read and write access to the file
         No other user can access the file
+
             $ chmod 600 ~/.netrc
+
         The function checks for this file to retrieve credentials, prior to
         prompting for manual input.
 

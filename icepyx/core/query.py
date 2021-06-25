@@ -682,7 +682,7 @@ class Query:
     # ----------------------------------------------------------------------
     # Methods - Login and Granules (NSIDC-API)
 
-    def earthdata_login(self, uid, email):
+    def earthdata_login(self, uid, email, s3token=False):
         """
         Log in to NSIDC EarthData to access data. Generates the needed session and token for most
         data searches and data ordering/download.
@@ -693,6 +693,8 @@ class Query:
             Earthdata login user ID
         email : string
             Email address. NSIDC will automatically send you emails about the status of your order.
+        s3token : boolean, default False
+            Generate AWS s3 ICESat-2 data access credentials
 
         See Also
         --------
@@ -705,12 +707,21 @@ class Query:
         Earthdata Login password:  ········
         """
 
-        capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml"
+        if s3token == False:
+            capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml"
+        elif s3token == True:
+            capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
         self._session = Earthdata(uid, email, capability_url).login()
+
+        # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
+        if s3token == True:
+            self._s3login_credentials = json.loads(
+                self._session.get(self._session.get(capability_url).url).content
+            )
         self._email = email
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self, ids=False, cycles=False, tracks=False):
+    def avail_granules(self, ids=False, cycles=False, tracks=False, s3urls=False):
         """
         Obtain information about the available granules for the query
         object's parameters. By default, a complete list of available granules is
@@ -727,6 +738,9 @@ class Query:
 
         tracks : boolean, default False
             Indicates whether the function should return a list of RGTs.
+
+        s3urls : boolean, default False
+            Indicates whether the function should return a list of potential AWS s3 urls.
 
         Examples
         --------
@@ -752,10 +766,14 @@ class Query:
         except AttributeError:
             self.granules.get_avail(self.CMRparams, self.reqparams)
 
-        if ids or cycles or tracks:
-            # list of outputs in order of ids, cycles, tracks
+        if ids or cycles or tracks or s3urls:
+            # list of outputs in order of ids, cycles, tracks, s3urls
             return granules.gran_IDs(
-                self.granules.avail, ids=ids, cycles=cycles, tracks=tracks
+                self.granules.avail,
+                ids=ids,
+                cycles=cycles,
+                tracks=tracks,
+                s3urls=s3urls,
             )
         else:
             return granules.info(self.granules.avail)

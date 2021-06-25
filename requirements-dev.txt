@@ -1,5 +1,8 @@
+black
 codecov
-pre_commit
-pypistats[pandas]
+flake8
+pre-commit
+pypistats
 pytest>=4.6
 pytest-cov
+responses

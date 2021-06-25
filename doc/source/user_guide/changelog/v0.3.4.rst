@@ -1,0 +1,49 @@
+.. _whatsnew_034:
+
+What's new in v0.3.4 (23 March 2021)
+------------------------------------
+
+These are the changes in icepyx 0.3.4 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- None
+
+Bug fixes
+~~~~~~~~~
+
+- None
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+^^^^^^^^^^^
+
+- fix read the docs build with automatic versioning (#182)
+- update tracking metrics and automate github action figure updates (#184)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- Add quick instructions for installing icepyx via conda (#187)
+
+
+Other
+^^^^^
+
+- None
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.3.3..v0.3.4|HEAD

@@ -65,13 +65,15 @@ class Query:
         DevGoal: check for time in date-range date-time object, if that's used for input.
     version : string, default most recent version
         Dataset version, given as a 3 digit string. If no version is given, the current
-        version is used.
-    cycle : string, default all available orbital cycles
+        version is used. Example: "004"
+    cycles : string or a list of strings, default all available orbital cycles
         Dataset cycle, given as a 2 digit string. If no cycle is given, all available
-        cycles are used.
-    track : string, default all available reference ground tracks (RGTs)
+        cycles are used. Example: "04"
+    tracks : string or a list of strings, default all available reference ground tracks (RGTs)
         Dataset track, given as a 4 digit string. If no track is given, all available
-        reference ground tracks are used.
+        reference ground tracks are used. Example: "0594" 
+    files : string, default None
+        A placeholder for future development. Not used for any purposes yet. 
 
     Returns
     -------

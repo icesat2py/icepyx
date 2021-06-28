@@ -55,7 +55,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
     s3urls : boolean, default False
         Return a a list of AWS s3 urls for the available granules in the granule dictionary.
         Note: currently, NSIDC does not provide metadata on which granules are available on s3.
-        Thus, all of the urls may not be valid and may return FileNotFoundErrors
+        Thus, all of the urls may not be valid and may return FileNotFoundErrors.
         s3 data access is currently limited access to beta testers.
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
@@ -105,7 +105,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
             str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
         )
         gran_s3urls.append(
-            f"s3://nsidc-cumulus-prod-protected/ATLAS/ATL{PRD}/{RL}/{YY}/{MM}/{DD}/{producer_granule_id}"
+            f"s3://nsidc-cumulus-prod-protected/ATLAS/{PRD}/{RL}/{YY}/{MM}/{DD}/{producer_granule_id}"
         )
     # list of granule parameters
     gran_list = []
@@ -291,9 +291,7 @@ class Granules:
                 "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
             )
 
-        # base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
-        base_url = "https://n5eil01u.ecs.nsidc.org/ATLAS/ATL06.004/"
-        # DevGoal: get the base_url from the granules?
+        base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
 
         self.get_avail(
             CMRparams, reqparams

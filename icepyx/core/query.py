@@ -712,25 +712,20 @@ class Query:
         if s3token == False:
             capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml"
         elif s3token == True:
-            # loosely check for AWS login capability
-            try:
-                import botocore.session
-                import botocore.exceptions
 
-                session = botocore.session.get_session()
-                ec2_client = session.create_client("ec2", region_name="us-west-2")
-                response = ec2_client.describe_instance_status(
-                    InstanceIds=["i-12345"], IncludeAllInstances=True
-                )
-            # local user not on AWS instance
-            except botocore.exceptions.NoCredentialsError:
-                print(
-                    "Please confirm that you have valid AWS account credentials and are working from an AWS instance"
-                )
-                raise
-            # Pangeo no response permission error
-            except botocore.exceptions.ClientError:
-                pass
+            def is_ec2():
+                import socket
+
+                try:
+                    socket.gethostbyname("instance-data")
+                    return True
+                except socket.gaierror:
+                    return False
+
+            # loosely check for AWS login capability without web request
+            assert (
+                is_ec2() == True
+            ), "You must be working from a valid AWS instance to use s3 data access"
             capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
         self._session = Earthdata(uid, email, capability_url).login()
 

@@ -71,9 +71,9 @@ class Query:
         cycles are used. Example: "04"
     tracks : string or a list of strings, default all available reference ground tracks (RGTs)
         Dataset track, given as a 4 digit string. If no track is given, all available
-        reference ground tracks are used. Example: "0594" 
+        reference ground tracks are used. Example: "0594"
     files : string, default None
-        A placeholder for future development. Not used for any purposes yet. 
+        A placeholder for future development. Not used for any purposes yet.
 
     Returns
     -------
@@ -712,6 +712,25 @@ class Query:
         if s3token == False:
             capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml"
         elif s3token == True:
+            # loosely check for AWS login capability
+            try:
+                import botocore.session
+                import botocore.exceptions
+
+                session = botocore.session.get_session()
+                ec2_client = session.create_client("ec2", region_name="us-west-2")
+                response = ec2_client.describe_instance_status(
+                    InstanceIds=["i-12345"], IncludeAllInstances=True
+                )
+            # local user not on AWS instance
+            except botocore.exceptions.NoCredentialsError:
+                print(
+                    "Please confirm that you have valid AWS account credentials and are working from an AWS instance"
+                )
+                raise
+            # Pangeo no response permission error
+            except botocore.exceptions.ClientError:
+                pass
             capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
         self._session = Earthdata(uid, email, capability_url).login()
 

@@ -2,12 +2,14 @@ backoff
 datashader
 fiona
 geopandas
+h5netcdf
 h5py
 holoviews
 hvplot
 intake
 matplotlib
 numpy
+pathlib
 requests
 shapely
 xarray

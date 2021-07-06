@@ -71,9 +71,9 @@ class Query:
         cycles are used. Example: "04"
     tracks : string or a list of strings, default all available reference ground tracks (RGTs)
         Product track, given as a 4 digit string. If no track is given, all available
-        reference ground tracks are used. Example: "0594" 
+        reference ground tracks are used. Example: "0594"
     files : string, default None
-        A placeholder for future development. Not used for any purposes yet. 
+        A placeholder for future development. Not used for any purposes yet.
 
     Returns
     -------
@@ -945,7 +945,7 @@ class Query:
             return tile * bbox_poly
 
         except ImportError:
-            world = gpd.read_file(gpd.products.get_path("naturalearth_lowres"))
+            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
             f, ax = plt.subplots(1, figsize=(12, 6))
             world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
             gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)

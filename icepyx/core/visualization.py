@@ -486,7 +486,7 @@ class Visualize:
 
             x, y = ds.utils.lnglat_to_meters(ddf.lon, ddf.lat)
             ddf_new = ddf.assign(x=x, y=y).persist()
-            dset = hv.product(ddf_new)
+            dset = hv.Dataset(ddf_new)
 
             raster_cycle = dset.to(
                 hv.Points,

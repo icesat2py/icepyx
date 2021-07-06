@@ -6,9 +6,9 @@ import numpy as np
 import icepyx.core.validate_inputs as val
 
 
-########## dset_version ##########
+########## prod_version ##########
 def test_version_setting_to_latest():
-    obs = val.dset_version("010", None)
+    obs = val.prod_version("010", None)
     expected = "010"
     assert obs == expected
 
@@ -16,11 +16,11 @@ def test_version_setting_to_latest():
 def test_neg_version_str_given():
     ermesg = "Version number must be positive"
     with pytest.raises(AssertionError, match=ermesg):
-        val.dset_version("010", "-12")
+        val.prod_version("010", "-12")
 
 
 def test_short_version_str_given():
-    obs = val.dset_version("001", "2")
+    obs = val.prod_version("001", "2")
     expected = "002"
     assert obs == expected
 
@@ -28,13 +28,13 @@ def test_short_version_str_given():
 def test_int_version():
     ermesg = "Please enter the version number as a string"
     with pytest.raises(TypeError, match=ermesg):
-        val.dset_version("010", 12)
+        val.prod_version("010", 12)
 
 
 def test_old_version():
     wrng = "You are using an old version of this product"
     with pytest.warns(UserWarning, match=wrng):
-        val.dset_version("003", "001")
+        val.prod_version("003", "001")
 
 
 ########## spatial ##########

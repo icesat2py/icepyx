@@ -3,7 +3,7 @@ import glob
 import os
 import xarray as xr
 
-import icepyx.core.query.Query as Query
+from icepyx.core.query import Query
 
 
 def _get_datasource_type(filepath):
@@ -24,30 +24,42 @@ def _get_datasource_type(filepath):
     """
 
 
-def _validate_source(source, filename_pattern):
+def _validate_source(source):
     """
     Check that the entered data source paths are valid
     """
 
-    # Start here, with validating the filenames against the pattern (right now this otherwise just checks they're valid inputs twice)
-
-    # acceptable inputs (for now) are a single file or directory with matching filename patterns
+    # acceptable inputs (for now) are a single file or directory
     assert type(source) == str, "You must enter your input as a string."
     assert (
         os.path.isdir(source) == True or os.path.isfile(source) == True
     ), "Your data source string is not a valid data source."
+    return True
 
-    source_path_list = []
+
+def _check_filename_pattern(source, filename_pattern):
+    """
+    Check that the entered data source file paths match the input filename_pattern
+    """
     if os.path.isdir(source):
-        source_path_list.append(
-            [f for f in glob.iglob(source, recursive=True) if os.path.isfile(f)]
+        filelist = [
+            f
+            for f in glob.iglob(source, recursive=True)
+            if os.path.isfile(f) and fnmatch.fnmatch(f, filename_pattern)
+        ]
+        print(filelist)
+        assert len(filelist) > 0, "None of your filenames match the specified pattern."
+        print(
+            f"You have {len(filelist)} files matching the filename pattern to be read in."
         )
+        return True
     elif os.path.isfile(source):
-        source_path_list.append(source)
+        assert fnmatch.fnmatch(
+            source, filename_pattern
+        ), "Your input filename does not match the specified pattern."
+        return True
     else:
-        raise ValueError(
-            f"{item} does not contain the ATLAS sensor string, 'ATL'. Please use filenames that include ATL."
-        )
+        return False
 
 
 # after validation, use the notebook code and code outline to start implementing the rest of the class
@@ -64,9 +76,9 @@ class Read:
         A string with a full file path or full directory path to ICESat-2 hdf5 (.h5) format files.
         Files within a directory must have a consistent filename pattern.
 
-    filename_pattern : string, default 'processed_ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
-        String that shows the filename pattern.
-        The default describes files downloaded directly from NSIDC.
+    filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
+        String that shows the filename pattern as required for Intake's path_as_pattern argument.
+        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted).
 
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
@@ -92,17 +104,21 @@ class Read:
     def __init__(
         self,
         data_source=None,
-        filename_pattern=None,
+        filename_pattern=f"ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
         catalog=None,
         out_obj_type=xr.Dataset,
     ):
 
         if data_source == None:
             raise ValueError("Please provide a data source.")
+        else:
+            assert _validate_source(data_source)
+            self.data_source = data_source
 
-        if filename_pattern:
-            print("check the filename pattern")
-            self._filename_pattern = filename_pattern
+        assert _check_filename_pattern(data_source, filename_pattern)
+        # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
+        # start here with getting an intake path pattern and filename pattern to go from one to the other
+        self._filename_pattern = filename_pattern
 
         if catalog:
             print("validate catalog")

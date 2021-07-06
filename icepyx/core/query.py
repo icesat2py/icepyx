@@ -120,17 +120,10 @@ class Query:
         cycles=None,
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
-        dataset=None,
     ):
 
         # warnings.filterwarnings("always")
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
-
-        if dataset != None:
-            warnings.filterwarnings("always")
-            warnings.warn(
-                "In line with most common usage, the 'dataset' input argument has been replaced by 'product'."
-            )
 
         if (
             (product is None or spatial_extent is None)
@@ -158,7 +151,7 @@ class Query:
         if date_range:
             self._start, self._end = val.temporal(date_range, start_time, end_time)
 
-        self._version = val.dset_version(self.latest_version(), version)
+        self._version = val.prod_version(self.latest_version(), version)
 
         # build list of available CMR parameters if reducing by cycle or RGT
         # or a list of explicitly named files (full or partial names)
@@ -174,6 +167,21 @@ class Query:
 
     # ----------------------------------------------------------------------
     # Properties
+
+    @property
+    def dataset(self):
+        """
+        Legacy property included to provide depracation warning.
+
+        See Also
+        --------
+        product
+        """
+        warnings.filterwarnings("always")
+        warnings.warn(
+            "In line with most common usage, 'dataset' has been replaced by 'product'.",
+            DeprecationWarning,
+        )
 
     @property
     def product(self):

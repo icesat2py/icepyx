@@ -8,7 +8,7 @@ import icepyx.core.APIformatting as apifmt
 import icepyx.core.geospatial as geospatial
 
 
-def dset_version(latest_vers, version):
+def prod_version(latest_vers, version):
     """
     Check if the submitted product version is valid, and warn the user if a newer version is available.
     """

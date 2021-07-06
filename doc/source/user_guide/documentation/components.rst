@@ -58,3 +58,11 @@ variables
    :members:
    :undoc-members:
    :show-inheritance:
+
+visualize
+---------
+
+.. automodule:: icepyx.core.visualization
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -56,7 +56,7 @@ def _validate_OA_product(product):
 
 
 # DevNote: test for this function is commented out; dates in some of the values were causing the test to fail...
-def about_product(dset):
+def about_product(prod):
     """
     Ping Earthdata to get metadata about the product of interest (the collection).
 
@@ -66,7 +66,7 @@ def about_product(dset):
     """
 
     cmr_collections_url = "https://cmr.earthdata.nasa.gov/search/collections.json"
-    response = requests.get(cmr_collections_url, params={"short_name": dset})
+    response = requests.get(cmr_collections_url, params={"short_name": prod})
     results = json.loads(response.content)
     return results
 
@@ -84,7 +84,7 @@ def _get_custom_options(session, product, version):
         )
 
     capability_url = (
-        f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{dataset}.{version}.xml"
+        f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{product}.{version}.xml"
     )
     response = session.get(capability_url)
     root = ET.fromstring(response.content)
@@ -148,7 +148,7 @@ def _get_custom_options(session, product, version):
     return cust_options
 
 
-# DevGoal: populate this with default variable lists for all of the datasets!
+# DevGoal: populate this with default variable lists for all of the products!
 # DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with product not being in the list, though it should since it was checked as valid earlier...)
 def _default_varlists(product):
     """

@@ -505,6 +505,31 @@ class Query:
         return self._order_vars
 
     @property
+    def file_vars(self):
+        """
+        Return the file variables object.
+        This instance is generated when files are used to create the data object (not yet implemented).
+
+        See Also
+        --------
+        variables.Variables
+
+        Examples
+        --------
+        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.earthdata_login(user_id,user_email)
+        Earthdata Login password:  ········
+        >>> reg_a.file_vars
+        <icepyx.core.variables.Variables at [location]>
+        """
+
+        if not hasattr(self, "_file_vars"):
+            if self._source == "file":
+                self._file_vars = Variables(self._source, product=self.product)
+
+        return self._file_vars
+
+    @property
     def granules(self):
         """
         Return the granules object, which provides the underlying funtionality for searching, ordering,
@@ -544,7 +569,7 @@ class Query:
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_summary_info()
-        title :  ATLAS/ICESat-2 L3A Land Ice Height V002
+        product_id :  ATLAS/ICESat-2 L3A Land Ice Height V002
         short_name :  ATL06
         version_id :  002
         time_start :  2018-10-14T00:00:00.000Z
@@ -555,7 +580,7 @@ class Query:
         if not hasattr(self, "_about_product"):
             self._about_product = is2ref.about_product(self._prod)
         summ_keys = [
-            "title",
+            "product_id",
             "short_name",
             "version_id",
             "time_start",

@@ -27,7 +27,6 @@ def test_bad_product():
 
 ########## about_product ##########
 # Note: requires internet connection
-# could the github flat data option be used here? https://octo.github.com/projects/flat-data
 # def test_product_info():
 #     obs = is2ref.about_product('ATL06')
 #     print(obs)

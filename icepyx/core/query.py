@@ -27,15 +27,15 @@ from icepyx.core.visualization import Visualize
 class Query:
     """
     ICESat-2 Data object to query, obtain, and perform basic operations on
-    available ICESat-2 datasets using temporal and spatial input parameters.
+    available ICESat-2 data products using temporal and spatial input parameters.
     Allows the easy input and formatting of search parameters to match the
     NASA NSIDC DAAC and (development goal-not yet implemented) conversion to multiple data types.
 
     Parameters
     ----------
-    dataset : string
-        ICESat-2 dataset ID, also known as "short name" (e.g. ATL03).
-        Available datasets can be found at: https://nsidc.org/data/icesat-2/data-sets
+    product : string
+        ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
+        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     spatial_extent : list or string
         Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
         geospatial polygon file.
@@ -64,16 +64,16 @@ class Query:
         End time in UTC/Zulu (24 hour clock). If None, use default.
         DevGoal: check for time in date-range date-time object, if that's used for input.
     version : string, default most recent version
-        Dataset version, given as a 3 digit string. If no version is given, the current
+        Product version, given as a 3 digit string. If no version is given, the current
         version is used. Example: "004"
     cycles : string or a list of strings, default all available orbital cycles
-        Dataset cycle, given as a 2 digit string. If no cycle is given, all available
+        Product cycle, given as a 2 digit string. If no cycle is given, all available
         cycles are used. Example: "04"
     tracks : string or a list of strings, default all available reference ground tracks (RGTs)
-        Dataset track, given as a 4 digit string. If no track is given, all available
-        reference ground tracks are used. Example: "0594" 
+        Product track, given as a 4 digit string. If no track is given, all available
+        reference ground tracks are used. Example: "0594"
     files : string, default None
-        A placeholder for future development. Not used for any purposes yet. 
+        A placeholder for future development. Not used for any purposes yet.
 
     Returns
     -------
@@ -111,7 +111,7 @@ class Query:
 
     def __init__(
         self,
-        dataset=None,
+        product=None,
         spatial_extent=None,
         date_range=None,
         start_time=None,
@@ -119,14 +119,14 @@ class Query:
         version=None,
         cycles=None,
         tracks=None,
-        files=None,
+        files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
     ):
 
         # warnings.filterwarnings("always")
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
 
         if (
-            (dataset is None or spatial_extent is None)
+            (product is None or spatial_extent is None)
             and (date_range is None or cycles is None or tracks is None)
             and files is None
         ):
@@ -142,7 +142,7 @@ class Query:
             # self.order_vars = Variables(self._source)
         # self.variables = Variables(self._source)
 
-        self._dset = is2ref._validate_dataset(dataset)
+        self._prod = is2ref._validate_product(product)
 
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
             spatial_extent
@@ -151,7 +151,7 @@ class Query:
         if date_range:
             self._start, self._end = val.temporal(date_range, start_time, end_time)
 
-        self._version = val.dset_version(self.latest_version(), version)
+        self._version = val.prod_version(self.latest_version(), version)
 
         # build list of available CMR parameters if reducing by cycle or RGT
         # or a list of explicitly named files (full or partial names)
@@ -162,7 +162,7 @@ class Query:
             self._tracks = val.tracks(tracks)
             # create list of CMR parameters for granule name
             self._readable_granule_name = apifmt._fmt_readable_granules(
-                self._dset, cycles=self.cycles, tracks=self.tracks
+                self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
     # ----------------------------------------------------------------------
@@ -171,29 +171,44 @@ class Query:
     @property
     def dataset(self):
         """
-        Return the short name dataset ID string associated with the query object.
+        Legacy property included to provide depracation warning.
 
-        Examples
+        See Also
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dataset
-        'ATL06'
+        product
         """
-        return self._dset
+        warnings.filterwarnings("always")
+        warnings.warn(
+            "In line with most common usage, 'dataset' has been replaced by 'product'.",
+            DeprecationWarning,
+        )
 
     @property
-    def dataset_version(self):
+    def product(self):
         """
-        Return the dataset version of the data object.
+        Return the short name product ID string associated with the query object.
 
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dataset_version
+        >>> reg_a.product
+        'ATL06'
+        """
+        return self._prod
+
+    @property
+    def product_version(self):
+        """
+        Return the product version of the data object.
+
+        Examples
+        --------
+        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.product_version
         '003'
 
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
-        >>> reg_a.dataset_version
+        >>> reg_a.product_version
         '001'
         """
         return self._version
@@ -354,7 +369,7 @@ class Query:
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
-                dataset=self.dataset,
+                product=self.product,
                 version=self._version,
                 extent_type=self.extent_type,
                 spatial_extent=self._spat_extent,
@@ -470,14 +485,14 @@ class Query:
                     self._order_vars = Variables(
                         self._source,
                         session=self._session,
-                        dataset=self.dataset,
+                        product=self.product,
                         avail=self._cust_options["variables"],
                     )
                 else:
                     self._order_vars = Variables(
                         self._source,
                         session=self._session,
-                        dataset=self.dataset,
+                        product=self.product,
                         version=self._version,
                     )
 
@@ -510,7 +525,7 @@ class Query:
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(self._source, dataset=self.dataset)
+                self._file_vars = Variables(self._source, product=self.product)
 
         return self._file_vars
 
@@ -518,7 +533,7 @@ class Query:
     def granules(self):
         """
         Return the granules object, which provides the underlying funtionality for searching, ordering,
-        and downloading granules for the specified dataset. Users are encouraged to use the built in wrappers
+        and downloading granules for the specified product. Users are encouraged to use the built in wrappers
         rather than trying to access the granules object themselves.
 
         See Also
@@ -543,18 +558,18 @@ class Query:
         return self._granules
 
     # ----------------------------------------------------------------------
-    # Methods - Get and display neatly information at the dataset level
+    # Methods - Get and display neatly information at the product level
 
-    def dataset_summary_info(self):
+    def product_summary_info(self):
         """
-        Display a summary of selected metadata for the specified version of the dataset
+        Display a summary of selected metadata for the specified version of the product
         of interest (the collection).
 
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dataset_summary_info()
-        dataset_id :  ATLAS/ICESat-2 L3A Land Ice Height V002
+        >>> reg_a.product_summary_info()
+        product_id :  ATLAS/ICESat-2 L3A Land Ice Height V002
         short_name :  ATL06
         version_id :  002
         time_start :  2018-10-14T00:00:00.000Z
@@ -562,10 +577,10 @@ class Query:
         summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
         orbit_parameters :  {'swath_width': '36.0', 'period': '94.29', 'inclination_angle': '92.0', 'number_of_orbits': '0.071428571', 'start_circular_latitude': '0.0'}
         """
-        if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2ref.about_dataset(self._dset)
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
         summ_keys = [
-            "dataset_id",
+            "product_id",
             "short_name",
             "version_id",
             "time_start",
@@ -574,26 +589,26 @@ class Query:
             "orbit_parameters",
         ]
         for key in summ_keys:
-            print(key, ": ", self._about_dataset["feed"]["entry"][-1][key])
+            print(key, ": ", self._about_product["feed"]["entry"][-1][key])
 
-    def dataset_all_info(self):
+    def product_all_info(self):
         """
-        Display all metadata about the dataset of interest (the collection).
+        Display all metadata about the product of interest (the collection).
 
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dataset_all_info()
+        >>> reg_a.product_all_info()
         {very long prettily-formatted dictionary output}
 
         """
-        if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2ref.about_dataset(self._dset)
-        pprint.pprint(self._about_dataset)
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
+        pprint.pprint(self._about_product)
 
     def latest_version(self):
         """
-        Determine the most recent version available for the given dataset.
+        Determine the most recent version available for the given product.
 
         Examples
         --------
@@ -601,15 +616,15 @@ class Query:
         >>> reg_a.latest_version()
         '003'
         """
-        if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2ref.about_dataset(self._dset)
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
         return max(
-            [entry["version_id"] for entry in self._about_dataset["feed"]["entry"]]
+            [entry["version_id"] for entry in self._about_product["feed"]["entry"]]
         )
 
     def show_custom_options(self, dictview=False):
         """
-        Display customization/subsetting options available for this dataset.
+        Display customization/subsetting options available for this product.
 
         Parameters
         ----------
@@ -670,7 +685,7 @@ class Query:
             all(key in self._cust_options.keys() for key in keys)
         except AttributeError or KeyError:
             self._cust_options = is2ref._get_custom_options(
-                self._session, self.dataset, self._version
+                self._session, self.product, self._version
             )
 
         for h, k in zip(headers, keys):
@@ -707,7 +722,7 @@ class Query:
         Earthdata Login password:  ········
         """
 
-        capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml"
+        capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
         self._session = Earthdata(uid, email, capability_url).login()
         self._email = email
 

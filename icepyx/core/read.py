@@ -37,6 +37,58 @@ def _validate_source(source):
     return True
 
 
+# Need to post on intake's page to see if this would be a useful contribution...
+# https://github.com/intake/intake/blob/master/intake/source/utils.py#L216
+def _pattern_to_glob(pattern):
+    """
+    Adapted from intake.source.utils.path_to_glob to convert a path as pattern into a glob style path
+    that uses the pattern's indicated number of '?' instead of '*' where an int was specified.
+
+    Returns pattern if pattern is not a string.
+
+    Parameters
+    ----------
+    pattern : str
+        Path as pattern optionally containing format_strings
+
+    Returns
+    -------
+    glob : str
+        Path with int format strings replaced with the proper number of '?' and '*' otherwise.
+
+    Examples
+    --------
+    >>> _pattern_to_glob('{year}/{month}/{day}.csv')
+    '*/*/*.csv'
+     >>> _pattern_to_glob('{year:4}/{month:2}/{day:2}.csv')
+    '????/??/??.csv'
+    >>> _pattern_to_glob('data/{year:4}{month:02}{day:02}.csv')
+    'data/????????.csv'
+    >>> _pattern_to_glob('data/*.csv')
+    'data/*.csv'
+    """
+    from string import Formatter
+
+    if not isinstance(pattern, str):
+        return pattern
+
+    fmt = Formatter()
+    glob = ""
+    prev_field_name = None
+    for literal_text, field_name, format_specs, _ in fmt.parse(pattern):
+        glob += literal_text
+        if field_name and (literal_text or prev_field_name is None):
+            try:
+                glob += "?" * int(format_specs)
+            except ValueError:
+                glob += "*"
+                # alternatively, you could use bits=utils._get_parts_of_format_string(resolved_string, literal_texts, format_specs)
+                # and then use len(bits[i]) to get the length of each format_spec
+        prev_field_name = field_name
+    # print(glob)
+    return glob
+
+
 def _check_filename_pattern(source, filename_pattern):
     """
     Check that the entered data source file paths match the input filename_pattern
@@ -104,7 +156,7 @@ class Read:
     def __init__(
         self,
         data_source=None,
-        filename_pattern=f"ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
+        filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
         catalog=None,
         out_obj_type=xr.Dataset,
     ):
@@ -117,7 +169,7 @@ class Read:
 
         assert _check_filename_pattern(data_source, filename_pattern)
         # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
-        # start here with getting an intake path pattern and filename pattern to go from one to the other
+        # use _pattern_to_glob to do the checks...
         self._filename_pattern = filename_pattern
 
         if catalog:

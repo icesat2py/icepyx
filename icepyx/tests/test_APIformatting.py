@@ -1103,7 +1103,7 @@ def test_CMRparams_no_other_inputs():
         assert CMRparams.check_values() == False
 
     CMRparams.build_params(
-        dataset="ATL06",
+        product="ATL06",
         version="003",
         start=dt.datetime(2019, 2, 20, 0, 0),
         end=dt.datetime(2019, 2, 24, 23, 59, 59),

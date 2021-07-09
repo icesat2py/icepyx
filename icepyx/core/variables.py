@@ -11,7 +11,7 @@ import icepyx.core.is2ref as is2ref
 class Variables:
     """
     Get, create, interact, and manipulate lists of variables and variable paths
-    contained in ICESat-2 datasets.
+    contained in ICESat-2 products.
 
     Parameters
     ----------
@@ -27,12 +27,12 @@ class Variables:
         A session object authenticating the user to download data using their Earthdata login information.
         The session object will automatically be passed from the query object if you
         have successfully logged in there.
-    dataset : string, default None
-        Properly formatted string specifying a valid ICESat-2 dataset
+    product : string, default None
+        Properly formatted string specifying a valid ICESat-2 product
     version : string, default None
-        Properly formatted string specifying a valid version of the ICESat-2 dataset
-    source : string, default None
-        For vartype file, a path to a directory or single input source files (not yet implemented)
+        Properly formatted string specifying a valid version of the ICESat-2 product
+    path : string, default None
+        For vartype file, a path to a directory of or single input data file (not yet implemented)
     """
 
     def __init__(
@@ -41,15 +41,15 @@ class Variables:
         avail=None,
         wanted=None,
         session=None,
-        dataset=None,
+        product=None,
         version=None,
-        source=None,
+        path=None,
     ):
 
         assert vartype in ["order", "file"], "Please submit a valid variables type flag"
 
         self._vartype = vartype
-        self.dataset = dataset
+        self.product = product
         self._avail = avail
         self.wanted = wanted
         self._session = session
@@ -61,7 +61,7 @@ class Variables:
                 self._version = version
         elif self._vartype == "file":
             # DevGoal: check that the list or string are valid dir/files
-            self.source = source
+            self.path = path
 
     # @property
     # def wanted(self):
@@ -69,7 +69,7 @@ class Variables:
 
     def avail(self, options=False, internal=False):
         """
-        Get the list of available variables and variable paths from the input dataset
+        Get the list of available variables and variable paths from the input data product
 
         Examples
         --------
@@ -92,7 +92,7 @@ class Variables:
         if not hasattr(self, "_avail") or self._avail == None:
             if self._vartype == "order":
                 self._avail = is2ref._get_custom_options(
-                    self._session, self.dataset, self._version
+                    self._session, self.product, self._version
                 )["variables"]
 
             elif self._vartype == "file":
@@ -205,14 +205,14 @@ class Variables:
         self, vgrp, allpaths, var_list=None, beam_list=None, keyword_list=None
     ):
         """
-        Check that the user is requesting valid paths and/or variables for their dataset.
+        Check that the user is requesting valid paths and/or variables for their product.
 
         See self.append() for further details on the list of input parameters.
 
         Parameters:
         -----------
         vgrp : dict
-            Dictionary containing dataset variables as keys
+            Dictionary containing product variables as keys
 
         allpaths : list
             List of all potential path keywords
@@ -227,7 +227,7 @@ class Variables:
             List of user requested variable path keywords
 
         """
-        # check if the list of variables, if specified, are available in the dataset
+        # check if the list of variables, if specified, are available in the product
         if var_list is not None:
             for var_id in var_list:
                 if var_id not in vgrp.keys():
@@ -237,8 +237,8 @@ class Variables:
                     raise ValueError(err_msg_varid)
 
         # DevGoal: is there a way to not have this hard-coded in?
-        # check if the list of beams, if specified, are available in the dataset
-        if self.dataset == "ATL09":
+        # check if the list of beams, if specified, are available in the product
+        if self.product == "ATL09":
             beam_avail = ["profile_" + str(i + 1) for i in range(3)]
         else:
             beam_avail = ["gt" + str(i + 1) + "l" for i in range(3)]
@@ -251,7 +251,7 @@ class Variables:
                     err_msg_beam = err_msg_beam + ", ".join(beam_avail)
                     raise ValueError(err_msg_beam)
 
-        # check if keywords, if specified, are available for the dataset
+        # check if keywords, if specified, are available for the product
         if keyword_list is not None:
             for kw in keyword_list:
                 #                 assert kw in allpaths, "Invalid keyword. Please select from: " + ', '.join(allpaths)
@@ -269,7 +269,7 @@ class Variables:
         """
         sum_varlist = []
         if defaults == True:
-            sum_varlist = sum_varlist + is2ref._default_varlists(self.dataset)
+            sum_varlist = sum_varlist + is2ref._default_varlists(self.product)
         if var_list is not None:
             for vn in var_list:
                 if vn not in sum_varlist:
@@ -354,11 +354,11 @@ class Variables:
         beam_list : list of strings, default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
-            For all other datasets, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
+            For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
             A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
-            the dataset that include that keyword in their path. A list of availble keywords can be obtained by
+            the product that include that keyword in their path. A list of availble keywords can be obtained by
             entering `keyword_list=['']` into the function.
 
         Notes
@@ -468,11 +468,11 @@ class Variables:
         beam_list : list of strings, default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
-            For all other datasets, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
+            For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
             A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
-            the dataset that include that keyword in their path.
+            the product that include that keyword in their path.
 
         Notes
         -----

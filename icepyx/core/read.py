@@ -1,17 +1,20 @@
 import fnmatch
-import glob
+from intake.catalog import Catalog
 import os
 import xarray as xr
 
-from icepyx.core.query import Query
+# from icepyx.core.query import Query
 
 
-def _get_datasource_type(filepath):
+def _get_datasource_type():  # filepath):
     """
     Determine if the input is from a local system or is an s3 bucket
     Not needed now, but will need to implement for cloud data access
     """
-    pass
+
+    source_types = ["is2_local", "is2_s3"]
+    return source_types[0]
+
     """
     see Don's code
     use fsspec.get_mapper to determine which kind of file each is;
@@ -92,7 +95,8 @@ def _pattern_to_glob(pattern):
 def _run_fast_scandir(dir, fn_glob):
     """
     Quickly scan nested directories to get a list of filenames that match the fn_glob string.
-    Modified from https://stackoverflow.com/a/59803793/2441026 (faster than os.walk or glob methods).
+    Modified from https://stackoverflow.com/a/59803793/2441026
+    (faster than os.walk or glob methods, and allows filename matching in subdirectories).
 
     Parameters
     ----------
@@ -191,7 +195,7 @@ class Read:
         data_source=None,
         filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
         catalog=None,
-        out_obj_type=xr.Dataset,
+        out_obj_type=None,  # xr.Dataset,
     ):
 
         if data_source == None:
@@ -210,8 +214,12 @@ class Read:
             self._catalog_path = catalog
 
         if out_obj_type:
-            print("validate data object type")
-            self._out_obj = out_obj_type
+            print(
+                "Output object type will be an xarray DataSet - no other output types are implemented"
+            )
+        self._out_obj = xr.Dataset
+
+        self._source_type = _get_datasource_type()
 
     # ----------------------------------------------------------------------
     # Properties
@@ -225,7 +233,49 @@ class Read:
         --------
         >>>
         """
-        return print(open(self._catalog_path, "r").read())
+        if not hasattr(self, "_catalog"):
+            return open(self._catalog_path, "r").read()
+        else:
+            return self._catalog
+
+    # ----------------------------------------------------------------------
+    # Methods
+    def build_catalog(self, var_paths="/gt1l/land_ice_segments", **kwargs):
+        """"""
+        from intake.catalog.local import LocalCatalogEntry
+        import intake_xarray
+
+        import icepyx.core.APIformatting as apifmt
+
+        xarray_kwargs_dict = {"engine": "h5netcdf", "group": var_paths}
+
+        source_args_dict = {
+            "urlpath": self.data_source,
+            "path_as_pattern": self._pattern,
+            "xarray_kwargs": xarray_kwargs_dict,
+        }
+
+        metadata_dict = {"version": 1}
+
+        source_dict = {
+            "name": self._source_type,
+            "description": "",
+            "driver": intake_xarray.netcdf.NetCDFSource,
+            "args": source_args_dict,
+        }
+
+        local_cat_source = {self._source_type: LocalCatalogEntry(**source_dict)}
+
+        defaults_dict = {
+            "name": "IS2-hdf5-icepyx-intake-catalog",
+            "description": "an icepyx-generated catalog for creating local ICESat-2 intake entries",
+            "metadata": metadata_dict,
+            "entries": local_cat_source,
+        }
+
+        build_cat_dict = apifmt.combine_params(defaults_dict, kwargs)
+
+        self._catalog = Catalog.from_dict(**build_cat_dict)
 
 
 '''

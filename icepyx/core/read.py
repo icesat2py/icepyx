@@ -16,6 +16,7 @@ def _get_datasource_type(filepath):
     see Don's code
     use fsspec.get_mapper to determine which kind of file each is;
     determine the first one and then mandate that all items in the list are the same type.
+    Could also use: os.path.splitext(f.name)[1].lower() to get file extension
 
     If ultimately want to handle mixed types, save the valid paths in a dict with "s3" or "local" as the keys and the list of the files as the values.
     Then the dict can also contain a catalog key with a dict of catalogs for each of those types of inputs ("s3" or "local")
@@ -77,29 +78,64 @@ def _pattern_to_glob(pattern):
     prev_field_name = None
     for literal_text, field_name, format_specs, _ in fmt.parse(pattern):
         glob += literal_text
-        if field_name and (literal_text or prev_field_name is None):
+        if field_name and (glob[-1] != "*"):
             try:
                 glob += "?" * int(format_specs)
             except ValueError:
                 glob += "*"
                 # alternatively, you could use bits=utils._get_parts_of_format_string(resolved_string, literal_texts, format_specs)
                 # and then use len(bits[i]) to get the length of each format_spec
-        prev_field_name = field_name
     # print(glob)
     return glob
 
 
-def _check_filename_pattern(source, filename_pattern):
+def _run_fast_scandir(dir, fn_glob):
     """
-    Check that the entered data source file paths match the input filename_pattern
+    Quickly scan nested directories to get a list of filenames that match the fn_glob string.
+    Modified from https://stackoverflow.com/a/59803793/2441026 (faster than os.walk or glob methods).
+
+    Parameters
+    ----------
+    dir : str
+        full path to the input directory
+
+    fn_glob : str
+        glob-style filename pattern
+
+    Outputs
+    -------
+    subfolders : list
+        list of strings of all nested subdirectories
+
+    files : list
+        list of strings containing full paths to each file matching the filename pattern
     """
+
+    subfolders, files = [], []
+
+    for f in os.scandir(dir):
+        if f.is_dir():
+            subfolders.append(f.path)
+        if f.is_file():
+            if fnmatch.fnmatch(f.name, fn_glob):
+                files.append(f.path)
+
+    for dir in list(subfolders):
+        sf, f = _run_fast_scandir(dir, fn_glob)
+        subfolders.extend(sf)
+        files.extend(f)
+
+    return subfolders, files
+
+
+def _check_source_for_pattern(source, filename_pattern):
+    """
+    Check that the entered data source contains files that match the input filename_pattern
+    """
+    glob_pattern = _pattern_to_glob(filename_pattern)
+
     if os.path.isdir(source):
-        filelist = [
-            f
-            for f in glob.iglob(source, recursive=True)
-            if os.path.isfile(f) and fnmatch.fnmatch(f, filename_pattern)
-        ]
-        print(filelist)
+        _, filelist = _run_fast_scandir(source, glob_pattern)
         assert len(filelist) > 0, "None of your filenames match the specified pattern."
         print(
             f"You have {len(filelist)} files matching the filename pattern to be read in."
@@ -107,14 +143,11 @@ def _check_filename_pattern(source, filename_pattern):
         return True
     elif os.path.isfile(source):
         assert fnmatch.fnmatch(
-            source, filename_pattern
-        ), "Your input filename does not match the specified pattern."
+            os.path.basename(source), glob_pattern
+        ), "Your input filename does not match the filename pattern."
         return True
     else:
         return False
-
-
-# after validation, use the notebook code and code outline to start implementing the rest of the class
 
 
 class Read:
@@ -167,11 +200,11 @@ class Read:
             assert _validate_source(data_source)
             self.data_source = data_source
 
-        assert _check_filename_pattern(data_source, filename_pattern)
+        assert _check_source_for_pattern(data_source, filename_pattern)
         # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
-        # use _pattern_to_glob to do the checks...
-        self._filename_pattern = filename_pattern
+        self._pattern = filename_pattern
 
+        # after validation, use the notebook code and code outline to start implementing the rest of the class
         if catalog:
             print("validate catalog")
             self._catalog_path = catalog

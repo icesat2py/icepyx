@@ -240,13 +240,54 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Methods
-    def build_catalog(self, var_paths="/gt1l/land_ice_segments", **kwargs):
-        """"""
+    def build_catalog(
+        self, var_paths="/gt1l/land_ice_segments", var_path_params=None, **kwargs
+    ):
+        """
+        Build an Intake catalog for reading in ICESat-2 data.
+
+        Parameters
+        ----------
+        var_paths : str
+            Variable paths to load.
+            Can include general parameter names, which must be contained within double curly brackets and further
+            described in `var_path_params`.
+            Default list based on data product of provided files.
+            If multiple data products are included in the files, the default list will be for the product of the first file.
+            This may result in errors during read-in if all files do not have the same variable paths.
+
+        var_path_params : dict, default None
+            Dictionary with a keyword for each parameter name specified in the `var_paths` string.
+            Each parameter keyword should contain a dictionary with the acceptable keyword-value pairs for the driver being used.
+
+        **kwargs :
+            Keyword arguments to be passed through to `intake.catalog.Catalog.from_dict()`.
+            Keywords needed to override default inputs include:
+                - `source_args_dict` # highest level source information; keys include: "urlpath", "path_as_pattern", driver-specific ("xarray_kwargs" is default)
+                - `metadata_dict`
+                - `source_dict` # individual source entry  information (default is supplied by data object; "name", "description", "driver", "args")
+                - `defaults_dict`  # catalog "name", "description", "metadata", "entries", etc.
+
+        Returns
+        -------
+        intake.catalog.Catalog object accessible via self.catalog
+
+        Examples
+        --------
+        >>> reader = icepyx.read.Read("/full/path/to/set/of/ICESat-2/files")
+
+        >>> reader.build_catalog()
+        <>
+
+        >>> reader.build_catalog(var_paths = "", var_path_params = )
+
+        """
         from intake.catalog.local import LocalCatalogEntry
         import intake_xarray
 
         import icepyx.core.APIformatting as apifmt
 
+        # generalize this/make it so the values can be entered as kwargs...
         xarray_kwargs_dict = {"engine": "h5netcdf", "group": var_paths}
 
         source_args_dict = {
@@ -264,16 +305,39 @@ class Read:
             "args": source_args_dict,
         }
 
-        local_cat_source = {self._source_type: LocalCatalogEntry(**source_dict)}
+        import pprint
 
+        # pprint.pprint(source_dict)
+        if var_path_params:
+            source_dict = apifmt.combine_params(
+                source_dict,
+                {"parameters": list(var_path_params.keys())},
+                var_path_params,
+            )
+
+        print(source_dict)
+        # NOTE: LocalCatalogEntry has some required positional args (name, description, driver)
+        local_cat_source = {
+            self._source_type: LocalCatalogEntry(
+                name=source_dict.pop("name"),
+                description=source_dict.pop("description"),
+                driver=source_dict.pop("driver"),
+                **source_dict,
+            )
+        }
+
+        # print(local_cat_source)
         defaults_dict = {
             "name": "IS2-hdf5-icepyx-intake-catalog",
             "description": "an icepyx-generated catalog for creating local ICESat-2 intake entries",
             "metadata": metadata_dict,
             "entries": local_cat_source,
         }
+        # print(defaults_dict)
+        # print(type(defaults_dict))
 
         build_cat_dict = apifmt.combine_params(defaults_dict, kwargs)
+        print(build_cat_dict)
 
         self._catalog = Catalog.from_dict(**build_cat_dict)
 

@@ -538,7 +538,7 @@ class Granules:
                     "Unable to download ", order, ". Check granule order for messages."
                 )
             # DevGoal: move this option back out to the is2class level and implement it in an alternate way?
-            #         #Note: extract the dataset to save it locally
+            #         #Note: extract the data to save it locally
             else:
                 with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
                     for zfile in z.filelist:

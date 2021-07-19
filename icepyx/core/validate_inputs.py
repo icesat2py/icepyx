@@ -8,9 +8,9 @@ import icepyx.core.APIformatting as apifmt
 import icepyx.core.geospatial as geospatial
 
 
-def dset_version(latest_vers, version):
+def prod_version(latest_vers, version):
     """
-    Check if the submitted dataset version is valid, and warn the user if a newer version is available.
+    Check if the submitted product version is valid, and warn the user if a newer version is available.
     """
     if version is None:
         vers = latest_vers
@@ -24,7 +24,7 @@ def dset_version(latest_vers, version):
 
         if int(vers) < int(latest_vers):
             warnings.filterwarnings("always")
-            warnings.warn("You are using an old version of this dataset")
+            warnings.warn("You are using an old version of this product")
 
     return vers
 
@@ -114,7 +114,7 @@ def spatial(spatial_extent):
     Validate the input spatial extent and return the needed parameters to the query object.
     """
 
-    scalar_types = (np.int, np.float, np.int64)
+    scalar_types = (int, float, np.int64)
 
     if isinstance(spatial_extent, (list, np.ndarray)):
 

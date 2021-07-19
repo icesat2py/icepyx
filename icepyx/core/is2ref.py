@@ -8,13 +8,13 @@ import icepyx
 # options to get customization options for ICESat-2 data (though could be used generally)
 
 
-def _validate_dataset(dataset):
+def _validate_product(product):
     """
-    Confirm a valid ICESat-2 dataset was specified
+    Confirm a valid ICESat-2 product was specified
     """
-    if isinstance(dataset, str):
-        dataset = str.upper(dataset)
-        assert dataset in [
+    if isinstance(product, str):
+        product = str.upper(product)
+        assert product in [
             "ATL01",
             "ATL02",
             "ATL03",
@@ -27,10 +27,10 @@ def _validate_dataset(dataset):
             "ATL11",
             "ATL12",
             "ATL13",
-        ], "Please enter a valid dataset"
+        ], "Please enter a valid product"
     else:
-        raise TypeError("Please enter a dataset string")
-    return dataset
+        raise TypeError("Please enter a product string")
+    return product
 
 
 # DevGoal: See if there's a way to dynamically get this list so it's automatically updated
@@ -56,25 +56,25 @@ def _validate_OA_product(product):
 
 
 # DevNote: test for this function is commented out; dates in some of the values were causing the test to fail...
-def about_dataset(dset):
+def about_product(prod):
     """
-    Ping Earthdata to get metadata about the dataset of interest (the collection).
+    Ping Earthdata to get metadata about the product of interest (the collection).
 
     See Also
     --------
-    query.Query.dataset_all_info
+    query.Query.product_all_info
     """
 
     cmr_collections_url = "https://cmr.earthdata.nasa.gov/search/collections.json"
-    response = requests.get(cmr_collections_url, params={"short_name": dset})
+    response = requests.get(cmr_collections_url, params={"short_name": prod})
     results = json.loads(response.content)
     return results
 
 
 # DevGoal: use a mock of this output to test later functions, such as displaying options and widgets, etc.
-def _get_custom_options(session, dataset, version):
+def _get_custom_options(session, product, version):
     """
-    Get lists of what customization options are available for the dataset from NSIDC.
+    Get lists of what customization options are available for the product from NSIDC.
     """
     cust_options = {}
 
@@ -84,7 +84,7 @@ def _get_custom_options(session, dataset, version):
         )
 
     capability_url = (
-        f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{dataset}.{version}.xml"
+        f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{product}.{version}.xml"
     )
     response = session.get(capability_url)
     root = ET.fromstring(response.content)
@@ -148,15 +148,15 @@ def _get_custom_options(session, dataset, version):
     return cust_options
 
 
-# DevGoal: populate this with default variable lists for all of the datasets!
-# DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with dataset not being in the list, though it should since it was checked as valid earlier...)
-def _default_varlists(dataset):
+# DevGoal: populate this with default variable lists for all of the products!
+# DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with product not being in the list, though it should since it was checked as valid earlier...)
+def _default_varlists(product):
     """
     Return a list of default variables to select and send to the NSIDC subsetter.
     """
     common_list = ["delta_time", "latitude", "longitude"]
 
-    if dataset == "ATL06":
+    if product == "ATL06":
         return common_list + [
             "h_li",
             "h_li_sigma",
@@ -186,7 +186,7 @@ def _default_varlists(dataset):
             "tide_ocean",
         ]
 
-    elif dataset == "ATL07":
+    elif product == "ATL07":
         return common_list + [
             "seg_dist_x",
             "height_segment_height",
@@ -197,7 +197,7 @@ def _default_varlists(dataset):
             "height_segment_confidence",
         ]
 
-    elif dataset == "ATL09":
+    elif product == "ATL09":
         return common_list + [
             "bsnow_h",
             "bsnow_dens",
@@ -221,7 +221,7 @@ def _default_varlists(dataset):
             "apparent_surf_reflec",
         ]
 
-    elif dataset == "ATL10":
+    elif product == "ATL10":
         return common_list + [
             "seg_dist_x",
             "lead_height",
@@ -237,7 +237,7 @@ def _default_varlists(dataset):
             "height_segment_confidence",
         ]
 
-    elif dataset == "ATL11":
+    elif product == "ATL11":
         return common_list + [
             "h_corr",
             "h_corr_sigma",
@@ -247,6 +247,6 @@ def _default_varlists(dataset):
 
     else:
         print(
-            "THE REQUESTED DATASET DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUTDE, AND LONGITUDE WILL BE RETURNED"
+            "THE REQUESTED PRODUCT DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUTDE, AND LONGITUDE WILL BE RETURNED"
         )
         return common_list

@@ -210,7 +210,9 @@ class Read:
 
         # after validation, use the notebook code and code outline to start implementing the rest of the class
         if catalog:
-            print("validate catalog")
+            assert os.path.isfile(
+                catalog
+            ), "Your catalog path does not point to a valid file."
             self._catalog_path = catalog
 
         if out_obj_type:
@@ -234,9 +236,11 @@ class Read:
         >>>
         """
         if not hasattr(self, "_catalog"):
-            return open(self._catalog_path, "r").read()
-        else:
-            return self._catalog
+            from intake import open_catalog
+
+            self._catalog = open_catalog(self._catalog_path)
+
+        return self._catalog
 
     # ----------------------------------------------------------------------
     # Methods
@@ -282,7 +286,7 @@ class Read:
         >>> reader.build_catalog(var_paths = "", var_path_params = )
 
         """
-        from intake.catalog.local import LocalCatalogEntry
+        from intake.catalog.local import LocalCatalogEntry, UserParameter
         import intake_xarray
 
         import icepyx.core.APIformatting as apifmt
@@ -300,8 +304,8 @@ class Read:
 
         source_dict = {
             "name": self._source_type,
-            "description": "",
-            "driver": intake_xarray.netcdf.NetCDFSource,
+            "description": "test text here",
+            "driver": "intake_xarray.netcdf.NetCDFSource",  # NOTE: this must be a string or the catalog cannot be imported after saving
             "args": source_args_dict,
         }
 
@@ -311,7 +315,7 @@ class Read:
         if var_path_params:
             source_dict = apifmt.combine_params(
                 source_dict,
-                {"parameters": list(var_path_params.keys())},
+                {"parameters": [UserParameter(**var_path_params)]},
                 var_path_params,
             )
 

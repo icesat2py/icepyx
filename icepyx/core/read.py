@@ -260,8 +260,8 @@ class Read:
             If multiple data products are included in the files, the default list will be for the product of the first file.
             This may result in errors during read-in if all files do not have the same variable paths.
 
-        var_path_params : dict, default None
-            Dictionary with a keyword for each parameter name specified in the `var_paths` string.
+        var_path_params : [dict], default None
+            List of dictionaries with a keyword for each parameter name specified in the `var_paths` string.
             Each parameter keyword should contain a dictionary with the acceptable keyword-value pairs for the driver being used.
 
         **kwargs :
@@ -304,22 +304,17 @@ class Read:
 
         source_dict = {
             "name": self._source_type,
-            "description": "test text here",
+            "description": "",
             "driver": "intake_xarray.netcdf.NetCDFSource",  # NOTE: this must be a string or the catalog cannot be imported after saving
             "args": source_args_dict,
         }
 
-        import pprint
-
-        # pprint.pprint(source_dict)
         if var_path_params:
             source_dict = apifmt.combine_params(
                 source_dict,
-                {"parameters": [UserParameter(**var_path_params)]},
-                var_path_params,
+                {"parameters": [UserParameter(**params) for params in var_path_params]},
             )
 
-        print(source_dict)
         # NOTE: LocalCatalogEntry has some required positional args (name, description, driver)
         local_cat_source = {
             self._source_type: LocalCatalogEntry(
@@ -330,18 +325,14 @@ class Read:
             )
         }
 
-        # print(local_cat_source)
         defaults_dict = {
             "name": "IS2-hdf5-icepyx-intake-catalog",
             "description": "an icepyx-generated catalog for creating local ICESat-2 intake entries",
             "metadata": metadata_dict,
             "entries": local_cat_source,
         }
-        # print(defaults_dict)
-        # print(type(defaults_dict))
 
         build_cat_dict = apifmt.combine_params(defaults_dict, kwargs)
-        print(build_cat_dict)
 
         self._catalog = Catalog.from_dict(**build_cat_dict)
 

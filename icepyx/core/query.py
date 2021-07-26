@@ -19,6 +19,7 @@ from icepyx.core.granules import Granules as Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
+from icepyx.core.visualization import Visualize
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
@@ -26,15 +27,15 @@ import icepyx.core.validate_inputs as val
 class Query:
     """
     ICESat-2 Data object to query, obtain, and perform basic operations on
-    available ICESat-2 datasets using temporal and spatial input parameters.
+    available ICESat-2 data products using temporal and spatial input parameters.
     Allows the easy input and formatting of search parameters to match the
     NASA NSIDC DAAC and (development goal-not yet implemented) conversion to multiple data types.
 
     Parameters
     ----------
-    dataset : string
-        ICESat-2 dataset ID, also known as "short name" (e.g. ATL03).
-        Available datasets can be found at: https://nsidc.org/data/icesat-2/data-sets
+    product : string
+        ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
+        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     spatial_extent : list or string
         Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
         geospatial polygon file.
@@ -63,14 +64,16 @@ class Query:
         End time in UTC/Zulu (24 hour clock). If None, use default.
         DevGoal: check for time in date-range date-time object, if that's used for input.
     version : string, default most recent version
-        Dataset version, given as a 3 digit string. If no version is given, the current
-        version is used.
-    cycle : string, default all available orbital cycles
-        Dataset cycle, given as a 2 digit string. If no cycle is given, all available
-        cycles are used.
-    track : string, default all available reference ground tracks (RGTs)
-        Dataset track, given as a 4 digit string. If no track is given, all available
-        reference ground tracks are used.
+        Product version, given as a 3 digit string. If no version is given, the current
+        version is used. Example: "004"
+    cycles : string or a list of strings, default all available orbital cycles
+        Product cycle, given as a 2 digit string. If no cycle is given, all available
+        cycles are used. Example: "04"
+    tracks : string or a list of strings, default all available reference ground tracks (RGTs)
+        Product track, given as a 4 digit string. If no track is given, all available
+        reference ground tracks are used. Example: "0594"
+    files : string, default None
+        A placeholder for future development. Not used for any purposes yet.
 
     Returns
     -------
@@ -108,7 +111,7 @@ class Query:
 
     def __init__(
         self,
-        dataset=None,
+        product=None,
         spatial_extent=None,
         date_range=None,
         start_time=None,
@@ -116,16 +119,17 @@ class Query:
         version=None,
         cycles=None,
         tracks=None,
-        orbit_number=None,
-        files=None,
+        files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
     ):
 
         # warnings.filterwarnings("always")
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
 
         if (
-            dataset is None or spatial_extent is None or date_range is None
-        ) and files is None:
+            (product is None or spatial_extent is None)
+            and (date_range is None or cycles is None or tracks is None)
+            and files is None
+        ):
             raise ValueError(
                 "Please provide the required inputs. Use help([function]) to view the function's documentation"
             )
@@ -138,35 +142,28 @@ class Query:
             # self.order_vars = Variables(self._source)
         # self.variables = Variables(self._source)
 
-        self._dset = is2ref._validate_dataset(dataset)
+        self._prod = is2ref._validate_product(product)
 
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
             spatial_extent
         )
 
-        self._start, self._end = val.temporal(date_range, start_time, end_time)
+        if date_range:
+            self._start, self._end = val.temporal(date_range, start_time, end_time)
 
-        self._version = val.dset_version(self.latest_version(), version)
+        self._version = val.prod_version(self.latest_version(), version)
 
-        # list of CMR orbit number parameters
-        self._orbit_number = []
-        # get list of available ICESat-2 cycles and tracks
-        all_cycles,all_tracks = self.avail_granules(ids=False,cycles=True,tracks=True)
-        self._cycles = val.cycles(all_cycles, cycles)
-        self._tracks = val.tracks(all_tracks, tracks)
-        # build list of available CMR orbit number if reducing by cycle or RGT
+        # build list of available CMR parameters if reducing by cycle or RGT
+        # or a list of explicitly named files (full or partial names)
+        # DevGoal: add file name search to optional queries
         if cycles or tracks:
-            # for each available cycle of interest
-            for c in self.cycles:
-                # for each available track of interest
-                for t in self.tracks:
-                    self._orbit_number.append(int(t) + (int(c)-1)*1387 + 201)
-            # update the CMR parameters for orbit_number
-            self.CMRparams['orbit_number'] = self.orbit_number
-            # update required parameters (number of pages)
-            self._reqparams.build_params()
-            # update the list of available granules
-            self.granules.get_avail(self.CMRparams, self.reqparams)
+            # get lists of available ICESat-2 cycles and tracks
+            self._cycles = val.cycles(cycles)
+            self._tracks = val.tracks(tracks)
+            # create list of CMR parameters for granule name
+            self._readable_granule_name = apifmt._fmt_readable_granules(
+                self._prod, cycles=self.cycles, tracks=self.tracks
+            )
 
     # ----------------------------------------------------------------------
     # Properties
@@ -174,29 +171,44 @@ class Query:
     @property
     def dataset(self):
         """
-        Return the short name dataset ID string associated with the query object.
+        Legacy property included to provide depracation warning.
 
-        Examples
+        See Also
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dataset
-        'ATL06'
+        product
         """
-        return self._dset
+        warnings.filterwarnings("always")
+        warnings.warn(
+            "In line with most common usage, 'dataset' has been replaced by 'product'.",
+            DeprecationWarning,
+        )
 
     @property
-    def dataset_version(self):
+    def product(self):
         """
-        Return the dataset version of the data object.
+        Return the short name product ID string associated with the query object.
 
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dataset_version
+        >>> reg_a.product
+        'ATL06'
+        """
+        return self._prod
+
+    @property
+    def product_version(self):
+        """
+        Return the product version of the data object.
+
+        Examples
+        --------
+        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.product_version
         '003'
 
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
-        >>> reg_a.dataset_version
+        >>> reg_a.product_version
         '001'
         """
         return self._version
@@ -242,10 +254,13 @@ class Query:
         >>> reg_a.dates
         ['2019-02-20', '2019-02-28']
         """
-        return [
-            self._start.strftime("%Y-%m-%d"),
-            self._end.strftime("%Y-%m-%d"),
-        ]  # could also use self._start.date()
+        if not hasattr(self, "_start"):
+            return ["No temporal parameters set"]
+        else:
+            return [
+                self._start.strftime("%Y-%m-%d"),
+                self._end.strftime("%Y-%m-%d"),
+            ]  # could also use self._start.date()
 
     @property
     def start_time(self):
@@ -262,7 +277,10 @@ class Query:
         >>> reg_a.start_time
         '12:30:30'
         """
-        return self._start.strftime("%H:%M:%S")
+        if not hasattr(self, "_start"):
+            return ["No temporal parameters set"]
+        else:
+            return self._start.strftime("%H:%M:%S")
 
     @property
     def end_time(self):
@@ -279,7 +297,10 @@ class Query:
         >>> reg_a.end_time
         '10:20:20'
         """
-        return self._end.strftime("%H:%M:%S")
+        if not hasattr(self, "_end"):
+            return ["No temporal parameters set"]
+        else:
+            return self._end.strftime("%H:%M:%S")
 
     @property
     def cycles(self):
@@ -292,7 +313,10 @@ class Query:
         >>> reg_a.cycles
         ['02']
         """
-        return sorted(set(self._cycles))
+        if not hasattr(self, "_cycles"):
+            return ["No orbital parameters set"]
+        else:
+            return sorted(set(self._cycles))
 
     @property
     def tracks(self):
@@ -305,20 +329,10 @@ class Query:
         >>> reg_a.tracks
         ['0841', '0849', '0902', '0910']
         """
-        return sorted(set(self._tracks))
-
-    @property
-    def orbit_number(self):
-        """
-        Return the ICESat-2 CMR orbit number
-
-        Examples
-        --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.orbit_number
-        """
-        return ",".join(map(str,self._orbit_number))
-
+        if not hasattr(self, "_tracks"):
+            return ["No orbital parameters set"]
+        else:
+            return sorted(set(self._tracks))
 
     @property
     def CMRparams(self):
@@ -342,17 +356,24 @@ class Query:
 
         # dictionary of optional CMR parameters
         kwargs = {}
-        if self._orbit_number:
-            kwargs['orbit_number'] = self.orbit_number
+        # temporal CMR parameters
+        if hasattr(self, "_start") and hasattr(self, "_end"):
+            kwargs["start"] = self._start
+            kwargs["end"] = self._end
+        # granule name CMR parameters (orbital or file name)
+        # DevGoal: add to file name search to optional queries
+        if hasattr(self, "_readable_granule_name"):
+            kwargs["options[readable_granule_name][pattern]"] = "true"
+            kwargs["options[spatial][or]"] = "true"
+            kwargs["readable_granule_name[]"] = self._readable_granule_name
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
-                dataset=self.dataset,
+                product=self.product,
                 version=self._version,
-                start=self._start,
-                end=self._end,
                 extent_type=self.extent_type,
                 spatial_extent=self._spat_extent,
+                **kwargs,
             )
 
         return self._CMRparams.fmted_keys
@@ -373,7 +394,7 @@ class Query:
         Earthdata Login password:  ········
         >>> reg_a.order_granules()
         >>> reg_a.reqparams
-        {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y'}
+        {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
         if not hasattr(self, "_reqparams"):
@@ -410,6 +431,11 @@ class Query:
         if not hasattr(self, "_subsetparams"):
             self._subsetparams = apifmt.Parameters("subset")
 
+        # temporal subsetting parameters
+        if hasattr(self, "_start") and hasattr(self, "_end"):
+            kwargs["start"] = self._start
+            kwargs["end"] = self._end
+
         if self._subsetparams == None and not kwargs:
             return {}
         else:
@@ -418,16 +444,12 @@ class Query:
             if self._geom_filepath is not None:
                 self._subsetparams.build_params(
                     geom_filepath=self._geom_filepath,
-                    start=self._start,
-                    end=self._end,
                     extent_type=self.extent_type,
                     spatial_extent=self._spat_extent,
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
-                    start=self._start,
-                    end=self._end,
                     extent_type=self.extent_type,
                     spatial_extent=self._spat_extent,
                     **kwargs,
@@ -463,14 +485,14 @@ class Query:
                     self._order_vars = Variables(
                         self._source,
                         session=self._session,
-                        dataset=self.dataset,
+                        product=self.product,
                         avail=self._cust_options["variables"],
                     )
                 else:
                     self._order_vars = Variables(
                         self._source,
                         session=self._session,
-                        dataset=self.dataset,
+                        product=self.product,
                         version=self._version,
                     )
 
@@ -503,7 +525,7 @@ class Query:
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(self._source, dataset=self.dataset)
+                self._file_vars = Variables(self._source, product=self.product)
 
         return self._file_vars
 
@@ -511,7 +533,7 @@ class Query:
     def granules(self):
         """
         Return the granules object, which provides the underlying funtionality for searching, ordering,
-        and downloading granules for the specified dataset. Users are encouraged to use the built in wrappers
+        and downloading granules for the specified product. Users are encouraged to use the built in wrappers
         rather than trying to access the granules object themselves.
 
         See Also
@@ -536,18 +558,18 @@ class Query:
         return self._granules
 
     # ----------------------------------------------------------------------
-    # Methods - Get and display neatly information at the dataset level
+    # Methods - Get and display neatly information at the product level
 
-    def dataset_summary_info(self):
+    def product_summary_info(self):
         """
-        Display a summary of selected metadata for the specified version of the dataset
+        Display a summary of selected metadata for the specified version of the product
         of interest (the collection).
 
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dataset_summary_info()
-        dataset_id :  ATLAS/ICESat-2 L3A Land Ice Height V002
+        >>> reg_a.product_summary_info()
+        product_id :  ATLAS/ICESat-2 L3A Land Ice Height V002
         short_name :  ATL06
         version_id :  002
         time_start :  2018-10-14T00:00:00.000Z
@@ -555,10 +577,10 @@ class Query:
         summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
         orbit_parameters :  {'swath_width': '36.0', 'period': '94.29', 'inclination_angle': '92.0', 'number_of_orbits': '0.071428571', 'start_circular_latitude': '0.0'}
         """
-        if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2data(self._dset)
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
         summ_keys = [
-            "dataset_id",
+            "product_id",
             "short_name",
             "version_id",
             "time_start",
@@ -567,26 +589,26 @@ class Query:
             "orbit_parameters",
         ]
         for key in summ_keys:
-            print(key, ": ", self._about_dataset["feed"]["entry"][-1][key])
+            print(key, ": ", self._about_product["feed"]["entry"][-1][key])
 
-    def dataset_all_info(self):
+    def product_all_info(self):
         """
-        Display all metadata about the dataset of interest (the collection).
+        Display all metadata about the product of interest (the collection).
 
         Examples
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dataset_all_info()
+        >>> reg_a.product_all_info()
         {very long prettily-formatted dictionary output}
 
         """
-        if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2data(self._dset)
-        pprint.pprint(self._about_dataset)
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
+        pprint.pprint(self._about_product)
 
     def latest_version(self):
         """
-        Determine the most recent version available for the given dataset.
+        Determine the most recent version available for the given product.
 
         Examples
         --------
@@ -594,15 +616,15 @@ class Query:
         >>> reg_a.latest_version()
         '003'
         """
-        if not hasattr(self, "_about_dataset"):
-            self._about_dataset = is2ref.about_dataset(self._dset)
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
         return max(
-            [entry["version_id"] for entry in self._about_dataset["feed"]["entry"]]
+            [entry["version_id"] for entry in self._about_product["feed"]["entry"]]
         )
 
     def show_custom_options(self, dictview=False):
         """
-        Display customization/subsetting options available for this dataset.
+        Display customization/subsetting options available for this product.
 
         Parameters
         ----------
@@ -663,7 +685,7 @@ class Query:
             all(key in self._cust_options.keys() for key in keys)
         except AttributeError or KeyError:
             self._cust_options = is2ref._get_custom_options(
-                self._session, self.dataset, self._version
+                self._session, self.product, self._version
             )
 
         for h, k in zip(headers, keys):
@@ -700,7 +722,7 @@ class Query:
         Earthdata Login password:  ········
         """
 
-        capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml"
+        capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
         self._session = Earthdata(uid, email, capability_url).login()
         self._email = email
 
@@ -749,8 +771,9 @@ class Query:
 
         if ids or cycles or tracks:
             # list of outputs in order of ids, cycles, tracks
-            return granules.gran_IDs(self.granules.avail, ids=ids,
-                cycles=cycles, tracks=tracks)
+            return granules.gran_IDs(
+                self.granules.avail, ids=ids, cycles=cycles, tracks=tracks
+            )
         else:
             return granules.info(self.granules.avail)
 
@@ -916,11 +939,37 @@ class Query:
         >>> reg_a.visualize_spatial_extent
         [visual map output]
         """
+        gdf = geospatial.geodataframe(self.extent_type, self._spat_extent)
 
-        world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
-        f, ax = plt.subplots(1, figsize=(12, 6))
-        world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
-        geospatial.geodataframe(self.extent_type, self._spat_extent).plot(
-            ax=ax, color="#FF8C00", alpha=0.7
-        )
-        plt.show()
+        try:
+            from shapely.geometry import Polygon
+            import geoviews as gv
+
+            gv.extension("bokeh")
+
+            line_geoms = Polygon(gdf["geometry"][0]).boundary
+            bbox_poly = gv.Path(line_geoms).opts(color="red", line_color="red")
+            tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
+            return tile * bbox_poly
+
+        except ImportError:
+            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+            f, ax = plt.subplots(1, figsize=(12, 6))
+            world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
+            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
+            plt.show()
+
+    def visualize_elevation(self):
+        """
+        Visualize elevation requested from OpenAltimetry API using datashader based on cycles
+        https://holoviz.org/tutorial/Large_Data.html
+
+        Returns
+        -------
+        map_cycle, map_rgt + lineplot_rgt : Holoviews objects
+            Holoviews data visualization elements
+        """
+        viz = Visualize(self)
+        cycle_map, rgt_map = viz.viz_elevation()
+
+        return cycle_map, rgt_map

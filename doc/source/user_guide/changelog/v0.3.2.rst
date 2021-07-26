@@ -1,0 +1,44 @@
+.. _whatsnew_032:
+
+What's new in v0.3.2 (1 December 2020)
+-------------------------------------
+
+This is a summary of the changes in icepyx v0.3.2. See :ref:`release` for a full changelog
+including other versions of icepyx. Note that during this time period we transitioned to master + development branches, with mandatory squash commits to the development branch from working branches in order to simplify the git history.
+
+
+New Features
+~~~~~~~~~~~~
+
+- tracking tools set up
+- bibliography of icepyx uses
+
+Bug fixes
+~~~~~~~~~
+
+- resolve normal projection KeyError that resulted from a DAAC change to capabilities.xml
+- allow and validate numpy inputs for query objects
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+^^^^^^^^^^^
+
+- update Travis trigger to test PRs submitted from forks
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- section on tracking and usage statistics
+- add current path to `pip install -e` instructions
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.3.1..v0.3.2|HEAD

@@ -1,3 +1,4 @@
+import datetime
 import requests
 import time
 import io
@@ -10,6 +11,7 @@ from xml.etree import ElementTree as ET
 import zipfile
 
 import icepyx.core.APIformatting as apifmt
+import icepyx.core.exceptions
 
 
 def info(grans):
@@ -32,28 +34,35 @@ def info(grans):
 
 # DevNote: currently this fn is not tested
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
-def gran_IDs(grans, ids=True, cycles=False, tracks=False):
+def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False):
     """
-    Returns a list of granule information for the granule dictionary.
+    Returns a list of granule information for each granule dictionary in the input list of granule dictionaries.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
     or a list of granules present on the file system.
 
     Parameters
     ----------
+    grans : list of dictionaries
+        List of input granule json dictionaries. Must have key "producer_granule_id"
     ids: boolean, default True
         Return a list of the available granule IDs for the granule dictionary
     cycles : boolean, default False
         Return a list of the available orbital cycles for the granule dictionary
-    tracks : boolean, default Fal
+    tracks : boolean, default False
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
+    dates : boolean, default False
+        Return a list of the available dates for the list of granual dictionaries.
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
     # regular expression for extracting parameters from file names
-    rx = re.compile('(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})'
-           '(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$')
+    rx = re.compile(
+        r"(ATL\d{2})(-\d{2})?_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})"
+        r"(\d{2})_(\d{4})(\d{2})(\d{2})_(\d{3})_(\d{2})(.*?).(.*?)$"
+    )
     gran_ids = []
     gran_cycles = []
     gran_tracks = []
+    gran_dates = []
     for gran in grans:
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
@@ -67,10 +76,28 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
         # VERS: Product Version
         # AUX: Auxiliary flags
         # SFX: Suffix (h5)
-        PRD,HEM,YY,MM,DD,HH,MN,SS,TRK,CYCL,GRAN,RL,VERS,AUX,SFX = \
-            rx.findall(producer_granule_id).pop()
+        (
+            PRD,
+            HEM,
+            YY,
+            MM,
+            DD,
+            HH,
+            MN,
+            SS,
+            TRK,
+            CYCL,
+            GRAN,
+            RL,
+            VERS,
+            AUX,
+            SFX,
+        ) = rx.findall(producer_granule_id).pop()
         gran_cycles.append(CYCL)
         gran_tracks.append(TRK)
+        gran_dates.append(
+            str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
+        )
     # list of granule parameters
     gran_list = []
     # granule IDs
@@ -82,8 +109,12 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False):
     # reference ground tracks (RGTs)
     if tracks:
         gran_list.append(gran_tracks)
+    # granule date
+    if dates:
+        gran_list.append(gran_dates)
     # return the list of granule parameters
     return gran_list
+
 
 # DevGoal: this will be a great way/place to manage data from the local file system
 # where the user already has downloaded data!
@@ -148,23 +179,32 @@ class Granules:
 
         granule_search_url = "https://cmr.earthdata.nasa.gov/search/granules"
 
-        headers = {"Accept": "application/json"}
-        # DevGoal: check the below request/response for errors and show them if they're there; then gather the results
-        # note we should also do this whenever we ping NSIDC-API - make a function to check for errors
+        headers = {"Accept": "application/json", "Client-Id": "icepyx"}
+        # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
         while True:
+            params = apifmt.combine_params(
+                CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
+            )
             response = requests.get(
                 granule_search_url,
                 headers=headers,
-                params=apifmt.combine_params(
-                    CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
-                ),
+                params=apifmt.to_string(params),
             )
 
+            try:
+                response.raise_for_status()
+            except requests.HTTPError as e:
+                if (
+                    b"errors" in response.content
+                ):  # If CMR returns a bad status with extra information, display that
+                    raise icepyx.core.exceptions.NsidcQueryError(
+                        response.json()["errors"]
+                    )  # exception chaining will display original exception too
+                else:  # If no 'errors' key, just reraise original exception
+                    raise e
+
             results = json.loads(response.content)
-
-            # print(results)
-
-            if len(results["feed"]["entry"]) == 0:
+            if not results["feed"]["entry"]:
                 # Out of results, so break out of loop
                 break
 
@@ -295,8 +335,11 @@ class Granules:
             request.raise_for_status()
             esir_root = ET.fromstring(request.content)
             if verbose is True:
-                print("Order request URL: ", request.url)
-                print("Order request response XML content: ", request.content)
+                print("Order request URL: ", requests.utils.unquote(request.url))
+                print(
+                    "Order request response XML content: ",
+                    request.content.decode("utf-8"),
+                )
 
             # Look up order ID
             orderlist = []
@@ -365,6 +408,12 @@ class Granules:
 
             if status == "complete" or status == "complete_with_errors":
                 print("Your order is:", status)
+                messagelist = []
+                for message in loop_root.findall("./processInfo/info"):
+                    messagelist.append(message.text)
+                if messagelist != []:
+                    print("NSIDC returned these messages")
+                    pprint.pprint(messagelist)
                 if not hasattr(self, "orderIDs"):
                     self.orderIDs = []
 
@@ -461,25 +510,30 @@ class Granules:
             if verbose is True:
                 print("Zip download URL: ", downloadURL)
             print("Beginning download of zipped output...")
-            zip_response = session.get(downloadURL)
-            # Raise bad request: Loop will stop for bad response code.
-            zip_response.raise_for_status()
-            print(
-                "Data request",
-                order,
-                "of ",
-                len(self.orderIDs[i_order:]),
-                " order(s) is downloaded.",
-            )
 
+            try:
+                zip_response = session.get(downloadURL)
+                # Raise bad request: Loop will stop for bad response code.
+                zip_response.raise_for_status()
+                print(
+                    "Data request",
+                    order,
+                    "of ",
+                    len(self.orderIDs[i_order:]),
+                    " order(s) is downloaded.",
+                )
+            except requests.HTTPError:
+                print(
+                    "Unable to download ", order, ". Check granule order for messages."
+                )
             # DevGoal: move this option back out to the is2class level and implement it in an alternate way?
-            #         #Note: extract the dataset to save it locally
-            # if extract is True:
-            with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
-                for zfile in z.filelist:
-                    # Remove the subfolder name from the filepath
-                    zfile.filename = os.path.basename(zfile.filename)
-                    z.extract(member=zfile, path=path)
+            #         #Note: extract the data to save it locally
+            else:
+                with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
+                    for zfile in z.filelist:
+                        # Remove the subfolder name from the filepath
+                        zfile.filename = os.path.basename(zfile.filename)
+                        z.extract(member=zfile, path=path)
 
             # update the current finished order id and save to file
             with open(downid_fn, "w") as fid:

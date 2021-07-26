@@ -1,5 +1,6 @@
 gitpython
 nbsphinx
 numpydoc
+pybtex
 pygithub
--r requirements.txt
+sphinxcontrib-bibtex

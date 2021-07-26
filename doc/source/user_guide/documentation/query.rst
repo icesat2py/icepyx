@@ -1,14 +1,14 @@
 Query Class
 =================
 
-.. currentmodule:: icepyx.query
+.. currentmodule:: icepyx
 
 
 Constructor
 -----------
 
 .. autosummary::
-   :toctree: ../_icepyx/
+   :toctree: ../../_icepyx/
 
    Query
 
@@ -17,7 +17,7 @@ Attributes
 ----------
 
 .. autosummary::
-   :toctree: ../_icepyx/
+   :toctree: ../../_icepyx/
 
    Query.CMRparams
    Query.cycles
@@ -27,7 +27,6 @@ Attributes
    Query.end_time
    Query.file_vars
    Query.granules
-   Query.orbit_number
    Query.order_vars
    Query.reqparams
    Query.spatial_extent
@@ -39,7 +38,7 @@ Methods
 -------
 
 .. autosummary::
-   :toctree: ../_icepyx/
+   :toctree: ../../_icepyx/
 
    Query.avail_granules
    Query.dataset_all_info
@@ -50,3 +49,4 @@ Methods
    Query.order_granules
    Query.show_custom_options
    Query.visualize_spatial_extent
+   Query.visualize_elevation

@@ -51,7 +51,11 @@ We are delighted you'd like to contribute your `icepyx <https://github.com/icesa
 
 Contributing Code
 -----------------
-We follow a standard git workflow for code changes and additions. All submitted code, including our own, goes through the pull request process; no changes are pushed directly to the *master* or *development* branches. This allows our continuous integration (testing) process to ensure that the code is up to our standards and passes all of our tests (i.e. doesn't break what's already there and working). By having a *development* branch for daily work, we enable the *master* branch to remain stable between releases even as new features are being added.
+We follow a standard git workflow for code changes and additions.
+All submitted code, including our own, goes through the pull request process;
+no changes are pushed directly to the *main* or *development* branches.
+This allows our continuous integration (testing) process to ensure that the code is up to our standards and passes all of our tests (i.e. doesn't break what's already there and working).
+By having a *development* branch for daily work, we enable the *main* branch to remain stable between releases even as new features are being added.
 
 First Steps
 ^^^^^^^^^^^
@@ -77,7 +81,7 @@ We encourage users to follow the `git pull request workflow <https://www.asmeure
  - Fork the repo to your personal GitHub account
  - Add your fork as a remote
  - Add yourself to `CONTRIBUTORS.rst` (see `Attribution for Contributions`_)
- 
+
 (each time you are going to make changes)
 
  - Update the development branch

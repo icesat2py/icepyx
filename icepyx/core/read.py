@@ -3,6 +3,7 @@ import os
 import xarray as xr
 
 from icepyx.core import is2cat
+from icepyx.core.variables import Variables as Variables
 
 # from icepyx.core.query import Query
 
@@ -94,14 +95,14 @@ def _check_source_for_pattern(source, filename_pattern):
         print(
             f"You have {len(filelist)} files matching the filename pattern to be read in."
         )
-        return True
+        return True, filelist
     elif os.path.isfile(source):
         assert fnmatch.fnmatch(
             os.path.basename(source), glob_pattern
         ), "Your input filename does not match the filename pattern."
-        return True
+        return True, [source]
     else:
-        return False
+        return False, None
 
 
 class Read:
@@ -113,7 +114,7 @@ class Read:
     ----------
     data_source : string
         A string with a full file path or full directory path to ICESat-2 hdf5 (.h5) format files.
-        Files within a directory must have a consistent filename pattern.
+        Files within a directory must have a consistent filename pattern that includes the "ATL??" data product name.
 
     filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
@@ -154,9 +155,11 @@ class Read:
             assert _validate_source(data_source)
             self.data_source = data_source
 
-        assert _check_source_for_pattern(data_source, filename_pattern)
+        pattern_ck, filelist = _check_source_for_pattern(data_source, filename_pattern)
+        assert pattern_ck
         # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
         self._pattern = filename_pattern
+        self._filelist = filelist
 
         # after validation, use the notebook code and code outline to start implementing the rest of the class
         if catalog:
@@ -196,6 +199,43 @@ class Read:
             )
 
         return self._catalog
+
+    # I cut and pasted this directly out of the Query class - going to need to reconcile the _source/file stuff there
+    # and add functionality to vars to actually read in a single file and get the var list (probably using h5py)
+    # note: above line is
+    @property
+    def vars(self):
+        """
+        Return the to read in variables object.
+        This instance is generated from the source file or first file in a list of input files (when source is a directory).
+
+        See Also
+        --------
+        variables.Variables
+
+        Examples
+        --------
+        >>> reader =
+        >>> reader.vars
+        <icepyx.core.variables.Variables at [location]>
+        """
+
+        if not hasattr(self, "_read_vars"):
+            self._read_vars = Variables("file", source=self._filelist[0])
+
+        return self._read_vars
+
+    # ----------------------------------------------------------------------
+    # Methods
+
+    def load(self):
+        """"""
+
+        # some checks that the file has the required variables?
+
+        # how to best iterate through the variables and merge them?
+
+        pass
 
 
 '''

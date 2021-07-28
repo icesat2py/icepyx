@@ -3,6 +3,7 @@ from intake.catalog import Catalog
 
 # next steps:
 # add step that gets icesat2 data product and uses it to get var_path and var_path_param dicts that correspond to the default subset variables
+# look at Ben, Tyler, Tian, Shashank, readers to create a reader template and figure out what can be fixed and what the user needs to have control of
 # then, write a reader function that calls intake (with the right catalog, if it wasn't specifically created or supplied) and merges the beams/spots
 
 # Need to post on intake's page to see if this would be a useful contribution...

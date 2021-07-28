@@ -96,7 +96,20 @@ class Variables:
                 )["variables"]
 
             elif self._vartype == "file":
-                self._avail = None
+                import h5py
+
+                self._avail = []
+
+                def visitor_func(name, node):
+                    if isinstance(node, h5py.Group):
+                        # node is a Group
+                        pass
+                    else:
+                        # node is a Dataset
+                        self._avail.append(name)
+
+                with h5py.File(self.source) as h5f:
+                    h5f.visititems(visitor_func)
 
         if options == True:
             vgrp, paths = self.parse_var_list(self._avail)

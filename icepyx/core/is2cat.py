@@ -2,7 +2,8 @@ from intake.catalog import Catalog
 
 
 # next steps:
-# add step that gets icesat2 data product and uses it to get var_path and var_path_param dicts that correspond to the default subset variables
+# add step that gets icesat2 data product and uses it to get var_path and var_path_param dicts that correspond to the default subset variables - not yet
+# may be better to try and do this as part of generating the available/desired variable list using the var module. A challenge is how to try and handle not all files having the same variables.
 # look at Ben, Tyler, Tian, Shashank, readers to create a reader template and figure out what can be fixed and what the user needs to have control of
 # then, write a reader function that calls intake (with the right catalog, if it wasn't specifically created or supplied) and merges the beams/spots
 
@@ -43,7 +44,7 @@ def _pattern_to_glob(pattern):
 
     fmt = Formatter()
     glob = ""
-    prev_field_name = None
+    # prev_field_name = None
     for literal_text, field_name, format_specs, _ in fmt.parse(pattern):
         glob += literal_text
         if field_name and (glob[-1] != "*"):
@@ -128,6 +129,8 @@ def build_catalog(
         "driver": "intake_xarray.netcdf.NetCDFSource",  # NOTE: this must be a string or the catalog cannot be imported after saving
         "args": source_args_dict,
     }
+
+    # can
 
     if var_path_params:
         source_dict = apifmt.combine_params(

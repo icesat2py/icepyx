@@ -2,7 +2,8 @@ import fnmatch
 import os
 import xarray as xr
 
-from icepyx.core import is2cat
+import icepyx.core.is2cat as is2cat
+import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 
 # from icepyx.core.query import Query
@@ -144,6 +145,7 @@ class Read:
     def __init__(
         self,
         data_source=None,
+        product=None,
         filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
         catalog=None,
         out_obj_type=None,  # xr.Dataset,
@@ -154,6 +156,11 @@ class Read:
         else:
             assert _validate_source(data_source)
             self.data_source = data_source
+
+        if product == None:
+            raise ValueError("Please provide ICESat-2 data product of your file(s).")
+        else:
+            self._product = is2ref._validate_product(product)
 
         pattern_ck, filelist = _check_source_for_pattern(data_source, filename_pattern)
         assert pattern_ck
@@ -201,8 +208,8 @@ class Read:
         return self._catalog
 
     # I cut and pasted this directly out of the Query class - going to need to reconcile the _source/file stuff there
-    # and add functionality to vars to actually read in a single file and get the var list (probably using h5py)
-    # note: above line is
+    # and add the data product to the variables object (maybe get it from the single file?)
+
     @property
     def vars(self):
         """

@@ -158,9 +158,11 @@ class Read:
             self.data_source = data_source
 
         if product == None:
-            raise ValueError("Please provide ICESat-2 data product of your file(s).")
+            raise ValueError(
+                "Please provide the ICESat-2 data product of your file(s)."
+            )
         else:
-            self._product = is2ref._validate_product(product)
+            self._prod = is2ref._validate_product(product)
 
         pattern_ck, filelist = _check_source_for_pattern(data_source, filename_pattern)
         assert pattern_ck
@@ -187,28 +189,31 @@ class Read:
     # Properties
 
     @property
-    def catalog(self):
+    def is2catalog(self):
         """
-        Print the catalog.
+        Print a generic ICESat-2 Intake catalog.
+        This catalog does not specify groups, so it cannot be used to read in data.
 
         Examples
         --------
         >>>
         """
-        if not hasattr(self, "_catalog") and hasattr(self, "_catalog_path"):
+        if not hasattr(self, "_is2catalog") and hasattr(self, "_catalog_path"):
             from intake import open_catalog
 
-            self._catalog = open_catalog(self._catalog_path)
+            self._is2catalog = open_catalog(self._catalog_path)
 
         else:
-            self._catalog = is2cat.build_catalog(
-                self.data_source, self._pattern, self._source_type
+            self._is2catalog = is2cat.build_catalog(
+                self.data_source,
+                self._pattern,
+                self._source_type,
+                var_paths="/paths/to/variables",
             )
 
-        return self._catalog
+        return self._is2catalog
 
     # I cut and pasted this directly out of the Query class - going to need to reconcile the _source/file stuff there
-    # and add the data product to the variables object (maybe get it from the single file?)
 
     @property
     def vars(self):
@@ -228,7 +233,9 @@ class Read:
         """
 
         if not hasattr(self, "_read_vars"):
-            self._read_vars = Variables("file", source=self._filelist[0])
+            self._read_vars = Variables(
+                "file", path=self._filelist[0], product=self._prod
+            )
 
         return self._read_vars
 
@@ -238,11 +245,38 @@ class Read:
     def load(self):
         """"""
 
+        # todo:
         # some checks that the file has the required variables?
+        # allow people to use their own catalog to read in the data
+        # do the above by checking for a catalog path and using that. Otherwise, a wanted var list is required to generate the catalogs to read in the data
+        # update and write docstrings
+        # keep working on example notebook
+
+        # actually merge the data into one or more xarray datasets by beam/spot
+        # X look at Ben, Tyler, Tian, Shashank, readers to create a reader template and figure out what can be fixed and what the user needs to have control of
+        # look into spots and enhancing functionality for more control
+
+        wanted_groups = []
+        [
+            wanted_groups.append(val)
+            for vals in self._read_vars.wanted.values()
+            for val in vals
+        ]
+        print(wanted_groups)
+        for var_path in wanted_groups[5:6]:
+            print(var_path)
+            varcat = is2cat.build_catalog(
+                self.data_source,
+                self._pattern,
+                self._source_type,
+                var_paths="/gt2l/land_ice_segments",
+            )
+
+            print(varcat["is2_local"])
+            ds = varcat[self._source_type].read()
+            print(ds)
 
         # how to best iterate through the variables and merge them?
-
-        pass
 
 
 '''

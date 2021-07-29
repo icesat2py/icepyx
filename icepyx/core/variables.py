@@ -108,7 +108,7 @@ class Variables:
                         # node is a Dataset
                         self._avail.append(name)
 
-                with h5py.File(self.source) as h5f:
+                with h5py.File(self.path) as h5f:
                     h5f.visititems(visitor_func)
 
         if options == True:
@@ -421,17 +421,24 @@ class Variables:
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
         # add the mandatory variables to the data object
-        nec_varlist = [
-            "sc_orient",
-            "sc_orient_time",
-            "atlas_sdp_gps_epoch",
-            "data_start_utc",
-            "data_end_utc",
-            "granule_start_utc",
-            "granule_end_utc",
-            "start_delta_time",
-            "end_delta_time",
-        ]
+        if self._vartype == "order":
+            nec_varlist = [
+                "sc_orient",
+                "sc_orient_time",
+                "atlas_sdp_gps_epoch",
+                "data_start_utc",
+                "data_end_utc",
+                "granule_start_utc",
+                "granule_end_utc",
+                "start_delta_time",
+                "end_delta_time",
+            ]
+        elif self._vartype == "file":
+            nec_varlist = [
+                "sc_orient",
+                "data_start_utc",
+                "data_end_utc",
+            ]
 
         if not hasattr(self, "wanted") or self.wanted == None:
             for varid in nec_varlist:

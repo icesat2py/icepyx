@@ -1,12 +1,5 @@
 from intake.catalog import Catalog
 
-
-# next steps:
-# add step that gets icesat2 data product and uses it to get var_path and var_path_param dicts that correspond to the default subset variables - not yet
-# may be better to try and do this as part of generating the available/desired variable list using the var module. A challenge is how to try and handle not all files having the same variables.
-# look at Ben, Tyler, Tian, Shashank, readers to create a reader template and figure out what can be fixed and what the user needs to have control of
-# then, write a reader function that calls intake (with the right catalog, if it wasn't specifically created or supplied) and merges the beams/spots
-
 # Need to post on intake's page to see if this would be a useful contribution...
 # https://github.com/intake/intake/blob/master/intake/source/utils.py#L216
 def _pattern_to_glob(pattern):
@@ -67,7 +60,8 @@ def build_catalog(
     **kwargs
 ):
     """
-    Build an Intake catalog for reading in ICESat-2 data.
+    Build a general Intake catalog for reading in ICESat-2 data.
+    This function is used by the read class object to create catalogs from lists of ICESat-2 variables.
 
     Parameters
     ----------
@@ -93,16 +87,7 @@ def build_catalog(
 
     Returns
     -------
-    intake.catalog.Catalog object accessible via self.catalog
-
-    Examples
-    --------
-    >>> reader = icepyx.read.Read("/full/path/to/set/of/ICESat-2/ATL06/files")
-
-    >>> reader.build_catalog(var_paths="/gt1l/land_ice_segments")
-    <>
-
-    >>> reader.build_catalog(var_paths = "", var_path_params = )
+    intake.catalog.Catalog object
 
     """
     from intake.catalog.local import LocalCatalogEntry, UserParameter
@@ -110,9 +95,11 @@ def build_catalog(
 
     import icepyx.core.APIformatting as apifmt
 
-    assert var_paths, "You must enter a variable path."
+    assert (
+        var_paths
+    ), "You must enter a variable path or you will not be able to read in any data."
 
-    # generalize this/make it so the values can be entered as kwargs...
+    # generalize this/make it so the [engine] values can be entered as kwargs...
     xarray_kwargs_dict = {"engine": "h5netcdf", "group": var_paths}
 
     source_args_dict = {

@@ -19,12 +19,64 @@ from icepyx.core.granules import Granules as Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
-from icepyx.core.visualization import Visualize
+
+class GenQuery:
+    '''
+    Generic components of query object that specifically handles
+    spatio-temporal constraints applicable to all datasets
+
+    Parameters
+    ----------
+    spatial_extent : list or string
+        Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
+        geospatial polygon file.
+        Bounding box coordinates should be provided in decimal degrees as
+        [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+        Polygon coordinates should be provided as coordinate pairs in decimal degrees as
+        [(longitude1, latitude1), (longitude2, latitude2), ... (longitude_n,latitude_n), (longitude1,latitude1)]
+        or
+        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
+        Your list must contain at least four points, where the first and last are identical.
+        DevGoal: adapt code so the polygon is automatically closed if need be
+        Geospatial polygon files are entered as strings with the full file path and
+        must contain only one polygon with the area of interest.
+        Currently supported formats are: kml, shp, and gpkg
+    date_range : list of 'YYYY-MM-DD' strings
+        Date range of interest, provided as start and end dates, inclusive.
+        The required date format is 'YYYY-MM-DD' strings, where
+        YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
+        Currently, a list of specific dates (rather than a range) is not accepted.
+        DevGoal: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
+        DevGoal: allow searches with a list of dates, rather than a range.
+    start_time : HH:mm:ss, default 00:00:00
+        Start time in UTC/Zulu (24 hour clock). If None, use default.
+        DevGoal: check for time in date-range date-time object, if that's used for input.
+    end_time : HH:mm:ss, default 23:59:59
+        End time in UTC/Zulu (24 hour clock). If None, use default.
+        DevGoal: check for time in date-range date-time object, if that's used for input.
+
+    Todo: Add doctests
+    '''
+    def __init__(self,
+        spatial_extent=None,
+        date_range=None,
+        start_time=None,
+        end_time=None):
+
+
+
+        # validate & init spatial extent
+        self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
+            spatial_extent
+        )
+
+        # valiidate and init temporal constraints
+        self._start, self._end = val.temporal(date_range, start_time, end_time)
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
 # DevNote: currently this class is not tested
-class Query:
+class Query(GenQuery):
     """
     ICESat-2 Data object to query, obtain, and perform basic operations on
     available ICESat-2 data products using temporal and spatial input parameters.
@@ -125,6 +177,7 @@ class Query:
         # warnings.filterwarnings("always")
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
 
+        # Check necessary combination of input has been specified
         if (
             (product is None or spatial_extent is None)
             and (date_range is None or cycles is None or tracks is None)
@@ -144,14 +197,18 @@ class Query:
 
         self._prod = is2ref._validate_product(product)
 
-        self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
-            spatial_extent
-        )
+        # moved to GenQuery
+        # self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
+        #     spatial_extent
+        # )
 
-        if date_range:
-            self._start, self._end = val.temporal(date_range, start_time, end_time)
+        # moved to GenQuery
+        # self._start, self._end = val.temporal(date_range, start_time, end_time)
 
-        self._version = val.prod_version(self.latest_version(), version)
+        super().__init__(spatial_extent,
+                       date_range,
+                       start_time,
+                       end_time)
 
         # build list of available CMR parameters if reducing by cycle or RGT
         # or a list of explicitly named files (full or partial names)

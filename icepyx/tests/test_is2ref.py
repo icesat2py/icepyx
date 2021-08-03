@@ -3,33 +3,33 @@ import warnings
 
 import icepyx.core.is2ref as is2ref
 
-########## _validate_dataset ##########
-def test_lowercase_dataset():
+########## _validate_product ##########
+def test_lowercase_product():
     lcds = "atl03"
-    obs = is2ref._validate_dataset(lcds)
+    obs = is2ref._validate_product(lcds)
     expected = "ATL03"
     assert obs == expected
 
 
-def test_num_dataset():
+def test_num_product():
     dsnum = 6
-    ermsg = "Please enter a dataset string"
+    ermsg = "Please enter a product string"
     with pytest.raises(TypeError, match=ermsg):
-        is2ref._validate_dataset(dsnum)
+        is2ref._validate_product(dsnum)
 
 
-def test_bad_dataset():
+def test_bad_product():
     wrngds = "atl-6"
-    ermsg = "Please enter a valid dataset"
+    ermsg = "Please enter a valid product"
     with pytest.raises(AssertionError, match=ermsg):
-        is2ref._validate_dataset(wrngds)
+        is2ref._validate_product(wrngds)
 
 
-########## about_dataset ##########
+########## about_product ##########
 # Note: requires internet connection
 # could the github flat data option be used here? https://octo.github.com/projects/flat-data
-# def test_dataset_info():
-#     obs = is2ref.about_dataset('ATL06')
+# def test_product_info():
+#     obs = is2ref.about_product('ATL06')
 #     print(obs)
 #     #TestQuestion: what is a better way to do this? I think maybe use a mock, which would also deal with the dicts not matching because of the 'updated' key value
 #     #That or check for the same keys and the same values where applicable

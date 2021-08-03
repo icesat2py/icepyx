@@ -1,4 +1,5 @@
 import icepyx as ipx
+import icepyx.core.Earthdata as Earthdata
 import pytest
 import warnings
 
@@ -15,7 +16,7 @@ def reg(scope="module"):
 
 @pytest.fixture
 def session(reg, scope="module"):
-    return reg.Earthdata._start_session(
+    return Earthdata._start_session(
         "icepyx_devteam", "icepyx.dev@gmail.com", os.getenv("NSIDC_LOGIN")
     )
 
@@ -26,7 +27,7 @@ import json
 
 
 def test_get_custom_options_output(session):
-    obs = is2ref._get_custom_options(session, "ATL06", "002")
+    obs = is2ref._get_custom_options(session, "ATL06", "004")
     with open("./ATL06v04_options.json", "r") as exp:
         assert all(keys in obs.keys() for keys in exp.keys())
         assert all(obs[key] == exp[key] for key in exp.keys())
@@ -34,10 +35,10 @@ def test_get_custom_options_output(session):
 
 ########## query module ##########
 # NOTE: best this test can do at the moment is a successful download with no errors...
-def test_download_granules_with_subsetting(reg_a, session):
+def test_download_granules_with_subsetting(reg, session):
     path = "./downloads_subset"
-    reg_a.order_granules(session)
-    reg_a.download_granules(session, path)
+    reg.order_granules(session)
+    reg.download_granules(session, path)
 
 
 # def test_download_granules_without_subsetting(reg_a, session):

@@ -6,6 +6,16 @@ import icepyx.core.is2ref as is2ref
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 
+
+def list_of_dict_vals(input_dict):
+    """
+    Create a single list of the values from a dictionary.
+    """
+    wanted_list = []
+    [wanted_list.append(val) for vals in input_dict.values() for val in vals]
+    return wanted_list
+
+
 # REFACTOR: class needs better docstrings
 # DevNote: currently this class is not tested
 class Variables:
@@ -125,9 +135,19 @@ class Variables:
             return self._avail
 
     @staticmethod
-    def parse_var_list(varlist):
+    def parse_var_list(varlist, tiered=True):
         """
         Parse a list of path strings into tiered lists and names of variables
+
+        Parameters
+        ----------
+        varlist : list of strings
+            List of full variable paths to be parsed.
+
+        tiered : boolean, default True
+            Whether to return the paths (sans variable name) as a nested list of component strings
+            (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments']])
+            or a single list of path strings (e.g. ['orbit_info','ancillary_data','gt1l/land_ice_segments'])
 
         Examples
         --------
@@ -190,9 +210,12 @@ class Variables:
 
         # create a dictionary of variable names and paths
         vgrp = {}
-        num = np.max([v.count("/") for v in varlist])
-        #         print('max needed: ' + str(num))
-        paths = [[] for i in range(num)]
+        if tiered == False:
+            paths = []
+        else:
+            num = np.max([v.count("/") for v in varlist])
+            #         print('max needed: ' + str(num))
+            paths = [[] for i in range(num)]
 
         # print(self._cust_options['variables'])
         for vn in varlist:
@@ -204,13 +227,16 @@ class Variables:
                 vgrp[vkey].append(vn)
 
             if vpath:
-                j = 0
-                for d in vpath.split("/"):
-                    paths[j].append(d)
-                    j = j + 1
-                for i in range(j, num):
-                    paths[i].append("none")
-                    i = i + 1
+                if tiered == False:
+                    paths.append(vpath)
+                else:
+                    j = 0
+                    for d in vpath.split("/"):
+                        paths[j].append(d)
+                        j = j + 1
+                    for i in range(j, num):
+                        paths[i].append("none")
+                        i = i + 1
 
         return vgrp, paths
 

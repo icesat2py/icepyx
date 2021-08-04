@@ -5,6 +5,7 @@ import xarray as xr
 import icepyx.core.is2cat as is2cat
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
+from icepyx.core.variables import list_of_dict_vals
 
 # from icepyx.core.query import Query
 
@@ -243,40 +244,67 @@ class Read:
     # Methods
 
     def load(self):
-        """"""
+        """
+        Use a wanted variables list to load the data from the files into memory.
+        If you would like to use the Intake catalog you provided to read in a single data variable,
+        simply call Intake's `read()` function on the is2catalog property (e.g. `reader.is2catalog.read()`).
+
+        Parameters
+        ----------
+
+
+        """
 
         # todo:
         # some checks that the file has the required variables?
-        # allow people to use their own catalog to read in the data
-        # do the above by checking for a catalog path and using that. Otherwise, a wanted var list is required to generate the catalogs to read in the data
-        # update and write docstrings
-        # keep working on example notebook
+        # x keep working on example notebook
+
+        # create a dataset for one variable using this method
+
+        # Notes: intake wants an entire group, not an individual variable (which makes sense if we're using its smarts to set up lat, lon, etc)
+        # so to get a combined dataset, we need to keep track of beams under the hood, open each group, and then combine them into one xarray where the beams are IDed somehow (or only the strong ones are returned)
+        # this means we need to get/track from each dataset we open some of the metadata, which currently isn't brought into the dataset by intake
+        # similar to using spots, a question is how well we can "know" this info external to a given granule (e.g. with a table)
+        # we should already have functions in vars to separate things out (or can add some) into components, then use that info to iterate according to what the user is asking for
 
         # actually merge the data into one or more xarray datasets by beam/spot
         # X look at Ben, Tyler, Tian, Shashank, readers to create a reader template and figure out what can be fixed and what the user needs to have control of
         # look into spots and enhancing functionality for more control
 
-        wanted_groups = []
-        [
-            wanted_groups.append(val)
-            for vals in self._read_vars.wanted.values()
-            for val in vals
-        ]
-        print(wanted_groups)
-        for var_path in wanted_groups[5:6]:
-            print(var_path)
-            varcat = is2cat.build_catalog(
-                self.data_source,
-                self._pattern,
-                self._source_type,
-                var_paths="/gt2l/land_ice_segments",
-            )
+        groups_list = list_of_dict_vals(self._read_vars.wanted)
+        _, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
+        for var_path in set(wanted_groups):
+            if var_path in ["orbit_info", "ancillary_data"]:
+                print(var_path + " not read in right now, but will be added")
+                # brainstorming: can still use intake to read in these groups, but then just take the variables
+                # (which we know from the wanted var list), hold them, and ultimately add them to the ds
+                # need to put in a way to return them even if there are no data variables read in in via the else
+            else:
+                print(var_path)
+                varcat = is2cat.build_catalog(
+                    self.data_source,
+                    self._pattern,
+                    self._source_type,
+                    var_paths=var_path
+                    # var_paths = "/orbit_info"
+                    # var_paths = "/{{laser}}/land_ice_segments",
+                    # var_path_params = [{"name": "laser",
+                    #                     "description": "Laser Beam Number",
+                    #                     "type": "str",
+                    #                     "default": "gt1l",
+                    #                     "allowed": ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
+                    #                 }],
+                )
 
-            print(varcat["is2_local"])
-            ds = varcat[self._source_type].read()
-            print(ds)
+                # print(varcat["is2_local"])
+                ds = varcat[self._source_type].read()
+                # next step: compute spot and add it as a coordinate...
+                # then, add some other functions for manipulating ICESat-2 Xarray stuff, getting rid of the variables the user didn't ask for, etc.,
+                # and call those to merge the datasets
+                print(ds)
 
         # how to best iterate through the variables and merge them?
+        return ds
 
 
 '''

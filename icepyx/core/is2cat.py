@@ -117,23 +117,34 @@ def build_catalog(
         "args": source_args_dict,
     }
 
-    # can
-
     if var_path_params:
         source_dict = apifmt.combine_params(
             source_dict,
             {"parameters": [UserParameter(**params) for params in var_path_params]},
         )
 
-    # NOTE: LocalCatalogEntry has some required positional args (name, description, driver)
-    local_cat_source = {
-        source_type: LocalCatalogEntry(
-            name=source_dict.pop("name"),
-            description=source_dict.pop("description"),
-            driver=source_dict.pop("driver"),
-            **source_dict,
-        )
-    }
+        # NOTE: LocalCatalogEntry has some required positional args (name, description, driver)
+        # I tried doing this generally with *source_dict after the positional args (instead of as part of the if)
+        # but apparently I don't quite get something about passing dicts with * and ** and couldn't make it work
+        local_cat_source = {
+            source_type: LocalCatalogEntry(
+                name=source_dict.pop("name"),
+                description=source_dict.pop("description"),
+                driver=source_dict.pop("driver"),
+                parameters=source_dict.pop("parameters"),
+                args=source_dict.pop("args"),
+            )
+        }
+
+    else:
+        local_cat_source = {
+            source_type: LocalCatalogEntry(
+                name=source_dict.pop("name"),
+                description=source_dict.pop("description"),
+                driver=source_dict.pop("driver"),
+                args=source_dict.pop("args"),
+            )
+        }
 
     defaults_dict = {
         "name": "IS2-hdf5-icepyx-intake-catalog",

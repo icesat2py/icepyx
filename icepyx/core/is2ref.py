@@ -250,3 +250,47 @@ def _default_varlists(product):
             "THE REQUESTED PRODUCT DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUTDE, AND LONGITUDE WILL BE RETURNED"
         )
         return common_list
+
+
+def gt2beam(gt, sc_orient):
+
+    assert gt in ["gt1l", "gt1r", " gt2l", "gt2r", "gt3l", "gt3r"]
+
+    gr_spot = gt[2]
+    gr_lr = gt[3]
+
+    if sc_orient == 1:
+        if gr_spot == 1:
+            if gr_lr == "l":
+                beam = 2
+            elif gr_lr == "r":
+                beam = 1
+        elif gr_spot == 2:
+            if gr_lr == "l":
+                beam = 4
+            elif gr_lr == "r":
+                beam = 3
+        elif gr_spot == 3:
+            if gr_lr == "l":
+                beam = 6
+            elif gr_lr == "r":
+                beam = 5
+
+    if sc_orient == 0:
+        if gr_spot == 1:
+            if gr_lr == "l":
+                beam = 5
+            elif gr_lr == "r":
+                beam = 6
+        elif gr_spot == 2:
+            if gr_lr == "l":
+                beam = 3
+            elif gr_lr == "r":
+                beam = 4
+        elif gr_spot == 3:
+            if gr_lr == "l":
+                beam = 1
+            elif gr_lr == "r":
+                beam = 2
+
+    return beam

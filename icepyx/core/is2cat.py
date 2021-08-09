@@ -57,6 +57,7 @@ def build_catalog(
     source_type,
     var_paths=None,
     var_path_params=None,
+    extra_engine_kwargs=None,
     **kwargs
 ):
     """
@@ -100,12 +101,16 @@ def build_catalog(
     ), "You must enter a variable path or you will not be able to read in any data."
 
     # generalize this/make it so the [engine] values can be entered as kwargs...
+    engine_key = "xarray_kwargs"
     xarray_kwargs_dict = {"engine": "h5netcdf", "group": var_paths}
+    if extra_engine_kwargs:
+        for key in extra_engine_kwargs.keys():
+            xarray_kwargs_dict[key] = extra_engine_kwargs[key]
 
     source_args_dict = {
         "urlpath": data_source,
         "path_as_pattern": path_pattern,
-        "xarray_kwargs": xarray_kwargs_dict,
+        engine_key: xarray_kwargs_dict,
     }
 
     metadata_dict = {"version": 1}

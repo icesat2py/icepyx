@@ -118,7 +118,7 @@ class Variables:
                         # node is a Dataset
                         self._avail.append(name)
 
-                with h5py.File(self.path) as h5f:
+                with h5py.File(self.path, "r") as h5f:
                     h5f.visititems(visitor_func)
 
         if options == True:

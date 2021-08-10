@@ -117,6 +117,7 @@ class Read:
     data_source : string
         A string with a full file path or full directory path to ICESat-2 hdf5 (.h5) format files.
         Files within a directory must have a consistent filename pattern that includes the "ATL??" data product name.
+        Files must all be within a single directory.
 
     filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
@@ -209,7 +210,7 @@ class Read:
                 self.data_source,
                 self._pattern,
                 self._source_type,
-                var_paths="/paths/to/variables",
+                grp_paths="/paths/to/variables",
             )
 
         return self._is2catalog
@@ -257,7 +258,6 @@ class Read:
 
         # todo:
         # some checks that the file has the required variables?
-        # x keep working on example notebook
 
         # create a dataset for one variable using this method
 
@@ -272,23 +272,61 @@ class Read:
         # look into spots and enhancing functionality for more control
 
         groups_list = list_of_dict_vals(self._read_vars.wanted)
+        # vgrp, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
+
+        all_dss = []
+        # Note: I'd originally hoped to rely on intake-xarray in order to not have to iterate through the files myself,
+        # by providing a generalized url/source in building the catalog.
+        # However, this led to errors when I tried to combine two identical datasets because the single dimension was equal.
+        # In these situations, xarray recommends manually controlling the merge/concat process yourself.
+        # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
+        # Hence, taking the less generalized approach herein.
+        for file in self._filelist:
+            all_dss.append(
+                self._get_single_dataset(file, groups_list)
+            )  # wanted_groups, vgrp.keys()))
+
+        return all_dss
+
+    # NOTE: for non-gridded datasets only
+    def _get_single_dataset(self, file, groups_list):  # wanted_groups, wanted_vars):
+        """
+        Create a single xarray dataset with all of the wanted variables/groups from the wanted var list for a single data file/url.
+        """
+        import regex as re
+
+        # ultimately put this into another function (maybe make it possible to have multiple templates)?
+        is2ds = xr.Dataset(
+            coords=dict(
+                spot=[1, 2, 3, 4, 5, 6],
+                gran_idx=[999999],
+                source_file=(["gran_idx"], [file]),
+            ),
+            attrs=dict(data_product=self._prod),
+        )
+
+        # print(is2ds)
+
+        # returns the wanted groups as a single list of full group path strings
         _, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
-        for var_path in set(wanted_groups):
-            if var_path in ["orbit_info", "ancillary_data"]:
-                print(var_path + " not read in right now, but will be added")
-                # brainstorming: can still use intake to read in these groups, but then just take the variables
-                # (which we know from the wanted var list), hold them, and ultimately add them to the ds
-                # need to put in a way to return them even if there are no data variables read in in via the else
-            else:
-                print(var_path)
-                varcat = is2cat.build_catalog(
-                    self.data_source,
+        wanted_groups_set = set(wanted_groups)
+        # returns the wanted groups as a list of lists with group path string elements separated
+        vgrp, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
+        wanted_vars = list(vgrp.keys())
+
+        all_meta = {}
+        all_data = []
+        for grp_path in wanted_groups_set:
+            print(grp_path)
+            try:
+                grpcat = is2cat.build_catalog(
+                    file,
                     self._pattern,
                     self._source_type,
-                    var_paths=var_path
-                    # var_paths = "/orbit_info"
-                    # var_paths = "/{{laser}}/land_ice_segments",
-                    # var_path_params = [{"name": "laser",
+                    grp_paths=grp_path
+                    # grp_paths = "/orbit_info"
+                    # grp_paths = "/{{laser}}/land_ice_segments",
+                    # grp_path_params = [{"name": "laser",
                     #                     "description": "Laser Beam Number",
                     #                     "type": "str",
                     #                     "default": "gt1l",
@@ -296,15 +334,77 @@ class Read:
                     #                 }],
                 )
 
-                # print(varcat["is2_local"])
-                ds = varcat[self._source_type].read()
-                # next step: compute spot and add it as a coordinate...
-                # then, add some other functions for manipulating ICESat-2 Xarray stuff, getting rid of the variables the user didn't ask for, etc.,
-                # and call those to merge the datasets
-                print(ds)
+                ds = grpcat[self._source_type].read()
+            # NOTE: could also do this with h5py, but then would have to read in each variable in the group separately
+            except ValueError:
+                grpcat = is2cat.build_catalog(
+                    file,
+                    self._pattern,
+                    self._source_type,
+                    grp_paths=grp_path,
+                    extra_engine_kwargs={"phony_dims": "access"},
+                )
 
-        # how to best iterate through the variables and merge them?
-        return ds
+                ds = grpcat[self._source_type].read()
+
+            # DELETE(?)
+            # if any(var in list(ds.keys()) for var in wanted_vars):
+
+            if grp_path in ["orbit_info", "ancillary_data"]:
+                grp_spec_vars = [
+                    wanted_vars[i]
+                    for i, x in enumerate(wanted_groups_tiered[0])
+                    if x == grp_path
+                ]
+                print(grp_spec_vars)
+
+                for var in grp_spec_vars:
+                    print(var)
+                    is2ds = is2ds.assign_coords({var: ("gran_idx", ds[var])})
+                    # wanted_vars.remove(var) # can't remove the item from the list unless you do it from wanted_groups too
+
+                # return ds
+                #         all_meta.append(ds[grp_spec_vars])
+                #         wanted_vars = [wanted_vars.remove(x) for x in grp_spec_vars]
+                #         print(ds[grp_spec_vars])
+            else:
+                gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
+                is2ds = is2ds.assign_coords(gt=("gran_idx", [gt_str]))
+
+                # START HERE with figuring out how to get the spot number if haven't done the other groups yet (or specify set order?)
+                grp_spec_vars = [
+                    wanted_vars[i] for i, x in enumerate(wanted_groups) if x == grp_path
+                ]
+                print(grp_spec_vars)
+                spot = is2ref.gt2beam(gt_str, is2ds.sc_orient.values())
+                print(spot)
+                # next step: compute beam and add it as a coordinate...
+                # add a test for the new function (called here)!
+                # for piece in grp_path.split("/"):
+                #     if piece in ['gt1l', 'gt1r',' gt2l', 'gt2r', 'gt3l', 'gt3r']:
+                #         gr_spot = piece
+                #     else:
+                #         continue
+                # beam = is2ref.gt2beam(gr_spot, sc_orient)
+
+                # then, add some other functions for manipulating ICESat-2 Xarray stuff, getting rid of the variables the user didn't ask for, etc.,
+                # for var in grp_spec_vars:
+                #     is2ds=is2ds.assign({var:("gran_idx", ds[var])})
+                # print(is2ds)
+
+        #         all_data.append(ds)
+        print(is2ds)
+
+        # all_data.append(ds)
+        print("don't forget to fill in the actual idx value")
+        return is2ds
+
+        #     import h5py
+        #     with h5py.File(file, "r") as fi:
+        #         value = fi[grp_path][var]
+
+        # print(all_meta, all_data)
+        # return all_meta, all_data
 
 
 '''

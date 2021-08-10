@@ -55,8 +55,8 @@ def build_catalog(
     data_source,
     path_pattern,
     source_type,
-    var_paths=None,
-    var_path_params=None,
+    grp_paths=None,
+    grp_path_params=None,
     extra_engine_kwargs=None,
     **kwargs
 ):
@@ -66,16 +66,16 @@ def build_catalog(
 
     Parameters
     ----------
-    var_paths : str, default None
+    grp_paths : str, default None
         Variable paths to load.
         Can include general parameter names, which must be contained within double curly brackets and further
-        described in `var_path_params`.
+        described in `grp_path_params`.
         Default list based on data product of provided files.
         If multiple data products are included in the files, the default list will be for the product of the first file.
         This may result in errors during read-in if all files do not have the same variable paths.
 
-    var_path_params : [dict], default None
-        List of dictionaries with a keyword for each parameter name specified in the `var_paths` string.
+    grp_path_params : [dict], default None
+        List of dictionaries with a keyword for each parameter name specified in the `grp_paths` string.
         Each parameter keyword should contain a dictionary with the acceptable keyword-value pairs for the driver being used.
 
     **kwargs :
@@ -97,12 +97,12 @@ def build_catalog(
     import icepyx.core.APIformatting as apifmt
 
     assert (
-        var_paths
+        grp_paths
     ), "You must enter a variable path or you will not be able to read in any data."
 
     # generalize this/make it so the [engine] values can be entered as kwargs...
     engine_key = "xarray_kwargs"
-    xarray_kwargs_dict = {"engine": "h5netcdf", "group": var_paths}
+    xarray_kwargs_dict = {"engine": "h5netcdf", "group": grp_paths}
     if extra_engine_kwargs:
         for key in extra_engine_kwargs.keys():
             xarray_kwargs_dict[key] = extra_engine_kwargs[key]
@@ -122,10 +122,10 @@ def build_catalog(
         "args": source_args_dict,
     }
 
-    if var_path_params:
+    if grp_path_params:
         source_dict = apifmt.combine_params(
             source_dict,
-            {"parameters": [UserParameter(**params) for params in var_path_params]},
+            {"parameters": [UserParameter(**params) for params in grp_path_params]},
         )
 
         # NOTE: LocalCatalogEntry has some required positional args (name, description, driver)

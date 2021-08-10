@@ -462,6 +462,7 @@ class Variables:
         elif self._vartype == "file":
             nec_varlist = [
                 "sc_orient",
+                "atlas_sdp_gps_epoch",
                 "data_start_utc",
                 "data_end_utc",
             ]

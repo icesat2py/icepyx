@@ -258,18 +258,14 @@ class Read:
 
         # todo:
         # some checks that the file has the required variables?
-
-        # create a dataset for one variable using this method
+        # maybe give user some options here about merging parameters?
+        # add a check that wanted variables exists, and create them with defaults if possible (and let the user know)
 
         # Notes: intake wants an entire group, not an individual variable (which makes sense if we're using its smarts to set up lat, lon, etc)
         # so to get a combined dataset, we need to keep track of beams under the hood, open each group, and then combine them into one xarray where the beams are IDed somehow (or only the strong ones are returned)
-        # this means we need to get/track from each dataset we open some of the metadata, which currently isn't brought into the dataset by intake
-        # similar to using spots, a question is how well we can "know" this info external to a given granule (e.g. with a table)
-        # we should already have functions in vars to separate things out (or can add some) into components, then use that info to iterate according to what the user is asking for
+        # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
 
         # actually merge the data into one or more xarray datasets by beam/spot
-        # X look at Ben, Tyler, Tian, Shashank, readers to create a reader template and figure out what can be fixed and what the user needs to have control of
-        # look into spots and enhancing functionality for more control
 
         groups_list = list_of_dict_vals(self._read_vars.wanted)
         # vgrp, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
@@ -285,6 +281,13 @@ class Read:
             all_dss.append(
                 self._get_single_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
+
+        # START HERE -- need to get delta_time to NOT be a dimension coordinate in the read_single_dataset
+        # if len(all_dss) ==1:
+        #     return all_dss[0]
+        # else:
+        #     merged_dss = xr.concat(all_dss, dim=["grn_idx"])
+        #     return merged_dss
 
         return all_dss
 
@@ -310,13 +313,15 @@ class Read:
         # returns the wanted groups as a single list of full group path strings
         _, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
         wanted_groups_set = set(wanted_groups)
+        wanted_groups_set.remove(
+            "orbit_info"
+        )  # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+        print(wanted_groups_set)
         # returns the wanted groups as a list of lists with group path string elements separated
         vgrp, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
         wanted_vars = list(vgrp.keys())
 
-        all_meta = {}
-        all_data = []
-        for grp_path in wanted_groups_set:
+        for grp_path in ["orbit_info"] + list(wanted_groups_set):
             print(grp_path)
             try:
                 grpcat = is2cat.build_catalog(
@@ -347,9 +352,6 @@ class Read:
 
                 ds = grpcat[self._source_type].read()
 
-            # DELETE(?)
-            # if any(var in list(ds.keys()) for var in wanted_vars):
-
             if grp_path in ["orbit_info", "ancillary_data"]:
                 grp_spec_vars = [
                     wanted_vars[i]
@@ -360,51 +362,45 @@ class Read:
 
                 for var in grp_spec_vars:
                     print(var)
-                    is2ds = is2ds.assign_coords({var: ("gran_idx", ds[var])})
+                    is2ds = is2ds.assign({var: ("gran_idx", ds[var])})
                     # wanted_vars.remove(var) # can't remove the item from the list unless you do it from wanted_groups too
 
-                # return ds
-                #         all_meta.append(ds[grp_spec_vars])
-                #         wanted_vars = [wanted_vars.remove(x) for x in grp_spec_vars]
-                #         print(ds[grp_spec_vars])
             else:
                 gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
                 is2ds = is2ds.assign_coords(gt=("gran_idx", [gt_str]))
 
-                # START HERE with figuring out how to get the spot number if haven't done the other groups yet (or specify set order?)
                 grp_spec_vars = [
                     wanted_vars[i] for i, x in enumerate(wanted_groups) if x == grp_path
                 ]
                 print(grp_spec_vars)
-                spot = is2ref.gt2beam(gt_str, is2ds.sc_orient.values())
-                print(spot)
-                # next step: compute beam and add it as a coordinate...
+                spot = is2ref.gt2beam(gt_str, is2ds.sc_orient.values[0])
                 # add a test for the new function (called here)!
-                # for piece in grp_path.split("/"):
-                #     if piece in ['gt1l', 'gt1r',' gt2l', 'gt2r', 'gt3l', 'gt3r']:
-                #         gr_spot = piece
-                #     else:
-                #         continue
-                # beam = is2ref.gt2beam(gr_spot, sc_orient)
+                # also, clean up the beam/spot nomenclature throughout read and is2ref!
 
-                # then, add some other functions for manipulating ICESat-2 Xarray stuff, getting rid of the variables the user didn't ask for, etc.,
-                # for var in grp_spec_vars:
-                #     is2ds=is2ds.assign({var:("gran_idx", ds[var])})
-                # print(is2ds)
+                ds = ds.reset_coords(drop=False)
+                ds = ds.expand_dims(["spot", "gran_idx"])
+                ds = ds.assign_coords(spot=("spot", [spot]))
+                print(ds[grp_spec_vars])
+                is2ds = is2ds.merge(
+                    ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
+                )
 
-        #         all_data.append(ds)
-        print(is2ds)
+                print(is2ds)
 
-        # all_data.append(ds)
         print("don't forget to fill in the actual idx value")
+        is2ds["gran_idx"] = [234566]
         return is2ds
 
-        #     import h5py
-        #     with h5py.File(file, "r") as fi:
-        #         value = fi[grp_path][var]
 
-        # print(all_meta, all_data)
-        # return all_meta, all_data
+# for piece in grp_path.split("/"):
+#     if piece in ['gt1l', 'gt1r',' gt2l', 'gt2r', 'gt3l', 'gt3r']:
+#         gr_spot = piece
+#     else:
+#         continue
+
+#     import h5py
+#     with h5py.File(file, "r") as fi:
+#         value = fi[grp_path][var]
 
 
 '''

@@ -1,3 +1,4 @@
+import warnings
 import requests
 from xml.etree import ElementTree as ET
 import json
@@ -256,7 +257,7 @@ def gt2beam(gt, sc_orient):
 
     assert gt in ["gt1l", "gt1r", " gt2l", "gt2r", "gt3l", "gt3r"]
 
-    gr_spot = gt[2]
+    gr_spot = int(gt[2])
     gr_lr = gt[3]
 
     if sc_orient == 1:
@@ -276,7 +277,7 @@ def gt2beam(gt, sc_orient):
             elif gr_lr == "r":
                 beam = 5
 
-    if sc_orient == 0:
+    elif sc_orient == 0:
         if gr_spot == 1:
             if gr_lr == "l":
                 beam = 5
@@ -292,5 +293,8 @@ def gt2beam(gt, sc_orient):
                 beam = 1
             elif gr_lr == "r":
                 beam = 2
+
+    if "beam" not in locals():
+        raise ValueError("Could not compute the beam number.")
 
     return beam

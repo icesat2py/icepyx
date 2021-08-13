@@ -463,6 +463,8 @@ class Variables:
             nec_varlist = [
                 "sc_orient",
                 "atlas_sdp_gps_epoch",
+                "cycle_number",
+                "rgt",
                 "data_start_utc",
                 "data_end_utc",
             ]

@@ -282,14 +282,13 @@ class Read:
                 self._get_single_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
 
-        # START HERE -- need to get delta_time to NOT be a dimension coordinate in the read_single_dataset
-        # if len(all_dss) ==1:
-        #     return all_dss[0]
-        # else:
-        #     merged_dss = xr.concat(all_dss, dim=["grn_idx"])
-        #     return merged_dss
+        if len(all_dss) == 1:
+            return all_dss[0]
+        else:
+            merged_dss = xr.combine_by_coords(all_dss, data_vars="minimal")
+            return merged_dss
 
-        return all_dss
+        # return all_dss
 
     # NOTE: for non-gridded datasets only
     def _get_single_dataset(self, file, groups_list):  # wanted_groups, wanted_vars):
@@ -301,28 +300,26 @@ class Read:
         # ultimately put this into another function (maybe make it possible to have multiple templates)?
         is2ds = xr.Dataset(
             coords=dict(
-                spot=[1, 2, 3, 4, 5, 6],
-                gran_idx=[999999],
+                # spot=[1, 2, 3, 4, 5, 6],
+                gran_idx=["999999"],
                 source_file=(["gran_idx"], [file]),
             ),
             attrs=dict(data_product=self._prod),
         )
 
-        # print(is2ds)
-
         # returns the wanted groups as a single list of full group path strings
-        _, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
+        wanted_dict, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
         wanted_groups_set = set(wanted_groups)
         wanted_groups_set.remove(
             "orbit_info"
         )  # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
-        print(wanted_groups_set)
+        # print(wanted_groups_set)
         # returns the wanted groups as a list of lists with group path string elements separated
-        vgrp, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
-        wanted_vars = list(vgrp.keys())
+        _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
+        wanted_vars = list(wanted_dict.keys())
 
         for grp_path in ["orbit_info"] + list(wanted_groups_set):
-            print(grp_path)
+            # print(grp_path)
             try:
                 grpcat = is2cat.build_catalog(
                     file,
@@ -358,37 +355,57 @@ class Read:
                     for i, x in enumerate(wanted_groups_tiered[0])
                     if x == grp_path
                 ]
-                print(grp_spec_vars)
+                # print(grp_spec_vars)
 
                 for var in grp_spec_vars:
-                    print(var)
+                    # print(var)
                     is2ds = is2ds.assign({var: ("gran_idx", ds[var])})
                     # wanted_vars.remove(var) # can't remove the item from the list unless you do it from wanted_groups too
 
+                try:
+                    rgt = ds["rgt"].values[0]
+                    cycle = ds["cycle_number"].values[0]
+                except KeyError:
+                    pass
+
             else:
                 gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-                is2ds = is2ds.assign_coords(gt=("gran_idx", [gt_str]))
-
-                grp_spec_vars = [
-                    wanted_vars[i] for i, x in enumerate(wanted_groups) if x == grp_path
-                ]
-                print(grp_spec_vars)
                 spot = is2ref.gt2beam(gt_str, is2ds.sc_orient.values[0])
                 # add a test for the new function (called here)!
                 # also, clean up the beam/spot nomenclature throughout read and is2ref!
 
-                ds = ds.reset_coords(drop=False)
-                ds = ds.expand_dims(["spot", "gran_idx"])
-                ds = ds.assign_coords(spot=("spot", [spot]))
-                print(ds[grp_spec_vars])
+                grp_spec_vars = [
+                    k for k, v in wanted_dict.items() if any(grp_path in x for x in v)
+                ]
+                # print(grp_spec_vars)
+
+                ds = (
+                    ds.reset_coords(drop=False)
+                    .expand_dims(["spot", "gran_idx"])
+                    .assign_coords(spot=("spot", [spot]))
+                    .assign_coords(gt=(("gran_idx", "spot"), [[gt_str]]))
+                )
+
+                # print(ds)
+                # print(ds[grp_spec_vars])
+
                 is2ds = is2ds.merge(
                     ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
                 )
 
-                print(is2ds)
+        # print(is2ds)
 
-        print("don't forget to fill in the actual idx value")
-        is2ds["gran_idx"] = [234566]
+        try:
+            is2ds["gran_idx"] = [f"{rgt:04d}{cycle:02d}"]
+        except NameError:
+            import random
+
+            is2ds["gran_idx"] = [random.randint(900000, 999999)]
+            import warnings
+
+            warnings.warn("Your granule index is made up of random values.")
+            # You must include the orbit/cycle_number and orbit/rgt variables to generate
+        # print(is2ds)
         return is2ds
 
 

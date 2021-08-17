@@ -19,6 +19,7 @@ from icepyx.core.granules import Granules as Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
+from icepyx.core.visualization import Visualize
 
 class GenQuery:
     '''
@@ -133,6 +134,7 @@ class Query(GenQuery):
 
     Examples
     --------
+    todo: make a test file with these examples
     Initializing Query with a bounding box.
 
     >>> reg_a_bbox = [-55, 68, -48, 71]

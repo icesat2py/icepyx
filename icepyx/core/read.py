@@ -85,28 +85,6 @@ def _run_fast_scandir(dir, fn_glob):
     return subfolders, files
 
 
-def _check_source_for_pattern(source, filename_pattern):
-    """
-    Check that the entered data source contains files that match the input filename_pattern
-    """
-    glob_pattern = is2cat._pattern_to_glob(filename_pattern)
-
-    if os.path.isdir(source):
-        _, filelist = _run_fast_scandir(source, glob_pattern)
-        assert len(filelist) > 0, "None of your filenames match the specified pattern."
-        print(
-            f"You have {len(filelist)} files matching the filename pattern to be read in."
-        )
-        return True, filelist
-    elif os.path.isfile(source):
-        assert fnmatch.fnmatch(
-            os.path.basename(source), glob_pattern
-        ), "Your input filename does not match the filename pattern."
-        return True, [source]
-    else:
-        return False, None
-
-
 class Read:
     """
     Data object to create and use Intake catalogs to read ICESat-2 data into the specified formats.
@@ -166,7 +144,9 @@ class Read:
         else:
             self._prod = is2ref._validate_product(product)
 
-        pattern_ck, filelist = _check_source_for_pattern(data_source, filename_pattern)
+        pattern_ck, filelist = self._check_source_for_pattern(
+            data_source, filename_pattern
+        )
         assert pattern_ck
         # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
         self._pattern = filename_pattern
@@ -244,34 +224,141 @@ class Read:
     # ----------------------------------------------------------------------
     # Methods
 
-    def load(self):
+    @staticmethod
+    def _check_source_for_pattern(source, filename_pattern):
         """
-        Use a wanted variables list to load the data from the files into memory.
-        If you would like to use the Intake catalog you provided to read in a single data variable,
-        simply call Intake's `read()` function on the is2catalog property (e.g. `reader.is2catalog.read()`).
+        Check that the entered data source contains files that match the input filename_pattern
+        """
+        glob_pattern = is2cat._pattern_to_glob(filename_pattern)
+
+        if os.path.isdir(source):
+            _, filelist = _run_fast_scandir(source, glob_pattern)
+            assert (
+                len(filelist) > 0
+            ), "None of your filenames match the specified pattern."
+            print(
+                f"You have {len(filelist)} files matching the filename pattern to be read in."
+            )
+            return True, filelist
+        elif os.path.isfile(source):
+            assert fnmatch.fnmatch(
+                os.path.basename(source), glob_pattern
+            ), "Your input filename does not match the filename pattern."
+            return True, [source]
+        else:
+            return False, None
+
+    @staticmethod
+    def _add_var_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
+        """
+        Add the new variable group to the dataset template.
 
         Parameters
         ----------
+        is2ds : Xarray dataset
+            Template dataset to add new variables to.
+        ds : Xarray dataset
+            Dataset containing the group to add
+        grp_path : str
+            hdf5 group path read into ds
+        wanted_groups_tiered : list of lists
+            A list of lists of deconstructed group + variable paths.
+            The first list contains the first portion of the group name (between consecutive "/"),
+            the second list contains the second portion of the group name, etc.
+            "none" is used to fill in where paths are shorter than the longest path.
+        wanted_dict : dict
+            Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
 
+        Returns
+        -------
+        Xarray Dataset with variables from the ds variable group added.
+        """
 
+        wanted_vars = list(wanted_dict.keys())
+
+        if grp_path in ["orbit_info", "ancillary_data"]:
+            grp_spec_vars = [
+                wanted_vars[i]
+                for i, x in enumerate(wanted_groups_tiered[0])
+                if x == grp_path
+            ]
+            # print(grp_spec_vars)
+
+            for var in grp_spec_vars:
+                # print(var)
+                is2ds = is2ds.assign({var: ("gran_idx", ds[var])})
+                # wanted_vars.remove(var) # can't remove the item from the list unless you do it from wanted_groups too
+
+            try:
+                rgt = ds["rgt"].values[0]
+                cycle = ds["cycle_number"].values[0]
+                try:
+                    is2ds["gran_idx"] = [f"{rgt:04d}{cycle:02d}"]
+                except NameError:
+                    import random, warnings
+
+                    is2ds["gran_idx"] = [random.randint(900000, 999999)]
+                    warnings.warn("Your granule index is made up of random values.")
+                    # You must include the orbit/cycle_number and orbit/rgt variables to generate
+            except KeyError:
+                pass
+
+        else:
+            import regex as re
+
+            gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
+            spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
+            # add a test for the new function (called here)!
+
+            grp_spec_vars = [
+                k for k, v in wanted_dict.items() if any(grp_path in x for x in v)
+            ]
+            # print(grp_spec_vars)
+
+            ds = (
+                ds.reset_coords(drop=False)
+                .expand_dims(["spot", "gran_idx"])
+                .assign_coords(spot=("spot", [spot]))
+                .assign_coords(gt=(("gran_idx", "spot"), [[gt_str]]))
+            )
+
+            # print(ds)
+            # print(ds[grp_spec_vars])
+
+            is2ds = is2ds.merge(
+                ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
+            )
+        return is2ds
+
+    def load(self):
+        """
+        Create a single Xarray Dataset containing the data from one or more files and/or ground tracks.
+        Uses icepyx's ICESat-2 data product awareness and Xarray's `combine_by_coords` function.
+
+        All items in the wanted variables list will be loaded from the files into memory.
+        If you do not provide a wanted variables list, a default one will be created for you.
+
+        If you would like to use the Intake catalog you provided to read in a single data variable,
+        simply call Intake's `read()` function on the is2catalog property (e.g. `reader.is2catalog.read()`).
         """
 
         # todo:
         # some checks that the file has the required variables?
         # maybe give user some options here about merging parameters?
         # add a check that wanted variables exists, and create them with defaults if possible (and let the user know)
+        # write tests for the functions!
 
         # Notes: intake wants an entire group, not an individual variable (which makes sense if we're using its smarts to set up lat, lon, etc)
         # so to get a combined dataset, we need to keep track of spots under the hood, open each group, and then combine them into one xarray where the spots are IDed somehow (or only the strong ones are returned)
         # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
 
-        # actually merge the data into one or more xarray datasets by spot
-
-        groups_list = list_of_dict_vals(self._read_vars.wanted)
-        # vgrp, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
+        try:
+            groups_list = list_of_dict_vals(self._read_vars.wanted)
+        except AttributeError:
+            pass
 
         all_dss = []
-        # Note: I'd originally hoped to rely on intake-xarray in order to not have to iterate through the files myself,
+        # DevNote: I'd originally hoped to rely on intake-xarray in order to not have to iterate through the files myself,
         # by providing a generalized url/source in building the catalog.
         # However, this led to errors when I tried to combine two identical datasets because the single dimension was equal.
         # In these situations, xarray recommends manually controlling the merge/concat process yourself.
@@ -279,7 +366,7 @@ class Read:
         # Hence, taking the less generalized approach herein.
         for file in self._filelist:
             all_dss.append(
-                self._get_single_dataset(file, groups_list)
+                self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
 
         if len(all_dss) == 1:
@@ -288,122 +375,108 @@ class Read:
             merged_dss = xr.combine_by_coords(all_dss, data_vars="minimal")
             return merged_dss
 
-        # return all_dss
-
-    # NOTE: for non-gridded datasets only
-    def _get_single_dataset(self, file, groups_list):  # wanted_groups, wanted_vars):
+    def _build_dataset_template(self, file):
         """
-        Create a single xarray dataset with all of the wanted variables/groups from the wanted var list for a single data file/url.
-        """
-        import regex as re
+        Create the Xarray dataset object templated for the data to be read in.
 
-        # ultimately put this into another function (maybe make it possible to have multiple templates)?
+        It may be possible to expand this function to provide multiple templates.
+        """
         is2ds = xr.Dataset(
             coords=dict(
-                # spot=[1, 2, 3, 4, 5, 6],
                 gran_idx=["999999"],
                 source_file=(["gran_idx"], [file]),
             ),
             attrs=dict(data_product=self._prod),
         )
+        return is2ds
+
+    def _read_single_var(self, file, grp_path):
+        """
+        For a given file and variable group path, construct an Intake catalog and use it to read in the data.
+
+        Parameters
+        ----------
+        file : str
+            Full path to ICESat-2 data file.
+            Currently tested for locally downloaded files; untested but hopefully works for s3 stored cloud files.
+        grp_path : str
+            Full string to a variable group.
+            E.g. 'gt1l/land_ice_segments'
+
+        Returns
+        -------
+        Xarray dataset with the specified group.
+
+        """
+
+        try:
+            grpcat = is2cat.build_catalog(
+                file,
+                self._pattern,
+                self._source_type,
+                grp_paths=grp_path
+                # grp_paths = "/orbit_info"
+                # grp_paths = "/{{beam}}/land_ice_segments",
+                # grp_path_params = [{"name": "beam",
+                #                     "description": "Beam Number",
+                #                     "type": "str",
+                #                     "default": "gt1l",
+                #                     "allowed": ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
+                #                 }],
+            )
+            ds = grpcat[self._source_type].read()
+
+        # NOTE: could also do this with h5py, but then would have to read in each variable in the group separately
+        except ValueError:
+            grpcat = is2cat.build_catalog(
+                file,
+                self._pattern,
+                self._source_type,
+                grp_paths=grp_path,
+                extra_engine_kwargs={"phony_dims": "access"},
+            )
+
+            ds = grpcat[self._source_type].read()
+
+        return ds
+
+    # NOTE: for non-gridded datasets only
+    def _build_single_file_dataset(self, file, groups_list):
+        """
+        Create a single xarray dataset with all of the wanted variables/groups from the wanted var list for a single data file/url.
+
+        Parameters
+        ----------
+        file : str
+            Full path to ICESat-2 data file.
+            Currently tested for locally downloaded files; untested but hopefully works for s3 stored cloud files.
+
+        groups_list : list of strings
+            List of full paths to data variables within the file.
+            e.g. ['orbit_info/sc_orient', 'gt1l/land_ice_segments/h_li', 'gt1l/land_ice_segments/latitude', 'gt1l/land_ice_segments/longitude']
+
+        Returns
+        -------
+        Xarray Dataset
+        """
+
+        is2ds = self._build_dataset_template(file)
 
         # returns the wanted groups as a single list of full group path strings
         wanted_dict, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
         wanted_groups_set = set(wanted_groups)
-        wanted_groups_set.remove(
-            "orbit_info"
-        )  # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
-        # print(wanted_groups_set)
+        # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+        wanted_groups_set.remove("orbit_info")
         # returns the wanted groups as a list of lists with group path string elements separated
         _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
-        wanted_vars = list(wanted_dict.keys())
 
         for grp_path in ["orbit_info"] + list(wanted_groups_set):
             # print(grp_path)
-            try:
-                grpcat = is2cat.build_catalog(
-                    file,
-                    self._pattern,
-                    self._source_type,
-                    grp_paths=grp_path
-                    # grp_paths = "/orbit_info"
-                    # grp_paths = "/{{beam}}/land_ice_segments",
-                    # grp_path_params = [{"name": "beam",
-                    #                     "description": "Beam Number",
-                    #                     "type": "str",
-                    #                     "default": "gt1l",
-                    #                     "allowed": ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
-                    #                 }],
-                )
+            ds = self._read_single_var(file, grp_path)
+            is2ds = self._add_var_to_ds(
+                is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
+            )
 
-                ds = grpcat[self._source_type].read()
-            # NOTE: could also do this with h5py, but then would have to read in each variable in the group separately
-            except ValueError:
-                grpcat = is2cat.build_catalog(
-                    file,
-                    self._pattern,
-                    self._source_type,
-                    grp_paths=grp_path,
-                    extra_engine_kwargs={"phony_dims": "access"},
-                )
-
-                ds = grpcat[self._source_type].read()
-
-            if grp_path in ["orbit_info", "ancillary_data"]:
-                grp_spec_vars = [
-                    wanted_vars[i]
-                    for i, x in enumerate(wanted_groups_tiered[0])
-                    if x == grp_path
-                ]
-                # print(grp_spec_vars)
-
-                for var in grp_spec_vars:
-                    # print(var)
-                    is2ds = is2ds.assign({var: ("gran_idx", ds[var])})
-                    # wanted_vars.remove(var) # can't remove the item from the list unless you do it from wanted_groups too
-
-                try:
-                    rgt = ds["rgt"].values[0]
-                    cycle = ds["cycle_number"].values[0]
-                except KeyError:
-                    pass
-
-            else:
-                gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-                spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
-                # add a test for the new function (called here)!
-
-                grp_spec_vars = [
-                    k for k, v in wanted_dict.items() if any(grp_path in x for x in v)
-                ]
-                # print(grp_spec_vars)
-
-                ds = (
-                    ds.reset_coords(drop=False)
-                    .expand_dims(["spot", "gran_idx"])
-                    .assign_coords(spot=("spot", [spot]))
-                    .assign_coords(gt=(("gran_idx", "spot"), [[gt_str]]))
-                )
-
-                # print(ds)
-                # print(ds[grp_spec_vars])
-
-                is2ds = is2ds.merge(
-                    ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
-                )
-
-        # print(is2ds)
-
-        try:
-            is2ds["gran_idx"] = [f"{rgt:04d}{cycle:02d}"]
-        except NameError:
-            import random
-
-            is2ds["gran_idx"] = [random.randint(900000, 999999)]
-            import warnings
-
-            warnings.warn("Your granule index is made up of random values.")
-            # You must include the orbit/cycle_number and orbit/rgt variables to generate
         # print(is2ds)
         return is2ds
 

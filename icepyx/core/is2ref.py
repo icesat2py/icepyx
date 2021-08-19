@@ -253,48 +253,48 @@ def _default_varlists(product):
         return common_list
 
 
-def gt2beam(gt, sc_orient):
+def gt2spot(gt, sc_orient):
 
     assert gt in ["gt1l", "gt1r", " gt2l", "gt2r", "gt3l", "gt3r"]
 
-    gr_spot = int(gt[2])
+    gr_num = int(gt[2])
     gr_lr = gt[3]
 
     if sc_orient == 1:
-        if gr_spot == 1:
+        if gr_num == 1:
             if gr_lr == "l":
-                beam = 2
+                spot = 2
             elif gr_lr == "r":
-                beam = 1
-        elif gr_spot == 2:
+                spot = 1
+        elif gr_num == 2:
             if gr_lr == "l":
-                beam = 4
+                spot = 4
             elif gr_lr == "r":
-                beam = 3
-        elif gr_spot == 3:
+                spot = 3
+        elif gr_num == 3:
             if gr_lr == "l":
-                beam = 6
+                spot = 6
             elif gr_lr == "r":
-                beam = 5
+                spot = 5
 
     elif sc_orient == 0:
-        if gr_spot == 1:
+        if gr_num == 1:
             if gr_lr == "l":
-                beam = 5
+                spot = 5
             elif gr_lr == "r":
-                beam = 6
-        elif gr_spot == 2:
+                spot = 6
+        elif gr_num == 2:
             if gr_lr == "l":
-                beam = 3
+                spot = 3
             elif gr_lr == "r":
-                beam = 4
-        elif gr_spot == 3:
+                spot = 4
+        elif gr_num == 3:
             if gr_lr == "l":
-                beam = 1
+                spot = 1
             elif gr_lr == "r":
-                beam = 2
+                spot = 2
 
-    if "beam" not in locals():
-        raise ValueError("Could not compute the beam number.")
+    if "spot" not in locals():
+        raise ValueError("Could not compute the spot number.")
 
-    return beam
+    return spot

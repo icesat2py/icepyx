@@ -262,10 +262,10 @@ class Read:
         # add a check that wanted variables exists, and create them with defaults if possible (and let the user know)
 
         # Notes: intake wants an entire group, not an individual variable (which makes sense if we're using its smarts to set up lat, lon, etc)
-        # so to get a combined dataset, we need to keep track of beams under the hood, open each group, and then combine them into one xarray where the beams are IDed somehow (or only the strong ones are returned)
+        # so to get a combined dataset, we need to keep track of spots under the hood, open each group, and then combine them into one xarray where the spots are IDed somehow (or only the strong ones are returned)
         # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
 
-        # actually merge the data into one or more xarray datasets by beam/spot
+        # actually merge the data into one or more xarray datasets by spot
 
         groups_list = list_of_dict_vals(self._read_vars.wanted)
         # vgrp, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
@@ -327,9 +327,9 @@ class Read:
                     self._source_type,
                     grp_paths=grp_path
                     # grp_paths = "/orbit_info"
-                    # grp_paths = "/{{laser}}/land_ice_segments",
-                    # grp_path_params = [{"name": "laser",
-                    #                     "description": "Laser Beam Number",
+                    # grp_paths = "/{{beam}}/land_ice_segments",
+                    # grp_path_params = [{"name": "beam",
+                    #                     "description": "Beam Number",
                     #                     "type": "str",
                     #                     "default": "gt1l",
                     #                     "allowed": ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
@@ -370,9 +370,8 @@ class Read:
 
             else:
                 gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-                spot = is2ref.gt2beam(gt_str, is2ds.sc_orient.values[0])
+                spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
                 # add a test for the new function (called here)!
-                # also, clean up the beam/spot nomenclature throughout read and is2ref!
 
                 grp_spec_vars = [
                     k for k, v in wanted_dict.items() if any(grp_path in x for x in v)

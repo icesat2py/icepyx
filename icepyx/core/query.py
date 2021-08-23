@@ -136,11 +136,15 @@ class Query(GenQuery):
     --------
     todo: make a test file with these examples
     Initializing Query with a bounding box.
+    >>> import icepyx
 
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
-    >>> reg_a = icepyx.query.Query('ATL06', reg_a_bbox, reg_a_dates)
-    >>> reg_a
+    >>> reg_a = icepyx.Query('ATL06', reg_a_bbox, reg_a_dates)
+    >>> print(reg_a)
+    Bounding box ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
+    Date range['2019-02-20', '2019-02-28']
+
     <icepyx.core.query.Query at [location]>
 
     Initializing Query with a list of polygon vertex coordinate pairs.
@@ -148,7 +152,7 @@ class Query(GenQuery):
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = icepyx.query.Query('ATL06', reg_a_poly, reg_a_dates)
-    >>> reg_a
+    >>> reg_a.spatial_extent
     <icepyx.core.query.Query at [location]>
 
     Initializing Query with a geospatial polygon file.
@@ -226,6 +230,12 @@ class Query(GenQuery):
 
     # ----------------------------------------------------------------------
     # Properties
+
+    def __str__(self):
+        # todo: define a meaningful string representation of Query()
+        str = 'Bounding box {0}\nDate range {1}'.format(self.spatial_extent,
+                                                       self.dates)
+        return str
 
     @property
     def dataset(self):

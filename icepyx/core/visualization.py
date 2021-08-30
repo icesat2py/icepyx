@@ -238,14 +238,17 @@ class Visualize:
 
         for bbox_i in bbox_list:
 
-            region = ipx.Query(
-                self.product,
-                bbox_i,
-                self.date_range,
-                cycles=self.cycles,
-                tracks=self.tracks,
-            )
-            icesat2_files = region.avail_granules(ids=True)[0]
+            try:
+                region = ipx.Query(
+                    self.product,
+                    bbox_i,
+                    self.date_range,
+                    cycles=self.cycles,
+                    tracks=self.tracks,
+                )
+                icesat2_files = region.avail_granules(ids=True)[0]
+            except (AttributeError, AssertionError):
+                continue
 
             if not icesat2_files:
                 continue
@@ -407,6 +410,8 @@ class Visualize:
 
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
+
+        assert OA_para_list, "Your search returned no results; try different search parameters"
 
         url_number = len(OA_para_list)
 

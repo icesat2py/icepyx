@@ -142,10 +142,10 @@ class Query(GenQuery):
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = icepyx.Query('ATL06', reg_a_bbox, reg_a_dates)
     >>> print(reg_a)
-    Bounding box ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
-    Date range['2019-02-20', '2019-02-28']
+    Product ATL06 v004
+    ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
+    Date range ['2019-02-20', '2019-02-28']
 
-    <icepyx.core.query.Query at [location]>
 
     Initializing Query with a list of polygon vertex coordinate pairs.
 
@@ -216,6 +216,8 @@ class Query(GenQuery):
                        start_time,
                        end_time)
 
+        self._version = val.prod_version(self.latest_version(), version)
+
         # build list of available CMR parameters if reducing by cycle or RGT
         # or a list of explicitly named files (full or partial names)
         # DevGoal: add file name search to optional queries
@@ -232,9 +234,15 @@ class Query(GenQuery):
     # Properties
 
     def __str__(self):
-        # todo: define a meaningful string representation of Query()
-        str = 'Bounding box {0}\nDate range {1}'.format(self.spatial_extent,
-                                                       self.dates)
+        '''
+        String representation of self. Returns eg.
+
+        Product ATL03 v004
+        ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
+        Date range['2019-02-20', '2019-02-28']
+        '''
+        str = 'Product {2} v{3}\n{0}\nDate range {1}'.format(self.spatial_extent,
+                                                       self.dates, self.product, self.product_version)
         return str
 
     @property

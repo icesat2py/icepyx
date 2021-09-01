@@ -569,7 +569,7 @@ class Query:
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_summary_info()
-        product_id :  ATLAS/ICESat-2 L3A Land Ice Height V002
+        title :  ATLAS/ICESat-2 L3A Land Ice Height V002
         short_name :  ATL06
         version_id :  002
         time_start :  2018-10-14T00:00:00.000Z
@@ -580,7 +580,7 @@ class Query:
         if not hasattr(self, "_about_product"):
             self._about_product = is2ref.about_product(self._prod)
         summ_keys = [
-            "product_id",
+            "title",
             "short_name",
             "version_id",
             "time_start",

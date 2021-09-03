@@ -10,19 +10,33 @@ from icepyx.core.variables import list_of_dict_vals
 # from icepyx.core.query import Query
 
 
-def _get_datasource_type():  # filepath):
+def _check_datasource(filepath):
     """
-    Determine if the input is from a local system or is an s3 bucket
-    Not needed now, but will need to implement for cloud data access
+    Determine if the input is from a local system or is an s3 bucket.
+    Then, validate the inputs (for those on the local system; s3 sources are not validated currently)
     """
+
+    import fsspec
+    from fsspec.implementations.local import LocalFileSystem
+    from pathlib import Path
 
     source_types = ["is2_local", "is2_s3"]
-    return source_types[0]
+
+    if not isinstance(filepath, Path) and not isinstance(filepath, str):
+        raise TypeError("save_path must be a string or Path")
+
+    fsmap = fsspec.get_mapper(str(filepath))
+    output_fs = fsmap.fs
+
+    if "s3" in output_fs.protocol:
+        return source_types[1]
+    elif isinstance(output_fs, LocalFileSystem):
+        assert _validate_source(filepath)
+        return source_types[0]
+    else:
+        raise ValueError("Could not confirm the datasource type.")
 
     """
-    see Don's code
-    use fsspec.get_mapper to determine which kind of file each is;
-    determine the first one and then mandate that all items in the list are the same type.
     Could also use: os.path.splitext(f.name)[1].lower() to get file extension
 
     If ultimately want to handle mixed types, save the valid paths in a dict with "s3" or "local" as the keys and the list of the files as the values.
@@ -34,10 +48,14 @@ def _get_datasource_type():  # filepath):
 
 def _validate_source(source):
     """
-    Check that the entered data source paths are valid
+    Check that the entered data source paths on the local file system are valid
+
+    Currently, s3 data source paths are not validated.
     """
 
     # acceptable inputs (for now) are a single file or directory
+    # would ultimately like to make a Path (from pathlib import Path; isinstance(source, Path)) an option
+    # see https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py#L82
     assert type(source) == str, "You must enter your input as a string."
     assert (
         os.path.isdir(source) == True or os.path.isfile(source) == True
@@ -134,7 +152,7 @@ class Read:
         if data_source == None:
             raise ValueError("Please provide a data source.")
         else:
-            assert _validate_source(data_source)
+            self._source_type = _check_datasource(data_source)
             self.data_source = data_source
 
         if product == None:
@@ -144,13 +162,33 @@ class Read:
         else:
             self._prod = is2ref._validate_product(product)
 
-        pattern_ck, filelist = self._check_source_for_pattern(
+        pattern_ck, filelist = Read._check_source_for_pattern(
             data_source, filename_pattern
         )
         assert pattern_ck
         # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
         self._pattern = filename_pattern
-        self._filelist = filelist
+
+        # this is a first pass at getting rid of mixed product types and warning the user.
+        # it takes an approach assuming the product name is in the filename, but needs reworking if we let multiple products be loaded
+        # one way to handle this would be bring in the product info during the loading step and fill in product there instead of requiring it from the user
+        filtered_filelist = [file for file in filelist if self._prod in file]
+        if len(filtered_filelist) == 0:
+            import warnings
+
+            warnings.warn(
+                "Your filesnames do not contain a product identifier. You will likely need to manually merge your dataframes."
+            )
+            self._filelist = filelist
+        elif len(filtered_filelist) < len(filelist):
+            import warnings
+
+            warnings.warn(
+                "Some files matching your filename pattern were removed as they were not the specified product."
+            )
+            self._filelist = filtered_filelist
+        else:
+            self._filelist = filelist
 
         # after validation, use the notebook code and code outline to start implementing the rest of the class
         if catalog:
@@ -164,8 +202,6 @@ class Read:
                 "Output object type will be an xarray DataSet - no other output types are implemented"
             )
         self._out_obj = xr.Dataset
-
-        self._source_type = _get_datasource_type()
 
     # ----------------------------------------------------------------------
     # Properties
@@ -245,8 +281,14 @@ class Read:
                 os.path.basename(source), glob_pattern
             ), "Your input filename does not match the filename pattern."
             return True, [source]
-        else:
-            return False, None
+        elif isinstance(source, str):
+            if source.startswith("s3://"):
+                return True, [source]
+        elif isinstance(source, list):
+            if all(source.startswith("s3://")):
+                return True, source
+        # else:
+        return False, None
 
     @staticmethod
     def _add_var_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
@@ -381,6 +423,9 @@ class Read:
 
         It may be possible to expand this function to provide multiple templates.
         """
+        # NOTE: use the hdf5 library to grab the attr for the product specifier
+        # can ultimately then use it to check against user specified one or merge strategies (or to return a list of ds)
+
         is2ds = xr.Dataset(
             coords=dict(
                 gran_idx=["999999"],
@@ -471,9 +516,9 @@ class Read:
         _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
 
         for grp_path in ["orbit_info"] + list(wanted_groups_set):
-            # print(grp_path)
+            print(grp_path)
             ds = self._read_single_var(file, grp_path)
-            is2ds = self._add_var_to_ds(
+            is2ds = Read._add_var_to_ds(
                 is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
             )
 

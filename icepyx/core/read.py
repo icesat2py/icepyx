@@ -10,6 +10,7 @@ from icepyx.core.variables import list_of_dict_vals
 # from icepyx.core.query import Query
 
 
+# Dev note: function fully tested (except else, which don't know how to get to)
 def _check_datasource(filepath):
     """
     Determine if the input is from a local system or is an s3 bucket.
@@ -23,7 +24,7 @@ def _check_datasource(filepath):
     source_types = ["is2_local", "is2_s3"]
 
     if not isinstance(filepath, Path) and not isinstance(filepath, str):
-        raise TypeError("save_path must be a string or Path")
+        raise TypeError("filepath must be a string or Path")
 
     fsmap = fsspec.get_mapper(str(filepath))
     output_fs = fsmap.fs
@@ -43,9 +44,21 @@ def _check_datasource(filepath):
     Then the dict can also contain a catalog key with a dict of catalogs for each of those types of inputs ("s3" or "local")
     In general, the issue we'll run into with multiple files is going to be merging during the read in,
     so it could be beneficial to not hide this too much and mandate users handle this intentionally outside the read in itself.
+    
+    this function was derived with some of the following resources, based on echopype
+    https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py
+
+    https://filesystem-spec.readthedocs.io/en/latest/api.html?highlight=get_map#fsspec.spec.AbstractFileSystem.glob
+
+    https://filesystem-spec.readthedocs.io/en/latest/_modules/fsspec/implementations/local.html
+
+    https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/convert/api.py#L380
+
+    https://echopype.readthedocs.io/en/stable/convert.html
     """
 
 
+# Dev note: function fully tested as currently written
 def _validate_source(source):
     """
     Check that the entered data source paths on the local file system are valid
@@ -63,6 +76,7 @@ def _validate_source(source):
     return True
 
 
+# Dev Note: function is tested (at least loosely)
 def _run_fast_scandir(dir, fn_glob):
     """
     Quickly scan nested directories to get a list of filenames that match the fn_glob string.
@@ -89,6 +103,8 @@ def _run_fast_scandir(dir, fn_glob):
     subfolders, files = [], []
 
     for f in os.scandir(dir):
+        if any(f.name.startswith(s) for s in ["__", "."]):
+            continue
         if f.is_dir():
             subfolders.append(f.path)
         if f.is_file():
@@ -103,6 +119,7 @@ def _run_fast_scandir(dir, fn_glob):
     return subfolders, files
 
 
+# To do: test this class and functions therein
 class Read:
     """
     Data object to create and use Intake catalogs to read ICESat-2 data into the specified formats.

@@ -422,7 +422,6 @@ class Read:
         # However, this led to errors when I tried to combine two identical datasets because the single dimension was equal.
         # In these situations, xarray recommends manually controlling the merge/concat process yourself.
         # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
-        # Hence, taking the less generalized approach herein.
         for file in self._filelist:
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
@@ -431,8 +430,19 @@ class Read:
         if len(all_dss) == 1:
             return all_dss[0]
         else:
-            merged_dss = xr.combine_by_coords(all_dss, data_vars="minimal")
-            return merged_dss
+            try:
+                merged_dss = xr.combine_by_coords(all_dss, data_vars="minimal")
+                return merged_dss
+            except ValueError as ve:
+                import warnings
+
+                warnings.warn(
+                    "Your inputs could not be automatically merged due to the following error: {0}\nicepyx is returning a list of Xarray DataSets, one per granule".format(
+                        ve
+                    ),
+                    stacklevel=2,
+                )
+                return all_dss
 
     def _build_dataset_template(self, file):
         """
@@ -533,7 +543,7 @@ class Read:
         _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
 
         for grp_path in ["orbit_info"] + list(wanted_groups_set):
-            print(grp_path)
+            # print(grp_path)
             ds = self._read_single_var(file, grp_path)
             is2ds = Read._add_var_to_ds(
                 is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict

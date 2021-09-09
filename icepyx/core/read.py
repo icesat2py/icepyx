@@ -532,6 +532,16 @@ class Read:
         Xarray Dataset
         """
 
+        file_product = self._read_single_var(file, "/").attrs["identifier_product_type"]
+        assert (
+            file_product == self._prod
+        ), "Your product specification does not match the product specification within your files."
+        # I think the below method might NOT read the file into memory as the above might?
+        # import h5py
+
+        # with h5py.File(filepath,'r') as h5pt:
+        #     prod_id = h5pt.attrs["identifier_product_type"]
+
         is2ds = self._build_dataset_template(file)
 
         # returns the wanted groups as a single list of full group path strings

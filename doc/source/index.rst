@@ -16,7 +16,6 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    getting_started/origin_purpose
    getting_started/install
    getting_started/example_link
-   getting_started/earthdata
    getting_started/citation_link
 
 .. toctree::

@@ -1,23 +1,37 @@
 language: python
 
+before_install:
+  - sudo apt-get update
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+
 install:
+  - conda create --name icepyx-env --channel conda-forge python=$TRAVIS_PYTHON_VERSION proj=7.2.0 geos
+  - source activate icepyx-env
+
   - pip install -r requirements.txt -r requirements-dev.txt
-  - pip install -e .
+  - pip install -e .[complete]
 
 stages:
   - name: basic tests
-    if: (type = pull_request) OR (type = push AND repo = icesat2py/icepyx AND branch IN (master, development))
+    if: (type = pull_request) OR (type = push AND repo = icesat2py/icepyx AND branch IN (main, development))
   - name: behind Earthdata
-    if: branch = master OR commit_message =~ nsidc_tests OR type = cron
+    if: branch = main OR commit_message =~ nsidc_tests OR type = cron
 
 #ultimately move basic tests list into a separate script with the list of files to run (then this can be put into a matrix and parallellized as well)
 jobs:
   include:
     - stage: basic tests
-      script: pytest icepyx/ --ignore icepyx/tests/behind_NSIDC_API_login.py
+      script: pytest icepyx/ --ignore icepyx/tests/test_behind_NSIDC_API_login.py
       after_success: codecov
 
-    # - stage: behind Earthdata
-    #   script:
-    #     - export NSIDC_LOGIN=$NSIDC_LOGIN
-    #     - pytest icepyx/tests/behind_NSIDC_API_login.py
+    - stage: behind Earthdata
+      script:
+        - export NSIDC_LOGIN=$NSIDC_LOGIN
+        - pytest icepyx/tests/test_behind_NSIDC_API_login.py

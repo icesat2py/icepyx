@@ -1,10 +1,13 @@
 import pytest
+import re
+import requests
+import responses
 import warnings
 
 import icepyx as ipx
 from icepyx.core import granules as granules
 from icepyx.core.granules import Granules as Granules
-
+from icepyx.core.exceptions import NsidcQueryError
 
 # @pytest.fixture
 # def reg_a():
@@ -15,6 +18,8 @@ from icepyx.core.granules import Granules as Granules
 # @pytest.fixture
 # def session(reg_a):
 #     return reg_a._start_earthdata_session('icepyx_devteam', 'icepyx.dev@gmail.com', os.getenv('NSIDC_LOGIN'))
+
+# check that agent key is added in event of no subsetting
 
 
 # DevNote: clearly there's a better way that doesn't make the function so long... what is it?
@@ -592,16 +597,36 @@ def test_no_granules_in_search_results():
 
 def test_correct_granule_list_returned():
     reg_a = ipx.Query(
-        "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-28"], version="2"
+        "ATL06",
+        [-55, 68, -48, 71],
+        ["2019-02-20", "2019-02-28"],
+        version="3",
     )
 
-    reg_a.avail_granules()
-    obs_grans = [gran["producer_granule_id"] for gran in reg_a.granules.avail]
+    (obs_grans,) = reg_a.avail_granules(ids=True)
     exp_grans = [
-        "ATL06_20190221121851_08410203_002_01.h5",
-        "ATL06_20190222010344_08490205_002_01.h5",
-        "ATL06_20190225121032_09020203_002_01.h5",
-        "ATL06_20190226005526_09100205_002_01.h5",
+        "ATL06_20190221121851_08410203_003_01.h5",
+        "ATL06_20190222010344_08490205_003_01.h5",
+        "ATL06_20190225121032_09020203_003_01.h5",
+        "ATL06_20190226005526_09100205_003_01.h5",
     ]
-
     assert set(obs_grans) == set(exp_grans)
+
+
+@responses.activate
+def test_avail_granule_CMR_error():
+    # badreq = re.compile(re.escape('http://cmr.earthdata.nasa.gov/search/granules.json') + r'.*')
+    responses.add(
+        responses.GET,
+        re.compile(re.escape("https://cmr.earthdata.nasa.gov/search/granules") + r".*"),
+        status=400,
+        json={
+            "errors": "temporal start datetime is invalid: [badinput] is not a valid datetime."
+        },
+    )
+
+    ermsg = "An error was returned from NSIDC in regards to your query: temporal start datetime is invalid: [badinput] is not a valid datetime."
+    with pytest.raises(NsidcQueryError, match=re.escape(ermsg)):
+        CMRparams = {"version": "003", "temporal": "badinput", "short_name": "ATL08"}
+        reqparams = {"page_size": 1, "page_num": 1}
+        Granules().get_avail(CMRparams=CMRparams, reqparams=reqparams)

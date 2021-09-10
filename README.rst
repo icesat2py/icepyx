@@ -3,7 +3,7 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|Documentation Status|  |GitHub license|  |Travis CI Status| |Code Coverage|
+|Documentation Status|  |GitHub license|  |Travis CI Status| |Code Coverage| |Conda install| |Pypi install|
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
@@ -11,11 +11,17 @@ icepyx
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=master
+.. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=development
     :target: https://travis-ci.org/icesat2py/icepyx
 
-.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg 
+.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx
+    
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
+    :target: https://anaconda.org/conda-forge/icepyx
+
+.. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
+    :target: https://pypi.org/project/icepyx/
 
 Origin and Purpose
 ------------------
@@ -28,7 +34,7 @@ at the University of Washington in June 2019 or as scripts written and used by t
 This project combines and generalizes these scripts into a unified framework, making them accessible for everyone.
 
 
-.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/master.zip
+.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
 .. _`Fiona`: https://pypi.org/project/Fiona/
 
 Installation
@@ -36,11 +42,11 @@ Installation
 
 The simplest way to install icepyx is by using the
 `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/index.html>`__
-package manager.
-
+package manager. |Conda install|
+    
     conda install icepyx
 
-Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__.
+Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__. |Pypi install|
 
     pip install icepyx
 
@@ -53,12 +59,13 @@ Examples (Jupyter Notebooks)
 
 Listed below are example jupyter-notebooks
 
-`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
+`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
 
-`ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+`ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
 
-`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/master/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
+`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
 
+`ICESat-2 Data Visualization Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Visualization_Example.ipynb>`_
 
 Citing icepyx
 -------------
@@ -86,3 +93,20 @@ Please note that this project is released with a Contributor Code of Conduct. By
 
 .. |Contributor Covenant| image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
    :target: code_of_conduct.md
+   
+Research notice
+~~~~~~~~~~~~~~~
+
+Please note that this repository is participating in a study into
+sustainability of open source projects. Data will be gathered about this
+repository for approximately the next 12 months, starting from June
+2021.
+
+Data collected will include number of contributors, number of PRs, time
+taken to close/merge these PRs, and issues closed.
+
+For more information, please visit `the informational
+page <https://sustainable-open-science-and-software.github.io/>`__ or
+download the `participant information
+sheet <https://sustainable-open-science-and-software.github.io/assets/PIS_sustainable_software.pdf>`__.
+

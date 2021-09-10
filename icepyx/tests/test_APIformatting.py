@@ -1017,12 +1017,49 @@ def test_var_subset_list_fmt():
     assert obs == exp
 
 
+######## _fmt_readable_granules ########
+def test_readable_granules():
+    obs = apifmt._fmt_readable_granules("ATL06", cycles=["02"], tracks=["1387"])
+    exp = ["ATL06_??????????????_138702??_*"]
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules("ATL06", tracks=["1387"])
+    exp = ["ATL06_??????????????_1387????_*"]
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules("ATL06", cycles=["02"])
+    exp = ["ATL06_??????????????_????02??_*"]
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules(
+        "ATL06", files=["ATL06_20190329071316_13870211_003_*"]
+    )
+    exp = ["ATL06_20190329071316_13870211_003_*"]
+    assert obs == exp
+
+
 ########## combine_params ##########
 def test_combine_params():
     dict1 = {"key1": 0, "key2": 1}
     dict2 = {"key3": 10}
     obs = apifmt.combine_params(dict1, dict2)
     expected = {"key1": 0, "key2": 1, "key3": 10}
+    assert obs == expected
+
+
+############ to_string #############
+def test_to_string():
+    CMRparams = {
+        "short_name": "ATL06",
+        "version": "002",
+        "temporal": "2019-02-20T00:00:00Z,2019-02-28T23:59:59Z",
+        "bounding_box": "-55,68,-48,71",
+    }
+    reqparams = {"page_size": 10, "page_num": 1}
+    params = apifmt.combine_params(CMRparams, reqparams)
+    obs = apifmt.to_string(params)
+    expected = (
+        "short_name=ATL06&version=002"
+        "&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z"
+        "&bounding_box=-55,68,-48,71&page_size=10&page_num=1"
+    )
     assert obs == expected
 
 
@@ -1038,9 +1075,14 @@ def test_CMRparams_no_other_inputs():
     CMRparams = apifmt.Parameters("CMR")
     # TestQuestion: the next statement essentially tests _get_possible_keys as well, so how would I test them independently?
     assert CMRparams.poss_keys == {
-        "default": ["short_name", "version", "temporal"],
+        "default": ["short_name", "version"],
         "spatial": ["bounding_box", "polygon"],
-        "optional": ["orbit_number"],
+        "optional": [
+            "temporal",
+            "options[readable_granule_name][pattern]",
+            "options[spatial][or]",
+            "readable_granule_name[]",
+        ],
     }
     assert CMRparams.fmted_keys == {}
     assert CMRparams._check_valid_keys
@@ -1051,7 +1093,7 @@ def test_CMRparams_no_other_inputs():
         assert CMRparams.check_values() == False
 
     CMRparams.build_params(
-        dataset="ATL06",
+        product="ATL06",
         version="003",
         start=dt.datetime(2019, 2, 20, 0, 0),
         end=dt.datetime(2019, 2, 24, 23, 59, 59),

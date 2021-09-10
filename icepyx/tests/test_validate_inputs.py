@@ -6,9 +6,9 @@ import numpy as np
 import icepyx.core.validate_inputs as val
 
 
-########## dset_version ##########
+########## prod_version ##########
 def test_version_setting_to_latest():
-    obs = val.dset_version("010", None)
+    obs = val.prod_version("010", None)
     expected = "010"
     assert obs == expected
 
@@ -16,11 +16,11 @@ def test_version_setting_to_latest():
 def test_neg_version_str_given():
     ermesg = "Version number must be positive"
     with pytest.raises(AssertionError, match=ermesg):
-        val.dset_version("010", "-12")
+        val.prod_version("010", "-12")
 
 
 def test_short_version_str_given():
-    obs = val.dset_version("001", "2")
+    obs = val.prod_version("001", "2")
     expected = "002"
     assert obs == expected
 
@@ -28,13 +28,13 @@ def test_short_version_str_given():
 def test_int_version():
     ermesg = "Please enter the version number as a string"
     with pytest.raises(TypeError, match=ermesg):
-        val.dset_version("010", 12)
+        val.prod_version("010", 12)
 
 
 def test_old_version():
-    wrng = "You are using an old version of this dataset"
+    wrng = "You are using an old version of this product"
     with pytest.warns(UserWarning, match=wrng):
-        val.dset_version("003", "001")
+        val.prod_version("003", "001")
 
 
 ########## spatial ##########
@@ -50,21 +50,21 @@ def test_floatlist_bbox():
     expected = ["bounding_box", [-64.2, 66.2, -55.5, 72.5], None]
     for i in range(len(expected)):
         assert obs[i] == expected[i]
-        
+
 
 def test_numpyfloatarray_bbox():
     obs = val.spatial(np.array([-64.2, 66.2, -55.5, 72.5]))
     expected = ["bounding_box", [-64.2, 66.2, -55.5, 72.5], None]
     for i in range(len(expected)):
         assert obs[i] == expected[i]
-        
+
 
 def test_numpyfloatlist_bbox():
     obs = val.spatial(list(np.array([-64.2, 66.2, -55.5, 72.5])))
     expected = ["bounding_box", [-64.2, 66.2, -55.5, 72.5], None]
     for i in range(len(expected)):
         assert obs[i] == expected[i]
-        
+
 
 def test_list_latlon_pairs():
     out = val.spatial([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
@@ -195,3 +195,38 @@ def test_endtime_validstr():
     ermsg = "Please enter your end time as a string"
     with pytest.raises(TypeError, match=ermsg):
         val.temporal(["2019-02-22", "2019-02-28"], "00:15:00", 235959)
+
+
+########## orbital ##########
+
+
+def test_cycles():
+    obs = val.cycles([1, 2, 3, 4])
+    exp = ["01", "02", "03", "04"]
+    assert obs == exp
+
+
+def test_tracks():
+    obs = val.tracks([1, 2, 3, 4])
+    exp = ["0001", "0002", "0003", "0004"]
+    assert obs == exp
+
+
+def test_cycles_negative():
+    ermsg = "Cycle number must be positive"
+    with pytest.raises(AssertionError, match=ermsg):
+        val.cycles(-1)
+
+
+def test_tracks_negative():
+    ermsg = "Reference Ground Track must be positive"
+    with pytest.raises(AssertionError, match=ermsg):
+        val.tracks(-1)
+
+
+def test_tracks_valid():
+    expmsg = "Listed Reference Ground Track is not available"
+    with pytest.warns(UserWarning) as record:
+        val.tracks(1388)
+    # check that warning message matches expected
+    assert record[0].message.args[0] == expmsg

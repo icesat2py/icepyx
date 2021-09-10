@@ -132,6 +132,10 @@ class Read:
         Files within a directory must have a consistent filename pattern that includes the "ATL??" data product name.
         Files must all be within a single directory.
 
+    product : string
+        ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
+        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
+
     filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted).

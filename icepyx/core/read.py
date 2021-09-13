@@ -1,5 +1,6 @@
 import fnmatch
 import os
+import warnings
 import xarray as xr
 
 import icepyx.core.is2cat as is2cat
@@ -170,13 +171,13 @@ class Read:
         out_obj_type=None,  # xr.Dataset,
     ):
 
-        if data_source == None:
+        if data_source is None:
             raise ValueError("Please provide a data source.")
         else:
             self._source_type = _check_datasource(data_source)
             self.data_source = data_source
 
-        if product == None:
+        if product is None:
             raise ValueError(
                 "Please provide the ICESat-2 data product of your file(s)."
             )
@@ -195,15 +196,11 @@ class Read:
         # one way to handle this would be bring in the product info during the loading step and fill in product there instead of requiring it from the user
         filtered_filelist = [file for file in filelist if self._prod in file]
         if len(filtered_filelist) == 0:
-            import warnings
-
             warnings.warn(
                 "Your filesnames do not contain a product identifier. You will likely need to manually merge your dataframes."
             )
             self._filelist = filelist
         elif len(filtered_filelist) < len(filelist):
-            import warnings
-
             warnings.warn(
                 "Some files matching your filename pattern were removed as they were not the specified product."
             )
@@ -212,16 +209,16 @@ class Read:
             self._filelist = filelist
 
         # after validation, use the notebook code and code outline to start implementing the rest of the class
-        if catalog:
+        if catalog is not None:
             assert os.path.isfile(
                 catalog
             ), "Your catalog path does not point to a valid file."
             self._catalog_path = catalog
 
-        if out_obj_type:
+        if out_obj_type is not None:
             print(
-                "Output object type will be an xarray DataSet - no other output types are implemented"
-            )
+                "Output object type will be an xarray DataSet - "
+                "no other output types are implemented yet"
         self._out_obj = xr.Dataset
 
     # ----------------------------------------------------------------------
@@ -438,8 +435,6 @@ class Read:
                 merged_dss = xr.combine_by_coords(all_dss, data_vars="minimal")
                 return merged_dss
             except ValueError as ve:
-                import warnings
-
                 warnings.warn(
                     "Your inputs could not be automatically merged due to the following error: {0}\nicepyx is returning a list of Xarray DataSets, one per granule".format(
                         ve

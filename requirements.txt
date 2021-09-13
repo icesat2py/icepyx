@@ -7,9 +7,9 @@ h5py
 holoviews
 hvplot
 intake
+intake-xarray
 matplotlib
 numpy
-pathlib
 requests
 shapely
 xarray

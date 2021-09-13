@@ -358,7 +358,7 @@ class Read:
                 except NameError:
                     import random, warnings
 
-                    is2ds["gran_idx"] = [random.randint(900000, 999999)]
+                    is2ds["gran_idx"] = [str(random.randint(900000, 999999))]
                     warnings.warn("Your granule index is made up of random values.")
                     # You must include the orbit/cycle_number and orbit/rgt variables to generate
             except KeyError:

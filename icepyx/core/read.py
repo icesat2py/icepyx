@@ -197,7 +197,8 @@ class Read:
         filtered_filelist = [file for file in filelist if self._prod in file]
         if len(filtered_filelist) == 0:
             warnings.warn(
-                "Your filesnames do not contain a product identifier. You will likely need to manually merge your dataframes."
+                "Your filenames do not contain a product identifier (e.g. ATL06). "
+                "You will likely need to manually merge your dataframes."
             )
             self._filelist = filelist
         elif len(filtered_filelist) < len(filelist):
@@ -212,7 +213,7 @@ class Read:
         if catalog is not None:
             assert os.path.isfile(
                 catalog
-            ), "Your catalog path does not point to a valid file."
+            ), f"Your catalog path '{catalog}' does not point to a valid file."
             self._catalog_path = catalog
 
         if out_obj_type is not None:
@@ -436,9 +437,10 @@ class Read:
                 return merged_dss
             except ValueError as ve:
                 warnings.warn(
-                    "Your inputs could not be automatically merged due to the following error: {0}\nicepyx is returning a list of Xarray DataSets, one per granule".format(
-                        ve
-                    ),
+                    "Your inputs could not be automatically merged using "
+                    f"xarray.combine_by_coords due to the following error: {ve}\n"
+                    "icepyx will return a list of Xarray DataSets (one per granule) "
+                    "which you can combine together manually instead",
                     stacklevel=2,
                 )
                 return all_dss

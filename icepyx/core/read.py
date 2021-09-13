@@ -220,6 +220,7 @@ class Read:
             print(
                 "Output object type will be an xarray DataSet - "
                 "no other output types are implemented yet"
+            )
         self._out_obj = xr.Dataset
 
     # ----------------------------------------------------------------------

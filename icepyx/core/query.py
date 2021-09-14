@@ -7,6 +7,7 @@ import pprint
 import time
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import numpy as np
 
 from icepyx.core.Earthdata import Earthdata
 import icepyx.core.APIformatting as apifmt
@@ -314,7 +315,7 @@ class Query(GenQuery):
 
         >>> reg_a = icepyx.Query('ATL06',[(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
-        ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]]
+        ['polygon', ([-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0])]
         """
 
         if self.extent_type == "bounding_box":
@@ -323,9 +324,11 @@ class Query(GenQuery):
             # return ['polygon', self._spat_extent]
             # Note: self._spat_extent is a shapely geometry object
             # todo: format lon&lat values in the return string e.g. ([lon1, lon2, lon3], [lat1, lat2, lat3])
-            coords = self._spat_extent.exterior.coord.xy
+            coords = self._spat_extent.exterior.coords.xy
+            lons = np.array(coords[0])
+            lats = coords[1]
             # format coords
-            return ["polygon", coords]
+            return ["polygon", lons, lats]
         else:
             return ["unknown spatial type", None]
 

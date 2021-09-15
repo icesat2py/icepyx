@@ -22,8 +22,9 @@ import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
 from icepyx.core.visualization import Visualize
 
+
 class GenQuery:
-    '''
+    """
     Generic components of query object that specifically handles
     spatio-temporal constraints applicable to all datasets
 
@@ -58,14 +59,11 @@ class GenQuery:
         DevGoal: check for time in date-range date-time object, if that's used for input.
 
     Todo: Add doctests
-    '''
-    def __init__(self,
-        spatial_extent=None,
-        date_range=None,
-        start_time=None,
-        end_time=None):
+    """
 
-
+    def __init__(
+        self, spatial_extent=None, date_range=None, start_time=None, end_time=None
+    ):
 
         # validate & init spatial extent
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
@@ -74,6 +72,7 @@ class GenQuery:
 
         # valiidate and init temporal constraints
         self._start, self._end = val.temporal(date_range, start_time, end_time)
+
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
@@ -215,10 +214,7 @@ class Query(GenQuery):
         # moved to GenQuery
         # self._start, self._end = val.temporal(date_range, start_time, end_time)
 
-        super().__init__(spatial_extent,
-                       date_range,
-                       start_time,
-                       end_time)
+        super().__init__(spatial_extent, date_range, start_time, end_time)
 
         self._version = val.prod_version(self.latest_version(), version)
 
@@ -238,15 +234,16 @@ class Query(GenQuery):
     # Properties
 
     def __str__(self):
-        '''
+        """
         String representation of self. Returns eg.
 
         Product ATL03 v004
         ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
         Date range['2019-02-20', '2019-02-28']
-        '''
-        str = 'Product {2} v{3}\n{0}\nDate range {1}'.format(self.spatial_extent,
-                                                       self.dates, self.product, self.product_version)
+        """
+        str = "Product {2} v{3}\n{0}\nDate range {1}".format(
+            self.spatial_extent, self.dates, self.product, self.product_version
+        )
         return str
 
     @property
@@ -271,7 +268,8 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> discussion point icepyx.query.Query versus Query (in vscode, test suite can't find icepyx...)
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product
         'ATL06'
         """
@@ -284,7 +282,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_version
         '003'
 

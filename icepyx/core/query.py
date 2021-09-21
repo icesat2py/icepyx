@@ -134,13 +134,11 @@ class Query(GenQuery):
 
     Examples
     --------
-    todo: make a test file with these examples
     Initializing Query with a bounding box.
-    >>> import icepyx
 
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
-    >>> reg_a = icepyx.Query('ATL06', reg_a_bbox, reg_a_dates)
+    >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v004
     ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
@@ -152,16 +150,16 @@ class Query(GenQuery):
 
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
-    >>> reg_a = icepyx.Query('ATL06', reg_a_poly, reg_a_dates)
+    >>> reg_a = Query('ATL06', reg_a_poly, reg_a_dates)
     >>> reg_a.spatial_extent
     ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]]
 
     Initializing Query with a geospatial polygon file.
     # todo: create small example polygon
-    >>> aoi = '../../examples/supporting_files/data-access_PineIsland/glims_polygons.shp'
-    >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a = icepyx.Query('ATL06', aoi, reg_a_dates)
-    >>> print(reg_a)
+    # >>> aoi = '../../examples/supporting_files/data-access_PineIsland/glims_polygons.shp'
+    # >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    # >>> reg_a = Query('ATL06', aoi, reg_a_dates)
+    # >>> print(reg_a)
     Product ATL06 v004
     ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
     Date range ['2019-02-22', '2019-02-28']
@@ -268,7 +266,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> discussion point icepyx.query.Query versus Query (in vscode, test suite can't find icepyx...)
+        discussion point icepyx.query.Query versus Query (in vscode, test suite can't find icepyx...)
         >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product
         'ATL06'
@@ -303,32 +301,26 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> import icepyx
 
         # Note: coordinates returned as float, not int
         # todo: these doctests fail because formatting is off
-        >>> reg_a = icepyx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
-        ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
+        ('bounding box', [-55.0, 68.0, -48.0, 71.0])
 
-        >>> reg_a = icepyx.Query('ATL06',[(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
+        >>> reg_a = Query('ATL06',[(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
-        ['polygon', ([-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0])]
+        ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
         """
 
         if self.extent_type == "bounding_box":
-            return ["bounding box", self._spat_extent]
+            return ("bounding box", self._spat_extent)
         elif self.extent_type == "polygon":
             # return ['polygon', self._spat_extent]
             # Note: self._spat_extent is a shapely geometry object
-            # todo: format lon&lat values in the return string e.g. ([lon1, lon2, lon3], [lat1, lat2, lat3])
-            coords = self._spat_extent.exterior.coords.xy
-            lons = np.array(coords[0])
-            lats = coords[1]
-            # format coords
-            return ["polygon", lons, lats]
+            return ('polygon', self._spat_extent.exterior.coords.xy)
         else:
-            return ["unknown spatial type", None]
+            return ("unknown spatial type", None)
 
     @property
     def dates(self):

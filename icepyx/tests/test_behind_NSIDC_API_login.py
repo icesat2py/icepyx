@@ -1,5 +1,6 @@
 import icepyx as ipx
-import icepyx.core.Earthdata as Earthdata
+from icepyx.core.Earthdata import Earthdata as Earthdata
+import os
 import pytest
 import warnings
 

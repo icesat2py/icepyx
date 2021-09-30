@@ -424,7 +424,7 @@ class Parameters:
             May include optional keyword arguments to be passed to the subsetter. Valid keywords
             are time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
 
-            Keyword argument inputs for 'CMR' may include: dataset, version, start, end, extent_type, spatial_extent
+            Keyword argument inputs for 'CMR' may include: dataset (data product), version, start, end, extent_type, spatial_extent
             Keyword argument inputs for 'required' may include: page_size, page_num, request_mode, include_meta, client_string
             Keyword argument inputs for 'subset' may include: geom_filepath, start, end, extent_type, spatial_extent
 
@@ -477,13 +477,13 @@ class Parameters:
                         assert self._fmted_keys[key]
                     else:
                         if key == "short_name":
-                            self._fmted_keys.update({key: kwargs["dataset"]})
+                            self._fmted_keys.update({key: kwargs["product"]})
                         elif key == "version":
                             self._fmted_keys.update({key: kwargs["version"]})
 
                 for key in opt_keys:
                     if key == "Coverage" and key in kwargs.keys():
-                        # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+                        # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that product without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
                         self._fmted_keys.update(
                             {key: _fmt_var_subset_list(kwargs[key])}
                         )

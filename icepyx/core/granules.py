@@ -186,7 +186,9 @@ class Granules:
                 CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
             )
             response = requests.get(
-                granule_search_url, headers=headers, params=apifmt.to_string(params),
+                granule_search_url,
+                headers=headers,
+                params=apifmt.to_string(params),
             )
 
             try:
@@ -525,7 +527,7 @@ class Granules:
                     "Unable to download ", order, ". Check granule order for messages."
                 )
             # DevGoal: move this option back out to the is2class level and implement it in an alternate way?
-            #         #Note: extract the dataset to save it locally
+            #         #Note: extract the data to save it locally
             else:
                 with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
                     for zfile in z.filelist:

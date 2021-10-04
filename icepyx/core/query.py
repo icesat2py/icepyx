@@ -311,6 +311,10 @@ class Query(GenQuery):
         >>> reg_a = Query('ATL06',[(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
         ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
+
+        # NOTE Is this where we wanted to put the file-based test/example?
+        # The test file path is: examples/supporting_files/simple_test_poly.gpkg
+
         """
 
         if self.extent_type == "bounding_box":
@@ -318,7 +322,7 @@ class Query(GenQuery):
         elif self.extent_type == "polygon":
             # return ['polygon', self._spat_extent]
             # Note: self._spat_extent is a shapely geometry object
-            return ('polygon', self._spat_extent.exterior.coords.xy)
+            return ("polygon", self._spat_extent.exterior.coords.xy)
         else:
             return ("unknown spatial type", None)
 

@@ -10,7 +10,8 @@ Some include longer analysis workflows and showcase some best-practices.
 Example Notebooks
 -----------------
 
-```{toc-tree}
+```{eval-rst}
+.. toctree::
   example_notebooks/ICESat-2_DAAC_DataAccess_Example
   example_notebooks/ICESat-2_DAAC_DataAccess2_Subsetting
   example_notebooks/ICESat-2_Data_Visualization_Example

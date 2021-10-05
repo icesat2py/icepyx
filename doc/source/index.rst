@@ -15,16 +15,14 @@ icepyx is both a software library and a community composed of ICESat-2 data user
 
    getting_started/origin_purpose
    getting_started/install
-   getting_started/example_link
+   getting_started/examples
    getting_started/citation_link
 
 .. toctree::
    :maxdepth: 2
    :hidden:
    :caption: User Guide
-
-   example_notebooks/ICESat-2_DAAC_DataAccess_Example
-   example_notebooks/ICESat-2_Data_Visualization_Example
+   
    user_guide/documentation/icepyx
    user_guide/changelog/index
 

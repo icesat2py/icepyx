@@ -33,8 +33,8 @@ copyright = "2019-{}, The icepyx Developers".format(year)
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.napoleon",
+    "numpydoc",
+    # "sphinx.ext.autosummary",
     "myst_nb",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
@@ -69,6 +69,7 @@ bibtex_bibfiles = ["tracking/icepyx_pubs.bib"]
 # `path/to/file:heading` instead of just `heading`
 autosectionlabel_prefix_document = True
 autosummary_generate = True
+numpydoc_show_class_members = False
 jupyter_execute_notebooks = "off"
 
 # -- Options for HTML output -------------------------------------------------

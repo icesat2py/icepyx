@@ -2,7 +2,7 @@ gitpython
 linkify-it-py
 myst-nb
 nbsphinx
+numpydoc
 pybtex
 pygithub
-sphinx_rtd_theme
 sphinxcontrib-bibtex

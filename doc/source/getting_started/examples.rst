@@ -11,6 +11,7 @@ Example Notebooks
 -----------------
 
 .. toctree::
+   :maxdepth: 2
 
    ../../../examples/ICESat-2_DAAC_DataAccess_Example
    example_notebooks/ICESat-2_DAAC_DataAccess2_Subsetting

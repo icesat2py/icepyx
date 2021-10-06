@@ -21,7 +21,7 @@ jobs:
         BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
         CONTENT_REPO: ${{github.event.pull_request.head.repo.full_name}}
       with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
+        github-token: ${{secrets.TRAFFIC_ACTION_TOKEN}}
         script: |
           var BRANCH_NAME = process.env.BRANCH_NAME;
           var CONTENT_REPO = process.env.CONTENT_REPO;

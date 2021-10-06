@@ -16,12 +16,12 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Comment on PR with Binder link
-      uses: actions/github-script@v3
+      uses: actions/github-script@v5
       env:
         BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
         CONTENT_REPO: ${{github.event.pull_request.head.repo.full_name}}
       with:
-        github-token: ${{secrets.TRAFFIC_ACTION_TOKEN}}
+        github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
           var BRANCH_NAME = process.env.BRANCH_NAME;
           var CONTENT_REPO = process.env.CONTENT_REPO;

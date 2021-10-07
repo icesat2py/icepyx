@@ -13,9 +13,6 @@ jobs:
   add-badge:
     runs-on: ubuntu-20.04
     steps:
-    - name: Checkout PR
-      uses: actions/checkout@v2
-
     - name: Comment on PR with Binder link
       uses: actions/github-script@v5
       env:

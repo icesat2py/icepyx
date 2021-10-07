@@ -2,7 +2,6 @@
 
 name: AddBinderBadge
 on:
-  push:
   pull_request_target:
     # since we're using nbgitpuller, only create the badge when PR opened
     types: [opened]

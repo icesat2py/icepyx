@@ -7,8 +7,7 @@ on:
   pull_request_target:
     # since we're using nbgitpuller, only create the badge when PR opened
     types: [opened]
-    paths:
-      - 'examples/*'
+
 jobs:
   add-badge:
     runs-on: ubuntu-20.04

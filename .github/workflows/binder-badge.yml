@@ -10,7 +10,9 @@ on:
 
 jobs:
   add-badge:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
     - name: Comment on PR with Binder link
       uses: actions/github-script@v5

@@ -18,9 +18,11 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
+          var GITHUB_HEAD_REF = $GITHUB_HEAD_REF;
+          var GITHUB_REPOSITORY = $GITHUB_REPOSITORY;
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/icesat2py/icepyx/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252F${$GITHUB_REPOSITORY}%26urlpath%3Dlab%252Ftree%252Ficepyx%252Fexamples%252F%26branch%3D${$GITHUB_HEAD_REF}) :point_left: Launch a binder notebook on this branch`
+            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/icesat2py/icepyx/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252F${GITHUB_REPOSITORY}%26urlpath%3Dlab%252Ftree%252Ficepyx%252Fexamples%252F%26branch%3D${GITHUB_HEAD_REF}) :point_left: Launch a binder notebook on this branch`
           })

@@ -13,6 +13,14 @@ jobs:
     steps:
     - name: Checkout PR
       uses: actions/checkout@v2
+      run: |
+        echo $GITHUB_HEAD_REF
+        echo $GITHUB_REPOSITORY
+        echo $GITHUB_REF
+        echo $GITHUB_BASE_REF
+        echo ${{ github.head_ref}}
+        echo ${{ github.ref}}
+        echo ${{ github.base_ref}}
 
     - name: Comment on PR with Binder link
       uses: actions/github-script@v5

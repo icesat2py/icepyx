@@ -13,6 +13,7 @@ jobs:
     steps:
     - name: Checkout PR
       uses: actions/checkout@v2
+    - name: print vars
       run: |
         echo $GITHUB_HEAD_REF
         echo $GITHUB_REPOSITORY

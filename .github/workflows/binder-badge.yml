@@ -10,15 +10,16 @@ on:
 jobs:
   add-badge:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    steps:      
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v2
+
     - name: Comment on PR with Binder link
       uses: actions/github-script@v5
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          var GITHUB_REF = ${{ github.base_ref }};
+          var GITHUB_HEAD_REF = github.event.pull_request.head.ref;
           var GITHUB_REPOSITORY = $GITHUB_REPOSITORY;
           github.rest.issues.createComment({
             issue_number: context.issue.number,

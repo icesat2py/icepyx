@@ -132,7 +132,9 @@ class Earthdata:
             session = self._start_session()
 
         except:
-            self.pswd = getpass.getpass("Earthdata Login password: ")
+            # if not using an environmental variable for password
+            if not self.pswd:
+                self.pswd = getpass.getpass("Earthdata Login password: ")
             for i in range(attempts):
                 try:
                     session = self._start_session()

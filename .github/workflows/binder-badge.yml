@@ -14,6 +14,8 @@ jobs:
       run: |
         echo $PR_HEAD_REF
         echo $PR_HEAD_USERREPO
+        echo $GITHUB_HEAD_REF
+        echo $GITHUB_REPOSITORY
       env:
         PR_HEAD_REF: ${{ github.head_ref }}
         PR_HEAD_USERREPO: ${{ github.repository }}

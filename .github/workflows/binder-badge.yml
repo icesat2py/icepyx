@@ -36,6 +36,6 @@ jobs:
             repo: context.repo.repo,
             body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/icesat2py/icepyx/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252F${CONTENT_REPO}%26urlpath%3Dlab%252Ftree%252Ficepyx%252Fexamples%252F%26branch%3D${BRANCH_NAME}) :point_left: Launch a binder notebook on this branch`
           })
-        env:
-          BRANCH_NAME: ${{ github.ref}}
-          CONTENT_REPO: ${{ github.repository }}
+      env:
+        BRANCH_NAME: ${{ github.ref }}
+        CONTENT_REPO: ${{ github.repository }}

@@ -29,7 +29,11 @@ class Earthdata:
     """
 
     def __init__(
-        self, uid, email, capability_url, pswd=os.environ.get('EARTHDATA_PASSWORD'),
+        self,
+        uid,
+        email,
+        capability_url,
+        pswd=os.environ.get("EARTHDATA_PASSWORD"),
     ):
 
         assert isinstance(uid, str), "Enter your login user id as a string"
@@ -128,13 +132,14 @@ class Earthdata:
             session = self._start_session()
 
         except:
+            self.pswd = getpass.getpass("Earthdata Login password: ")
             for i in range(attempts):
                 try:
                     session = self._start_session()
                     break
                 except KeyError:
                     pass
-                if ((i+1) < attempts):
+                if (i + 1) < attempts:
                     self.uid = input("Please re-enter your Earthdata user ID: ")
                     self.pswd = getpass.getpass("Earthdata Login password: ")
             else:

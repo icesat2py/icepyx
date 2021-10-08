@@ -31,7 +31,7 @@ jobs:
       script: pytest icepyx/ --username=$EARTHDATA_USERNAME --password=$EARTHDATA_PASSWORD --email=$EARTHDATA_EMAIL --ignore icepyx/tests/behind_NSIDC_API_login.py
       after_success: codecov
 
-    # - stage: behind Earthdata
-    #   script:
-    #     - export NSIDC_LOGIN=$NSIDC_LOGIN
-    #     - pytest icepyx/tests/behind_NSIDC_API_login.py
+    - stage: behind Earthdata
+      script:
+        - export NSIDC_LOGIN=$NSIDC_LOGIN
+        - pytest icepyx/tests/test_behind_NSIDC_API_login.py

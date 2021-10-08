@@ -1,6 +1,6 @@
 # From: https://github.com/uwhackweek/jupyterbook-template/.github/workflows/binder-badge.yml
 
-name: AddBinderBadge
+name: Binder Badge
 on:
   push:
   workflow_dispatch:
@@ -8,22 +8,20 @@ on:
     types: [opened]
 
 jobs:
-  add-badge:
+  binder:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout PR
-      uses: actions/checkout@v2
-
-    - name: Comment on PR with Binder link
-      uses: actions/github-script@v5
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          var GITHUB_HEAD_REF = github.event.pull_request.head.ref;
-          var GITHUB_REPOSITORY = $GITHUB_REPOSITORY;
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/icesat2py/icepyx/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252F${CONTENT_REPO}%26urlpath%3Dlab%252Ftree%252Ficepyx%252Fexamples%252F%26branch%3D${BRANCH_NAME}) :point_left: Launch a binder notebook on this branch`
-          })
+    - uses: actions/checkout@v2
+    - name: print vars
+      run: |
+        echo $PR_HEAD_REF
+        echo $PR_HEAD_USERREPO
+        echo $GITHUB_HEAD_REF
+        echo $GITHUB_REPOSITORY
+        echo ${{ github.base_ref}}
+        echo ${{ github.head_ref}}
+        echo ${{ github.ref}}
+        echo ${{ github.base_ref}}
+      env:
+        PR_HEAD_REF: ${{ github.head_ref }}
+        PR_HEAD_USERREPO: ${{ github.repository }}

@@ -18,7 +18,7 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          var GITHUB_REF = ${{ github.head_ref }};
+          var GITHUB_REF = ${{ github.base_ref }};
           var GITHUB_REPOSITORY = $GITHUB_REPOSITORY;
           github.rest.issues.createComment({
             issue_number: context.issue.number,

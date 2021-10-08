@@ -14,14 +14,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: print vars
       run: |
-        echo $PR_HEAD_REF
-        echo $PR_HEAD_USERREPO
         echo $GITHUB_HEAD_REF
         echo $GITHUB_REPOSITORY
-        echo ${{ github.base_ref}}
+        echo $GITHUB_REF
+        echo $GITHUB_BASE_REF
         echo ${{ github.head_ref}}
         echo ${{ github.ref}}
         echo ${{ github.base_ref}}
-      env:
-        PR_HEAD_REF: ${{ github.head_ref }}
-        PR_HEAD_USERREPO: ${{ github.repository }}

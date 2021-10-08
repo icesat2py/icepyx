@@ -5,7 +5,6 @@ on:
   push:
   workflow_dispatch:
   pull_request_target:
-    # since we're using nbgitpuller, only create the badge when PR opened
     types: [opened]
 
 jobs:
@@ -16,17 +15,12 @@ jobs:
     steps:
     - name: Comment on PR with Binder link
       uses: actions/github-script@v5
-      env:
-        BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
-        CONTENT_REPO: ${{github.event.pull_request.head.repo.full_name}}
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          var BRANCH_NAME = process.env.BRANCH_NAME;
-          var CONTENT_REPO = process.env.CONTENT_REPO;
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/icesat2py/icepyx/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252F${CONTENT_REPO}%26urlpath%3Dlab%252Ftree%252Ficepyx%252Fexamples%252F%26branch%3D${BRANCH_NAME}) :point_left: Launch a binder notebook on this branch`
+            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/icesat2py/icepyx/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252F${$GITHUB_REPOSITORY}%26urlpath%3Dlab%252Ftree%252Ficepyx%252Fexamples%252F%26branch%3D${$GITHUB_HEAD_REF}) :point_left: Launch a binder notebook on this branch`
           })

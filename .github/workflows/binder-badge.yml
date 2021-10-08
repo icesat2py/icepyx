@@ -12,10 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    steps:
-    - name: Checkout PR
-      uses: actions/checkout@v2
-      
+    steps:      
     - name: Comment on PR with Binder link
       uses: actions/github-script@v5
       with:

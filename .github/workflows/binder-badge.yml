@@ -40,5 +40,4 @@ jobs:
           })
       # NOTE: Setting the vars as env vars is required to make them available within the Comment on PR step
       env:
-        BRANCH_NAME: $GIT_BRANCH
         CONTENT_REPO: ${{ github.repository }}

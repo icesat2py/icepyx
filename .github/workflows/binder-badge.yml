@@ -26,7 +26,7 @@ jobs:
         github-token: ${{secrets.GITHUB_TOKEN}}
         # NOTE: setting the vars for the script (by getting them from the env) makes it cleaner and easier to use them in the url
         script: |
-          var BRANCH_NAME = ${process.env.GITHUB_REF#refs/heads};
+          var BRANCH_NAME = echo ${process.env.GITHUB_REF#refs/heads};
           var CONTENT_REPO = process.env.CONTENT_REPO;
           github.rest.issues.createComment({
             issue_number: context.issue.number,

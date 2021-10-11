@@ -23,6 +23,7 @@ jobs:
       run: |
         echo ${GITHUB_REF#refs/heads/}
         export GIT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+        echo $GIT_BRANCH
 
     - name: Comment on PR with Binder link
       uses: actions/github-script@v5
@@ -30,7 +31,7 @@ jobs:
         github-token: ${{secrets.GITHUB_TOKEN}}
         # NOTE: setting the vars for the script (by getting them from the env) makes it cleaner and easier to use them in the url
         script: |
-          var BRANCH_NAME = process.env.GIT_BRANCH;
+          var BRANCH_NAME = process.env.BRANCH_NAME;
           var CONTENT_REPO = process.env.CONTENT_REPO;
           github.rest.issues.createComment({
             issue_number: context.issue.number,
@@ -40,4 +41,5 @@ jobs:
           })
       # NOTE: Setting the vars as env vars is required to make them available within the Comment on PR step
       env:
+        BRANCH_NAME: ${{ GIT_BRANCH }}
         CONTENT_REPO: ${{ github.repository }}

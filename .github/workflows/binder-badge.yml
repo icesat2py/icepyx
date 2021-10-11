@@ -32,7 +32,7 @@ jobs:
         # NOTE: setting the vars for the script (by getting them from the env) makes it cleaner and easier to use them in the url
         script: |
           console.log(context)
-          var BRANCH_NAME = `${GITHUB_REF.replace("refs/heads", "")}`;
+          var BRANCH_NAME = process.env.GITHUB_REF.replace("refs/heads", "");
           var CONTENT_REPO = process.env.CONTENT_REPO;
           github.rest.issues.createComment({
             issue_number: context.issue.number,

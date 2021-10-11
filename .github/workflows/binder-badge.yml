@@ -3,7 +3,6 @@
 name: AddBinderBadge
 on:
   push:
-  workflow_dispatch:
   pull_request_target:
     types: [opened]
 
@@ -11,19 +10,19 @@ jobs:
   add-badge:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout PR
-      uses: actions/checkout@v2
-    - name: print vars
-      run: |
-        echo ${{ github.head_ref}}
-        echo ${{ github.ref}}
-        echo ${{ github.base_ref}}
-        echo ${GITHUB_REF#refs/heads/}
-    - name: get branch name
-      run: |
-        echo ${GITHUB_REF#refs/heads/}
-        export GIT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
-        echo $GIT_BRANCH
+    # - name: Checkout PR
+    #   uses: actions/checkout@v2
+    # - name: print vars
+    #   run: |
+    #     echo ${{ github.head_ref}}
+    #     echo ${{ github.ref}}
+    #     echo ${{ github.base_ref}}
+    #     echo ${GITHUB_REF#refs/heads/}
+    # - name: get branch name
+    #   run: |
+    #     echo ${GITHUB_REF#refs/heads/}
+    #     export GIT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+    #     echo $GIT_BRANCH
 
     - name: Comment on PR with Binder link
       uses: actions/github-script@v5

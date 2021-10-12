@@ -1,44 +1,57 @@
-# From: https://github.com/uwhackweek/jupyterbook-template/.github/workflows/binder-badge.yml
-
-name: AddBinderBadge
+name: binder-badge
 on:
   push:
   pull_request_target:
-    types: [opened]
 
 jobs:
-  add-badge:
+  badge:
     runs-on: ubuntu-latest
     steps:
-    # - name: Checkout PR
-    #   uses: actions/checkout@v2
-    # - name: print vars
-    #   run: |
-    #     echo ${{ github.head_ref}}
-    #     echo ${{ github.ref}}
-    #     echo ${{ github.base_ref}}
-    #     echo ${GITHUB_REF#refs/heads/}
-    # - name: get branch name
-    #   run: |
-    #     echo ${GITHUB_REF#refs/heads/}
-    #     export GIT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
-    #     echo $GIT_BRANCH
+      - uses: manics/action-binderbadge@main
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          
+# From: https://github.com/uwhackweek/jupyterbook-template/.github/workflows/binder-badge.yml
 
-    - name: Comment on PR with Binder link
-      uses: actions/github-script@v5
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          console.log(context)
-          var BRANCH_NAME = process.env.GITHUB_REF.replace("refs/heads", "");
-          var CONTENT_REPO = process.env.CONTENT_REPO;
-          github.rest.issues.createComment({
-            issue_number: context.payload.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${CONTENT_REPO}/${BRANCH_NAME}?labpath=examples) :point_left: Launch a binder notebook on this branch`
-          })
-      # NOTE: Setting the vars as env vars is required to make them available within the Comment on PR step
-      env:
-        GITHUB_REF: ${{ github.ref }}
-        CONTENT_REPO: ${{ github.repository }}
+# name: AddBinderBadge
+# on:
+#   push:
+#   pull_request_target:
+#     types: [opened]
+
+# jobs:
+#   add-badge:
+#     runs-on: ubuntu-latest
+#     steps:
+#     # - name: Checkout PR
+#     #   uses: actions/checkout@v2
+#     # - name: print vars
+#     #   run: |
+#     #     echo ${{ github.head_ref}}
+#     #     echo ${{ github.ref}}
+#     #     echo ${{ github.base_ref}}
+#     #     echo ${GITHUB_REF#refs/heads/}
+#     # - name: get branch name
+#     #   run: |
+#     #     echo ${GITHUB_REF#refs/heads/}
+#     #     export GIT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+#     #     echo $GIT_BRANCH
+
+#     - name: Comment on PR with Binder link
+#       uses: actions/github-script@v5
+#       with:
+#         github-token: ${{secrets.GITHUB_TOKEN}}
+#         script: |
+#           console.log(context)
+#           var BRANCH_NAME = process.env.GITHUB_REF.replace("refs/heads", "");
+#           var CONTENT_REPO = process.env.CONTENT_REPO;
+#           github.rest.issues.createComment({
+#             issue_number: context.issue.number,
+#             owner: context.repo.owner,
+#             repo: context.repo.repo,
+#             body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${CONTENT_REPO}/${BRANCH_NAME}?labpath=examples) :point_left: Launch a binder notebook on this branch`
+#           })
+#       # NOTE: Setting the vars as env vars is required to make them available within the Comment on PR step
+#       env:
+#         GITHUB_REF: ${{ github.ref }}
+#         CONTENT_REPO: ${{ github.repository }}

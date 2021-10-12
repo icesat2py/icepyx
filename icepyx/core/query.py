@@ -70,8 +70,7 @@ class Query:
         Product cycle, given as a 2 digit string. If no cycle is given, all available
         cycles are used. Example: "04"
     tracks : string or a list of strings, default all available reference ground tracks (RGTs)
-        Dataset track, given as a 4 digit string. If no track is given, all available
-
+        Product track, given as a 4 digit string. If no track is given, all available
         reference ground tracks are used. Example: "0594"
     files : string, default None
         A placeholder for future development. Not used for any purposes yet.

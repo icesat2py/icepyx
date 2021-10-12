@@ -28,16 +28,15 @@ jobs:
       uses: actions/github-script@v5
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
-        # NOTE: setting the vars for the script (by getting them from the env) makes it cleaner and easier to use them in the url
         script: |
           console.log(context)
           var BRANCH_NAME = process.env.GITHUB_REF.replace("refs/heads", "");
           var CONTENT_REPO = process.env.CONTENT_REPO;
           github.rest.issues.createComment({
-            issue_number: context.issue.number,
+            issue_number: context.payload.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${CONTENT_REPO}${BRANCH_NAME}?labpath=examples) :point_left: Launch a binder notebook on this branch`
+            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${CONTENT_REPO}/${BRANCH_NAME}?labpath=examples) :point_left: Launch a binder notebook on this branch`
           })
       # NOTE: Setting the vars as env vars is required to make them available within the Comment on PR step
       env:

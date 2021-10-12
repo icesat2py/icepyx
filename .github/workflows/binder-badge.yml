@@ -1,4 +1,4 @@
-name: binder-badge
+name: AddBinderBadge
 on:
   pull_request_target:
 

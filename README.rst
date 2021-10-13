@@ -11,8 +11,8 @@ icepyx
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=development
-    :target: https://travis-ci.org/icesat2py/icepyx
+.. |Travis Dev Branch Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
+    :target: https://app.travis-ci.com/icesat2py/icepyx
 
 .. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx

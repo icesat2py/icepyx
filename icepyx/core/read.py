@@ -1,6 +1,7 @@
 import fnmatch
 import os
 import warnings
+from numpy import datetime64
 import xarray as xr
 
 import icepyx.core.is2cat as is2cat
@@ -355,14 +356,20 @@ class Read:
                 rgt = ds["rgt"].values[0]
                 cycle = ds["cycle_number"].values[0]
                 try:
-                    is2ds["gran_idx"] = [f"{rgt:04d}{cycle:02d}"]
+                    is2ds["gran_idx"] = [int(f"{rgt:04d}{cycle:02d}")]
                 except NameError:
                     import random, warnings
 
-                    is2ds["gran_idx"] = [str(random.randint(900000, 999999))]
+                    is2ds["gran_idx"] = [random.randint(900000, 999999)]
                     warnings.warn("Your granule index is made up of random values.")
                     # You must include the orbit/cycle_number and orbit/rgt variables to generate
             except KeyError:
+                pass
+
+            try:
+                is2ds["data_start_utc"] = is2ds.data_start_utc.astype(datetime64)
+                is2ds["data_end_utc"] = is2ds.data_end_utc.astype(datetime64)
+            except AttributeError:
                 pass
 
         else:
@@ -390,6 +397,8 @@ class Read:
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
             )
+            # is2ds['gt'] = is2ds.gt.astype(str)
+
         return is2ds
 
     def load(self):
@@ -457,7 +466,7 @@ class Read:
 
         is2ds = xr.Dataset(
             coords=dict(
-                gran_idx=["999999"],
+                gran_idx=[999999],
                 source_file=(["gran_idx"], [file]),
             ),
             attrs=dict(data_product=self._prod),

@@ -1,33 +1,11 @@
-# From: https://github.com/uwhackweek/jupyterbook-template/.github/workflows/binder-badge.yml
-
 name: AddBinderBadge
 on:
-  push:
   pull_request_target:
-    # since we're using nbgitpuller, only create the badge when PR opened
-    types: [opened]
-    paths:
-      - 'examples/*'
-jobs:
-  add-badge:
-    runs-on: ubuntu-20.04
-    steps:
-    - name: Checkout PR
-      uses: actions/checkout@v2
 
-    - name: Comment on PR with Binder link
-      uses: actions/github-script@v5
-      env:
-        BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
-        CONTENT_REPO: ${{github.event.pull_request.head.repo.full_name}}
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          var BRANCH_NAME = process.env.BRANCH_NAME;
-          var CONTENT_REPO = process.env.CONTENT_REPO;
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/icesat2py/icepyx/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252F${CONTENT_REPO}%26urlpath%3Dlab%252Ftree%252Ficepyx%252Fexamples%252F%26branch%3D${BRANCH_NAME}) :point_left: Launch a binder notebook on this branch`
-          })
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: manics/action-binderbadge@main
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}

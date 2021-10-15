@@ -7,6 +7,7 @@ import json
 import numpy as np
 import os
 import pprint
+import warnings
 from xml.etree import ElementTree as ET
 import zipfile
 
@@ -123,6 +124,11 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
         gran_list.append(gran_dates)
     # AWS s3 url
     if s3urls:
+        warnings.filterwarnings("always")
+        warnings.warn(
+            "You MUST be pre-authenticated by NSIDC as a beta tester to have cloud access to ICESat-2 data",
+            UserWarning,
+        )
         gran_list.append(gran_s3urls)
     # return the list of granule parameters
     return gran_list

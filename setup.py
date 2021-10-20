@@ -10,7 +10,7 @@ EXTRAS_REQUIRE = {
     "viz": ["geoviews >= 1.9.0", "proj", "cartopy >= 0.18.0", "scipy"],
     "cloud": ["s3fs"],
 }
-EXTRAS_REQUIRE["complete"] = sorted(set(sum(EXTRAS_REQUIRE.values(), [])))
+EXTRAS_REQUIRE["complete"] = set(sum(EXTRAS_REQUIRE.values(), []))
 
 setuptools.setup(
     name="icepyx",

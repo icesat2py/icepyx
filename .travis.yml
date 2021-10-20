@@ -12,7 +12,7 @@ before_install:
   - conda info -a
 
 install:
-  - conda create --name icepyx-env --channel conda-forge python=3.7 geos
+  - conda create --name icepyx-env --channel conda-forge python=3.7 proj geos
   - source activate icepyx-env
 
   - pip install -r requirements.txt -r requirements-dev.txt

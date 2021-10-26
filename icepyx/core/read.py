@@ -346,7 +346,7 @@ class Read:
 
             for var in grp_spec_vars:
                 # print(var)
-                is2ds = is2ds.assign({var: ("gran_idx", ds[var])})
+                is2ds = is2ds.assign({var: ("gran_idx", ds[var].data)})
                 # wanted_vars.remove(var) # can't remove the item from the list unless you do it from wanted_groups too
 
             try:
@@ -355,7 +355,7 @@ class Read:
                 try:
                     is2ds["gran_idx"] = [int(f"{rgt:04d}{cycle:02d}")]
                 except NameError:
-                    import random, warnings
+                    import random
 
                     is2ds["gran_idx"] = [random.randint(900000, 999999)]
                     warnings.warn("Your granule index is made up of random values.")
@@ -364,6 +364,13 @@ class Read:
                 pass
 
             try:
+                # DevNote: these lines cause a NumPy Warning, as explained here: https://numpy.org/doc/stable/release/1.11.0-notes.html?
+                # For now I'm going to silence this warning...
+                import numpy as np
+
+                warnings.filterwarnings(
+                    "default", category=DeprecationWarning, module=np.astype()
+                )
                 is2ds["data_start_utc"] = is2ds.data_start_utc.astype(datetime64)
                 is2ds["data_end_utc"] = is2ds.data_end_utc.astype(datetime64)
             except AttributeError:

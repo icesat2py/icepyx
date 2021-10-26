@@ -1,7 +1,8 @@
 import fnmatch
 import os
 import warnings
-from numpy import datetime64
+
+import numpy as np
 import xarray as xr
 
 import icepyx.core.is2cat as is2cat
@@ -354,7 +355,7 @@ class Read:
                 rgt = ds["rgt"].values[0]
                 cycle = ds["cycle_number"].values[0]
                 try:
-                    is2ds["gran_idx"] = [int(f"{rgt:04d}{cycle:02d}")]
+                    is2ds["gran_idx"] = [np.uint64(f"{rgt:04d}{cycle:02d}")]
                 except NameError:
                     import random
 
@@ -372,8 +373,8 @@ class Read:
                 warnings.filterwarnings(
                     "default", category=DeprecationWarning, module=np.astype()
                 )
-                is2ds["data_start_utc"] = is2ds.data_start_utc.astype(datetime64)
-                is2ds["data_end_utc"] = is2ds.data_end_utc.astype(datetime64)
+                is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
+                is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
             except AttributeError:
                 pass
 
@@ -471,7 +472,7 @@ class Read:
 
         is2ds = xr.Dataset(
             coords=dict(
-                gran_idx=[999999],
+                gran_idx=[np.uint64(999999)],
                 source_file=(["gran_idx"], [file]),
             ),
             attrs=dict(data_product=self._prod),

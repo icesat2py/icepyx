@@ -19,9 +19,10 @@ def _check_datasource(filepath):
     Then, validate the inputs (for those on the local system; s3 sources are not validated currently)
     """
 
+    from pathlib import Path
+
     import fsspec
     from fsspec.implementations.local import LocalFileSystem
-    from pathlib import Path
 
     source_types = ["is2_local", "is2_s3"]
 

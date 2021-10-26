@@ -66,6 +66,17 @@ def build_catalog(
 
     Parameters
     ----------
+    data_source : string
+        A string with a full file path or full directory path to ICESat-2 hdf5 (.h5) format files.
+        Files within a directory must have a consistent filename pattern that includes the "ATL??" data product name.
+        Files must all be within a single directory.
+
+    path_pattern : string
+        String that shows the filename pattern as required for Intake's path_as_pattern argument.
+
+    source_type : string
+        String to use as the Local Catalog Entry name.
+
     grp_paths : str, default None
         Variable paths to load.
         Can include general parameter names, which must be contained within double curly brackets and further
@@ -89,6 +100,10 @@ def build_catalog(
     Returns
     -------
     intake.catalog.Catalog object
+
+    See Also
+    --------
+    read.Read
 
     """
     from intake.catalog.local import LocalCatalogEntry, UserParameter

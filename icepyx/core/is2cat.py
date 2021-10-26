@@ -16,7 +16,7 @@ def _pattern_to_glob(pattern):
 
     Returns
     -------
-    glob : str
+    glob_path : str
         Path with int format strings replaced with the proper number of '?' and '*' otherwise.
 
     Examples
@@ -36,19 +36,19 @@ def _pattern_to_glob(pattern):
         return pattern
 
     fmt = Formatter()
-    glob = ""
+    glob_path = ""
     # prev_field_name = None
-    for literal_text, field_name, format_specs, _ in fmt.parse(pattern):
-        glob += literal_text
-        if field_name and (glob[-1] != "*"):
+    for literal_text, field_name, format_specs, _ in fmt.parse(format_string=pattern):
+        glob_path += literal_text
+        if field_name and (glob_path != "*"):
             try:
-                glob += "?" * int(format_specs)
+                glob_path += "?" * int(format_specs)
             except ValueError:
-                glob += "*"
+                glob_path += "*"
                 # alternatively, you could use bits=utils._get_parts_of_format_string(resolved_string, literal_texts, format_specs)
                 # and then use len(bits[i]) to get the length of each format_spec
-    # print(glob)
-    return glob
+    # print(glob_path)
+    return glob_path
 
 
 def build_catalog(

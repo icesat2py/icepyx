@@ -233,9 +233,6 @@ class Read:
         Print a generic ICESat-2 Intake catalog.
         This catalog does not specify groups, so it cannot be used to read in data.
 
-        Examples
-        --------
-        >>>
         """
         if not hasattr(self, "_is2catalog") and hasattr(self, "_catalog_path"):
             from intake import open_catalog

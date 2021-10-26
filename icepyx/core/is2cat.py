@@ -23,7 +23,7 @@ def _pattern_to_glob(pattern):
     --------
     >>> _pattern_to_glob('{year}/{month}/{day}.csv')
     '*/*/*.csv'
-     >>> _pattern_to_glob('{year:4}/{month:2}/{day:2}.csv')
+    >>> _pattern_to_glob('{year:4}/{month:2}/{day:2}.csv')
     '????/??/??.csv'
     >>> _pattern_to_glob('data/{year:4}{month:02}{day:02}.csv')
     'data/????????.csv'

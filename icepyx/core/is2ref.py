@@ -1,7 +1,9 @@
-import warnings
-import requests
-from xml.etree import ElementTree as ET
 import json
+import numpy as np
+import requests
+import warnings
+from xml.etree import ElementTree as ET
+
 
 import icepyx
 
@@ -257,7 +259,7 @@ def gt2spot(gt, sc_orient):
 
     assert gt in ["gt1l", "gt1r", " gt2l", "gt2r", "gt3l", "gt3r"]
 
-    gr_num = int(gt[2])
+    gr_num = np.uint8(gt[2])
     gr_lr = gt[3]
 
     if sc_orient == 1:
@@ -297,4 +299,4 @@ def gt2spot(gt, sc_orient):
     if "spot" not in locals():
         raise ValueError("Could not compute the spot number.")
 
-    return spot
+    return np.uint8(spot)

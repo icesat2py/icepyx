@@ -368,8 +368,6 @@ class Read:
             try:
                 # DevNote: these lines cause a NumPy Warning, as explained here: https://numpy.org/doc/stable/release/1.11.0-notes.html?
                 # For now I'm going to silence this warning...
-                import numpy as np
-
                 warnings.filterwarnings(
                     "default", category=DeprecationWarning, module=np.astype()
                 )
@@ -394,16 +392,19 @@ class Read:
                 ds.reset_coords(drop=False)
                 .expand_dims(["spot", "gran_idx"])
                 .assign_coords(spot=("spot", [spot]))
-                .assign_coords(gt=(("gran_idx", "spot"), [[gt_str]]))
+                .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
             )
 
             # print(ds)
-            # print(ds[grp_spec_vars])
-
+            grp_spec_vars.append("gt")
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
             )
-            # is2ds['gt'] = is2ds.gt.astype(str)
+            # print(is2ds)
+
+            # re-cast some dtypes to make array smaller
+            is2ds["gt"] = is2ds.gt.astype(str)
+            is2ds["spot"] = is2ds.spot.astype(np.uint8)
 
         return is2ds
 

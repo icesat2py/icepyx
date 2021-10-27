@@ -256,7 +256,7 @@ class Read:
     @property
     def vars(self):
         """
-        Return the to read in variables object.
+        Return the variables object associated with the data being read in.
         This instance is generated from the source file or first file in a list of input files (when source is a directory).
 
         See Also
@@ -265,7 +265,7 @@ class Read:
 
         Examples
         --------
-        >>> reader =
+        >>> reader = ipx.Read(path_root, "ATL06", pattern)
         >>> reader.vars
         <icepyx.core.variables.Variables at [location]>
         """
@@ -307,7 +307,7 @@ class Read:
         elif isinstance(source, list):
             if all(source.startswith("s3://")):
                 return True, source
-        # else:
+
         return False, None
 
     @staticmethod
@@ -344,12 +344,9 @@ class Read:
                 for i, x in enumerate(wanted_groups_tiered[0])
                 if x == grp_path
             ]
-            # print(grp_spec_vars)
 
             for var in grp_spec_vars:
-                # print(var)
                 is2ds = is2ds.assign({var: ("gran_idx", ds[var].data)})
-                # wanted_vars.remove(var) # can't remove the item from the list unless you do it from wanted_groups too
 
             try:
                 rgt = ds["rgt"].values[0]
@@ -501,18 +498,7 @@ class Read:
 
         try:
             grpcat = is2cat.build_catalog(
-                file,
-                self._pattern,
-                self._source_type,
-                grp_paths=grp_path
-                # grp_paths = "/orbit_info"
-                # grp_paths = "/{{beam}}/land_ice_segments",
-                # grp_path_params = [{"name": "beam",
-                #                     "description": "Beam Number",
-                #                     "type": "str",
-                #                     "default": "gt1l",
-                #                     "allowed": ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
-                #                 }],
+                file, self._pattern, self._source_type, grp_paths=grp_path
             )
             ds = grpcat[self._source_type].read()
 
@@ -556,7 +542,6 @@ class Read:
         ), "Your product specification does not match the product specification within your files."
         # I think the below method might NOT read the file into memory as the above might?
         # import h5py
-
         # with h5py.File(filepath,'r') as h5pt:
         #     prod_id = h5pt.attrs["identifier_product_type"]
 
@@ -571,60 +556,9 @@ class Read:
         _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
 
         for grp_path in ["orbit_info"] + list(wanted_groups_set):
-            # print(grp_path)
             ds = self._read_single_var(file, grp_path)
             is2ds = Read._add_var_to_ds(
                 is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
             )
 
-        # print(is2ds)
         return is2ds
-
-
-# for piece in grp_path.split("/"):
-#     if piece in ['gt1l', 'gt1r',' gt2l', 'gt2r', 'gt3l', 'gt3r']:
-#         gr_spot = piece
-#     else:
-#         continue
-
-#     import h5py
-#     with h5py.File(file, "r") as fi:
-#         value = fi[grp_path][var]
-
-
-'''
-read.py extra/early dev code
-
-init docstring for using below parse_data_source fn
-data_source : list of strings
-        List of files to read in.
-        May be a list of full file paths, directories, or s3 urls.
-        You can combine file paths and directories, but not local files and s3 urls.
-        Each file to be included must contain the string "ATL".
-
-def _parse_data_source(source):
-    """
-    Determine input source data type (files, directories, or urls)
-    """
-    assert type(source) == list, "You must enter your inputs as a list."
-    # DevGoal: accept Path or string inputs and test for validity 
-    # (see/modify https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py)
-    assert all(type(i) == str for i in source), "One or more of your inputs were not provided as strings."
-    
-    source_path_list = []
-    for item in source:
-        print(item)
-        if os.path.isdir(item):
-            source_path_list.append([f for f in glob.iglob(item+'**/*ATL*', recursive=True) if os.path.isfile(f)])
-        elif fnmatch.fnmatch(item, "*/*ATL*.*"):
-            source_path_list.append(item)
-        else:
-            raise ValueError(f"{item} does not contain the ATLAS sensor string, 'ATL'. Please use filenames that include ATL.")
-        
-    
-    # source_type = type(source)
-    # assert source_type
-    return source_path_list
-
-
-'''

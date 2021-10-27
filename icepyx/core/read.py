@@ -390,7 +390,7 @@ class Read:
 
             ds = (
                 ds.reset_coords(drop=False)
-                .expand_dims(["spot", "gran_idx"])
+                .expand_dims(dim=["spot", "gran_idx"])
                 .assign_coords(spot=("spot", [spot]))
                 .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
             )

@@ -387,14 +387,14 @@ class Query:
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.reqparams
-        {'page_size': 10, 'page_num': 1}
+        {'page_size': 2000, 'page_num': 1}
 
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.order_granules()
         >>> reg_a.reqparams
-        {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
+        {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
         if not hasattr(self, "_reqparams"):

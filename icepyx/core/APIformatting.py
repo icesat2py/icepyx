@@ -441,7 +441,7 @@ class Parameters:
             else:
                 reqkeys = self.poss_keys[self._reqtype]
                 defaults = {
-                    "page_size": 10,
+                    "page_size": 2000,
                     "page_num": 1,
                     "request_mode": "async",
                     "include_meta": "Y",

@@ -28,7 +28,7 @@ stages:
 jobs:
   include:
     - stage: basic tests
-      script: pytest icepyx/ --ignore icepyx/tests/test_behind_NSIDC_API_login.py
+      script: pytest icepyx/ --verbose --ignore icepyx/tests/test_behind_NSIDC_API_login.py
       after_success: codecov
 
     - stage: behind Earthdata

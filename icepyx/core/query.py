@@ -387,14 +387,14 @@ class Query:
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.reqparams
-        {'page_size': 10, 'page_num': 1}
+        {'page_size': 2000, 'page_num': 1}
 
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.order_granules()
         >>> reg_a.reqparams
-        {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
+        {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
         if not hasattr(self, "_reqparams"):
@@ -812,7 +812,7 @@ class Query:
 
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(self, verbose=False, subset=True, email=True, **kwargs):
+    def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
         """
         Place an order for the available granules for the query object.
 
@@ -827,7 +827,7 @@ class Query:
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email: boolean, default True
+        email: boolean, default False
             Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.

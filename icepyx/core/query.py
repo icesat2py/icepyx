@@ -71,7 +71,8 @@ class GenQuery:
         )
 
         # valiidate and init temporal constraints
-        self._start, self._end = val.temporal(date_range, start_time, end_time)
+        if date_range:
+            self._start, self._end = val.temporal(date_range, start_time, end_time)
 
 
 # DevGoal: update docs throughout to allow for polygon spatial extent

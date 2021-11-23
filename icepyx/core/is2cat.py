@@ -1,7 +1,7 @@
 from intake.catalog import Catalog
 
 # Need to post on intake's page to see if this would be a useful contribution...
-# https://github.com/intake/intake/blob/master/intake/source/utils.py#L216
+# https://github.com/intake/intake/blob/0.6.4/intake/source/utils.py#L216
 def _pattern_to_glob(pattern):
     """
     Adapted from intake.source.utils.path_to_glob to convert a path as pattern into a glob style path

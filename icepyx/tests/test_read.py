@@ -53,12 +53,14 @@ def test_validate_source_str_not_a_dir_or_file():
             "./icepyx/",
             "is2*.py",
             (
-                ["./icepyx/core", "./icepyx/tests"],
-                [
-                    "./icepyx/core/is2cat.py",
-                    "./icepyx/core/is2ref.py",
-                    "./icepyx/tests/is2class_query.py",
-                ],
+                sorted(["./icepyx/core", "./icepyx/tests"]),
+                sorted(
+                    [
+                        "./icepyx/core/is2cat.py",
+                        "./icepyx/core/is2ref.py",
+                        "./icepyx/tests/is2class_query.py",
+                    ]
+                ),
             ),
         ),
         (
@@ -72,7 +74,7 @@ def test_validate_source_str_not_a_dir_or_file():
 def test_check_run_fast_scandir(dir, fn_glob, expect):
 
     (subfolders, files) = read._run_fast_scandir(dir, fn_glob)
-    assert (subfolders, files) == expect
+    assert (sorted(subfolders), sorted(files)) == expect
 
 
 # Best way to test this may be by including a small sample file with the repo (which can be used for testing some of the catalog/read-in functions as well)

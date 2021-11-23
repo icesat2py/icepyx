@@ -363,18 +363,18 @@ class Read:
                 pass
 
             try:
-                # DevNote: these lines cause a NumPy Warning, as explained here: https://numpy.org/doc/stable/release/1.11.0-notes.html?
-                # For now I'm going to silence this warning...
-                warnings.filterwarnings(
-                    "default", category=DeprecationWarning, module=np.astype()
-                )
+                # DevNote: these lines may cause a NumPy Warning, as explained here: https://numpy.org/doc/stable/release/1.11.0-notes.html?
+                # The below line will silence this warning...
+                # warnings.filterwarnings(
+                #     "default", category=DeprecationWarning, module=np.astype()
+                # )
                 is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
                 is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
             except AttributeError:
                 pass
 
         else:
-            import regex as re
+            import re
 
             gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
             spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])

@@ -257,7 +257,14 @@ def _default_varlists(product):
 
 def gt2spot(gt, sc_orient):
 
-    assert gt in ["gt1l", "gt1r", " gt2l", "gt2r", "gt3l", "gt3r"]
+    assert gt in [
+        "gt1l",
+        "gt1r",
+        "gt2l",
+        "gt2r",
+        "gt3l",
+        "gt3r",
+    ], "An invalid ground track was found"
 
     gr_num = np.uint8(gt[2])
     gr_lr = gt[3]

@@ -139,29 +139,27 @@ class Query(GenQuery):
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
-    >>> print(reg_a)
+    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
     Product ATL06 v004
-    ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
+    ('bounding box', [-55.0, 68.0, -48.0, 71.0])
     Date range ['2019-02-20', '2019-02-28']
 
-    # todo: change all doctest outputs with new __str__ functionality
-    # todo: figure out doctests with whitespace (eleiminate newline issues)
     Initializing Query with a list of polygon vertex coordinate pairs.
-
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_poly, reg_a_dates)
-    >>> reg_a.spatial_extent
-    ['polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]]
+    >>> reg_a.spatial_extent # doctest: +NORMALIZE_WHITESPACE
+    ('polygon',
+    (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]),
+    array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
 
     Initializing Query with a geospatial polygon file.
-    # todo: create small example polygon
-    # >>> aoi = '../../examples/supporting_files/data-access_PineIsland/glims_polygons.shp'
-    # >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    # >>> reg_a = Query('ATL06', aoi, reg_a_dates)
-    # >>> print(reg_a)
+    >>> aoi = '../../examples/supporting_files/simple_test_poly.gpkg'
+    >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    >>> reg_a = Query('ATL06', aoi, reg_a_dates)
+    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
     Product ATL06 v004
-    ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
+    ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
     Date range ['2019-02-22', '2019-02-28']
     """
 
@@ -303,7 +301,6 @@ class Query(GenQuery):
         --------
 
         # Note: coordinates returned as float, not int
-        # todo: these doctests fail because formatting is off
         >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
         ('bounding box', [-55.0, 68.0, -48.0, 71.0])

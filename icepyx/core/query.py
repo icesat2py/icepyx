@@ -30,7 +30,7 @@ class GenQuery:
 
     Parameters
     ----------
-    spatial_extent : list or string
+    spatial_extent : list of coordinates or string (i.e. file name)
         Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
         geospatial polygon file.
         Bounding box coordinates should be provided in decimal degrees as
@@ -58,7 +58,32 @@ class GenQuery:
         End time in UTC/Zulu (24 hour clock). If None, use default.
         DevGoal: check for time in date-range date-time object, if that's used for input.
 
-    Todo: Add doctests
+    Init with bounding box
+    >>> reg_a_bbox = [-55, 68, -48, 71]
+    >>> reg_a_dates = ['2019-02-20','2019-02-28']
+    >>> reg_a = GenQuery(reg_a_bbox, reg_a_dates)
+    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
+    Extent type: bounding_box
+    Coordinates: [-55.0, 68.0, -48.0, 71.0]
+    Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
+
+    Initializing Query with a list of polygon vertex coordinate pairs.
+    >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
+    >>> reg_a_dates = ['2019-02-20','2019-02-28']
+    >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
+    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
+    Extent type: polygon
+    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
+
+    Initializing Query with a geospatial polygon file.
+    >>> aoi = '../../examples/supporting_files/simple_test_poly.gpkg'
+    >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    >>> reg_a = GenQuery(aoi, reg_a_dates)
+    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
+    Extent type: polygon
+    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
     """
 
     def __init__(
@@ -74,6 +99,18 @@ class GenQuery:
         if date_range:
             self._start, self._end = val.temporal(date_range, start_time, end_time)
 
+    def __str__(self):
+        """
+        String representation of self. Returns eg.
+
+        Extent type: bounding_box
+        Coordinates: [-55.0, 68.0, -48.0, 71.0]
+        Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
+        """
+        str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
+            self.extent_type, self._spat_extent, self._start, self._end
+        )
+        return str
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
@@ -141,7 +178,7 @@ class Query(GenQuery):
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
     >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
-    Product ATL06 v004
+    Product ATL06 v005
     ('bounding box', [-55.0, 68.0, -48.0, 71.0])
     Date range ['2019-02-20', '2019-02-28']
 
@@ -159,7 +196,7 @@ class Query(GenQuery):
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
-    Product ATL06 v004
+    Product ATL06 v005
     ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
     Date range ['2019-02-22', '2019-02-28']
     """

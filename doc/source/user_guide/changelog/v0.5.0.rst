@@ -43,6 +43,7 @@ Maintenance
 - By default, no email status updates to users when ordering granules (#240)
 - Set default page size for orders to 2000 per NSIDC recommendation (#239)
 - update add and commit GitHub Action version (#244)
+- update citation list and traffic/download data (#245)
 
 
 Documentation

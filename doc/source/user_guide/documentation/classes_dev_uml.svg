@@ -18,7 +18,7 @@
 <text text-anchor="start" x="8" y="-196.3" font-family="Times,serif" font-size="14.00">capability_url</text>
 <text text-anchor="start" x="8" y="-181.3" font-family="Times,serif" font-size="14.00">email</text>
 <text text-anchor="start" x="8" y="-166.3" font-family="Times,serif" font-size="14.00">netrc : NoneType</text>
-<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : str, NoneType</text>
+<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : NoneType, str</text>
 <text text-anchor="start" x="8" y="-136.3" font-family="Times,serif" font-size="14.00">session : Session</text>
 <text text-anchor="start" x="8" y="-121.3" font-family="Times,serif" font-size="14.00">uid</text>
 <polyline fill="none" stroke="black" points="0,-113.5 301,-113.5 "/>
@@ -57,7 +57,7 @@
 <text text-anchor="start" x="742.5" y="-947.3" font-family="Times,serif" font-size="14.00">_geom_filepath : NoneType</text>
 <text text-anchor="start" x="742.5" y="-932.3" font-family="Times,serif" font-size="14.00">_granules</text>
 <text text-anchor="start" x="742.5" y="-917.3" font-family="Times,serif" font-size="14.00">_order_vars</text>
-<text text-anchor="start" x="742.5" y="-902.3" font-family="Times,serif" font-size="14.00">_prod : NoneType, str</text>
+<text text-anchor="start" x="742.5" y="-902.3" font-family="Times,serif" font-size="14.00">_prod : str, NoneType</text>
 <text text-anchor="start" x="742.5" y="-887.3" font-family="Times,serif" font-size="14.00">_readable_granule_name : list</text>
 <text text-anchor="start" x="742.5" y="-872.3" font-family="Times,serif" font-size="14.00">_reqparams</text>
 <text text-anchor="start" x="742.5" y="-857.3" font-family="Times,serif" font-size="14.00">_s3login_credentials</text>
@@ -154,7 +154,7 @@
 <polyline fill="none" stroke="black" points="1022,-234 1275,-234 "/>
 <text text-anchor="start" x="1030" y="-218.8" font-family="Times,serif" font-size="14.00">_fmted_keys : dict, NoneType</text>
 <text text-anchor="start" x="1030" y="-203.8" font-family="Times,serif" font-size="14.00">_poss_keys : dict</text>
-<text text-anchor="start" x="1030" y="-188.8" font-family="Times,serif" font-size="14.00">_reqtype : NoneType, str</text>
+<text text-anchor="start" x="1030" y="-188.8" font-family="Times,serif" font-size="14.00">_reqtype : str, NoneType</text>
 <text text-anchor="start" x="1030" y="-173.8" font-family="Times,serif" font-size="14.00">fmted_keys</text>
 <text text-anchor="start" x="1030" y="-158.8" font-family="Times,serif" font-size="14.00">partype</text>
 <text text-anchor="start" x="1030" y="-143.8" font-family="Times,serif" font-size="14.00">poss_keys</text>
@@ -282,7 +282,7 @@
 <text text-anchor="start" x="2171.5" y="-226.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
 <text text-anchor="start" x="2171.5" y="-211.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
 <text text-anchor="start" x="2171.5" y="-196.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
-<text text-anchor="start" x="2171.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType, str</text>
+<text text-anchor="start" x="2171.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : str, NoneType</text>
 <text text-anchor="start" x="2171.5" y="-166.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
 <polyline fill="none" stroke="black" points="2163.5,-158.5 2679.5,-158.5 "/>
 <text text-anchor="start" x="2171.5" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(query_obj, product, spatial_extent, date_range, cycles, tracks)</text>

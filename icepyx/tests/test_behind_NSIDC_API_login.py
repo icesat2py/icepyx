@@ -18,7 +18,7 @@ def reg(scope="module"):
 @pytest.fixture
 def session(reg, scope="module"):
     return Earthdata(
-        "icepyx_devteam", "icepyx.dev@gmail.com", os.getenv("NSIDC_LOGIN")
+        "icepyx_devteam", "icepyx.dev@gmail.com", capability_url="", pswd=os.getenv("NSIDC_LOGIN")
     )._start_session()
 
 

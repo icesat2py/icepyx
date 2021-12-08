@@ -21,7 +21,6 @@ order by last name) and are considered "The icepyx Developers":
 * `Jessica Scheick <https://github.com/jessicas11>`_ - Unaffiliated (ORCID: `0000-0002-3421-4459 <https://www.orcid.org/0000-0002-3421-4459>`_)
 * `David Shean <https://github.com/dshean>`_ - University of Washington
 * `Ben Smith <https://github.com/smithb>`_ - University of Washington
-* `Trey Stafford <https://github.com/trey-stafford>`_ - NSIDC, University of Colorado
 * `Amy Steiker <https://github.com/asteiker>`_ - NSIDC, University of Colorado
 * `Tyler Sutterley <https://github.com/tsutterley>`_ - University of Washington
 * `Anna Valentine <https://github.com/annavalentine>`_ - Colorado School of Mines

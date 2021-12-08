@@ -1052,13 +1052,13 @@ def test_to_string():
         "temporal": "2019-02-20T00:00:00Z,2019-02-28T23:59:59Z",
         "bounding_box": "-55,68,-48,71",
     }
-    reqparams = {"page_size": 2000, "page_num": 1}
+    reqparams = {"page_size": 10, "page_num": 1}
     params = apifmt.combine_params(CMRparams, reqparams)
     obs = apifmt.to_string(params)
     expected = (
         "short_name=ATL06&version=002"
         "&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z"
-        "&bounding_box=-55,68,-48,71&page_size=2000&page_num=1"
+        "&bounding_box=-55,68,-48,71&page_size=10&page_num=1"
     )
     assert obs == expected
 

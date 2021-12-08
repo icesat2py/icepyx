@@ -6,16 +6,6 @@ import icepyx.core.is2ref as is2ref
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 
-
-def list_of_dict_vals(input_dict):
-    """
-    Create a single list of the values from a dictionary.
-    """
-    wanted_list = []
-    [wanted_list.append(val) for vals in input_dict.values() for val in vals]
-    return wanted_list
-
-
 # REFACTOR: class needs better docstrings
 # DevNote: currently this class is not tested
 class Variables:
@@ -106,20 +96,7 @@ class Variables:
                 )["variables"]
 
             elif self._vartype == "file":
-                import h5py
-
-                self._avail = []
-
-                def visitor_func(name, node):
-                    if isinstance(node, h5py.Group):
-                        # node is a Group
-                        pass
-                    else:
-                        # node is a Dataset
-                        self._avail.append(name)
-
-                with h5py.File(self.path, "r") as h5f:
-                    h5f.visititems(visitor_func)
+                self._avail = None
 
         if options == True:
             vgrp, paths = self.parse_var_list(self._avail)
@@ -135,19 +112,9 @@ class Variables:
             return self._avail
 
     @staticmethod
-    def parse_var_list(varlist, tiered=True):
+    def parse_var_list(varlist):
         """
         Parse a list of path strings into tiered lists and names of variables
-
-        Parameters
-        ----------
-        varlist : list of strings
-            List of full variable paths to be parsed.
-
-        tiered : boolean, default True
-            Whether to return the paths (sans variable name) as a nested list of component strings
-            (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments']])
-            or a single list of path strings (e.g. ['orbit_info','ancillary_data','gt1l/land_ice_segments'])
 
         Examples
         --------
@@ -210,12 +177,9 @@ class Variables:
 
         # create a dictionary of variable names and paths
         vgrp = {}
-        if tiered == False:
-            paths = []
-        else:
-            num = np.max([v.count("/") for v in varlist])
-            #         print('max needed: ' + str(num))
-            paths = [[] for i in range(num)]
+        num = np.max([v.count("/") for v in varlist])
+        #         print('max needed: ' + str(num))
+        paths = [[] for i in range(num)]
 
         # print(self._cust_options['variables'])
         for vn in varlist:
@@ -227,16 +191,13 @@ class Variables:
                 vgrp[vkey].append(vn)
 
             if vpath:
-                if tiered == False:
-                    paths.append(vpath)
-                else:
-                    j = 0
-                    for d in vpath.split("/"):
-                        paths[j].append(d)
-                        j = j + 1
-                    for i in range(j, num):
-                        paths[i].append("none")
-                        i = i + 1
+                j = 0
+                for d in vpath.split("/"):
+                    paths[j].append(d)
+                    j = j + 1
+                for i in range(j, num):
+                    paths[i].append("none")
+                    i = i + 1
 
         return vgrp, paths
 
@@ -447,27 +408,17 @@ class Variables:
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
         # add the mandatory variables to the data object
-        if self._vartype == "order":
-            nec_varlist = [
-                "sc_orient",
-                "sc_orient_time",
-                "atlas_sdp_gps_epoch",
-                "data_start_utc",
-                "data_end_utc",
-                "granule_start_utc",
-                "granule_end_utc",
-                "start_delta_time",
-                "end_delta_time",
-            ]
-        elif self._vartype == "file":
-            nec_varlist = [
-                "sc_orient",
-                "atlas_sdp_gps_epoch",
-                "cycle_number",
-                "rgt",
-                "data_start_utc",
-                "data_end_utc",
-            ]
+        nec_varlist = [
+            "sc_orient",
+            "sc_orient_time",
+            "atlas_sdp_gps_epoch",
+            "data_start_utc",
+            "data_end_utc",
+            "granule_start_utc",
+            "granule_end_utc",
+            "start_delta_time",
+            "end_delta_time",
+        ]
 
         if not hasattr(self, "wanted") or self.wanted == None:
             for varid in nec_varlist:

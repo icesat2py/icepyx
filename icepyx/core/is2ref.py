@@ -1,9 +1,6 @@
-import json
-import numpy as np
 import requests
-import warnings
 from xml.etree import ElementTree as ET
-
+import json
 
 import icepyx
 
@@ -253,57 +250,3 @@ def _default_varlists(product):
             "THE REQUESTED PRODUCT DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUTDE, AND LONGITUDE WILL BE RETURNED"
         )
         return common_list
-
-
-def gt2spot(gt, sc_orient):
-
-    assert gt in [
-        "gt1l",
-        "gt1r",
-        "gt2l",
-        "gt2r",
-        "gt3l",
-        "gt3r",
-    ], "An invalid ground track was found"
-
-    gr_num = np.uint8(gt[2])
-    gr_lr = gt[3]
-
-    if sc_orient == 1:
-        if gr_num == 1:
-            if gr_lr == "l":
-                spot = 2
-            elif gr_lr == "r":
-                spot = 1
-        elif gr_num == 2:
-            if gr_lr == "l":
-                spot = 4
-            elif gr_lr == "r":
-                spot = 3
-        elif gr_num == 3:
-            if gr_lr == "l":
-                spot = 6
-            elif gr_lr == "r":
-                spot = 5
-
-    elif sc_orient == 0:
-        if gr_num == 1:
-            if gr_lr == "l":
-                spot = 5
-            elif gr_lr == "r":
-                spot = 6
-        elif gr_num == 2:
-            if gr_lr == "l":
-                spot = 3
-            elif gr_lr == "r":
-                spot = 4
-        elif gr_num == 3:
-            if gr_lr == "l":
-                spot = 1
-            elif gr_lr == "r":
-                spot = 2
-
-    if "spot" not in locals():
-        raise ValueError("Could not compute the spot number.")
-
-    return np.uint8(spot)

@@ -387,14 +387,14 @@ class Query:
         --------
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.reqparams
-        {'page_size': 2000, 'page_num': 1}
+        {'page_size': 10, 'page_num': 1}
 
         >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.order_granules()
         >>> reg_a.reqparams
-        {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
+        {'page_size': 10, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
         if not hasattr(self, "_reqparams"):
@@ -699,7 +699,7 @@ class Query:
     # ----------------------------------------------------------------------
     # Methods - Login and Granules (NSIDC-API)
 
-    def earthdata_login(self, uid, email, s3token=False):
+    def earthdata_login(self, uid, email):
         """
         Log in to NSIDC EarthData to access data. Generates the needed session and token for most
         data searches and data ordering/download.
@@ -710,8 +710,6 @@ class Query:
             Earthdata login user ID
         email : string
             Email address. NSIDC will automatically send you emails about the status of your order.
-        s3token : boolean, default False
-            Generate AWS s3 ICESat-2 data access credentials
 
         See Also
         --------
@@ -724,36 +722,12 @@ class Query:
         Earthdata Login password:  ········
         """
 
-        if s3token == False:
-            capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml"
-        elif s3token == True:
-
-            def is_ec2():
-                import socket
-
-                try:
-                    socket.gethostbyname("instance-data")
-                    return True
-                except socket.gaierror:
-                    return False
-
-            # loosely check for AWS login capability without web request
-            assert (
-                is_ec2() == True
-            ), "You must be working from a valid AWS instance to use s3 data access"
-            capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
-
+        capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
         self._session = Earthdata(uid, email, capability_url).login()
-
-        # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
-        if s3token == True:
-            self._s3login_credentials = json.loads(
-                self._session.get(self._session.get(capability_url).url).content
-            )
         self._email = email
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self, ids=False, cycles=False, tracks=False, s3urls=False):
+    def avail_granules(self, ids=False, cycles=False, tracks=False):
         """
         Obtain information about the available granules for the query
         object's parameters. By default, a complete list of available granules is
@@ -770,9 +744,6 @@ class Query:
 
         tracks : boolean, default False
             Indicates whether the function should return a list of RGTs.
-
-        s3urls : boolean, default False
-            Indicates whether the function should return a list of potential AWS s3 urls.
 
         Examples
         --------
@@ -798,21 +769,17 @@ class Query:
         except AttributeError:
             self.granules.get_avail(self.CMRparams, self.reqparams)
 
-        if ids or cycles or tracks or s3urls:
-            # list of outputs in order of ids, cycles, tracks, s3urls
+        if ids or cycles or tracks:
+            # list of outputs in order of ids, cycles, tracks
             return granules.gran_IDs(
-                self.granules.avail,
-                ids=ids,
-                cycles=cycles,
-                tracks=tracks,
-                s3urls=s3urls,
+                self.granules.avail, ids=ids, cycles=cycles, tracks=tracks
             )
         else:
             return granules.info(self.granules.avail)
 
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
+    def order_granules(self, verbose=False, subset=True, email=True, **kwargs):
         """
         Place an order for the available granules for the query object.
 
@@ -827,7 +794,7 @@ class Query:
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email: boolean, default False
+        email: boolean, default True
             Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.

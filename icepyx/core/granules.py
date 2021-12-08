@@ -7,7 +7,6 @@ import json
 import numpy as np
 import os
 import pprint
-import warnings
 from xml.etree import ElementTree as ET
 import zipfile
 
@@ -35,7 +34,7 @@ def info(grans):
 
 # DevNote: currently this fn is not tested
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
-def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=False):
+def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False):
     """
     Returns a list of granule information for each granule dictionary in the input list of granule dictionaries.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
@@ -52,12 +51,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
     tracks : boolean, default False
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
     dates : boolean, default False
-        Return a list of the available dates for the granule dictionary.
-    s3urls : boolean, default False
-        Return a a list of AWS s3 urls for the available granules in the granule dictionary.
-        Note: currently, NSIDC does not provide metadata on which granules are available on s3.
-        Thus, all of the urls may not be valid and may return FileNotFoundErrors.
-        s3 data access is currently limited access to beta testers.
+        Return a list of the available dates for the list of granual dictionaries.
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
     # regular expression for extracting parameters from file names
@@ -69,7 +63,6 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
     gran_cycles = []
     gran_tracks = []
     gran_dates = []
-    gran_s3urls = []
     for gran in grans:
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
@@ -105,9 +98,6 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
         gran_dates.append(
             str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
         )
-        gran_s3urls.append(
-            f"s3://nsidc-cumulus-prod-protected/ATLAS/{PRD}/{RL}/{YY}/{MM}/{DD}/{producer_granule_id}"
-        )
     # list of granule parameters
     gran_list = []
     # granule IDs
@@ -122,14 +112,6 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
     # granule date
     if dates:
         gran_list.append(gran_dates)
-    # AWS s3 url
-    if s3urls:
-        warnings.filterwarnings("always")
-        warnings.warn(
-            "You MUST be pre-authenticated by NSIDC as a beta tester to have cloud access to ICESat-2 data",
-            UserWarning,
-        )
-        gran_list.append(gran_s3urls)
     # return the list of granule parameters
     return gran_list
 
@@ -298,6 +280,7 @@ class Granules:
             )
 
         base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
+        # DevGoal: get the base_url from the granules?
 
         self.get_avail(
             CMRparams, reqparams

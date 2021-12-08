@@ -1,6 +1,6 @@
 .. _whatsnew_0x0:
 
-What's new in 0.4.1 (01 December 2021)
+What's new in 0.4.1 (01 October 2021)
 -----------------------------------
 
 These are the changes in icepyx 0.4.1 See :ref:`release` for a full changelog
@@ -30,7 +30,7 @@ Maintenance
 - improved variable naming for clarity and in line with common usage (#211)
 - add tests that require an active NSIDC Earthdata session (#209)
 - update tracking metrics and limit traffic action to parent repo (#221)
-- remove extra code block from example notebook (#225)
+- remove extra code block frome xample notebook (#225)
 
 
 Documentation

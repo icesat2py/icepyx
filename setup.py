@@ -6,10 +6,7 @@ with open("README.rst", "r") as f:
 with open("requirements.txt") as f:
     INSTALL_REQUIRES = f.read().strip().split("\n")
 
-EXTRAS_REQUIRE = {
-    "viz": ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"],
-    "cloud": ["s3fs"],
-}
+EXTRAS_REQUIRE = {"viz": ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"]}
 EXTRAS_REQUIRE["complete"] = sorted(set(sum(EXTRAS_REQUIRE.values(), [])))
 
 setuptools.setup(

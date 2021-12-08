@@ -1,5 +1,6 @@
 name: Update UML diagrams
 on:
+  workflow_dispatch:
   pull_request_review:
     types: [submitted]
 
@@ -23,7 +24,7 @@ jobs:
           rm ./packages_dev_uml.svg
           mv ./*.svg ./doc/source/user_guide/documentation/
       - name: Commit changes
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v4
         with:
           author_name: GitHub Action
           message: "GitHub action UML generation auto-update"

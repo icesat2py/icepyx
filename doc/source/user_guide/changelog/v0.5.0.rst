@@ -1,6 +1,6 @@
 .. _whatsnew_050:
 
-What's new in 0.5.0 (2 December 2021)
+What's new in 0.5.0 (8 December 2021)
 -----------------------------------
 
 These are the changes in icepyx 0.5.0 See :ref:`release` for a full changelog
@@ -17,7 +17,6 @@ New Features
     * add ability to get list of variables from a file
     * add variables example notebook; trim variables module details out of subsetting example
     * update examples from 2020 Hackweek tutorials
-- add github action to add binder badge to PRs (#229 and #233)
 - preliminary AWS access (#213)  
     * add basic cloud data access capabilities
     * add weak check for AWS instance
@@ -38,6 +37,7 @@ Deprecations
 Maintenance
 ^^^^^^^^^^^
 
+- add github action to add binder badge to PRs (#229 and #233)
 - update links for travis badge (#234)
 - changed pytest to run in verbose mode so that it is more clear which parametrized test is failing.
 - By default, no email status updates to users when ordering granules (#240)

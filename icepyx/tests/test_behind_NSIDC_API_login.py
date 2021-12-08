@@ -17,9 +17,9 @@ def reg(scope="module"):
 
 @pytest.fixture
 def session(reg, scope="module"):
-    return Earthdata._start_session(
+    return Earthdata(
         "icepyx_devteam", "icepyx.dev@gmail.com", os.getenv("NSIDC_LOGIN")
-    )
+    )._start_session()
 
 
 ########## is2ref module ##########

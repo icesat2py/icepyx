@@ -3,7 +3,7 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|Documentation Status|  |GitHub license|  |Travis CI Status| |Code Coverage| |Conda install| |Pypi install|
+|Documentation Status|  |GitHub license|  |Travis Dev Branch Build Status| |Code Coverage| |Conda install| |Pypi install|
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
@@ -11,8 +11,8 @@ icepyx
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=development
-    :target: https://travis-ci.org/icesat2py/icepyx
+.. |Travis Dev Branch Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
+    :target: https://app.travis-ci.com/icesat2py/icepyx
 
 .. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx
@@ -63,9 +63,15 @@ Listed below are example jupyter-notebooks
 
 `ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
 
-`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
+`Working_with_ICESat-2_Data_Variables <https://github.com/icesat2py/icepyx/blob/main/examples/Working_with_ICESat-2_Data_Variables.ipynb>`_
 
-`ICESat-2 Data Visualization Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Visualization_Example.ipynb>`_
+`ICESat-2_Data_Visualization_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Visualization_Example.ipynb>`_
+
+`ICESat-2_Data_Read-in_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Read-in_Example.ipynb>`_
+
+`ICESat-2_cloud_data_access_example (BETA ONLY) <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_cloud_data_access_example.ipynb>`_
+
+`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
 
 Citing icepyx
 -------------

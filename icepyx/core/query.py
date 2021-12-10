@@ -62,7 +62,7 @@ class GenQuery:
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = GenQuery(reg_a_bbox, reg_a_dates)
-    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(reg_a)
     Extent type: bounding_box
     Coordinates: [-55.0, 68.0, -48.0, 71.0]
     Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
@@ -71,7 +71,7 @@ class GenQuery:
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
-    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(reg_a)
     Extent type: polygon
     Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
     Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
@@ -80,7 +80,7 @@ class GenQuery:
     >>> aoi = '../../examples/supporting_files/simple_test_poly.gpkg'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = GenQuery(aoi, reg_a_dates)
-    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(reg_a) # doctest:
     Extent type: polygon
     Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
     Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
@@ -111,6 +111,7 @@ class GenQuery:
             self.extent_type, self._spat_extent, self._start, self._end
         )
         return str
+
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
@@ -177,7 +178,7 @@ class Query(GenQuery):
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
-    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(reg_a)
     Product ATL06 v005
     ('bounding box', [-55.0, 68.0, -48.0, 71.0])
     Date range ['2019-02-20', '2019-02-28']
@@ -186,7 +187,7 @@ class Query(GenQuery):
     >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_poly, reg_a_dates)
-    >>> reg_a.spatial_extent # doctest: +NORMALIZE_WHITESPACE
+    >>> reg_a.spatial_extent
     ('polygon',
     (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]),
     array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
@@ -195,7 +196,7 @@ class Query(GenQuery):
     >>> aoi = '../../examples/supporting_files/simple_test_poly.gpkg'
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = Query('ATL06', aoi, reg_a_dates)
-    >>> print(reg_a) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(reg_a)
     Product ATL06 v005
     ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
     Date range ['2019-02-22', '2019-02-28']
@@ -239,14 +240,6 @@ class Query(GenQuery):
         # self.variables = Variables(self._source)
 
         self._prod = is2ref._validate_product(product)
-
-        # moved to GenQuery
-        # self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
-        #     spatial_extent
-        # )
-
-        # moved to GenQuery
-        # self._start, self._end = val.temporal(date_range, start_time, end_time)
 
         super().__init__(spatial_extent, date_range, start_time, end_time)
 
@@ -302,8 +295,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        discussion point icepyx.query.Query versus Query (in vscode, test suite can't find icepyx...)
-        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product
         'ATL06'
         """
@@ -316,11 +308,11 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = ipx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_version
-        '003'
+        '005'
 
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
         >>> reg_a.product_version
         '001'
         """
@@ -369,7 +361,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.dates
         ['2019-02-20', '2019-02-28']
         """
@@ -388,11 +380,11 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.start_time
         '00:00:00'
 
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], start_time='12:30:30')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], start_time='12:30:30')
         >>> reg_a.start_time
         '12:30:30'
         """
@@ -408,11 +400,11 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.end_time
         '23:59:59'
 
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], end_time='10:20:20')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], end_time='10:20:20')
         >>> reg_a.end_time
         '10:20:20'
         """
@@ -428,7 +420,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.cycles
         ['02']
         """
@@ -444,7 +436,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.tracks
         ['0841', '0849', '0902', '0910']
         """
@@ -460,10 +452,10 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.CMRparams
         {'short_name': 'ATL06',
-        'version': '002',
+        'version': '005',
         'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
         'bounding_box': '-55,68,-48,71'}
         """
@@ -504,11 +496,11 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.reqparams
         {'page_size': 2000, 'page_num': 1}
 
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.order_granules()
@@ -543,7 +535,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.subsetparams()
         {'time': '2019-02-20T00:00:00,2019-02-28T23:59:59', 'bbox': '-55,68,-48,71'}
         """
@@ -590,7 +582,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.order_vars
@@ -635,7 +627,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.file_vars
@@ -664,7 +656,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.granules
         <icepyx.core.granules.Granules at [location]>
         """
@@ -686,7 +678,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_summary_info()
         title :  ATLAS/ICESat-2 L3A Land Ice Height V002
         short_name :  ATL06
@@ -716,7 +708,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_all_info()
         {very long prettily-formatted dictionary output}
 
@@ -731,7 +723,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.latest_version()
         '003'
         """
@@ -754,7 +746,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.show_custom_options(dictview=True):
@@ -838,7 +830,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         """
@@ -895,13 +887,13 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.avail_granules()
         {'Number of available granules': 4,
         'Average size of granules (MB)': 48.975419759750004,
         'Total size of all granules (MB)': 195.90167903900002}
 
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.avail_granules(ids=True)
         >>> reg_a.avail_granules(cycles=True)
         ['02']
@@ -961,7 +953,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.order_granules()
@@ -1049,7 +1041,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.earthdata_login(user_id,user_email)
         Earthdata Login password:  ········
         >>> reg_a.download_granules('/path/to/download/folder')
@@ -1087,7 +1079,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> icepyx.query.Query('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
+        >>> ipx.Query('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28'])
         >>> reg_a.visualize_spatial_extent
         [visual map output]
         """

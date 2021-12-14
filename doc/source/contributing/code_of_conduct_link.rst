@@ -1,1 +1,1 @@
-{include} ../../../code_of_conduct.md
+.. include:: ../../../code_of_conduct.md

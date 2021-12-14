@@ -1,1 +1,0 @@
-.. include:: ../../../examples/ICESat-2_DAAC_DataAccess_Example

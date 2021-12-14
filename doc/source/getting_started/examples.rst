@@ -18,5 +18,5 @@ Example Notebooks
    example_notebooks/Working_with_ICESat-2_Data_Variables
    example_notebooks/ICESat-2_Data_Visualization_Example
    example_notebooks/ICESat-2_Data_Read-in_Example
-   example_notebooks/ICESat-2_cloud_data_access_example (BETA ONLY)
+   example_notebooks/ICESat-2_cloud_data_access_example
    example_notebooks/ICESat-2_DEM_comparison_Colombia_working

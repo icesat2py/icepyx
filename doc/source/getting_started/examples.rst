@@ -7,9 +7,6 @@ These examples illustrate how to use icepyx.
 They demonstrate many of the features of this package, including minimal examples to get you started quickly.
 Some include longer analysis workflows and showcase some best-practices.
 
-Example Notebooks
------------------
-
 .. toctree::
    :maxdepth: 1
 

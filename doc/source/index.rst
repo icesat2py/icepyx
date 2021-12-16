@@ -9,7 +9,7 @@ icepyx is both a software library and a community composed of ICESat-2 data user
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :hidden:
    :caption: Getting Started
 

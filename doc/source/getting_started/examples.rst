@@ -8,7 +8,7 @@ They demonstrate many of the features of this package, including minimal example
 Some include longer analysis workflows and showcase some best-practices.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 0
 
    example_notebooks/ICESat-2_DAAC_DataAccess_Example
    example_notebooks/ICESat-2_DAAC_DataAccess2_Subsetting

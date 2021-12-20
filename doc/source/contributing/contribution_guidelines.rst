@@ -6,7 +6,7 @@ Thank you for your interest in contributing to icepyx! We welcome and invite con
 Here we provide a set of guidelines and information for contributing to icepyx. This project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms. |Contributor Covenant|
 
 .. |Contributor Covenant| image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
-   :target: ../../../code_of_conduct.md
+   :target: ../../../../code_of_conduct.md
 
 
 Ways to Contribute

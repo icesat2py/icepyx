@@ -27,12 +27,12 @@ def setup_earthdata():
         os.remove(netrc_file)
 
 
-def capability_url(dataset, version):
+def capability_url(product, version):
     return posixpath.join(
         "https://n5eil02u.ecs.nsidc.org",
         "egi",
         "capabilities",
-        f"{dataset}.{version}.xml",
+        f"{product}.{version}.xml",
     )
 
 
@@ -40,7 +40,7 @@ def test_environment(username, password, email):
     url = capability_url("ATL06", "005")
     netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
     assert not os.access(netrc_file, os.F_OK)
-    assert Earthdata(username, email, url).login(attempts=1)
+    assert Earthdata(username, email, url, password).login(attempts=1)
 
 
 def test_netrc(username, password, email):
@@ -51,7 +51,7 @@ def test_netrc(username, password, email):
         f.write("machine {1} login {0} password {2}\n".format(*args))
         os.chmod(netrc_file, 0o600)
     url = capability_url("ATL06", "005")
-    assert Earthdata(username, email, url).login(attempts=0)
+    assert Earthdata(username, email, url, password).login(attempts=0)
 
 
 class Earthdata:

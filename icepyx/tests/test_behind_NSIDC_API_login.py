@@ -12,7 +12,9 @@ import warnings
 
 @pytest.fixture
 def reg(scope="module"):
-    return ipx.Query("ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"])
+    return ipx.Query(
+        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="004"
+    )
 
 
 @pytest.fixture

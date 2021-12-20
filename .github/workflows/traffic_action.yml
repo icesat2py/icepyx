@@ -41,4 +41,4 @@ jobs:
         message: "GitHub traffic auto-update"
         add: "./doc/source/tracking/traffic/*"
 #         add: "./traffic/*"
-        ref: "traffic"  # commits to branch "traffic"
+        branch: "traffic"  # commits to branch "traffic"

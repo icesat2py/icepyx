@@ -17,8 +17,12 @@ def reg(scope="module"):
 
 @pytest.fixture
 def session(reg, scope="module"):
+    capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
     return Earthdata(
-        "icepyx_devteam", "icepyx.dev@gmail.com", capability_url="", pswd=os.getenv("NSIDC_LOGIN")
+        "icepyx_devteam",
+        "icepyx.dev@gmail.com",
+        capability_url=capability_url,
+        pswd=os.getenv("NSIDC_LOGIN"),
     )._start_session()
 
 

@@ -2,16 +2,14 @@
 """
 test_Earthdata.py (12/2021)
 """
-import os
-import re
-import netrc
-import pytest
-import shutil
 import getpass
-import warnings
+import netrc
+import os
 import posixpath
-
-# from icepyx.core.Earthdata import Earthdata
+import pytest
+import re
+import shutil
+import warnings
 
 # PURPOSE: test different authentication methods
 @pytest.fixture(scope="module", autouse=True)

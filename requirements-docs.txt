@@ -1,4 +1,6 @@
 gitpython
+linkify-it-py
+myst-nb
 nbsphinx
 numpydoc
 pybtex

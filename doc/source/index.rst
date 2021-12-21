@@ -15,14 +15,26 @@ icepyx is both a software library and a community composed of ICESat-2 data user
 
    getting_started/origin_purpose
    getting_started/install
-   getting_started/examples
    getting_started/citation_link
 
 .. toctree::
    :maxdepth: 2
    :hidden:
+   :caption: Examples
+
+   getting_started/example_notebooks/ICESat-2_DAAC_DataAccess_Example
+   getting_started/example_notebooks/ICESat-2_DAAC_DataAccess2_Subsetting
+   getting_started/example_notebooks/Working_with_ICESat-2_Data_Variables
+   getting_started/example_notebooks/ICESat-2_Data_Visualization_Example
+   getting_started/example_notebooks/ICESat-2_Data_Read-in_Example
+   getting_started/example_notebooks/ICESat-2_cloud_data_access_example
+   getting_started/example_notebooks/ICESat-2_DEM_comparison_Colombia_working
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
    :caption: User Guide
-   
+
    user_guide/documentation/icepyx
    user_guide/changelog/index
 
@@ -44,14 +56,13 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    community/resources
    community/contact
    tracking/tracking
-  
+
 **Quick Install**
 
-.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg
     :target: https://anaconda.org/conda-forge/icepyx
-    
+
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx/
-    
-|Conda install| |Pypi install| 
 
+|Conda install| |Pypi install|

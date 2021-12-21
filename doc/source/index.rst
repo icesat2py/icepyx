@@ -104,14 +104,26 @@ ICESat-2 datasets to enable scientific discovery.
 
    getting_started/origin_purpose
    getting_started/install
-   getting_started/examples
    getting_started/citation_link
 
 .. toctree::
    :maxdepth: 2
    :hidden:
+   :caption: Examples
+
+   getting_started/example_notebooks/ICESat-2_DAAC_DataAccess_Example
+   getting_started/example_notebooks/ICESat-2_DAAC_DataAccess2_Subsetting
+   getting_started/example_notebooks/Working_with_ICESat-2_Data_Variables
+   getting_started/example_notebooks/ICESat-2_Data_Visualization_Example
+   getting_started/example_notebooks/ICESat-2_Data_Read-in_Example
+   getting_started/example_notebooks/ICESat-2_cloud_data_access_example
+   getting_started/example_notebooks/ICESat-2_DEM_comparison_Colombia_working
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
    :caption: User Guide
-   
+
    user_guide/documentation/icepyx
    user_guide/changelog/index
 
@@ -133,7 +145,6 @@ ICESat-2 datasets to enable scientific discovery.
    community/resources
    community/contact
    tracking/tracking
-
 
 Icon images from `Flaticon <https://flaticon.com>`_ (by Freepik, Pixel perfect, and Eucalyp) 
 and `NASA <https://www.nasa.gov/>`_.

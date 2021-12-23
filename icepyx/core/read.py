@@ -265,8 +265,8 @@ class Read:
 
         Examples
         --------
-        >>> reader = ipx.Read(path_root, "ATL06", pattern)
-        >>> reader.vars
+        >>> reader = ipx.Read(path_root, "ATL06", pattern) # doctest: +SKIP
+        >>> reader.vars  # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 

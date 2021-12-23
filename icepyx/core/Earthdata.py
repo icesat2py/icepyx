@@ -28,7 +28,11 @@ class Earthdata:
     """
 
     def __init__(
-        self, uid, email, capability_url, pswd=None,
+        self,
+        uid,
+        email,
+        capability_url,
+        pswd=None,
     ):
 
         assert isinstance(uid, str), "Enter your login user id as a string"
@@ -112,7 +116,7 @@ class Earthdata:
 
         Examples
         --------
-        >>> icepyx.core.Earthdata.Earthdata.login('sam.smith','sam.smith@domain.com')
+        >>> ipx.core.Earthdata.Earthdata.login('sam.smith','sam.smith@domain.com') # doctest: +SKIP
         Earthdata Login password:  ········
         """
 

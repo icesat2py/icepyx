@@ -37,3 +37,10 @@ def test_icepyx_boundingbox_query():
     )
 
     assert obs_tuple == exp_tuple
+
+
+# Tests need to add (given can't do them within docstrings/they're behind NSIDC login)
+# reqparams post-order
+# product_all_info
+# show_custom_options
+# any other skipped test in Query...

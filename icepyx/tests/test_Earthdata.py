@@ -10,6 +10,7 @@ import pytest
 import re
 import shutil
 import warnings
+# from icepyx.core.Earthdata import Earthdata
 
 # PURPOSE: test different authentication methods
 @pytest.fixture(scope="module", autouse=True)

@@ -18,8 +18,6 @@ sys.path.insert(0, os.path.abspath("../sphinxext"))
 import datetime
 
 import icepyx
-import recommonmark
-
 
 # -- Project information -----------------------------------------------------
 
@@ -36,16 +34,21 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
     "numpydoc",
-    "nbsphinx",
-    "recommonmark",
+    # "sphinx.ext.autosummary",
+    "myst_nb",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
 ]
+myst_enable_extensions = [
+    "linkify",
+]
 
 source_suffix = {
+    # Note, put .rst first so that API docs are linked properly
     ".rst": "restructuredtext",
-    ".txt": "markdown",
-    ".md": "markdown",
+    ".ipynb": "myst-nb",
+    ".txt": "myst-nb",
+    ".md": "myst-nb",
 }
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -62,9 +65,12 @@ master_doc = "index"
 bibtex_bibfiles = ["tracking/icepyx_pubs.bib"]
 
 # -- Configuration options ---------------------------------------------------
+# Prefix document path to section labels, to use:
+# `path/to/file:heading` instead of just `heading`
+autosectionlabel_prefix_document = True
 autosummary_generate = True
 numpydoc_show_class_members = False
-
+jupyter_execute_notebooks = "off"
 
 # -- Options for HTML output -------------------------------------------------
 

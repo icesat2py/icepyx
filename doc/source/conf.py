@@ -38,6 +38,7 @@ extensions = [
     "myst_nb",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
+    "sphinx_panels",
 ]
 myst_enable_extensions = [
     "linkify",

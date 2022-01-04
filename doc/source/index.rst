@@ -9,13 +9,11 @@ icepyx
 |version badge|
 
 **Quick Links**
-
-`Installation <install_ref>` |
-`Citation <citation>`|
-`Examples <examples>`|
+:ref:`Installation<install_ref>` |
+:ref:`Citation<citation>`|
+:ref:`Examples<examples>`|
 `Source Code <https://github.com/icesat2py/icepyx`__ |
-`Contact <contact_ref_label>`|
-
+:ref:`Contact<contact_ref_label>`
 
 icepyx is both a software library and a community composed of ICESat-2 data users, 
 developers, and the scientific community. 

@@ -9,6 +9,7 @@ icepyx
 |version badge|
 
 **Quick Links**
+
 `Installation <install_ref>` |
 `Citation <citation>`|
 `Examples <examples>`|

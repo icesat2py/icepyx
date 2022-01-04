@@ -1,11 +1,29 @@
 icepyx
 ======
 
-
-
 **Python tools for obtaining and working with ICESat-2 data**
 
-icepyx is both a software library and a community composed of ICESat-2 data users, developers, and the scientific community. We are working together to develop a shared library of resources - including existing resources, new code, tutorials, and use-cases/examples - that simplify the process of querying, obtaining, analyzing, and manipulating ICESat-2 datasets to enable scientific discovery.
+.. |version badge| image:: https://badge.fury.io/gh/icesat2py%2Ficepyx.svg
+    :target: https://badge.fury.io/gh/icesat2py%2Ficepyx
+    
+|version badge|
+
+**Quick Links**
+`Installation <install_ref>` |
+`Citation <citation>`|
+`Examples <examples>`|
+`Source Code <https://github.com/icesat2py/icepyx`__ |
+`Contact <contact_ref_label>`|
+
+
+icepyx is both a software library and a community composed of ICESat-2 data users, 
+developers, and the scientific community. 
+We are working together to develop a shared library of resources - 
+including existing resources, new code, tutorials, and use-cases/examples - 
+that simplify the process of querying, obtaining, analyzing, and manipulating 
+ICESat-2 datasets to enable scientific discovery.
+
+
 
 
 .. toctree::
@@ -44,14 +62,3 @@ icepyx is both a software library and a community composed of ICESat-2 data user
    community/resources
    community/contact
    tracking/tracking
-  
-**Quick Install**
-
-.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
-    :target: https://anaconda.org/conda-forge/icepyx
-    
-.. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
-    :target: https://pypi.org/project/icepyx/
-    
-|Conda install| |Pypi install| 
-

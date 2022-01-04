@@ -1,9 +1,13 @@
-
+.. _install_ref:
 
 
 .. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
 .. _`Fiona`: https://pypi.org/project/Fiona/
-
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
+    :target: https://anaconda.org/conda-forge/icepyx
+    
+.. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
+    :target: https://pypi.org/project/icepyx/
 
 
 Installation
@@ -24,7 +28,7 @@ To activate the virtual environment, you can do::
     conda activate icepyx-env
 
 
-Using conda 
+Using conda |Conda install|
 -----------
 
 If you already have a virtual conda environment set up and activated, you can
@@ -39,7 +43,7 @@ To upgrade an installed version of icepyx to the latest stable release, do::
 
 
 
-Using pip 
+Using pip |Pypi install| 
 ---------
 
 Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__.

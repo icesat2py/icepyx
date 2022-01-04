@@ -5,4 +5,5 @@ nbsphinx
 numpydoc
 pybtex
 pygithub
+sphinx-panels
 sphinxcontrib-bibtex

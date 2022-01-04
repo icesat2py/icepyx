@@ -4,6 +4,5 @@ myst-nb
 nbsphinx
 numpydoc
 pybtex
-pydata-sphinx-theme
 pygithub
 sphinxcontrib-bibtex

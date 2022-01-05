@@ -7,12 +7,14 @@ icepyx     |version badge|
 
 **Python tools for obtaining and working with ICESat-2 data**
 
+Quick Links: 
 :ref:`Installation<install_ref>` |
 :ref:`Citation<citation>` |
 :ref:`Examples<examples>` |
 `Source Code <https://github.com/icesat2py/icepyx>`_ |
 :ref:`Contact<contact_ref_label>`
 
+Quick Links:
 :link-badge:`install_ref,Installation,ref,badge-secondary text-white`
 :link-badge:`citation,Citation,ref,badge-secondary text-white`
 :link-badge:`examples,Examples,ref,badge-secondary text-white`
@@ -29,7 +31,7 @@ ICESat-2 datasets to enable scientific discovery.
 
 .. panels::
     :card: + intro-card text-center
-    :column: col-lg-3 col-md-4 col-sm-8 col-xs-12 p-2
+    :column: col-lg-4 col-md-4 col-sm-8 col-xs-12 p-2
     :img-top-cls: pl-2 pr-2 pt-2 pb-2
 
     ---
@@ -45,6 +47,11 @@ ICESat-2 datasets to enable scientific discovery.
     .. link-button:: install_ref
         :type: ref
         :text: Installation Instructions
+        :classes: stretched-link btn-outline-primary btn-block
+
+   .. link-button:: examples
+        :type: ref
+        :text: Examples
         :classes: stretched-link btn-outline-primary btn-block
 
     ---
@@ -68,9 +75,9 @@ ICESat-2 datasets to enable scientific discovery.
     **Community**
     ^^^^^^^^^^^^^
 
-    icepyx is more than just software.
-    We are a community of data producers, managers, and users
-    aiming to collaborate openly and share code and skills
+    icepyx is more than just software!
+    We're a community of data producers, managers, and users
+    who collaborate openly and share code and skills
     for every step along the entire data pipeline.
 
     .. link-button:: contact_ref_label
@@ -80,7 +87,7 @@ ICESat-2 datasets to enable scientific discovery.
 
     ---
     :img-top: https://icesat-2.gsfc.nasa.gov/sites/default/files/MissionLogo_0.png
-    :img-top-cls: pt-5 pb-5
+    :img-top-cls: pt-4 pb-4
 
     **ICESat-2 Resources**
     ^^^^^^^^^^^^^^^^^^^^^^

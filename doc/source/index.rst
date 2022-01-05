@@ -33,11 +33,10 @@ ICESat-2 datasets to enable scientific discovery.
 .. panels::
     :card: + intro-card text-center
     :column: col-lg-4 col-md-4 col-sm-8 col-xs-12 p-2
-    :img-top-cls: pl-5 pr-10
+    :img-top-cls: pl-3 pr-3
 
     ---
-    :img-top: ../source/_static/index-images/getting_started.png
-    :img-top-cls: width-30px
+    :img-top: https://cdn-icons-png.flaticon.com/128/2285/2285551.png
 
     **Getting Started**
     ^^^^^^^^^^^^^^^^^^^
@@ -53,7 +52,6 @@ ICESat-2 datasets to enable scientific discovery.
 
     ---
     :img-top: https://img.icons8.com/dotty/80/000000/user-manual.png
-    :img-top-cls: width-100px
 
     **User Guide**
     ^^^^^^^^^^^^^^

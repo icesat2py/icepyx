@@ -12,9 +12,8 @@ icepyx
 
 :ref:`Installation<install_ref>` |
 :ref:`Citation<citation>` |
-
-:ref:`Examples<examples>`_ |
-`Source Code<https://github.com/icesat2py/icepyx>`__ |
+:ref:`Examples<examples>` |
+`Source Code<https://github.com/icesat2py/icepyx>` |
 :ref:`Contact<contact_ref_label>`
 
 :link-badge:`https://github.com/icesat2py/icepyx, Source Code, cls=badge-secondary`

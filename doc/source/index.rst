@@ -31,14 +31,14 @@ ICESat-2 datasets to enable scientific discovery.
 
 
 .. panels::
-    :card: + intro-card text-center w-30
+    :card: + intro-card text-center w-60px
     :column: col-lg-2 col-md-2 col-sm-2 col-xs-12 p-2
 
     ---
     :img-top: ../source/_static/index-images/getting_started.png
 
-    Getting Started
-    ^^^^^^^^^^^^^^^
+    **Getting Started**
+    ^^^^^^^^^^^^^^^^^^^
 
     New to ICESat-2 or icepyx?
     Learn how to install icepyx and use it to jumpstart your project today.
@@ -52,8 +52,8 @@ ICESat-2 datasets to enable scientific discovery.
     ---
     :img-top: https://img.icons8.com/dotty/80/000000/user-manual.png
 
-    User Guide
-    ^^^^^^^^^^
+    **User Guide**
+    ^^^^^^^^^^^^^^
 
     The user guide provides in-depth information on the tools and functionality
     available for obtaining and interacting with ICESat-2 data products.
@@ -66,8 +66,8 @@ ICESat-2 datasets to enable scientific discovery.
     ---
     :img-top: ../source/_static/index-images/community.png
 
-    Community
-    ^^^^^^^^^
+    **Community**
+    ^^^^^^^^^^^^^
 
     icepyx is more than just software.
     We are a community of data producers, managers, and users
@@ -82,8 +82,8 @@ ICESat-2 datasets to enable scientific discovery.
     ---
     :img-top: https://icesat-2.gsfc.nasa.gov/sites/default/files/MissionLogo_0.png
 
-    ICESat-2 Resources
-    ^^^^^^^^^^^^^^^^^^
+    **ICESat-2 Resources**
+    ^^^^^^^^^^^^^^^^^^^^^^
 
     Curious about other tools for working with ICESat-2 data?
     Want to share your resource?

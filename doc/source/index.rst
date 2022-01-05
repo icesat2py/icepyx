@@ -9,12 +9,12 @@ icepyx
 |version badge|
 
 **Quick Links**
-:ref:`contact page<contact_ref_label>`
 
-:ref:`Installation<install_ref>`|
-:ref:`Citation<citation>`|
-:ref:`Examples<examples>`|
-`Source Code <https://github.com/icesat2py/icepyx>`__ |
+:ref:`Installation<install_ref>` |
+:ref:`Citation<citation>` |
+
+:ref:`Examples<examples>`_ |
+`Source Code<https://github.com/icesat2py/icepyx>`__ |
 :ref:`Contact<contact_ref_label>`
 
 
@@ -26,8 +26,12 @@ including existing resources, new code, tutorials, and use-cases/examples -
 that simplify the process of querying, obtaining, analyzing, and manipulating 
 ICESat-2 datasets to enable scientific discovery.
 
+
+
 .. panels::
     :card: + intro-card text-center
+    :style:
+      :width: 20rem;
     :column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
 
     ---

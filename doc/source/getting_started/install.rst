@@ -1,6 +1,3 @@
-.. _install_ref:
-
-
 .. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
 .. _`Fiona`: https://pypi.org/project/Fiona/
 .. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
@@ -9,6 +6,7 @@
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx/
 
+.. _install_ref:
 
 Installation
 ============

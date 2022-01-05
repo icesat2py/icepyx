@@ -1,14 +1,11 @@
-icepyx
-======
-
-**Python tools for obtaining and working with ICESat-2 data**
-
 .. |version badge| image:: https://badge.fury.io/gh/icesat2py%2Ficepyx.svg
     :target: https://badge.fury.io/gh/icesat2py%2Ficepyx
-    
-|version badge|
 
-**Quick Links**
+
+icepyx     |version badge|
+==========================
+
+**Python tools for obtaining and working with ICESat-2 data**
 
 :ref:`Installation<install_ref>` |
 :ref:`Citation<citation>` |
@@ -32,7 +29,7 @@ ICESat-2 datasets to enable scientific discovery.
 
 .. panels::
     :card: + intro-card text-center
-    :column: col-lg-3 col-md-3 col-sm-3 col-xs-12 p-2
+    :column: col-lg-3 col-md-4 col-sm-8 col-xs-12 p-2
     :img-top-cls: pl-2 pr-2 pt-2 pb-2
 
     ---
@@ -47,8 +44,8 @@ ICESat-2 datasets to enable scientific discovery.
 
     .. link-button:: install_ref
         :type: ref
-        :text: Go to Installation
-        :classes: stretched-link
+        :text: Installation Instructions
+        :classes: stretched-link btn-outline-primary btn-block
 
     ---
     :img-top: https://cdn-icons.flaticon.com/png/128/5194/premium/5194529.png?token=exp=1641409502~hmac=ec38c7a6b8982ca91475ea0b5d343bc3
@@ -61,8 +58,8 @@ ICESat-2 datasets to enable scientific discovery.
 
     .. link-button:: api_doc_ref
         :type: ref
-        :text: Go to Software Docs
-        :classes: stretched-link
+        :text: Software Docs
+        :classes: stretched-link btn-outline-primary btn-block
 
     ---
     :img-top: https://cdn-icons-png.flaticon.com/128/1283/1283342.png
@@ -78,11 +75,11 @@ ICESat-2 datasets to enable scientific discovery.
     .. link-button:: contact_ref_label
         :type: ref
         :text: Get Involved!
-        :classes: stretched-link
+        :classes: stretched-link btn-outline-primary btn-block
 
     ---
     :img-top: https://icesat-2.gsfc.nasa.gov/sites/default/files/MissionLogo_0.png
-    :img-top-cls: pt-8 pb-8
+    :img-top-cls: pt-5 pb-5
 
     **ICESat-2 Resources**
     ^^^^^^^^^^^^^^^^^^^^^^
@@ -94,7 +91,7 @@ ICESat-2 datasets to enable scientific discovery.
     .. link-button:: resource_ref_label
         :type: ref
         :text: ICESat-2 Resource Guide
-        :classes: stretched-link
+        :classes: stretched-link btn-outline-primary btn-block
 
 
 .. toctree::
@@ -136,4 +133,4 @@ ICESat-2 datasets to enable scientific discovery.
 
 
 Icon images from `Flaticon <https://flaticon.com>`_ (by Freepik, Andy Horvath, and Eucalyp) 
-and `NASA <https://www.nasa.gov/>`.
+and `NASA <https://www.nasa.gov/>`_.

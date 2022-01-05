@@ -30,7 +30,6 @@ that simplify the process of querying, obtaining, analyzing, and manipulating
 ICESat-2 datasets to enable scientific discovery.
 
 
-
 .. panels::
     :card: + intro-card text-center w-30
     :column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
@@ -70,10 +69,10 @@ ICESat-2 datasets to enable scientific discovery.
     Community
     ^^^^^^^^^
 
-    The reference guide contains a detailed description of the functions,
-    modules, and objects included in NumPy. The reference describes how the
-    methods work and which parameters can be used. It assumes that you have an
-    understanding of the key concepts.
+    icepyx is more than just software.
+    We are a community of data producers, managers, and users
+    aiming to collaborate openly and share code and skills
+    for every step along the entire data pipeline.
 
     .. link-button:: contact_ref_label
         :type: ref

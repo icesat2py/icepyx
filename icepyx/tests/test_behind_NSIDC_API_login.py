@@ -12,13 +12,19 @@ import warnings
 
 @pytest.fixture
 def reg(scope="module"):
-    return ipx.Query("ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"])
+    return ipx.Query(
+        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="004"
+    )
 
 
 @pytest.fixture
 def session(reg, scope="module"):
+    capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
     return Earthdata(
-        "icepyx_devteam", "icepyx.dev@gmail.com", capability_url="", pswd=os.getenv("NSIDC_LOGIN")
+        "icepyx_devteam",
+        "icepyx.dev@gmail.com",
+        capability_url=capability_url,
+        pswd=os.getenv("NSIDC_LOGIN"),
     )._start_session()
 
 

@@ -134,6 +134,5 @@ ICESat-2 datasets to enable scientific discovery.
    community/contact
    tracking/tracking
 
-
 Icon images from `Flaticon <https://flaticon.com>`_ (by Freepik, Pixel perfect, and Eucalyp) 
 and `NASA <https://www.nasa.gov/>`_.

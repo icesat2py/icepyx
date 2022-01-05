@@ -47,7 +47,7 @@ ICESat-2 datasets to enable scientific discovery.
     .. link-button:: install_ref
         :type: ref
         :text: Installation Instructions
-        :classes: stretched-link btn-outline-primary btn-block
+        :classes: btn-outline-primary btn-block
 
    .. link-button:: examples
         :type: ref

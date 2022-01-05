@@ -49,10 +49,7 @@ ICESat-2 datasets to enable scientific discovery.
         :text: Installation Instructions
         :classes: btn-outline-primary btn-block
 
-   .. link-button:: examples
-        :type: ref
-        :text: Examples
-        :classes: btn-outline-primary btn-block
+
 
     ---
     :img-top: https://cdn-icons-png.flaticon.com/128/3730/3730041.png

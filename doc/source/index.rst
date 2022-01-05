@@ -48,7 +48,8 @@ ICESat-2 datasets to enable scientific discovery.
         :classes: stretched-link btn-outline-primary btn-block
 
     ---
-    :img-top: https://cdn-icons.flaticon.com/png/128/5194/premium/5194529.png?token=exp=1641409502~hmac=ec38c7a6b8982ca91475ea0b5d343bc3
+    :img-top: https://cdn-icons-png.flaticon.com/128/3730/3730041.png
+
 
     **User Guide**
     ^^^^^^^^^^^^^^
@@ -132,5 +133,5 @@ ICESat-2 datasets to enable scientific discovery.
    tracking/tracking
 
 
-Icon images from `Flaticon <https://flaticon.com>`_ (by Freepik, Andy Horvath, and Eucalyp) 
+Icon images from `Flaticon <https://flaticon.com>`_ (by Freepik, Pixel perfect, and Eucalyp) 
 and `NASA <https://www.nasa.gov/>`_.

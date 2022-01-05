@@ -39,6 +39,7 @@ extensions = [
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
     "sphinx_panels",
+    "sphinx.ext.imgconverter",
 ]
 myst_enable_extensions = [
     "linkify",
@@ -104,11 +105,6 @@ html_context = {
         ),
     ],
 }
-
-
-from sphinx.builders.latex import LaTeXBuilder
-
-LaTeXBuilder.supported_image_types = ["image/png", "image/pdf", "image/svg+xml"]
 
 
 def setup(app):

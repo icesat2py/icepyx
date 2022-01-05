@@ -37,7 +37,7 @@ GitHub Traffic
 ^^^^^^^^^^^^^^
 Clones and views of the icepyx library directly on GitHub.
 
-.. image:: traffic/plots.*
+.. image:: traffic/plots.svg
   :width: 400
   :alt: Plots showing GitHub traffic (icepyx repository clones and views).
 
@@ -46,6 +46,6 @@ PyPI Downloads
 ^^^^^^^^^^^^^^
 Non-mirrored downloads of icepyx from the `Python Package Index <https://pypi.org/>`_ (e.g. using `pip install icepyx`).
 
-.. image:: pypistats/downloads.*
+.. image:: pypistats/downloads.svg
   :width: 600
   :alt: Figure showing the number of downloads of the icepyx library from the Python Package Index by non-mirroring sites since the package became available through that index.

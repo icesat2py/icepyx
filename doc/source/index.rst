@@ -32,11 +32,11 @@ ICESat-2 datasets to enable scientific discovery.
 
 .. panels::
     :card: + intro-card text-center
-    :column: col-lg-4 col-md-4 col-sm-8 col-xs-12 p-2
-    :img-top-cls: pl-3 pr-3
+    :column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
+    :img-top-cls: pl-2 pr-2 pt-2 pb-2
 
     ---
-    :img-top: https://cdn-icons-png.flaticon.com/128/2285/2285551.png
+    :img-top: https://cdn-icons-png.flaticon.com/128/2498/2498074.png
 
     **Getting Started**
     ^^^^^^^^^^^^^^^^^^^
@@ -48,10 +48,9 @@ ICESat-2 datasets to enable scientific discovery.
     .. link-button:: install_ref
         :type: ref
         :text:
-        :classes: stretched-link
 
     ---
-    :img-top: https://img.icons8.com/dotty/80/000000/user-manual.png
+    :img-top: https://cdn-icons.flaticon.com/png/128/5194/premium/5194529.png?token=exp=1641409502~hmac=ec38c7a6b8982ca91475ea0b5d343bc3
 
     **User Guide**
     ^^^^^^^^^^^^^^
@@ -65,7 +64,7 @@ ICESat-2 datasets to enable scientific discovery.
         :classes: stretched-link
 
     ---
-    :img-top: ../source/_static/index-images/community.png
+    :img-top: https://cdn-icons-png.flaticon.com/128/1283/1283342.png
 
     **Community**
     ^^^^^^^^^^^^^
@@ -134,7 +133,5 @@ ICESat-2 datasets to enable scientific discovery.
    tracking/tracking
 
 
-Icon images:
-<a href="https://icons8.com/icon/4nnewgciy66D/startup">Startup icon by Icons8</a>
-<a href="https://icons8.com/icon/45454/user-manual">User Manual icon by Icons8</a>
-<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+Icon images from `Flaticon <https://flaticon.com>`_ (by Freepik and Andy Horvath) 
+and `NASA <https://www.nasa.gov/>`.

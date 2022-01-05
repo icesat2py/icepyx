@@ -31,11 +31,12 @@ ICESat-2 datasets to enable scientific discovery.
 
 
 .. panels::
-    :card: + intro-card text-center w-60px
-    :column: col-lg-2 col-md-2 col-sm-2 col-xs-12 p-2
+    :card: + intro-card text-center
+    :column: col-lg-4 col-md-4 col-sm-8 col-xs-12 p-2
 
     ---
     :img-top: ../source/_static/index-images/getting_started.png
+      :width: 30px
 
     **Getting Started**
     ^^^^^^^^^^^^^^^^^^^
@@ -51,6 +52,7 @@ ICESat-2 datasets to enable scientific discovery.
 
     ---
     :img-top: https://img.icons8.com/dotty/80/000000/user-manual.png
+          :width: 100px
 
     **User Guide**
     ^^^^^^^^^^^^^^

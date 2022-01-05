@@ -30,8 +30,8 @@ ICESat-2 datasets to enable scientific discovery.
 
 .. panels::
     :card: + intro-card text-center
-    :style:
-      :width: 20rem;
+      :style:
+         :width: 20rem;
     :column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
 
     ---

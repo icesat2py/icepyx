@@ -106,6 +106,11 @@ html_context = {
 }
 
 
+from sphinx.builders.latex import LaTeXBuilder
+
+LaTeXBuilder.supported_image_types = ["image/png", "image/pdf", "image/svg+xml"]
+
+
 def setup(app):
     #     app.add_stylesheet("style.css")
     app.add_css_file("style.css")

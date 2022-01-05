@@ -31,7 +31,7 @@ ICESat-2 datasets to enable scientific discovery.
 
 .. panels::
     :card: + intro-card text-center
-    :column: col-lg-4 col-md-4 col-sm-8 col-xs-12 p-2
+    :column: col-lg-4 col-md-4 col-sm-6 col-xs-12 p-2
     :img-top-cls: pl-2 pr-2 pt-2 pb-2
 
     ---
@@ -47,9 +47,7 @@ ICESat-2 datasets to enable scientific discovery.
     .. link-button:: install_ref
         :type: ref
         :text: Installation Instructions
-        :classes: btn-outline-primary btn-block
-
-
+        :classes: stretched-link btn-outline-primary btn-block
 
     ---
     :img-top: https://cdn-icons-png.flaticon.com/128/3730/3730041.png
@@ -84,7 +82,7 @@ ICESat-2 datasets to enable scientific discovery.
 
     ---
     :img-top: https://icesat-2.gsfc.nasa.gov/sites/default/files/MissionLogo_0.png
-    :img-top-cls: pt-4 pb-4
+    :img-top-cls: pl-2 pr-2 pt-4 pb-4
 
     **ICESat-2 Resources**
     ^^^^^^^^^^^^^^^^^^^^^^

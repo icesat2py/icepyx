@@ -13,7 +13,7 @@ icepyx
 :ref:`Installation<install_ref>` |
 :ref:`Citation<citation>` |
 :ref:`Examples<examples>` |
-`Source Code<https://github.com/icesat2py/icepyx>`_|
+`Source Code <https://github.com/icesat2py/icepyx>`_ |
 :ref:`Contact<contact_ref_label>`
 
 :link-badge:`install_ref,Installation,ref,badge-secondary text-white`
@@ -32,7 +32,7 @@ ICESat-2 datasets to enable scientific discovery.
 
 .. panels::
     :card: + intro-card text-center w-30
-    :column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
+    :column: col-lg-8 col-md-8 col-sm-8 col-xs-12 p-2
 
     ---
     :img-top: ../source/_static/index-images/getting_started.png

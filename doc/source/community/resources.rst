@@ -14,7 +14,7 @@ We reserve the right to reject suggested resources that fall outside the scope o
 Resources Developed For and During Hackweeks
 --------------------------------------------
 
-..toctree::
+.. toctree::
   :titlesonly:
 
   2019_IS2_HW

@@ -22,3 +22,7 @@ We meet on:
 Additional information about logging in to the meetings can be found on `this Discourse post <https://discourse.pangeo.io/t/icepyx-team-meetings/722/2?u=jessicas11>`_.
 
 Absolutely NO previous software development experience is necessary to attend any meeting. Think of them more like coffee hour mixed with office hours than a conference call. We look forward to seeing you there!
+
+Ongoing Efforts
+----------------
+In addition to the ongoing development of icepyx itself, the ICESat-2 Cryosphere community continues to grow through a number of workshops and events.

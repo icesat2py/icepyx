@@ -14,15 +14,12 @@ We reserve the right to reject suggested resources that fall outside the scope o
 Resources Developed For and During Hackweeks
 --------------------------------------------
 
-:ref:`<resource_IS2HW_2019>`
-:ref:`<resource_IS2HW_2020>`
+..toctree::
+  :titlesonly:
 
-
-Resources for Working with ICESat-2 Data
-----------------------------------------
-
-:ref:`<resource_os_label>`
-:ref:`<_resource_software_label>`
+  2019_IS2_HW
+  2019_IS2_HW
+  IS2_software
 
 
 

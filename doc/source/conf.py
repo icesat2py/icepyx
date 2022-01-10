@@ -58,7 +58,11 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["**.ipynb_checkpoints", "**/example_notebooks/supporting_files"]
+exclude_patterns = [
+    "**.ipynb_checkpoints",
+    "**/example_notebooks/supporting_files",
+    "./user_guide/changelog/template.rst",
+]
 
 # location of master document (by default sphinx looks for contents.rst)
 master_doc = "index"

@@ -25,8 +25,7 @@ Additional resources having to do specifically with obtaining ICESat-2 data are 
   - by Fernando Paolo, Johan Nilsson, Alex Gardner
   - NASA's JPL Cryosphere Altimetry Processing Toolkit
   - Set of command line utilities to process, reduce, change format, etc. altimetry data from ICESat-2 and several other altimeters (e.g. ERS, CryoSat-2, IceBridge)
-  - Includes utilities to read and extract variables of interest, compute and apply various corrections (e.g. tides, inverse barometer), 
-  detrend and correct data, do a variety of geographic computations and manipulations (e.g. raster math, masking, slope/aspect), and tile/grid/reduce data
+  - Includes utilities to read and extract variables of interest, compute and apply various corrections (e.g. tides, inverse barometer), detrend and correct data, do a variety of geographic computations and manipulations (e.g. raster math, masking, slope/aspect), and tile/grid/reduce data
   - We envision making captoolkit's utilities available as part of the icepyx ecosystem in order for users to quickly obtain and pre-process/correct/process ICESat-2 data.
 
 - `Icesat2-viz <https://github.com/abarciauskas-bgse/icesat2-viz>`_
@@ -41,8 +40,7 @@ Additional resources having to do specifically with obtaining ICESat-2 data are 
   - Retrieve IceBridge, ICESat, and ICESat-2 data using the NSIDC subsetter API
   - Command line tool
   - Download data and convert it into a georeferenced format (e.g. geojson, kml, or shapefile)
-  - We envision use of Nsidc-subsetter to improve interoperability between icepyx and the NSIDC subsetter API. 
-  Currently, icepyx has very limited subsetting capabilities that are not easy to access or find more information about.
+  - We envision use of Nsidc-subsetter to improve interoperability between icepyx and the NSIDC subsetter API. Currently, icepyx has very limited subsetting capabilities that are not easy to access or find more information about.
 
 - `pointCollection <https://github.com/SmithB/pointCollection>`_
 

@@ -19,7 +19,7 @@ Resources Developed For and During Hackweeks
 
   resources/2019_IS2_HW
   resources/2020_IS2_HW
-  IS2_software
+  resources/IS2_software
 
 
 

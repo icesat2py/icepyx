@@ -15,14 +15,16 @@ Resources Developed For and During Hackweeks
 --------------------------------------------
 
 .. toctree::
-  :titlesonly:
+  :maxdepth: 2
 
   resources/2019_IS2_HW
   resources/2020_IS2_HW
+
+
+.. toctree::
+  :maxdepth: 2
+  
   resources/IS2_software
-
-
-
 
 
 Other Ways to Access ICESat-2 Data

@@ -15,10 +15,11 @@ Resources Developed For and During Hackweeks
 --------------------------------------------
 
 .. toctree::
+  :titlesonly:
 
   resources/2019_IS2_HW
-  resources/2019_IS2_HW
-  resources/IS2_software
+  resources/2020_IS2_HW
+  IS2_software
 
 
 

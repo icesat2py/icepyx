@@ -1,9 +1,5 @@
 .. _resource_software_label:
 
-Resources for Working with ICESat-2 Data
-========================================
-
-
 Open-Source Software packages
 -----------------------------
 

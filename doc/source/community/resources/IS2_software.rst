@@ -5,6 +5,7 @@ Open-Source Software packages
 
 
 
+.. _complementary_GH_repos_label:
 Complementary GitHub Repositories
 ---------------------------------
 Here we describe a selection of publicly available Python code posted on GitHub with applicability for working with ICESat-2 data. 
@@ -16,7 +17,7 @@ Conversations about how to best accomplish this have been ongoing since the conc
 Please check each repository's licensing information before using or modifying their code. 
 Additional resources having to do specifically with obtaining ICESat-2 data are noted in the last section of this document.*
 
-- `captoolkit <https://github.com/fspaolo/captoolkit>`_
+* `captoolkit <https://github.com/fspaolo/captoolkit>`_
 
   - by Fernando Paolo, Johan Nilsson, Alex Gardner
   - NASA's JPL Cryosphere Altimetry Processing Toolkit
@@ -24,13 +25,13 @@ Additional resources having to do specifically with obtaining ICESat-2 data are 
   - Includes utilities to read and extract variables of interest, compute and apply various corrections (e.g. tides, inverse barometer), detrend and correct data, do a variety of geographic computations and manipulations (e.g. raster math, masking, slope/aspect), and tile/grid/reduce data
   - We envision making captoolkit's utilities available as part of the icepyx ecosystem in order for users to quickly obtain and pre-process/correct/process ICESat-2 data.
 
-- `Icesat2-viz <https://github.com/abarciauskas-bgse/icesat2-viz>`_
+* `Icesat2-viz <https://github.com/abarciauskas-bgse/icesat2-viz>`_
 
   - by Aimee Barciauskas-bgse
   - Exploration for visualizing ICESat-2 data products; focused on 3-D visualization using mapbox tools
   - We hope to take advantage of Icesat2-viz's work to provide 3-D visualizations of ICESat-2 data to expand on the 2-D visualization options currently available within icepyx.
 
-- `Nsidc-subsetter <https://github.com/tsutterley/nsidc-subsetter>`_
+* `Nsidc-subsetter <https://github.com/tsutterley/nsidc-subsetter>`_
 
   - by Tyler Sutterley
   - Retrieve IceBridge, ICESat, and ICESat-2 data using the NSIDC subsetter API
@@ -38,7 +39,7 @@ Additional resources having to do specifically with obtaining ICESat-2 data are 
   - Download data and convert it into a georeferenced format (e.g. geojson, kml, or shapefile)
   - We envision use of Nsidc-subsetter to improve interoperability between icepyx and the NSIDC subsetter API. Currently, icepyx has very limited subsetting capabilities that are not easy to access or find more information about.
 
-- `pointCollection <https://github.com/SmithB/pointCollection>`_
+* `pointCollection <https://github.com/SmithB/pointCollection>`_
 
   - by Ben Smith
   - Efficiently organize and manipulate a database of points using this set of utilities

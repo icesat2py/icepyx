@@ -1,7 +1,7 @@
 .. _resource_IS2HW_2020:
 
 Second [Virtual] ICESat-2 Cryospheric Hackweek Facilitated by the University of Washington
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------------------------------------------------------
 COVID-19 forced the in-person event to be cancelled, but we're excited to extend the Hackweek model into a virtual space, 
 ultimately making it more accessible by removing the need to travel. This year's event is scheduled to take place from 15-18 June 2020, with multiple instructional sessions taking place during the preceding week (8-12 June) to limit the daily duration and accomodate multiple time zones. Though only selected participants are able to tune in to the live tutorial sessions, the materials being taught are freely available in the `ICESat-2 Hackweek GitHub Organization <https://github.com/ICESAT-2HackWeek>`_ respositories. Watch here for updates on projects conducted during the hackweek, and feel free to check out the event's `website <https://icesat-2hackweek.github.io/learning-resources/>`_.
 
@@ -13,6 +13,9 @@ During the actual Hackweek, teams of researchers and data scientists developed a
 `projects <https://github.com/ICESAT-2HackWeek/projects_2019>`_ related to their interests/research.
 Many of these resources were drawn from in the initial development of `icepyx`.
 
+
+Tutorials
+^^^^^^^^^
 The available tutorials, most of which contain one or more Jupyter Notebooks to illustrate concepts, are listed below. 
 Additional information for citing (including licensing) and running (e.g. through a Pangeo Binder) these tutorials can be found at the above link.
 
@@ -27,6 +30,8 @@ Additional information for citing (including licensing) and running (e.g. throug
 9. `Correcting ICESat-2 data and related applications <https://github.com/ICESAT-2HackWeek/data-correction>`_
 10. `Numerical Modeling <https://gitlab.com/danshapero/icesat-2019-06-20>`_
 
+Projects
+^^^^^^^^
 Though in many cases preliminary, these `project repositories <https://github.com/ICESAT-2HackWeek/projects_2019>`_ c
 an provide useful starting points to develop effective cryospheric workflows where more formal examples and functionality have not yet been developed.
 

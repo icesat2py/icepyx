@@ -5,4 +5,6 @@ nbsphinx
 numpydoc
 pybtex
 pygithub
+sphinx==4.3
+sphinx_rtd_theme==1.0
 sphinxcontrib-bibtex

@@ -3,6 +3,7 @@ import getpass
 import socket
 import netrc
 import re
+import os
 import json
 
 # DevNote: currently this class is not tested
@@ -28,7 +29,11 @@ class Earthdata:
     """
 
     def __init__(
-        self, uid, email, capability_url, pswd=None,
+        self,
+        uid,
+        email,
+        capability_url,
+        pswd=os.environ.get("EARTHDATA_PASSWORD"),
     ):
 
         assert isinstance(uid, str), "Enter your login user id as a string"
@@ -87,13 +92,13 @@ class Earthdata:
 
         self.session = session
 
-    def login(self):
+    def login(self, attempts=5):
         """
         This function tries to log the user in to Earthdata with the
         information provided. It prompts the user for their Earthdata password,
         but will only store that information within the active session.
         If the login fails, it will ask the user to re-enter their
-        username and password up to five times to try and log in.
+        username and password up to a set number of times to try and log in.
 
         Alternatively, you can create a .netrc file in your $HOME directory
         with the following line:
@@ -110,6 +115,11 @@ class Earthdata:
         The function checks for this file to retrieve credentials, prior to
         prompting for manual input.
 
+        Parameters
+        ----------
+        attempts : int
+            Number of allowed retry attempts.
+
         Examples
         --------
         >>> icepyx.core.Earthdata.Earthdata.login('sam.smith','sam.smith@domain.com')
@@ -122,15 +132,18 @@ class Earthdata:
             session = self._start_session()
 
         except:
-            self.pswd = getpass.getpass("Earthdata Login password: ")
-            for i in range(5):
+            # if not using an environmental variable for password
+            if not self.pswd:
+                self.pswd = getpass.getpass("Earthdata Login password: ")
+            for i in range(attempts):
                 try:
                     session = self._start_session()
                     break
                 except KeyError:
+                    pass
+                if (i + 1) < attempts:
                     self.uid = input("Please re-enter your Earthdata user ID: ")
                     self.pswd = getpass.getpass("Earthdata Login password: ")
-                    i += 1
             else:
                 raise RuntimeError("You could not successfully log in to Earthdata")
 

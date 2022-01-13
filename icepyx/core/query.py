@@ -836,7 +836,7 @@ class Query(GenQuery):
         """
 
         if s3token == False:
-            capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.dataset}.{self._version}.xml"
+            capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
         elif s3token == True:
 
             def is_ec2():

@@ -75,13 +75,19 @@ def test_gran_paras(filename, expect):
         ("ATL07", ["2019-7-1", "2019-8-1"], [-65, -66, -64.5, -65], 6720),
         ("ATL08", ["2019-6-15", "2019-7-1"], [-18, 63, -17, 64], 852),
         ("ATL10", ["2019-8-1", "2019-9-1"], [-64, -67, -60, -60], 7375),
-        ("ATL12", ["2019-7-1", "2019-10-1"], [-65.5, -65.5, -64.5, -65], 95),
+        (
+            "ATL12",
+            ["2019-7-1", "2019-10-1"],
+            [-65.5, -65.5, -64.5, -65],
+            95,
+        ),  # see note below
         ("ATL13", ["2019-6-1", "2019-12-1"], [-75, -51, -74, -50], 25),
     ],
 )
 def test_visualization_date_range(product, date_range, bbox, expect):
 
     region_viz = Visualize(product=product, spatial_extent=bbox, date_range=date_range)
+    print(region_viz.parallel_request_OA())
     data_size = region_viz.parallel_request_OA().size
 
     assert data_size == expect
@@ -90,12 +96,18 @@ def test_visualization_date_range(product, date_range, bbox, expect):
 @pytest.mark.parametrize(
     "product, bbox, cycles, tracks, expect",
     [
-        ("ATL06", [-64.5, -66, -63.5, -65], ["03"], ["1306"], 3240),
-        ("ATL07", [-65, -66, -64.5, -65], ["04"], ["0186"], 7130),
+        ("ATL06", [-64.5, -66, -63.5, -65], ["03"], ["1306"], 3235),
+        ("ATL07", [-65, -66, -64.5, -65], ["04"], ["0186"], 6720),
         ("ATL08", [-18, 63, -17, 64], ["03"], ["1320"], 852),
         ("ATL10", [-64, -67, -60, -60], ["04"], ["0681"], 6015),
-        ("ATL12", [-65.5, -65.5, -64.5, -65], ["05"], ["0041"], 95),
-        ("ATL13", [-75, -51, -74, -50], ["05"], ["0293"], 20),
+        (
+            "ATL12",
+            [-65.5, -65.5, -64.5, -65],
+            ["05"],
+            ["0041"],
+            95,
+        ),  # 2022-01-13 selected granules were removed, including this one. See list at: https://nsidc.org/data/atl10/
+        ("ATL13", [-75, -51, -74, -50], ["05"], ["0293"], 25),
     ],
 )
 def test_visualization_orbits(product, bbox, cycles, tracks, expect):

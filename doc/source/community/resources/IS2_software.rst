@@ -6,9 +6,9 @@ Open-Source Software packages
 
 
 .. _complementary_GH_repos_label:
+
 Complementary GitHub Repositories
 ---------------------------------
-
 Here we describe a selection of publicly available Python code posted on GitHub with applicability for working with ICESat-2 data. 
 This includes repositories that are more broadly designed for working with LiDAR/point cloud datasets in general. 
 These repositories represent independent but complimentary projects that we hope to make easily interoperable within icepyx in order to maximize capabilities and minimize duplication of efforts. 

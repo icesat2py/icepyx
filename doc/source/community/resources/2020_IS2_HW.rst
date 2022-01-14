@@ -2,7 +2,7 @@
 
 Second [Virtual] ICESat-2 Cryospheric Hackweek Facilitated by the University of Washington
 ------------------------------------------------------------------------------------------
-The [2020 ICESat-2 Cryospheric Science Hackweek](https://icesat-2hackweek.github.io/learning-resources/) was the 
+The `2020 ICESat-2 Cryospheric Science Hackweek <https://icesat-2hackweek.github.io/learning-resources/>`_ was the 
 first virtual Hackweek held by the University of Washington. 
 While originally planned as a five-day, in-person workshop, the event was shifted to a fully virtual/remote setting in light of 
 stay-at-home orders and travel restrictions in place to curb the spread of COVID-19. 
@@ -23,7 +23,6 @@ During the actual Hackweek, teams of researchers and data scientists developed a
 
 Tutorials |Zenodo badge|
 ^^^^^^^^^^^^^^^^^^^^^^^^
-
 The tutorials from this event live within a dedicated `GitHub repository <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_
 and are published on `Zenodo <https://doi.org/10.5281/zenodo.3966463>`_.
 You can run the tutorials by following the instructions `here <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials#re-create-the-icesat-2-hackweek-jupyterlab-environment-with-binder>`_.

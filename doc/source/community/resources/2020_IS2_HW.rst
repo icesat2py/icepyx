@@ -18,9 +18,11 @@ developed by volunteer instructors and presented during the event.
 During the actual Hackweek, teams of researchers and data scientists developed a series of interesting 
 `projects <https://github.com/ICESAT-2HackWeek/projects_2020>`_ related to their interests/research.
 
+.. |Zenodo badge| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3966463.svg
+    :target: https://doi.org/10.5281/zenodo.3966463
 
-Tutorials [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3966463.svg)](https://doi.org/10.5281/zenodo.3966463)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Tutorials |Zenodo badge|
+^^^^^^^^^^^^^^^^^^^^^^^^
 The tutorials from this event live within a dedicated `GitHub repository <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_
  and are published on `Zenodo <https://doi.org/10.5281/zenodo.3966463>`_.
 You can run the tutorials by following the instructions `here <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials#re-create-the-icesat-2-hackweek-jupyterlab-environment-with-binder>`_.

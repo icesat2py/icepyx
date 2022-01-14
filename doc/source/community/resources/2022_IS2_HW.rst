@@ -1,0 +1,17 @@
+.. _resource_IS2HW_2022:
+
+Third ICESat-2 Hackweek Facilitated by the University of Washington eScience Institute
+--------------------------------------------------------------------------------------
+This event is currently being planned, and will take place 21-25 March 2022.
+Please see the `event website <https://icesat-2hackweek.github.io/>`_ for more information.
+
+
+Tutorials
+^^^^^^^^^
+The tutorials for this event will be available to download for interactive use as well as pre-rendered on the event's website.
+The website will be linked here once it is live, and final information posted here after the event.
+
+
+Projects
+^^^^^^^^
+Projects will be listed here after the event.

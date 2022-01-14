@@ -9,10 +9,11 @@ During the actual Hackweek, teams of researchers and data scientists developed a
 `projects <https://github.com/ICESAT-2HackWeek/projects_2019>`_ related to their interests/research.
 Many of these resources were drawn from in the initial development of `icepyx`.
 
-Tutorials
+Tutorials [![DOI](https://zenodo.org/badge/192627215.svg)](https://zenodo.org/badge/latestdoi/192627215)
 ^^^^^^^^^
 The available tutorials, most of which contain one or more Jupyter Notebooks to illustrate concepts, are listed below. 
 Additional information for citing (including licensing) and running (e.g. through a Pangeo Binder) these tutorials can be found at the above link.
+They are published on `Zenodo <https://doi.org/10.5281/zenodo.3360994>`_.
 
 1. `Overview of the ICESat-2 mission (slides) <https://github.com/ICESAT-2HackWeek/intro_ICESat2>`_
 2. `Introduction to Open Science and Reproducible Research <https://github.com/ICESAT-2HackWeek/intro-jupyter-git>`_

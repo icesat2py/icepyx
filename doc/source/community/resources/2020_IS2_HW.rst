@@ -23,8 +23,9 @@ During the actual Hackweek, teams of researchers and data scientists developed a
 
 Tutorials |Zenodo badge|
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
 The tutorials from this event live within a dedicated `GitHub repository <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_
- and are published on `Zenodo <https://doi.org/10.5281/zenodo.3966463>`_.
+and are published on `Zenodo <https://doi.org/10.5281/zenodo.3966463>`_.
 You can run the tutorials by following the instructions `here <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials#re-create-the-icesat-2-hackweek-jupyterlab-environment-with-binder>`_.
 The published tutorial repo also includes links to presentation slides and videos of the recorded presentations.
 

@@ -2,7 +2,45 @@
 
 Open-Source Software packages
 -----------------------------
+ICESat-2 can be tricky to process for the first time, especially if working with the ATL03 data. Software packages have been developed to make ICESat-2 data analysis easier for new and experienced users. 
+Here, we highlight some commonly-used software packages developed by the science community. Most of these can be used alongside Icepyx to facilitate ICESat-2 data processing.
+Most of these packages are callable through Python, though others may require access to other software. Keep this in mind before attempting to use any package or plugin.
 
+* `SlideRule <https://github.com/ICESat2-SlideRule/sliderule-icesat2>`_
+
+  - collaboration between the ICESat-2 science team and University of Washington
+  - A Python client to process ICESat-2 ATL03 data prior to download.
+  - Aggregates ATL03 data into line segments of user-defined length, creating a customized form of the ATL06 product.
+  - Data may also be subsetted based on spatial bounds and photon classification.
+  
+* `IceFlow <https://github.com/nsidc/NSIDC-Data-Tutorials/tree/main/notebooks/iceflow>`_
+ 
+  - by National Snow and Ice Data Center (NSIDC)
+  - A Python library designed to simplify the co-registration of cryospheric datasets.
+  - Matches georeferencing parameters across data sets, allowing a user to derive a time series across multiple datasets for a given region.
+  - Currently valid datasets include ICESat, ICESat-2, and Operation IceBridge.
+   
+* `PhotonLabeler <https://github.com/Oht0nger/PhoLabeler>`_
+  
+  - by Lonesome Malambo
+  - A MATLAB-based user interface that allows for manual interpretation of ICESat-2 photons.
+  - Users may classify photons based on surface type, signal/noise likelihood, or other user-defined labels.
+  - Derives simple statistics for any user-defined photon classifications.
+    
+* `PhoREAL <https://github.com/icesat-2UT/PhoREAL>`_
+
+  - by Applied Research Laboratories, University of Texas at Austin
+  - A Python-based toolbox that may also be run as a GUI (Windows only).
+  - Allows for quick processing of ATL03/08 data, which may then be used to generate 2-D plots of ICESat-2 surface heights.
+  - Users may also convert processed data to .las, .csv, and .kml file formats.
+  
+* `OpenAltimetry <https://openaltimetry.org/index.html>`_
+
+  - collaboration between Scripps Institution of Oceanography, San Diego Supercomputer Center, NSIDC, and UNAVCO
+  - A web tool to visualize and download ICESat and ICESat-2 surface heights.
+  - Data may be subsetted by data product, reference ground track, and beam.
+  - Currently available ICESat-2 datasets are: ATL06 (land ice height), ATL07 (sea ice height), ATL08 (land/vegetation height), ATL13 (water surface height)
+   
 
 
 .. _complementary_GH_repos_label:

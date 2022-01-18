@@ -111,13 +111,13 @@ ICESat-2 datasets to enable scientific discovery.
    :hidden:
    :caption: Examples
 
-   example_notebooks/ICESat-2_DAAC_DataAccess_Example
-   example_notebooks/ICESat-2_DAAC_DataAccess2_Subsetting
-   example_notebooks/Working_with_ICESat-2_Data_Variables
-   example_notebooks/ICESat-2_Data_Visualization_Example
-   example_notebooks/ICESat-2_Data_Read-in_Example
-   example_notebooks/ICESat-2_cloud_data_access_example
-   example_notebooks/ICESat-2_DEM_comparison_Colombia_working
+   example_notebooks/IS2_data_access
+   example_notebooks/IS2_data_access2-subsetting
+   example_notebooks/IS2_data_variables
+   example_notebooks/IS2_data_visualization
+   example_notebooks/IS2_data_read-in
+   example_notebooks/IS2_cloud_data_access
+   example_notebooks/IS2_DEM_comparison_WIP
 
 .. toctree::
    :maxdepth: 2

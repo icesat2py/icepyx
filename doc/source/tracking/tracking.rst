@@ -3,7 +3,8 @@ Tracking icepyx Usage
 
 How is icepyx being used by the ICESat-2 data user community?
 
-Is your team or project using icepyx but not listed below? Please add your organization to the appropriate list with a link to your project/product (or :ref:`get in touch<contact_ref_label>` and we'll add it)!
+Is your team or project using icepyx but not listed below? 
+Please add your organization to the appropriate list with a link to your project/product (or :ref:`get in touch<contact_ref_label>` and we'll add it)!
 
 
 Projects and Organizations

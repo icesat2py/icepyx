@@ -29,7 +29,6 @@ Resources for Working with ICESat-2 Data
 
   resources/IS2_software
 
-
 Other Ways to Access ICESat-2 Data
 ----------------------------------
 icepyx aims to provide intuitive, object-based methods for finding, obtaining, visualizing, and analyzing ICESat-2 data as part of an open, 

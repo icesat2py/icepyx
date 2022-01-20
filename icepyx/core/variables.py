@@ -505,8 +505,8 @@ class Variables:
         Remove the variables and paths from the wanted list using user specified beam, keyword,
          and variable lists.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         all : boolean, default False
             Remove all variables and paths from the wanted list.
 

@@ -8,6 +8,7 @@ import time
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 from icepyx.core.Earthdata import Earthdata
 import icepyx.core.APIformatting as apifmt
@@ -77,7 +78,7 @@ class GenQuery:
     Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
 
     Initializing Query with a geospatial polygon file.
-    >>> aoi = '../../doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg'
+    >>> aoi = Path('../../doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = GenQuery(aoi, reg_a_dates)
     >>> print(reg_a)
@@ -193,7 +194,7 @@ class Query(GenQuery):
     array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
 
     Initializing Query with a geospatial polygon file.
-    >>> aoi = '../../doc/source/getting_started/example_notebooks/supporting_files/simple_test_poly.gpkg'
+    >>> aoi = Path('../../doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a)

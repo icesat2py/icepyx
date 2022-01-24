@@ -57,9 +57,9 @@ https://icepyx.readthedocs.io/en/latest/getting_started/install.html
 Examples (Jupyter Notebooks)
 ----------------------------
 
-Listed below are example jupyter-notebooks
+Listed below are example Jupyter notebooks
 
-`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
+`IS2_data_access <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access.html>`_
 
 `IS2_data_access2_subsetting <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html>`_
 
@@ -67,7 +67,7 @@ Listed below are example jupyter-notebooks
 
 `ICESat-2_Data_Visualization_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Visualization_Example.ipynb>`_
 
-`ICESat-2_Data_Read-in_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Read-in_Example.ipynb>`_
+`IS2_data_read-in <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_read-in.html>`_
 
 `ICESat-2_cloud_data_access_example (BETA ONLY) <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_cloud_data_access_example.ipynb>`_
 

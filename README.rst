@@ -63,7 +63,7 @@ Listed below are example Jupyter notebooks
 
 `IS2_data_access2_subsetting <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html>`_
 
-`Working_with_ICESat-2_Data_Variables <https://github.com/icesat2py/icepyx/blob/main/examples/Working_with_ICESat-2_Data_Variables.ipynb>`_
+`IS2_data_variables <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_variables.html>`_
 
 `IS2_data_visualization <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_visualization.html>`_
 

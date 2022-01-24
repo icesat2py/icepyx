@@ -69,9 +69,8 @@ Listed below are example Jupyter notebooks
 
 `IS2_data_read-in <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_read-in.html>`_
 
-`ICESat-2_cloud_data_access_example (BETA ONLY) <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_cloud_data_access_example.ipynb>`_
+`IS2_cloud_data_access (BETA ONLY) <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_cloud_data_access.html>`_
 
-`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
 
 Citing icepyx
 -------------

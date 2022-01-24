@@ -30,28 +30,17 @@ The published tutorial repo also includes links to presentation slides and video
 
 Tutorial Topics:
 
-1. Introductory Session
-
+1. Introductory Session 
 1. ICESat-2 Mission: Satellite, Sensor, and Data
-
-1. Git and GitHub
-
+1. Git and GitHub 
 1. Jupyter and iPython
-
 1. Geospatial Analysis with Python
-
-1. Introduction to ICESat-2 Sea Ice and Land Ice Products and Data Access
-
-1. Programmatic ICESat-2 data access
-
+1. Introduction to ICESat-2 Sea Ice and Land Ice Products and Data Access 
+1. Programmatic ICESat-2 data access 
 1. Introduction to HDF5 and ICESat-2 data files
-
 1. Land ice applications
-
 1. Sea ice applications
-
 1. Science data generation
-
 1. Machine learning
 
 Projects

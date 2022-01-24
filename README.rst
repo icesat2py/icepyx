@@ -65,7 +65,7 @@ Listed below are example Jupyter notebooks
 
 `Working_with_ICESat-2_Data_Variables <https://github.com/icesat2py/icepyx/blob/main/examples/Working_with_ICESat-2_Data_Variables.ipynb>`_
 
-`ICESat-2_Data_Visualization_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Visualization_Example.ipynb>`_
+`IS2_data_visualization <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_visualization.html>`_
 
 `IS2_data_read-in <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_read-in.html>`_
 

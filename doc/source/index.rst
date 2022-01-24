@@ -107,7 +107,7 @@ ICESat-2 datasets to enable scientific discovery.
    getting_started/citation_link
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :hidden:
    :caption: Examples
 

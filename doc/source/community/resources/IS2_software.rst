@@ -34,12 +34,7 @@ Most of these packages are callable through Python, though others may require ac
   - Allows for quick processing of ATL03/08 data, which may then be used to generate 2-D plots of ICESat-2 surface heights.
   - Users may also convert processed data to .las, .csv, and .kml file formats.
   
-* `OpenAltimetry <https://openaltimetry.org/index.html>`_
 
-  - collaboration between Scripps Institution of Oceanography, San Diego Supercomputer Center, NSIDC, and UNAVCO
-  - A web tool to visualize and download ICESat and ICESat-2 surface heights.
-  - Data may be subsetted by data product, reference ground track, and beam.
-  - Currently available ICESat-2 datasets are: ATL06 (land ice height), ATL07 (sea ice height), ATL08 (land/vegetation height), ATL13 (water surface height)
    
 
 

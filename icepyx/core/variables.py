@@ -402,8 +402,8 @@ class Variables:
 
         Notes
         -----
-        See also the `ICESat-2_DAAC_DataAccess2_Subsetting
-        <https://github.com/icesat2py/icepyx/blob/main/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        See also the `IS2_data_access2-subsetting
+        <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html>`_
         example notebook
 
         Examples
@@ -525,8 +525,8 @@ class Variables:
 
         Notes
         -----
-        See also the `ICESat-2_DAAC_DataAccess2_Subsetting
-        <https://github.com/icesat2py/icepyx/blob/main/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        See also the `IS2_data_access2-subsetting
+        <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html>`_
         example notebook
 
         Examples

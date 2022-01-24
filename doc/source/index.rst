@@ -14,13 +14,6 @@ Quick Links:
 `Source Code <https://github.com/icesat2py/icepyx>`_ |
 :ref:`Contact<contact_ref_label>`
 
-Quick Links:
-:link-badge:`install_ref,Installation,ref,badge-secondary text-white`
-:link-badge:`citation,Citation,ref,badge-secondary text-white`
-:link-badge:`examples,Examples,ref,badge-secondary text-white`
-:link-badge:`https://github.com/icesat2py/icepyx, Source Code, cls=badge-secondary text-white`
-:link-badge:`contact_ref_label,Contact,ref,badge-secondary text-white`
-
 icepyx is both a software library and a community composed of ICESat-2 data users, 
 developers, and the scientific community. 
 We are working together to develop a shared library of resources - 

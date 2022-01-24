@@ -22,7 +22,7 @@
 <text text-anchor="start" x="8" y="-83.8" font-family="Times,serif" font-size="14.00">session : Session</text>
 <text text-anchor="start" x="8" y="-68.8" font-family="Times,serif" font-size="14.00">uid</text>
 <polyline fill="none" stroke="black" points="0,-61 169,-61 "/>
-<text text-anchor="start" x="8" y="-45.8" font-family="Times,serif" font-size="14.00">login()</text>
+<text text-anchor="start" x="8" y="-45.8" font-family="Times,serif" font-size="14.00">login(attempts)</text>
 </g>
 <!-- icepyx.core.query.GenQuery -->
 <g id="node2" class="node">

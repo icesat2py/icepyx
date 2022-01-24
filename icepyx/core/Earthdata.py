@@ -122,7 +122,7 @@ class Earthdata:
 
         Examples
         --------
-        >>> icepyx.core.Earthdata.Earthdata.login('sam.smith','sam.smith@domain.com')
+        >>> ipx.core.Earthdata.Earthdata.login('sam.smith','sam.smith@domain.com') # doctest: +SKIP
         Earthdata Login password:  ········
         """
 

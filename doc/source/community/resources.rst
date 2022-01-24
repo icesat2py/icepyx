@@ -43,4 +43,6 @@ A few other options available for querying, visualizing, and downloading ICESat-
 -  `OpenAltimetry <https://openaltimetry.org/>`_
 
   -  Collaboration between NSIDC, Scripps, and San Diego Supercomputer Center
-  -  Enables data browsing on a map and selection of tracks and interactive data exploration for the higher level ICESat-2 datasets (i.e. ATL06+)
+  -  A web tool to visualize and download ICESat and ICESat-2 surface heights
+  - Data may be subsetted by data product, reference ground track (RGT), and beam
+  - Currently available ICESat-2 datasets are: ATL06 (land ice height), ATL07 (sea ice height), ATL08 (land/vegetation height), ATL13 (water surface height)

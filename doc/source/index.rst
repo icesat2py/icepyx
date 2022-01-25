@@ -10,7 +10,7 @@ icepyx     |version badge|
 Quick Links: 
 :ref:`Installation<install_ref>` |
 :ref:`Citation<citation>` |
-:ref:`Examples<example_notebooks/IS2_data_access>`_ |
+`Examples <example_notebooks/IS2_data_access>`_ |
 `Source Code <https://github.com/icesat2py/icepyx>`_ |
 :ref:`Contact<contact_ref_label>`
 

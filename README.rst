@@ -57,7 +57,7 @@ https://icepyx.readthedocs.io/en/latest/getting_started/install.html
 Examples (Jupyter Notebooks)
 ----------------------------
 
-Listed below are example Jupyter notebooks
+Listed below are example Jupyter notebooks for working with ICESat-2 (IS2).
 
 `IS2_data_access <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access.html>`_
 

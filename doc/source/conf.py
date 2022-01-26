@@ -37,7 +37,7 @@ extensions = [
     "numpydoc",
     # "sphinx.ext.autosummary",
     "myst_nb",
-    "jupyter_sphinx.execute",
+    "jupyter_sphinx",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
     "sphinx_panels",

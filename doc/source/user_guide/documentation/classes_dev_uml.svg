@@ -18,7 +18,7 @@
 <text text-anchor="start" x="8" y="-196.3" font-family="Times,serif" font-size="14.00">capability_url</text>
 <text text-anchor="start" x="8" y="-181.3" font-family="Times,serif" font-size="14.00">email</text>
 <text text-anchor="start" x="8" y="-166.3" font-family="Times,serif" font-size="14.00">netrc : NoneType</text>
-<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : str, NoneType</text>
+<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : NoneType, str</text>
 <text text-anchor="start" x="8" y="-136.3" font-family="Times,serif" font-size="14.00">session : Session</text>
 <text text-anchor="start" x="8" y="-121.3" font-family="Times,serif" font-size="14.00">uid</text>
 <polyline fill="none" stroke="black" points="0,-113.5 301,-113.5 "/>

@@ -1,4 +1,5 @@
 gitpython
+jupyter-sphinx
 linkify-it-py
 myst-nb
 nbsphinx

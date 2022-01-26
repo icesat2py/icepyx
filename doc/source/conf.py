@@ -19,6 +19,7 @@ import datetime
 
 import icepyx
 
+
 # -- Project information -----------------------------------------------------
 
 project = "icepyx"
@@ -36,6 +37,7 @@ extensions = [
     "numpydoc",
     # "sphinx.ext.autosummary",
     "myst_nb",
+    "jupyter_sphinx",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
     "sphinx_panels",

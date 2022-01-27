@@ -40,6 +40,7 @@ icepyx is but one of several software packages designed to improve user experien
 
 Resources Developed For and During Hackweeks
 --------------------------------------------
+Previous hackweeks gave participants the opportunity to develop codes to help download and/or analyze ICESat-2 data. Many of these projects are inactive, but they may provide useful workflows for users to work with.
 
 .. toctree::
   :maxdepth: 2

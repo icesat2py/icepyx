@@ -11,24 +11,6 @@ community efforts stemming from personal interest to ongoing research workflows.
 Please feel free to add your project or another resource to this guide by submitting a pull request. 
 We reserve the right to reject suggested resources that fall outside the scope of icepyx.
 
-Resources Developed For and During Hackweeks
---------------------------------------------
-
-.. toctree::
-  :maxdepth: 2
-
-  resources/2019_IS2_HW
-  resources/2020_IS2_HW
-  resources/2022_IS2_HW
-
-Resources for Working with ICESat-2 Data
-----------------------------------------
-
-.. toctree::
-  :maxdepth: 2
-
-  resources/IS2_software
-
 Other Ways to Access ICESat-2 Data
 ----------------------------------
 icepyx aims to provide intuitive, object-based methods for finding, obtaining, visualizing, and analyzing ICESat-2 data as part of an open, 
@@ -46,3 +28,22 @@ A few other options available for querying, visualizing, and downloading ICESat-
   -  A web tool to visualize and download ICESat and ICESat-2 surface heights
   - Data may be subsetted by data product, reference ground track (RGT), and beam
   - Currently available ICESat-2 datasets are: ATL06 (land ice height), ATL07 (sea ice height), ATL08 (land/vegetation height), ATL13 (water surface height)
+
+Software Packages for Working with ICESat-2 Data
+----------------------------------------
+icepyx is but one of several software packages designed to improve user experience with ICESat-2 data. The links below highlight other packages active in the community.
+
+.. toctree::
+  :maxdepth: 2
+
+  resources/IS2_software
+
+Resources Developed For and During Hackweeks
+--------------------------------------------
+
+.. toctree::
+  :maxdepth: 2
+
+  resources/2019_IS2_HW
+  resources/2020_IS2_HW
+  resources/2022_IS2_HW

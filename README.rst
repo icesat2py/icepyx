@@ -2,6 +2,7 @@ icepyx
 ======
 
 **Python tools for obtaining and working with ICESat-2 data**
+
 |GitHub license| |Conda install| |Pypi install|
 
 Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
@@ -15,13 +16,13 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
     :target: https://anaconda.org/conda-forge/icepyx
 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
-    :target: https://pypi.org/project/icepyx/
+    :target: https://pypi.org/project/icepyx
 
 .. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
 
 .. |Docs Status dev| image:: https://readthedocs.org/projects/icepyx/badge/?version=development
-   :target: https://icepyx.readthedocs.io/en/development/
+   :target: https://icepyx.readthedocs.io/en/development
 
 .. |Travis main Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=main
     :target: https://app.travis-ci.com/icesat2py/icepyx
@@ -30,10 +31,10 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
     :target: https://app.travis-ci.com/icesat2py/icepyx
 
 .. |Code Coverage main| image:: https://codecov.io/gh/icesat2py/icepyx/branch/main/graph/badge.svg
-    :target: https://codecov.io/gh/icesat2py/icepyx/branch/main
+    :target: https://codecov.io/gh/icesat2py/icepyx
 
 .. |Code Coverage dev| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
-    :target: https://codecov.io/gh/icesat2py/icepyx/branch/development
+    :target: https://codecov.io/gh/icesat2py/icepyx
     
 
 Origin and Purpose

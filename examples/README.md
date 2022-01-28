@@ -2,4 +2,4 @@
 
 Examples are available in the [documentation](https://icepyx.readthedocs.io).
 Source Jupyter notebooks and supporting materials are in
-[`doc/source/getting_started/example_notebooks`](https://github.com/icesat2py/icepyx/tree/main/doc/source/getting_started/example_notebooks).
+[`doc/source/example_notebooks`](https://github.com/icesat2py/icepyx/tree/main/doc/source/example_notebooks).

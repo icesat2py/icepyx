@@ -19,6 +19,7 @@ import datetime
 
 import icepyx
 
+
 # -- Project information -----------------------------------------------------
 
 project = "icepyx"

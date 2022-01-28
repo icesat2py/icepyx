@@ -241,7 +241,7 @@
 <text text-anchor="start" x="1877" y="-181.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
 <text text-anchor="start" x="1877" y="-166.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
 <text text-anchor="start" x="1877" y="-151.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
-<text text-anchor="start" x="1877" y="-136.3" font-family="Times,serif" font-size="14.00">product : str, NoneType</text>
+<text text-anchor="start" x="1877" y="-136.3" font-family="Times,serif" font-size="14.00">product : NoneType, str</text>
 <text text-anchor="start" x="1877" y="-121.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
 <polyline fill="none" stroke="black" points="1869,-113.5 2120,-113.5 "/>
 <text text-anchor="start" x="1877" y="-98.3" font-family="Times,serif" font-size="14.00">generate_OA_parameters(): list</text>

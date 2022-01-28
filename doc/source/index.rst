@@ -10,7 +10,7 @@ icepyx     |version badge|
 Quick Links: 
 :ref:`Installation<install_ref>` |
 :ref:`Citation<citation>` |
-:ref:`Examples<examples>` |
+`Examples <example_notebooks/IS2_data_access.html>`_ |
 `Source Code <https://github.com/icesat2py/icepyx>`_ |
 :ref:`Contact<contact_ref_label>`
 
@@ -98,6 +98,18 @@ ICESat-2 datasets to enable scientific discovery.
    getting_started/origin_purpose
    getting_started/install
    getting_started/citation_link
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Examples
+
+   example_notebooks/IS2_data_access
+   example_notebooks/IS2_data_access2-subsetting
+   example_notebooks/IS2_data_variables
+   example_notebooks/IS2_data_visualization
+   example_notebooks/IS2_data_read-in
+   example_notebooks/IS2_cloud_data_access
 
 .. toctree::
    :maxdepth: 2

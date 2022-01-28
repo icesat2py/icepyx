@@ -30,7 +30,7 @@ A few other options available for querying, visualizing, and downloading ICESat-
   - Currently available ICESat-2 datasets are: ATL06 (land ice height), ATL07 (sea ice height), ATL08 (land/vegetation height), ATL13 (water surface height)
 
 Software Packages for Working with ICESat-2 Data
-----------------------------------------
+------------------------------------------------
 icepyx is but one of several software packages designed to improve user experience with ICESat-2 data. The links below highlight other packages active in the community.
 
 .. toctree::

@@ -18,11 +18,11 @@ reproducible workflow that leverages existing tools wherever possible (see :ref:
 and can be run locally, using high performance computing, or in the cloud using Pangeo. 
 A few other options available for querying, visualizing, and downloading ICESat-2 data files are:
 
--  `NSIDC (DAAC) Data Access <https://nsidc.org/data/icesat-2>`_
+- `NSIDC (DAAC) Data Access <https://nsidc.org/data/icesat-2>`_
 
   - Select “ICESat-2 Data Sets” from the left hand menu. Choose your dataset (ATL##). Then, use the spatial and temporal filters to narrow your list of granules available for download.
 
--  `OpenAltimetry <https://openaltimetry.org/>`_
+- `OpenAltimetry <https://openaltimetry.org/>`_
 
   - Collaboration between NSIDC, Scripps, and San Diego Supercomputer Center
   - A web tool to visualize and download ICESat and ICESat-2 surface heights

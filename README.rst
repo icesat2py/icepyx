@@ -57,21 +57,20 @@ https://icepyx.readthedocs.io/en/latest/getting_started/install.html
 Examples (Jupyter Notebooks)
 ----------------------------
 
-Listed below are example jupyter-notebooks
+Listed below are example Jupyter notebooks for working with ICESat-2 (IS2).
 
-`ICESat-2_DAAC_DataAccess_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DAAC_DataAccess_Example.ipynb>`_
+`IS2_data_access <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access.html>`_
 
-`ICESat-2_DAAC_DataAccess2_Subsetting <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+`IS2_data_access2_subsetting <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html>`_
 
-`Working_with_ICESat-2_Data_Variables <https://github.com/icesat2py/icepyx/blob/main/examples/Working_with_ICESat-2_Data_Variables.ipynb>`_
+`IS2_data_variables <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_variables.html>`_
 
-`ICESat-2_Data_Visualization_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Visualization_Example.ipynb>`_
+`IS2_data_visualization <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_visualization.html>`_
 
-`ICESat-2_Data_Read-in_Example <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_Data_Read-in_Example.ipynb>`_
+`IS2_data_read-in <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_read-in.html>`_
 
-`ICESat-2_cloud_data_access_example (BETA ONLY) <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_cloud_data_access_example.ipynb>`_
+`IS2_cloud_data_access (BETA ONLY) <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_cloud_data_access.html>`_
 
-`ICESat-2_DEM_comparison_Colombia_working <https://github.com/icesat2py/icepyx/blob/main/examples/ICESat-2_DEM_comparison_Colombia_working.ipynb>`_
 
 Citing icepyx
 -------------

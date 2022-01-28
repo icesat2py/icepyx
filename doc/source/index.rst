@@ -114,19 +114,6 @@ ICESat-2 datasets to enable scientific discovery.
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Examples
-
-   getting_started/example_notebooks/ICESat-2_DAAC_DataAccess_Example
-   getting_started/example_notebooks/ICESat-2_DAAC_DataAccess2_Subsetting
-   getting_started/example_notebooks/Working_with_ICESat-2_Data_Variables
-   getting_started/example_notebooks/ICESat-2_Data_Visualization_Example
-   getting_started/example_notebooks/ICESat-2_Data_Read-in_Example
-   getting_started/example_notebooks/ICESat-2_cloud_data_access_example
-   getting_started/example_notebooks/ICESat-2_DEM_comparison_Colombia_working
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
    :caption: User Guide
 
    user_guide/documentation/icepyx

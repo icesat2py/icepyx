@@ -20,12 +20,12 @@ A few other options available for querying, visualizing, and downloading ICESat-
 
 -  `NSIDC (DAAC) Data Access <https://nsidc.org/data/icesat-2>`_
 
-  -  Select “ICESat-2 Data Sets” from the left hand menu. Choose your dataset (ATL##). Then, use the spatial and temporal filters to narrow your list of granules available for download.
+  - Select “ICESat-2 Data Sets” from the left hand menu. Choose your dataset (ATL##). Then, use the spatial and temporal filters to narrow your list of granules available for download.
 
 -  `OpenAltimetry <https://openaltimetry.org/>`_
 
-  -  Collaboration between NSIDC, Scripps, and San Diego Supercomputer Center
-  -  A web tool to visualize and download ICESat and ICESat-2 surface heights
+  - Collaboration between NSIDC, Scripps, and San Diego Supercomputer Center
+  - A web tool to visualize and download ICESat and ICESat-2 surface heights
   - Data may be subsetted by data product, reference ground track (RGT), and beam
   - Currently available ICESat-2 datasets are: ATL06 (land ice height), ATL07 (sea ice height), ATL08 (land/vegetation height), ATL13 (water surface height)
 

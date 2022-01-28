@@ -45,6 +45,8 @@ extensions = [
 myst_enable_extensions = [
     "linkify",
 ]
+# myst-nb config
+suppress_warnings = ["myst.header"]
 
 source_suffix = {
     # Note, put .rst first so that API docs are linked properly

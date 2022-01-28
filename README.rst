@@ -24,10 +24,10 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
    :target: http://icepyx.readthedocs.io/?badge=development
 
 .. |Travis main Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=main
-    :target: https://app.travis-ci.com/icesat2py/icepyx/main
+    :target: https://app.travis-ci.com/icesat2py/icepyx/branches/main
 
 .. |Travis dev Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
-    :target: https://app.travis-ci.com/icesat2py/icepyx/development
+    :target: https://app.travis-ci.com/icesat2py/icepyx/branches/development
 
 .. |Code Coverage main| image:: https://codecov.io/gh/icesat2py/icepyx/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx/branch/main

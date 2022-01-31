@@ -4,7 +4,7 @@ import pandas as pd
 
 cwd = os.getcwd()
 
-trackpath = cwd + '/'  # '/doc/source/tracking/pypistats/'
+trackpath = f'{cwd}/doc/source/tracking/pypistats/'
 downloadfn = "downloads_data.csv"
 sysdownloadfn = "sys_downloads_data.csv"
 

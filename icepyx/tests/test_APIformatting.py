@@ -1022,16 +1022,26 @@ def test_readable_granules():
     obs = apifmt._fmt_readable_granules("ATL06", cycles=["02"], tracks=["1387"])
     exp = ["ATL06_??????????????_138702??_*"]
     assert obs == exp
-    obs = apifmt._fmt_readable_granules("ATL06", tracks=["1387"])
-    exp = ["ATL06_??????????????_1387????_*"]
+    obs = apifmt._fmt_readable_granules('ATL07',cycles=['02'],tracks=['1387'])
+    exp = ['ATL07-??_??????????????_138702??_*']
     assert obs == exp
-    obs = apifmt._fmt_readable_granules("ATL06", cycles=["02"])
-    exp = ["ATL06_??????????????_????02??_*"]
+    obs = apifmt._fmt_readable_granules('ATL06',tracks=['1387'])
+    exp = ['ATL06_??????????????_1387????_*']
     assert obs == exp
-    obs = apifmt._fmt_readable_granules(
-        "ATL06", files=["ATL06_20190329071316_13870211_003_*"]
-    )
-    exp = ["ATL06_20190329071316_13870211_003_*"]
+    obs = apifmt._fmt_readable_granules('ATL07',tracks=['1387'])
+    exp = ['ATL07-??_??????????????_1387????_*']
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules('ATL11',tracks=['1387'])
+    exp = ['ATL11_1387??_*']
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules('ATL06',cycles=['02'])
+    exp = ['ATL06_??????????????_????02??_*']
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules('ATL07',cycles=['02'])
+    exp = ['ATL07-??_??????????????_????02??_*']
+    assert obs == exp
+    obs = apifmt._fmt_readable_granules('ATL06',files=['ATL06_20190329071316_13870211_003_*'])
+    exp = ['ATL06_20190329071316_13870211_003_*']
     assert obs == exp
 
 
@@ -1052,13 +1062,13 @@ def test_to_string():
         "temporal": "2019-02-20T00:00:00Z,2019-02-28T23:59:59Z",
         "bounding_box": "-55,68,-48,71",
     }
-    reqparams = {"page_size": 10, "page_num": 1}
+    reqparams = {"page_size": 2000, "page_num": 1}
     params = apifmt.combine_params(CMRparams, reqparams)
     obs = apifmt.to_string(params)
     expected = (
         "short_name=ATL06&version=002"
         "&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z"
-        "&bounding_box=-55,68,-48,71&page_size=10&page_num=1"
+        "&bounding_box=-55,68,-48,71&page_size=2000&page_num=1"
     )
     assert obs == expected
 

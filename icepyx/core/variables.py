@@ -6,6 +6,16 @@ import icepyx.core.is2ref as is2ref
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 
+
+def list_of_dict_vals(input_dict):
+    """
+    Create a single list of the values from a dictionary.
+    """
+    wanted_list = []
+    [wanted_list.append(val) for vals in input_dict.values() for val in vals]
+    return wanted_list
+
+
 # REFACTOR: class needs better docstrings
 # DevNote: currently this class is not tested
 class Variables:
@@ -73,10 +83,10 @@ class Variables:
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
-        >>> reg_a.earthdata_login(user_id,user_email)
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='5') # doctest: +SKIP
+        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
         Earthdata Login password:  ········
-        >>> reg_a.order_vars.avail()
+        >>> reg_a.order_vars.avail() # doctest: +SKIP
         ['ancillary_data/atlas_sdp_gps_epoch',
         'ancillary_data/control',
         'ancillary_data/data_end_utc',
@@ -96,7 +106,20 @@ class Variables:
                 )["variables"]
 
             elif self._vartype == "file":
-                self._avail = None
+                import h5py
+
+                self._avail = []
+
+                def visitor_func(name, node):
+                    if isinstance(node, h5py.Group):
+                        # node is a Group
+                        pass
+                    else:
+                        # node is a Dataset
+                        self._avail.append(name)
+
+                with h5py.File(self.path, "r") as h5f:
+                    h5f.visititems(visitor_func)
 
         if options == True:
             vgrp, paths = self.parse_var_list(self._avail)
@@ -112,17 +135,27 @@ class Variables:
             return self._avail
 
     @staticmethod
-    def parse_var_list(varlist):
+    def parse_var_list(varlist, tiered=True):
         """
         Parse a list of path strings into tiered lists and names of variables
 
+        Parameters
+        ----------
+        varlist : list of strings
+            List of full variable paths to be parsed.
+
+        tiered : boolean, default True
+            Whether to return the paths (sans variable name) as a nested list of component strings
+            (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments']])
+            or a single list of path strings (e.g. ['orbit_info','ancillary_data','gt1l/land_ice_segments'])
+
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
-        >>> reg_a.earthdata_login(user_id,user_email)
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1') # doctest: +SKIP
+        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
         Earthdata Login password:  ········
-        >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail())
-        >>> var_dict
+        >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail()) # doctest: +SKIP
+        >>> var_dict # doctest: +SKIP
         {'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],
         .
         .
@@ -137,7 +170,7 @@ class Variables:
         .
         .
         }
-        >>> var_dict.keys()
+        >>> var_dict.keys() # doctest: +SKIP
         dict_keys(['atlas_sdp_gps_epoch', 'control', 'data_end_utc', 'data_start_utc',
         'end_cycle', 'end_delta_time', 'end_geoseg', 'end_gpssow', 'end_gpsweek',
         'end_orbit', 'end_region', 'end_rgt', 'granule_end_utc', 'granule_start_utc',
@@ -166,8 +199,8 @@ class Variables:
         'qa_granule_fail_reason', 'qa_granule_pass_fail', 'signal_selection_source_fraction_0',
         'signal_selection_source_fraction_1', 'signal_selection_source_fraction_2',
         'signal_selection_source_fraction_3'])
-        >>> import numpy
-        >>> numpy.unique(paths)
+        >>> import numpy # doctest: +SKIP
+        >>> numpy.unique(paths) # doctest: +SKIP
         array(['ancillary_data', 'bias_correction', 'dem', 'fit_statistics',
         'geophysical', 'ground_track', 'gt1l', 'gt1r', 'gt2l', 'gt2r',
         'gt3l', 'gt3r', 'land_ice', 'land_ice_segments', 'none',
@@ -177,9 +210,12 @@ class Variables:
 
         # create a dictionary of variable names and paths
         vgrp = {}
-        num = np.max([v.count("/") for v in varlist])
-        #         print('max needed: ' + str(num))
-        paths = [[] for i in range(num)]
+        if tiered == False:
+            paths = []
+        else:
+            num = np.max([v.count("/") for v in varlist])
+            #         print('max needed: ' + str(num))
+            paths = [[] for i in range(num)]
 
         # print(self._cust_options['variables'])
         for vn in varlist:
@@ -191,13 +227,16 @@ class Variables:
                 vgrp[vkey].append(vn)
 
             if vpath:
-                j = 0
-                for d in vpath.split("/"):
-                    paths[j].append(d)
-                    j = j + 1
-                for i in range(j, num):
-                    paths[i].append("none")
-                    i = i + 1
+                if tiered == False:
+                    paths.append(vpath)
+                else:
+                    j = 0
+                    for d in vpath.split("/"):
+                        paths[j].append(d)
+                        j = j + 1
+                    for i in range(j, num):
+                        paths[i].append("none")
+                        i = i + 1
 
         return vgrp, paths
 
@@ -363,31 +402,31 @@ class Variables:
 
         Notes
         -----
-        See also the `ICESat-2_DAAC_DataAccess2_Subsetting
-        <https://github.com/icesat2py/icepyx/blob/main/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        See also the `IS2_data_access2-subsetting
+        <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html>`_
         example notebook
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.earthdata_login(user_id,user_email)
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
         Earthdata Login password:  ········
 
         To add all variables related to a specific ICESat-2 beam
 
-        >>> reg_a.order_vars.append(beam_list=['gt1r'])
+        >>> reg_a.order_vars.append(beam_list=['gt1r']) # doctest: +SKIP
 
         To include the default variables:
 
-        >>> reg_a.order_vars.append(defaults=True)
+        >>> reg_a.order_vars.append(defaults=True) # doctest: +SKIP
 
         To add specific variables in orbit_info
 
-        >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
+        >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
 
         To add all variables and paths in ancillary_data
 
-        >>> reg_a.order_vars.append(keyword_list=['ancillary_data'])
+        >>> reg_a.order_vars.append(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
         assert not (
@@ -408,17 +447,27 @@ class Variables:
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
         # add the mandatory variables to the data object
-        nec_varlist = [
-            "sc_orient",
-            "sc_orient_time",
-            "atlas_sdp_gps_epoch",
-            "data_start_utc",
-            "data_end_utc",
-            "granule_start_utc",
-            "granule_end_utc",
-            "start_delta_time",
-            "end_delta_time",
-        ]
+        if self._vartype == "order":
+            nec_varlist = [
+                "sc_orient",
+                "sc_orient_time",
+                "atlas_sdp_gps_epoch",
+                "data_start_utc",
+                "data_end_utc",
+                "granule_start_utc",
+                "granule_end_utc",
+                "start_delta_time",
+                "end_delta_time",
+            ]
+        elif self._vartype == "file":
+            nec_varlist = [
+                "sc_orient",
+                "atlas_sdp_gps_epoch",
+                "cycle_number",
+                "rgt",
+                "data_start_utc",
+                "data_end_utc",
+            ]
 
         if not hasattr(self, "wanted") or self.wanted == None:
             for varid in nec_varlist:
@@ -456,8 +505,8 @@ class Variables:
         Remove the variables and paths from the wanted list using user specified beam, keyword,
          and variable lists.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         all : boolean, default False
             Remove all variables and paths from the wanted list.
 
@@ -476,31 +525,31 @@ class Variables:
 
         Notes
         -----
-        See also the `ICESat-2_DAAC_DataAccess2_Subsetting
-        <https://github.com/icesat2py/icepyx/blob/main/doc/examples/ICESat-2_DAAC_DataAccess2_Subsetting.ipynb>`_
+        See also the `IS2_data_access2-subsetting
+        <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html>`_
         example notebook
 
         Examples
         --------
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.earthdata_login(user_id,user_email)
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
         Earthdata Login password:  ········
 
         To clear the list of wanted variables
 
-        >>> reg_a.order_vars.remove(all=True)
+        >>> reg_a.order_vars.remove(all=True) # doctest: +SKIP
 
         To remove all variables related to a specific ICESat-2 beam
 
-        >>> reg_a.order_vars.remove(beam_list=['gt1r'])
+        >>> reg_a.order_vars.remove(beam_list=['gt1r']) # doctest: +SKIP
 
         To remove specific variables in orbit_info
 
-        >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time'])
+        >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
 
         To remove all variables and paths in ancillary_data
 
-        >>> reg_a.order_vars.remove(keyword_list=['ancillary_data'])
+        >>> reg_a.order_vars.remove(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
         if not hasattr(self, "wanted") or self.wanted == None:

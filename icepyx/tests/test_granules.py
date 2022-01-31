@@ -19,6 +19,8 @@ from icepyx.core.exceptions import NsidcQueryError
 # def session(reg_a):
 #     return reg_a._start_earthdata_session('icepyx_devteam', 'icepyx.dev@gmail.com', os.getenv('NSIDC_LOGIN'))
 
+# check that agent key is added in event of no subsetting
+
 
 # DevNote: clearly there's a better way that doesn't make the function so long... what is it?
 def test_granules_info():
@@ -595,15 +597,18 @@ def test_no_granules_in_search_results():
 
 def test_correct_granule_list_returned():
     reg_a = ipx.Query(
-        "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-28"], version="3",
+        "ATL06",
+        [-55, 68, -48, 71],
+        ["2019-02-20", "2019-02-28"],
+        version="5",
     )
 
     (obs_grans,) = reg_a.avail_granules(ids=True)
     exp_grans = [
-        "ATL06_20190221121851_08410203_003_01.h5",
-        "ATL06_20190222010344_08490205_003_01.h5",
-        "ATL06_20190225121032_09020203_003_01.h5",
-        "ATL06_20190226005526_09100205_003_01.h5",
+        "ATL06_20190221121851_08410203_005_01.h5",
+        "ATL06_20190222010344_08490205_005_01.h5",
+        "ATL06_20190225121032_09020203_005_01.h5",
+        "ATL06_20190226005526_09100205_005_01.h5",
     ]
     assert set(obs_grans) == set(exp_grans)
 

@@ -1,7 +1,7 @@
 .. _whatsnew_050:
 
 What's new in 0.5.0 (8 December 2021)
------------------------------------
+-------------------------------------
 
 These are the changes in icepyx 0.5.0 See :ref:`release` for a full changelog
 including other versions of icepyx.
@@ -17,7 +17,7 @@ New Features
     * add ability to get list of variables from a file
     * add variables example notebook; trim variables module details out of subsetting example
     * update examples from 2020 Hackweek tutorials
-- preliminary AWS access (#213)  
+- preliminary AWS access (#213)
     * add basic cloud data access capabilities
     * add weak check for AWS instance
 
@@ -61,4 +61,4 @@ Other
 Contributors
 ~~~~~~~~~~~~
 
-.. contributors:: v0.4.1..v0.5.0|HEAD  
+.. contributors:: v0.4.1..v0.5.0|HEAD

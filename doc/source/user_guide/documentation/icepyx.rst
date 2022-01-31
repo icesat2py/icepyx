@@ -1,3 +1,5 @@
+.. _api_doc_ref:
+
 icepyx Documentation (API Reference)
 ====================================
 

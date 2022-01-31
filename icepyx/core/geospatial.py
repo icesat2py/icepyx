@@ -4,36 +4,36 @@ from shapely.geometry import Polygon
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 def geodataframe(extent_type, spatial_extent, file=False):
     """
-        Return a geodataframe of the spatial extent
+    Return a geodataframe of the spatial extent
 
-        Parameters
-        ----------
-        extent_type : string
-            One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
-        
-        spatial_extent : string
-            A string of the spatial extent. If file is False, the string should be a
-            list of coordinates in decimal degrees of [lower-left-longitude, 
-            lower-left-latitute, upper-right-longitude, upper-right-latitude] or
-            [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1]. 
-            If file is True, the string is the full file path and filename to the
-            file containing the desired spatial extent.
+    Parameters
+    ----------
+    extent_type : string
+        One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
-        file : boolean, default False
-            Indication for whether the spatial_extent string is a filename or coordinate list
+    spatial_extent : string
+        A string of the spatial extent. If file is False, the string should be a
+        list of coordinates in decimal degrees of [lower-left-longitude,
+        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
+        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
+        If file is True, the string is the full file path and filename to the
+        file containing the desired spatial extent.
 
-        See Also
-        --------
-        icepyx.Query
-        
-        Examples
-        --------
-        >>> reg_a = icepyx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> gdf = geospatial.geodataframe(reg_a.extent_type, reg_a._spat_extent)
-        >>> gdf.geometry
-        0    POLYGON ((-55.00000 68.00000, -55.00000 71.000...
-        Name: geometry, dtype: geometry
-        """
+    file : boolean, default False
+        Indication for whether the spatial_extent string is a filename or coordinate list
+
+    See Also
+    --------
+    icepyx.Query
+
+    Examples
+    --------
+    >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+    >>> gdf = geodataframe(reg_a.extent_type, reg_a._spat_extent)
+    >>> gdf.geometry
+    0    POLYGON ((-55.00000 68.00000, -55.00000 71.000...
+    Name: geometry, dtype: geometry
+    """
 
     if extent_type == "bounding_box":
         boxx = [

@@ -3,25 +3,39 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|Documentation Status|  |GitHub license|  |Travis Dev Branch Build Status| |Code Coverage| |Conda install| |Pypi install|
+|GitHub license| |Conda install| |Pypi install|
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
-   :target: http://icepyx.readthedocs.io/?badge=latest
+Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
+
+Current development version (development branch): |Docs Status dev| |Travis dev Build Status| |Code Coverage dev|
 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |Travis Dev Branch Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
-    :target: https://app.travis-ci.com/icesat2py/icepyx
-
-.. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
-    :target: https://codecov.io/gh/icesat2py/icepyx
-    
 .. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
     :target: https://anaconda.org/conda-forge/icepyx
 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
-    :target: https://pypi.org/project/icepyx/
+    :target: https://pypi.org/project/icepyx
+
+.. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
+   :target: http://icepyx.readthedocs.io/?badge=latest
+
+.. |Docs Status dev| image:: https://readthedocs.org/projects/icepyx/badge/?version=development
+   :target: https://icepyx.readthedocs.io/en/development
+
+.. |Travis main Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=main
+    :target: https://app.travis-ci.com/icesat2py/icepyx
+
+.. |Travis dev Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
+    :target: https://app.travis-ci.com/icesat2py/icepyx
+
+.. |Code Coverage main| image:: https://codecov.io/gh/icesat2py/icepyx/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/icesat2py/icepyx
+
+.. |Code Coverage dev| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
+    :target: https://codecov.io/gh/icesat2py/icepyx
+    
 
 Origin and Purpose
 ------------------

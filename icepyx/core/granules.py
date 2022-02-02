@@ -323,27 +323,24 @@ class Granules:
 
         order_fn = ".order_restart"
 
+        total_pages = int(np.ceil(len(self.avail) / reqparams["page_size"]))
         print(
             "Total number of data order requests is ",
-            request_params["page_num"],
+            total_pages,
             " for ",
             len(self.avail),
             " granules.",
         )
-        # DevNote/05/27/20/: Their page_num values are the same, but use the combined version anyway.
-        # I'm switching back to reqparams, because that value is not changed by the for loop. I shouldn't cause an issue either way, but I've had issues with mutable types in for loops elsewhere.
-        for i in range(reqparams["page_num"]):
-            #         for i in range(request_params['page_num']):
-            page_val = i + 1
-
+        for page_num in range(1, total_pages + 1):
             print(
                 "Data request ",
-                page_val,
+                page_num,
                 " of ",
-                reqparams["page_num"],
+                total_pages,
                 " is submitting to NSIDC",
             )
-            request_params.update({"page_num": page_val})
+            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+            request_params.update({"page_num": page_num})
 
             # DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
             # into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general

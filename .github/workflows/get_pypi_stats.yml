@@ -2,7 +2,7 @@ name: Get PyPi Stats
 on:
   schedule:
     # runs once a week on sunday
-    - cron: "55 23 * * 0"
+    - cron: "55 20 1 * *"
   # Trigger manually at https://github.com/icesat2py/icepyx/actions/workflows/get_pypi_stats.yml
   workflow_dispatch:
 

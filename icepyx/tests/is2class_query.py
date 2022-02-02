@@ -20,7 +20,7 @@ def test_reqconfig_params():
     # test for search params
     reg_a.build_reqconfig_params("search")
     obs_keys = reg_a.reqparams.keys()
-    exp_keys_all = ["page_size", "scroll"]
+    exp_keys_all = ["page_size"]
     assert all(keys in obs_keys for keys in exp_keys_all)
 
     # test for download params

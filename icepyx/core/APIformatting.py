@@ -450,19 +450,10 @@ class Parameters:
                 for key in reqkeys:
                     if key in kwargs:
                         self._fmted_keys.update({key: kwargs[key]})
-                    #                 elif key in defaults:
-                    #                     if key is 'page_num':
-                    #                         pnum = math.ceil(len(is2obj.granules)/reqparams['page_size'])
-                    #                         if pnum > 0:
-                    #                             reqparams.update({key:pnum})
-                    #                         else:
-                    #                             reqparams.update({key:defaults[key]})
                     elif key in defaults:
                         self._fmted_keys.update({key: defaults[key]})
                     else:
                         pass
-
-                # self._fmted_keys["page_num"] = 1
 
         else:
             if self.check_values == True and kwargs == None:

@@ -11,10 +11,6 @@
 Installation
 ============
 
-<<<<<<< HEAD
-.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/master.zip
-.. _`Fiona`: https://pypi.org/project/Fiona/
-=======
 Quickstart
 ----------
 
@@ -22,7 +18,6 @@ The simplest way to install icepyx is by using the
 `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/index.html>`__
 package manager. The command below takes care of setting up a virtual
 environment and installs icepyx along with all the necessary dependencies::
->>>>>>> development
 
     conda create --name icepyx-env --channel conda-forge icepyx
 

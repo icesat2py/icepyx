@@ -20,7 +20,7 @@ def test_reqconfig_params():
     # test for search params
     reg_a.build_reqconfig_params("search")
     obs_keys = reg_a.reqparams.keys()
-    exp_keys_all = ["page_size", "page_num"]
+    exp_keys_all = ["page_size", "scroll"]
     assert all(keys in obs_keys for keys in exp_keys_all)
 
     # test for download params
@@ -37,9 +37,6 @@ def test_reqconfig_params():
         "include_meta",
     ]
     assert all(keys in obs_keys for keys in exp_keys_all)
-
-
-
 
 
 # BestPractices: should do additional properties tests for each potential property type (e.g. spatial extent can have type bounding_box or polygon)

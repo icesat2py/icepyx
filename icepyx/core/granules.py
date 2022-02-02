@@ -201,15 +201,14 @@ class Granules:
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
 
         params = apifmt.combine_params(
-            CMRparams, {k: reqparams[k] for k in ["page_size", "scroll"]}
+            CMRparams, {k: reqparams[k] for k in ["page_size"]}
         )
-        # params["scroll"] = "true"  # should be a required param for search (not yet avail for ordering)?
 
-        cmr_scroll_id = None
+        cmr_search_after = None
 
         while True:
-            if cmr_scroll_id is not None:
-                headers["CMR-Scroll-Id"] = cmr_scroll_id
+            if cmr_search_after is not None:
+                headers["CMR-Search-After"] = cmr_search_after
 
             response = requests.get(
                 granule_search_url,
@@ -217,10 +216,10 @@ class Granules:
                 params=apifmt.to_string(params),
             )
 
-            if cmr_scroll_id is None:
-                hits = int(response.headers["CMR-Hits"])
-
-            cmr_scroll_id = response.headers["CMR-Scroll-Id"]
+            try:
+                cmr_search_after = response.headers["CMR-Search-After"]
+            except KeyError:
+                cmr_search_after = None
 
             try:
                 response.raise_for_status()
@@ -236,9 +235,8 @@ class Granules:
 
             results = json.loads(response.content)
             if not results["feed"]["entry"]:
-                # Done scrolling
-                assert (
-                    len(self.avail) == hits
+                assert len(self.avail) == int(
+                    response.headers["CMR-Hits"]
                 ), "Search failure - unexpected number of results"
                 break
 

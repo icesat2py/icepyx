@@ -325,7 +325,7 @@ class Parameters:
             }
         elif self.partype == "required":
             self._poss_keys = {
-                "search": ["page_size", "scroll"],
+                "search": ["page_size"],
                 "download": [
                     "page_size",
                     "page_num",
@@ -443,7 +443,6 @@ class Parameters:
                 defaults = {
                     "page_size": 2000,
                     "page_num": 1,
-                    "scroll": True,
                     "request_mode": "async",
                     "include_meta": "Y",
                     "client_string": "icepyx",

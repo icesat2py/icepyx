@@ -34,27 +34,32 @@ Find the *Issues* tab at the top of GitHub repository and click *New Issue* butt
 Questions and Help
 ------------------
 
-Please do not create issues to ask for help. A faster way to reach the community is through our Science/ICESat-2 subcategory on the `Pangeo discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_ page. We are excited to have you join an existing conversation or start a new post! Please note that a github login is required to post on the discourse page.
+Please do not create issues to ask for help. A faster way to reach the community is through our Science/ICESat-2 subcategory on the `Pangeo discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_ page. We are excited to have you join an existing conversation or start a new post! Please note that a GitHub login is required to post on the discourse page.
 
 Other Resources
 ^^^^^^^^^^^^^^^
-- We are currently working on compiling a list of resources for working with ICESat-2 data (in the meantime, check out the `2019 ICESat-2 Hackweek repo <https://github.com/ICESAT-2HackWeek>`_ and `consider applying for this year's Hackweek <https://icesat-2hackweek.github.io/>`_) 
+- Check out our :ref:`ICESat-2 Open-Source Resources Guide<resource_ref_label>` for a host of tools and code for getting and working with ICESat-2 data
+- The `2019 ICESat-2 Hackweek Tutorial repo <https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials>`_ and [in progress] `2020 ICESat-2 Hackweek  Tutorial repo <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_ are great resources for learning basic Python and development skills, learning about ICESat-2 data, setting up a computational environment, and finding and analyzing ICESat-2 datasets.
 - A great set of `interactive tutorials <https://learngitbranching.js.org>`_ for learning and practicing using git
 - Let us know about the helpful tools you've found by posting on our discourse forum as indicated above (`Questions and Help`_)!
 
 
 Adding Examples
 ---------------
-We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "examples" branch, following the steps outlined below for `Contributing Code`_.
+We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "development" branch, following the steps outlined below for `Contributing Code`_.
 
 
 Contributing Code
 -----------------
-We follow a standard git workflow for code changes and additions. All submitted code, including our own, goes through the pull request process; no changes are pushed directly to the *master* branch. This allows our continuous integration (testing) process to ensure that the code is up to our standards and passes all of our tests (i.e. doesn't break what's already there and working). It also means that the *master* branch remains stable even as new features are being developed.
+We follow a standard git workflow for code changes and additions.
+All submitted code, including our own, goes through the pull request process;
+no changes are pushed directly to the *main* or *development* branches.
+This allows our continuous integration (testing) process to ensure that the code is up to our standards and passes all of our tests (i.e. doesn't break what's already there and working).
+By having a *development* branch for daily work, we enable the *main* branch to remain stable between releases even as new features are being added.
 
 First Steps
 ^^^^^^^^^^^
-Before you even begin writing code, please first check out our issues page. Someone may already be working on the same problem, and you may be able to contribute directly to their efforts. If not, create a new issue to describe what you plan to do.
+Before you begin writing code, please first check out our issues page. Someone may already be working on the same problem, and you may be able to contribute directly to their efforts. If not, create a new issue to describe what you plan to do.
 
 General Guidelines
 ^^^^^^^^^^^^^^^^^^
@@ -75,14 +80,15 @@ We encourage users to follow the `git pull request workflow <https://www.asmeure
  - Clone the repository
  - Fork the repo to your personal GitHub account
  - Add your fork as a remote
- 
-(each time you make changes)
+ - Add yourself to `CONTRIBUTORS.rst` (see `Attribution for Contributions`_)
 
- - Update the master
- - Create a branch
+(each time you are going to make changes)
+
+ - Update the development branch
+ - Create a new branch
  - Make your changes and commit them to the branch
  - Push your changes to your fork
- - Make a pull request (on GitHub)
+ - Make a pull request (on GitHub; pull requests will automatically be made against the development branch)
  - Push any additional, relevant changes to the same pull request (this will happen automatically if you push the changes to the same branch from which you made the pull request)
 
 Licensing

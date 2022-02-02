@@ -3,30 +3,33 @@ import warnings
 
 import icepyx.core.is2ref as is2ref
 
-########## _validate_dataset ##########
-def test_lowercase_dataset():
-    lcds = 'atl03'
-    obs = is2ref._validate_dataset(lcds)
-    expected = 'ATL03'
+########## _validate_product ##########
+def test_lowercase_product():
+    lcds = "atl03"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL03"
     assert obs == expected
 
-def test_num_dataset():
+
+def test_num_product():
     dsnum = 6
-    ermsg = "Please enter a dataset string"
+    ermsg = "Please enter a product string"
     with pytest.raises(TypeError, match=ermsg):
-        is2ref._validate_dataset(dsnum)
-    
-def test_bad_dataset():
-    wrngds = 'atl-6'
-    ermsg = "Please enter a valid dataset"
+        is2ref._validate_product(dsnum)
+
+
+def test_bad_product():
+    wrngds = "atl-6"
+    ermsg = "Please enter a valid product"
     with pytest.raises(AssertionError, match=ermsg):
-        is2ref._validate_dataset(wrngds)
+        is2ref._validate_product(wrngds)
 
 
-########## about_dataset ##########
-#Note: requires internet connection
-# def test_dataset_info():
-#     obs = is2ref.about_dataset('ATL06')
+########## about_product ##########
+# Note: requires internet connection
+# could the github flat data option be used here? https://octo.github.com/projects/flat-data
+# def test_product_info():
+#     obs = is2ref.about_product('ATL06')
 #     print(obs)
 #     #TestQuestion: what is a better way to do this? I think maybe use a mock, which would also deal with the dicts not matching because of the 'updated' key value
 #     #That or check for the same keys and the same values where applicable
@@ -151,16 +154,50 @@ def test_bad_dataset():
 
 
 ########## _get_custom_options ##########
-#Note: requires internet connection + active NSIDC session
-#Thus, the tests for this function are in the test_behind_NSIDC_API_login suite
+# Note: requires internet connection + active NSIDC session
+# Thus, the tests for this function are in the test_behind_NSIDC_API_login suite
 
 
 ########## _default_varlists ##########
 def test_ATL09_default_varlist():
-    obs = is2ref._default_varlists('ATL09')
-    expected = ['delta_time','latitude','longitude', 'bsnow_h','bsnow_dens','bsnow_con','bsnow_psc','bsnow_od',
-                    'cloud_flag_asr','cloud_fold_flag','cloud_flag_atm',
-                    'column_od_asr','column_od_asr_qf',
-                    'layer_attr','layer_bot','layer_top','layer_flag','layer_dens','layer_ib',
-                    'msw_flag','prof_dist_x','prof_dist_y','apparent_surf_reflec']
+    obs = is2ref._default_varlists("ATL09")
+    expected = [
+        "delta_time",
+        "latitude",
+        "longitude",
+        "bsnow_h",
+        "bsnow_dens",
+        "bsnow_con",
+        "bsnow_psc",
+        "bsnow_od",
+        "cloud_flag_asr",
+        "cloud_fold_flag",
+        "cloud_flag_atm",
+        "column_od_asr",
+        "column_od_asr_qf",
+        "layer_attr",
+        "layer_bot",
+        "layer_top",
+        "layer_flag",
+        "layer_dens",
+        "layer_ib",
+        "msw_flag",
+        "prof_dist_x",
+        "prof_dist_y",
+        "apparent_surf_reflec",
+    ]
+    assert obs == expected
+
+
+def test_ATL11_default_varlist():
+    obs = is2ref._default_varlists("ATL11")
+    expected = [
+        "delta_time",
+        "latitude",
+        "longitude",
+        "h_corr",
+        "h_corr_sigma",
+        "h_corr_sigma_systematic",
+        "quality_summary",
+    ]
     assert obs == expected

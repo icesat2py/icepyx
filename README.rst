@@ -3,16 +3,39 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|Documentation Status|  |GitHub license|  |Travis CI Status| |Code Coverage|
+|GitHub license| |Conda install| |Pypi install|
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
-   :target: http://icepyx.readthedocs.io/?badge=latest
+Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
+
+Current development version (development branch): |Docs Status dev| |Travis dev Build Status| |Code Coverage dev|
 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |Travis CI Status| image:: https://travis-ci.org/icesat2py/icepyx.svg?branch=master
-    :target: https://travis-ci.org/icesat2py/icepyx
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
+    :target: https://anaconda.org/conda-forge/icepyx
+
+.. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
+    :target: https://pypi.org/project/icepyx
+
+.. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
+   :target: http://icepyx.readthedocs.io/?badge=latest
+
+.. |Docs Status dev| image:: https://readthedocs.org/projects/icepyx/badge/?version=development
+   :target: https://icepyx.readthedocs.io/en/development
+
+.. |Travis main Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=main
+    :target: https://app.travis-ci.com/icesat2py/icepyx
+
+.. |Travis dev Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
+    :target: https://app.travis-ci.com/icesat2py/icepyx
+
+.. |Code Coverage main| image:: https://codecov.io/gh/icesat2py/icepyx/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/icesat2py/icepyx
+
+.. |Code Coverage dev| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
+    :target: https://codecov.io/gh/icesat2py/icepyx
+    
 
 .. |Code Coverage| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg 
     :target: https://codecov.io/gh/icesat2py/icepyx
@@ -28,56 +51,42 @@ at the University of Washington in June 2019 or as scripts written and used by t
 This project combines and generalizes these scripts into a unified framework, making them accessible for everyone.
 
 
-.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/master.zip
+.. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
 .. _`Fiona`: https://pypi.org/project/Fiona/
 
 Installation
 ------------
-The simplest way to install icepyx is using pip.
 
-.. code-block::
+The simplest way to install icepyx is by using the
+`conda <https://docs.conda.io/projects/conda/en/latest/user-guide/index.html>`__
+package manager. |Conda install|
+    
+    conda install icepyx
 
-  pip install icepyx
+Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__. |Pypi install|
 
+    pip install icepyx
 
-Windows users will need to first install `Fiona`_, please look at the instructions there. Windows users may consider installing Fiona using pipwin
-
-.. code-block::
-
-  pip install pipwin
-  pipwin install Fiona 
-
-
-Currently, packages are not automatically generated with each build, this means it is possible that pip will not install the latest release of icepyx. In this case, icepyx is also available for use via the GitHub repository. The contents of the repository can be download as a `zipped file`_ or cloned.
-
-To use icepyx this way, fork this repo to your own account, then git clone the repo onto your system. 
-To clone the repository:
-
-.. code-block::
-
-  git clone https://github.com/icesat2py/icepyx.git
-
-
-Provided the location of the repo is part of your $PYTHONPATH, you should simply be able to add import icepyx to your Python document.
-Alternatively, in a command line or terminal, navigate to the folder in your cloned repository containing setup.py and run
-
-.. code-block::
-
-  pip install -e
-
-
-Future developments of icepyx may include conda as another simplified installation option.
+More detailed instructions for installing `icepyx` can be found at
+https://icepyx.readthedocs.io/en/latest/getting_started/install.html
 
 
 Examples (Jupyter Notebooks)
 ----------------------------
 
-.. _`ICESat-2_DAAC_DataAccess_Example`: ICESat-2_DAAC_DataAccess_Example.ipynb
+Listed below are example Jupyter notebooks for working with ICESat-2 (IS2).
 
+`IS2_data_access <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access.html>`_
 
-Listed below are example jupyter-notebooks
+`IS2_data_access2_subsetting <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html>`_
 
-ICESat-2_DAAC_DataAccess_Example_
+`IS2_data_variables <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_variables.html>`_
+
+`IS2_data_visualization <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_visualization.html>`_
+
+`IS2_data_read-in <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_read-in.html>`_
+
+`IS2_cloud_data_access (BETA ONLY) <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_cloud_data_access.html>`_
 
 
 Citing icepyx
@@ -95,7 +104,7 @@ Come join the conversation at: https://discourse.pangeo.io/.
 Search for "icesat-2" under the "science" topic to find us.
 
 .. _`icepyx`: https://github.com/icesat2py/icepyx
-.. _`contribution guidelines`: ./doc/source/development/contribution_guidelines.rst
+.. _`contribution guidelines`: ./doc/source/contributing/contribution_guidelines.rst
 
 Contribute
 ----------
@@ -106,3 +115,20 @@ Please note that this project is released with a Contributor Code of Conduct. By
 
 .. |Contributor Covenant| image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
    :target: code_of_conduct.md
+   
+Research notice
+~~~~~~~~~~~~~~~
+
+Please note that this repository is participating in a study into
+sustainability of open source projects. Data will be gathered about this
+repository for approximately the next 12 months, starting from June
+2021.
+
+Data collected will include number of contributors, number of PRs, time
+taken to close/merge these PRs, and issues closed.
+
+For more information, please visit `the informational
+page <https://sustainable-open-science-and-software.github.io/>`__ or
+download the `participant information
+sheet <https://sustainable-open-science-and-software.github.io/assets/PIS_sustainable_software.pdf>`__.
+

@@ -1,5 +1,5 @@
-Icesat2Data Components
-======================
+Components
+==========
 
 
 
@@ -35,6 +35,14 @@ granules
    :undoc-members:
    :show-inheritance:
 
+is2cat
+------
+
+.. automodule:: icepyx.core.is2cat
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
 is2ref
 ------
 
@@ -55,6 +63,14 @@ variables
 ---------
 
 .. automodule:: icepyx.core.variables
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+visualize
+---------
+
+.. automodule:: icepyx.core.visualization
    :members:
    :undoc-members:
    :show-inheritance:

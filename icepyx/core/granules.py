@@ -201,9 +201,9 @@ class Granules:
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
 
         params = apifmt.combine_params(
-            CMRparams, {k: reqparams[k] for k in ["page_size"]}
+            CMRparams, {k: reqparams[k] for k in ["page_size", "scroll"]}
         )
-        params["scroll"] = "true"  # should this replace page_num as a required param?
+        # params["scroll"] = "true"  # should be a required param for search (not yet avail for ordering)?
 
         cmr_scroll_id = None
 

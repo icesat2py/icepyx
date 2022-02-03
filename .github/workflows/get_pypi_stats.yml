@@ -1,0 +1,37 @@
+name: Get PyPi Stats
+on:
+  schedule:
+    # runs once a month on the first
+    - cron: "55 20 1 * *"
+  # Trigger manually at https://github.com/icesat2py/icepyx/actions/workflows/get_pypi_stats.yml
+  workflow_dispatch:
+
+jobs:
+  # This workflow contains a single job called "pypi_stats"
+  pypi_stats:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'icesat2py'
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+      with:
+        ref: "traffic"
+
+    # Calculates pypi stats and clones and stores in CSV file
+    - name: Update pypi stats files
+      run: |
+        pip install -r requirements.txt
+        python ./doc/source/tracking/pypistats/get_pypi_stats.py
+
+    # Commits files to repository
+    - name: Commit changes
+      uses: EndBug/add-and-commit@v7
+      with:
+        author_name: learn2phoenix
+        message: "Pypi stats auto-update"
+        add: "./doc/source/tracking/pypistats/*"
+#         add: "./pypistats/*"
+        branch: "traffic"  # commits to branch "traffic"

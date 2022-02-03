@@ -442,7 +442,7 @@ class Parameters:
                 reqkeys = self.poss_keys[self._reqtype]
                 defaults = {
                     "page_size": 2000,
-                    "page_num": 1,
+                    "page_num": 0,
                     "request_mode": "async",
                     "include_meta": "Y",
                     "client_string": "icepyx",

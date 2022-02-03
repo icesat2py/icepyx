@@ -308,9 +308,7 @@ class Granules:
 
         base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
 
-        self.get_avail(
-            CMRparams, reqparams
-        )  # this way the reqparams['page_num'] is updated
+        self.get_avail(CMRparams, reqparams)
 
         if subset is False:
             request_params = apifmt.combine_params(
@@ -329,7 +327,13 @@ class Granules:
             len(self.avail),
             " granules.",
         )
-        for page_num in range(1, total_pages + 1):
+
+        if reqparams["page_num"] > 0:
+            pagenums = [reqparams["page_num"]]
+        else:
+            pagenums = range(1, total_pages + 1)
+
+        for page_num in pagenums:
             print(
                 "Data request ",
                 page_num,

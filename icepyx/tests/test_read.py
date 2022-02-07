@@ -56,8 +56,8 @@ def test_validate_source_str_not_a_dir_or_file():
                 sorted(
                     [
                         "./icepyx/core",
-                        "./icepyx/quests",
-                        "./icepyx/quests/dataset_scripts",
+                        "./icepyx/quest",
+                        "./icepyx/quest/dataset_scripts",
                         "./icepyx/tests",
                     ]
                 ),
@@ -81,8 +81,8 @@ def test_validate_source_str_not_a_dir_or_file():
             (
                 [
                     "./icepyx/core",
-                    "./icepyx/quests",
-                    "./icepyx/quests/dataset_scripts",
+                    "./icepyx/quest",
+                    "./icepyx/quest/dataset_scripts",
                     "./icepyx/tests",
                 ],
                 [],

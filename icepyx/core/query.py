@@ -296,11 +296,7 @@ class Query(GenQuery):
 
         Examples
         --------
-<<<<<<< HEAD
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-=======
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
->>>>>>> 157bba5a9b1956de40e68278c68284427f1988e1
         >>> reg_a.product
         'ATL06'
         """
@@ -313,19 +309,11 @@ class Query(GenQuery):
 
         Examples
         --------
-<<<<<<< HEAD
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.product_version
-        '003'
-
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
-=======
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_version
         '005'
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
->>>>>>> 157bba5a9b1956de40e68278c68284427f1988e1
         >>> reg_a.product_version
         '001'
         """
@@ -700,15 +688,9 @@ class Query(GenQuery):
 
         Examples
         --------
-<<<<<<< HEAD
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.product_summary_info()
-        product_id :  ATLAS/ICESat-2 L3A Land Ice Height V002
-=======
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='005')
         >>> reg_a.product_summary_info()
         title :  ATLAS/ICESat-2 L3A Land Ice Height V005
->>>>>>> 157bba5a9b1956de40e68278c68284427f1988e1
         short_name :  ATL06
         version_id :  005
         time_start :  2018-10-14T00:00:00.000Z
@@ -736,13 +718,8 @@ class Query(GenQuery):
 
         Examples
         --------
-<<<<<<< HEAD
-        >>> reg_a = icepyx.query.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.product_all_info()
-=======
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
         >>> reg_a.product_all_info() # doctest: +SKIP
->>>>>>> 157bba5a9b1956de40e68278c68284427f1988e1
         {very long prettily-formatted dictionary output}
 
         """

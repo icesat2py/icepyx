@@ -53,7 +53,14 @@ def test_validate_source_str_not_a_dir_or_file():
             "./icepyx/",
             "is2*.py",
             (
-                sorted(["./icepyx/core", "./icepyx/tests"]),
+                sorted(
+                    [
+                        "./icepyx/core",
+                        "./icepyx/quests",
+                        "./icepyx/quests/dataset_scripts",
+                        "./icepyx/tests",
+                    ]
+                ),
                 sorted(
                     [
                         "./icepyx/core/is2cat.py",
@@ -68,7 +75,19 @@ def test_validate_source_str_not_a_dir_or_file():
             "is2*.py",
             ([], ["./icepyx/core/is2cat.py", "./icepyx/core/is2ref.py"]),
         ),
-        ("./icepyx", "bogus_glob", (["./icepyx/core", "./icepyx/tests"], [])),
+        (
+            "./icepyx",
+            "bogus_glob",
+            (
+                [
+                    "./icepyx/core",
+                    "./icepyx/quests",
+                    "./icepyx/quests/dataset_scripts",
+                    "./icepyx/tests",
+                ],
+                [],
+            ),
+        ),
     ],
 )
 def test_check_run_fast_scandir(dir, fn_glob, expect):

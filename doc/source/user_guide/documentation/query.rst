@@ -4,6 +4,12 @@ Query Class
 .. currentmodule:: icepyx
 
 
+.. autosummary::
+   :toctree: ../../_icepyx/
+   :recursive:
+
+   GenQuery
+
 Constructor
 -----------
 

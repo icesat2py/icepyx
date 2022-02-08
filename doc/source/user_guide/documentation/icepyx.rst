@@ -22,4 +22,5 @@ Diagrams are updated automatically after a pull request (PR) is approved and bef
 
    query
    read
+   quest
    components

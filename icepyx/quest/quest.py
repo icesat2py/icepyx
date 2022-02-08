@@ -68,10 +68,6 @@ class Quest(GenQuery):
         return None
 
     def __str__(self):
-        """
-        Returns a string representation of self
-        """
-
         str = super(Quest, self).__str__()
 
         str += "\nData sets: "

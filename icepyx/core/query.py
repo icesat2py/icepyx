@@ -43,7 +43,7 @@ class DocGenQueryMeta(type):
         return cls
 
 
-class GenQuery(object, type=DocGenQueryMeta):
+class GenQuery(object, metaclass=DocGenQueryMeta):
     """
     Generic components of query object that specifically handles
     spatio-temporal constraints applicable to all datasets.
@@ -103,13 +103,6 @@ class GenQuery(object, type=DocGenQueryMeta):
             self._start, self._end = val.temporal(date_range, start_time, end_time)
 
     def __str__(self):
-        """
-        String representation of self. Returns eg.
-
-        Extent type: bounding_box
-        Coordinates: [-55.0, 68.0, -48.0, 71.0]
-        Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
-        """
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self.extent_type, self._spat_extent, self._start, self._end
         )

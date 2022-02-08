@@ -1,3 +1,4 @@
+import abc
 import datetime as dt
 import os
 import requests
@@ -55,6 +56,7 @@ class GenQuery(object, type=DocGenQueryMeta):
         DevGoal: check for time in date-range date-time object, if that's used for input.
     """
 
+    @abc.abstractmethod
     def __init__(
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):

@@ -18,7 +18,7 @@
 <text text-anchor="start" x="8" y="-196.3" font-family="Times,serif" font-size="14.00">capability_url</text>
 <text text-anchor="start" x="8" y="-181.3" font-family="Times,serif" font-size="14.00">email</text>
 <text text-anchor="start" x="8" y="-166.3" font-family="Times,serif" font-size="14.00">netrc : NoneType</text>
-<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : str, NoneType</text>
+<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : NoneType, str</text>
 <text text-anchor="start" x="8" y="-136.3" font-family="Times,serif" font-size="14.00">session : Session</text>
 <text text-anchor="start" x="8" y="-121.3" font-family="Times,serif" font-size="14.00">uid</text>
 <polyline fill="none" stroke="black" points="0,-113.5 301,-113.5 "/>
@@ -163,7 +163,7 @@
 <polygon fill="none" stroke="black" points="1022,-38 1022,-257 1275,-257 1275,-38 1022,-38"/>
 <text text-anchor="middle" x="1148.5" y="-241.8" font-family="Times,serif" font-size="14.00">Parameters</text>
 <polyline fill="none" stroke="black" points="1022,-234 1275,-234 "/>
-<text text-anchor="start" x="1030" y="-218.8" font-family="Times,serif" font-size="14.00">_fmted_keys : NoneType, dict</text>
+<text text-anchor="start" x="1030" y="-218.8" font-family="Times,serif" font-size="14.00">_fmted_keys : dict, NoneType</text>
 <text text-anchor="start" x="1030" y="-203.8" font-family="Times,serif" font-size="14.00">_poss_keys : dict</text>
 <text text-anchor="start" x="1030" y="-188.8" font-family="Times,serif" font-size="14.00">_reqtype : NoneType, str</text>
 <text text-anchor="start" x="1030" y="-173.8" font-family="Times,serif" font-size="14.00">fmted_keys</text>
@@ -218,7 +218,7 @@
 <text text-anchor="middle" x="1713.5" y="-835.3" font-family="Times,serif" font-size="14.00">Read</text>
 <polyline fill="none" stroke="black" points="1447,-827.5 1980,-827.5 "/>
 <text text-anchor="start" x="1455" y="-812.3" font-family="Times,serif" font-size="14.00">_catalog_path : NoneType</text>
-<text text-anchor="start" x="1455" y="-797.3" font-family="Times,serif" font-size="14.00">_filelist : list, NoneType</text>
+<text text-anchor="start" x="1455" y="-797.3" font-family="Times,serif" font-size="14.00">_filelist : NoneType, list</text>
 <text text-anchor="start" x="1455" y="-782.3" font-family="Times,serif" font-size="14.00">_is2catalog : Catalog</text>
 <text text-anchor="start" x="1455" y="-767.3" font-family="Times,serif" font-size="14.00">_out_obj : Dataset</text>
 <text text-anchor="start" x="1455" y="-752.3" font-family="Times,serif" font-size="14.00">_pattern : str</text>
@@ -243,13 +243,13 @@
 <polygon fill="none" stroke="black" points="1313,-0.5 1313,-294.5 1802,-294.5 1802,-0.5 1313,-0.5"/>
 <text text-anchor="middle" x="1557.5" y="-279.3" font-family="Times,serif" font-size="14.00">Variables</text>
 <polyline fill="none" stroke="black" points="1313,-271.5 1802,-271.5 "/>
-<text text-anchor="start" x="1321" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : list, NoneType</text>
+<text text-anchor="start" x="1321" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : NoneType, list</text>
 <text text-anchor="start" x="1321" y="-241.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
 <text text-anchor="start" x="1321" y="-226.3" font-family="Times,serif" font-size="14.00">_vartype</text>
 <text text-anchor="start" x="1321" y="-211.3" font-family="Times,serif" font-size="14.00">_version : NoneType</text>
 <text text-anchor="start" x="1321" y="-196.3" font-family="Times,serif" font-size="14.00">path : NoneType</text>
 <text text-anchor="start" x="1321" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType</text>
-<text text-anchor="start" x="1321" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
+<text text-anchor="start" x="1321" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : dict, NoneType</text>
 <polyline fill="none" stroke="black" points="1313,-158.5 1802,-158.5 "/>
 <text text-anchor="start" x="1321" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(vartype, avail, wanted, session, product, version, path)</text>
 <text text-anchor="start" x="1321" y="-128.3" font-family="Times,serif" font-size="14.00">_check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)</text>

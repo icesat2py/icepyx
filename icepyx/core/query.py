@@ -49,11 +49,37 @@ class GenQuery(object, metaclass=DocGenQueryMeta):
     spatio-temporal constraints applicable to all datasets.
     Extended by Query and Quest.
 
-    Parameters
-    ----------
-    start_time : HH:mm:ss, default 00:00:00
-        Start time in UTC/Zulu (24 hour clock). If None, use default.
-        DevGoal: check for time in date-range date-time object, if that's used for input.
+    Examples
+    --------
+    Init with bounding box
+
+    >>> reg_a_bbox = [-55, 68, -48, 71]
+    >>> reg_a_dates = ['2019-02-20','2019-02-28']
+    >>> reg_a = GenQuery(reg_a_bbox, reg_a_dates)
+    >>> print(reg_a)
+    Extent type: bounding_box
+    Coordinates: [-55.0, 68.0, -48.0, 71.0]
+    Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
+
+    Initializing Query with a list of polygon vertex coordinate pairs.
+
+    >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
+    >>> reg_a_dates = ['2019-02-20','2019-02-28']
+    >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
+    >>> print(reg_a)
+    Extent type: polygon
+    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
+
+    Initializing Query with a geospatial polygon file.
+
+    >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+    >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    >>> reg_a = GenQuery(aoi, reg_a_dates)
+    >>> print(reg_a)
+    Extent type: polygon
+    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
     """
 
     @abc.abstractmethod
@@ -61,37 +87,12 @@ class GenQuery(object, metaclass=DocGenQueryMeta):
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
         """
-        Examples
-        --------
-        Init with bounding box
+        Parameters
+        ----------
+        start_time : HH:mm:ss, default 00:00:00
+            Start time in UTC/Zulu (24 hour clock). If None, use default.
+            DevGoal: check for time in date-range date-time object, if that's used for input.
 
-        >>> reg_a_bbox = [-55, 68, -48, 71]
-        >>> reg_a_dates = ['2019-02-20','2019-02-28']
-        >>> reg_a = GenQuery(reg_a_bbox, reg_a_dates)
-        >>> print(reg_a)
-        Extent type: bounding_box
-        Coordinates: [-55.0, 68.0, -48.0, 71.0]
-        Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
-
-        Initializing Query with a list of polygon vertex coordinate pairs.
-
-        >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
-        >>> reg_a_dates = ['2019-02-20','2019-02-28']
-        >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
-        >>> print(reg_a)
-        Extent type: polygon
-        Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
-        Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
-
-        Initializing Query with a geospatial polygon file.
-
-        >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
-        >>> reg_a_dates = ['2019-02-22','2019-02-28']
-        >>> reg_a = GenQuery(aoi, reg_a_dates)
-        >>> print(reg_a)
-        Extent type: polygon
-        Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
-        Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
         """
         # validate & init spatial extent
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(

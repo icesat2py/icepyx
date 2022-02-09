@@ -24,7 +24,7 @@ import icepyx.core.validate_inputs as val
 from icepyx.core.visualization import Visualize
 
 
-class GenQuery(object):
+class GenQuery:
     """
     Base class for querying data.
 
@@ -62,6 +62,38 @@ class GenQuery(object):
         End time in UTC/Zulu (24 hour clock). If None, use default.
         DevGoal: check for time in date-range date-time object, if that's used for input.
 
+    Examples
+    --------
+    Init with bounding box
+
+    >>> reg_a_bbox = [-55, 68, -48, 71]
+    >>> reg_a_dates = ['2019-02-20','2019-02-28']
+    >>> reg_a = GenQuery(reg_a_bbox, reg_a_dates)
+    >>> print(reg_a)
+    Extent type: bounding_box
+    Coordinates: [-55.0, 68.0, -48.0, 71.0]
+    Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
+
+    Initializing Query with a list of polygon vertex coordinate pairs.
+
+    >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
+    >>> reg_a_dates = ['2019-02-20','2019-02-28']
+    >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
+    >>> print(reg_a)
+    Extent type: polygon
+    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
+
+    Initializing Query with a geospatial polygon file.
+
+    >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+    >>> reg_a_dates = ['2019-02-22','2019-02-28']
+    >>> reg_a = GenQuery(aoi, reg_a_dates)
+    >>> print(reg_a)
+    Extent type: polygon
+    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
+
     See Also
     --------
     Query
@@ -71,40 +103,6 @@ class GenQuery(object):
     def __init__(
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
-        """
-        Examples
-        --------
-        Init with bounding box
-
-        >>> reg_a_bbox = [-55, 68, -48, 71]
-        >>> reg_a_dates = ['2019-02-20','2019-02-28']
-        >>> reg_a = GenQuery(reg_a_bbox, reg_a_dates)
-        >>> print(reg_a)
-        Extent type: bounding_box
-        Coordinates: [-55.0, 68.0, -48.0, 71.0]
-        Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
-
-        Initializing Query with a list of polygon vertex coordinate pairs.
-
-        >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
-        >>> reg_a_dates = ['2019-02-20','2019-02-28']
-        >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
-        >>> print(reg_a)
-        Extent type: polygon
-        Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
-        Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
-
-        Initializing Query with a geospatial polygon file.
-
-        >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
-        >>> reg_a_dates = ['2019-02-22','2019-02-28']
-        >>> reg_a = GenQuery(aoi, reg_a_dates)
-        >>> print(reg_a)
-        Extent type: polygon
-        Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
-        Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
-        """
-
         # validate & init spatial extent
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
             spatial_extent
@@ -124,7 +122,6 @@ class GenQuery(object):
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
 # DevNote: currently this class is not tested
-# @doc(GenQuery, extra_params=["date_range"])
 class Query(GenQuery):
     r"""
     Query and get ICESat-2 data
@@ -210,9 +207,6 @@ class Query(GenQuery):
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
     ):
-        """
-        :meta private:
-        """
         # warnings.filterwarnings("always")
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
 
@@ -256,13 +250,6 @@ class Query(GenQuery):
     # Properties
 
     def __str__(self):
-        """
-        String representation of self.
-
-        Product ATL03 v004
-        ['bounding box', [-55.0, 68.0, -48.0, 71.0]]
-        Date range['2019-02-20', '2019-02-28']
-        """
         str = "Product {2} v{3}\n{0}\nDate range {1}".format(
             self.spatial_extent, self.dates, self.product, self.product_version
         )

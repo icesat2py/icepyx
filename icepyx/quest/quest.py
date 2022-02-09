@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from icepyx.core.query import GenQuery
 
 
-# Colocated data is a sub-class if SuperQuery
 # todo: implement the subclass inheritance
 class Quest(GenQuery):
     """

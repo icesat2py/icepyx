@@ -3,8 +3,8 @@ Quest Class
 
 .. currentmodule:: icepyx
 
-Constructor
------------
+Constructors
+------------
 
 .. autosummary::
    :toctree: ../../_icepyx/

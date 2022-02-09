@@ -8,6 +8,7 @@ Constructor
 
 .. autosummary::
    :toctree: ../../_icepyx/
+   :show-inheritance:
 
    Quest
 

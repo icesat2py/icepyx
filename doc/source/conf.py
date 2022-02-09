@@ -15,10 +15,10 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../sphinxext"))
+sys.path.insert(0, os.path.abspath("../icepyx/core"))
 import datetime
 
 import icepyx
-from icepyx.core.query import GenQuery
 
 
 # -- Project information -----------------------------------------------------
@@ -75,7 +75,6 @@ autosectionlabel_prefix_document = True
 autosummary_generate = True
 numpydoc_show_class_members = False
 jupyter_execute_notebooks = "off"
-autoclass_content = "class"  # to avoid having init show up as method
 suppress_warnings = ["myst.header"]  # suppress non-consecutive header warning
 
 # -- Options for HTML output -------------------------------------------------

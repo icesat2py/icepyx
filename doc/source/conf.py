@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.abspath("../sphinxext"))
 import datetime
 
 import icepyx
+from icepyx.core.query import GenQuery
 
 
 # -- Project information -----------------------------------------------------

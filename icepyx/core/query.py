@@ -507,7 +507,7 @@ class Query(GenQuery):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.reqparams
-        {'page_size': 2000, 'page_num': 1}
+        {'page_size': 2000}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
         >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP

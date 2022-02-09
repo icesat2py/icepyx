@@ -1,4 +1,4 @@
-from icepyx.core.query import Query
+from icepyx.core.query import Query, GenQuery
 from icepyx.core.read import Read
 from icepyx.quest.quest import Quest
 

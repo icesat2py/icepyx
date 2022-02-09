@@ -9,7 +9,7 @@ Constructors
 .. autosummary::
    :toctree: ../../_icepyx/
 
-   query.GenQuery
+   GenQuery
    Query
 
 

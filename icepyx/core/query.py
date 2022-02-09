@@ -27,6 +27,19 @@ import icepyx.core.validate_inputs as val
 from icepyx.core.visualization import Visualize
 
 
+class extend_docstring:
+    def __init__(self, method):
+        self.doc = method.__doc__
+
+    def __call__(self, function):
+        if self.doc is not None:
+            doc = function.__doc__
+            function.__doc__ = self.doc
+            if doc is not None:
+                function.__doc__ += doc
+        return function
+
+
 class GenQuery(object):
     """
     Generic components of query object that specifically handles
@@ -75,6 +88,14 @@ class GenQuery(object):
     def __init__(
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
+        """Extended by Query and Quest.
+
+        Parameters
+        ----------
+        start_time : HH:mm:ss, default 00:00:00
+            Start time in UTC/Zulu (24 hour clock). If None, use default.
+            DevGoal: check for time in date-range date-time object, if that's used for input.
+        """
         # validate & init spatial extent
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
             spatial_extent
@@ -184,6 +205,7 @@ class Query(GenQuery):
     # ----------------------------------------------------------------------
     # Constructors
 
+    @extend_docstring(GenQuery)
     def __init__(
         self,
         product=None,
@@ -196,6 +218,15 @@ class Query(GenQuery):
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
     ):
+        """
+        Parameters
+        ----------
+        product : string
+            ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
+            Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
+        spatial_extent : list of coordinates or string (i.e. file name)
+
+        """
 
         # warnings.filterwarnings("always")
         # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")

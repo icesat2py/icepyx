@@ -27,27 +27,17 @@ import icepyx.core.validate_inputs as val
 from icepyx.core.visualization import Visualize
 
 
-class DocGenQueryMeta(type):
-    """
-    Inherit docstrings from SuperClass using this MetaClass
-
-    References
-    ----------
-    """
-
-    def __new__(mcls, classname, bases, cls_dict):
-        cls = super().__new__(mcls, classname, bases, cls_dict)
-        for name, member in cls_dict.items():
-            if not getattr(member, "__doc__"):
-                member.__doc__ = getattr(bases[-1], name).__doc__
-        return cls
-
-
-class GenQuery(object, metaclass=DocGenQueryMeta):
+class GenQuery(object):
     """
     Generic components of query object that specifically handles
     spatio-temporal constraints applicable to all datasets.
     Extended by Query and Quest.
+
+    Parameters
+    ----------
+    start_time : HH:mm:ss, default 00:00:00
+        Start time in UTC/Zulu (24 hour clock). If None, use default.
+        DevGoal: check for time in date-range date-time object, if that's used for input.
 
     Examples
     --------
@@ -82,18 +72,9 @@ class GenQuery(object, metaclass=DocGenQueryMeta):
     Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
     """
 
-    @abc.abstractmethod
     def __init__(
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
-        """
-        Parameters
-        ----------
-        start_time : HH:mm:ss, default 00:00:00
-            Start time in UTC/Zulu (24 hour clock). If None, use default.
-            DevGoal: check for time in date-range date-time object, if that's used for input.
-
-        """
         # validate & init spatial extent
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
             spatial_extent

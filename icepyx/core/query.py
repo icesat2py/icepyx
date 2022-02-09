@@ -65,7 +65,7 @@ class GenQuery(object):
     See Also
     --------
     Query
-    ipx.Quest
+    Quest
     """
 
     def __init__(

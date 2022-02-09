@@ -13,7 +13,7 @@ class Quest(GenQuery):
     A list of already supported datasets is available at:
     Expands the icepyx GenQuery superclass.
 
-        See the doc page for GenQuery for details on temporal and spatial input parameters.
+    See the doc page for GenQuery for details on temporal and spatial input parameters.
 
 
     Parameters

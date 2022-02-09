@@ -9,8 +9,8 @@ Constructor
 .. autosummary::
    :toctree: ../../_icepyx/
 
-..automodule:: Quest
-   :show-inheritance:
+   GenQuery
+   Quest
 
 
 Attributes

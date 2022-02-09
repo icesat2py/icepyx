@@ -26,9 +26,11 @@ from icepyx.core.visualization import Visualize
 
 class GenQuery(object):
     """
+    Base class for querying data.
+
     Generic components of query object that specifically handles
     spatio-temporal constraints applicable to all datasets.
-    Extended by Query and Quest.
+    Extended by Query (ICESat-2) and Quest (other products).
 
     Parameters
     ----------
@@ -59,14 +61,17 @@ class GenQuery(object):
     end_time : HH:mm:ss, default 23:59:59
         End time in UTC/Zulu (24 hour clock). If None, use default.
         DevGoal: check for time in date-range date-time object, if that's used for input.
+
+    See Also
+    --------
+    Query
+    ipx.Quest
     """
 
     def __init__(
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
         """
-        Docstring to allow example docstring testing
-
         Examples
         --------
         Init with bounding box
@@ -126,9 +131,11 @@ class Query(GenQuery):
 
     ICESat-2 Data object to query, obtain, and perform basic operations on
     available ICESat-2 data products using temporal and spatial input parameters.
-    Expands the superclass GenQuery.
     Allows the easy input and formatting of search parameters to match the
     NASA NSIDC DAAC and (development goal-not yet implemented) conversion to multiple data types.
+    Expands the superclass GenQuery.
+
+    See the doc page for GenQuery for details on temporal and spatial input parameters.
 
     Parameters
     ----------

@@ -13,6 +13,9 @@ class Quest(GenQuery):
     A list of already supported datasets is available at:
     Expands the icepyx GenQuery superclass.
 
+        See the doc page for GenQuery for details on temporal and spatial input parameters.
+
+
     Parameters
     ----------
     projection : proj4 string
@@ -48,7 +51,7 @@ class Quest(GenQuery):
 
     See Also
     --------
-    ipx.GenQuery
+    GenQuery
     """
 
     def __init__(

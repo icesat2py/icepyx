@@ -206,15 +206,27 @@ class Granules:
 
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
+
+        params = apifmt.combine_params(
+            CMRparams, {k: reqparams[k] for k in ["page_size"]}
+        )
+
+        cmr_search_after = None
+
         while True:
-            params = apifmt.combine_params(
-                CMRparams, {k: reqparams[k] for k in ("page_size", "page_num")}
-            )
+            if cmr_search_after is not None:
+                headers["CMR-Search-After"] = cmr_search_after
+
             response = requests.get(
                 granule_search_url,
                 headers=headers,
                 params=apifmt.to_string(params),
             )
+
+            try:
+                cmr_search_after = response.headers["CMR-Search-After"]
+            except KeyError:
+                cmr_search_after = None
 
             try:
                 response.raise_for_status()
@@ -230,16 +242,13 @@ class Granules:
 
             results = json.loads(response.content)
             if not results["feed"]["entry"]:
-                # Out of results, so break out of loop
+                assert len(self.avail) == int(
+                    response.headers["CMR-Hits"]
+                ), "Search failure - unexpected number of results"
                 break
 
-            # Collect results and increment page_num
+            # Collect results
             self.avail.extend(results["feed"]["entry"])
-            reqparams["page_num"] += 1
-
-        # DevNote: The above calculated page_num is wrong when mod(granule number, page_size)=0.
-        # print(reqparams['page_num'])
-        reqparams["page_num"] = int(np.ceil(len(self.avail) / reqparams["page_size"]))
 
         assert (
             len(self.avail) > 0
@@ -306,9 +315,7 @@ class Granules:
 
         base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
 
-        self.get_avail(
-            CMRparams, reqparams
-        )  # this way the reqparams['page_num'] is updated
+        self.get_avail(CMRparams, reqparams)
 
         if subset is False:
             request_params = apifmt.combine_params(
@@ -319,27 +326,30 @@ class Granules:
 
         order_fn = ".order_restart"
 
+        total_pages = int(np.ceil(len(self.avail) / reqparams["page_size"]))
         print(
             "Total number of data order requests is ",
-            request_params["page_num"],
+            total_pages,
             " for ",
             len(self.avail),
             " granules.",
         )
-        # DevNote/05/27/20/: Their page_num values are the same, but use the combined version anyway.
-        # I'm switching back to reqparams, because that value is not changed by the for loop. I shouldn't cause an issue either way, but I've had issues with mutable types in for loops elsewhere.
-        for i in range(reqparams["page_num"]):
-            #         for i in range(request_params['page_num']):
-            page_val = i + 1
 
+        if reqparams["page_num"] > 0:
+            pagenums = [reqparams["page_num"]]
+        else:
+            pagenums = range(1, total_pages + 1)
+
+        for page_num in pagenums:
             print(
                 "Data request ",
-                page_val,
+                page_num,
                 " of ",
-                reqparams["page_num"],
+                total_pages,
                 " is submitting to NSIDC",
             )
-            request_params.update({"page_num": page_val})
+            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+            request_params.update({"page_num": page_num})
 
             # DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
             # into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general

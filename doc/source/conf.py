@@ -74,6 +74,7 @@ autosectionlabel_prefix_document = True
 autosummary_generate = True
 numpydoc_show_class_members = False
 jupyter_execute_notebooks = "off"
+suppress_warnings = ["myst.header"]  # suppress non-consecutive header warning
 
 # -- Options for HTML output -------------------------------------------------
 

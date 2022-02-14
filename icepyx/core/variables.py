@@ -469,6 +469,12 @@ class Variables:
                 "data_end_utc",
             ]
 
+        try:
+            self._check_valid_lists(vgrp, allpaths, var_list=nec_varlist)
+        except ValueError:
+            # Assume gridded product since user input lists were previously validated
+            nec_varlist = []
+
         if not hasattr(self, "wanted") or self.wanted == None:
             for varid in nec_varlist:
                 req_vars[varid] = vgrp[varid]

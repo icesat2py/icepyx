@@ -227,7 +227,7 @@ class Query(GenQuery):
             (product is None or spatial_extent is None)
             or (
                 (date_range is None and cycles is None and tracks is None)
-                and int(product[-2:]) <= 12
+                and int(product[-2:]) <= 13
             )
             and files is None
         ):

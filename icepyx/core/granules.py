@@ -74,7 +74,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
 
-        if int(gran["producer_granule_id"][3:5]) > 12:
+        if int(gran["producer_granule_id"][3:5]) > 13:
             continue
             # ultimately use this to get the s3urls from the metadata
             # gran_s3urls.append(gran["links"][])

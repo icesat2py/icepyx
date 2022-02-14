@@ -73,41 +73,48 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
     for gran in grans:
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
-        # PRD: ICESat-2 product
-        # HEM: Sea Ice Hemisphere flag
-        # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
-        # TRK: Reference Ground Track (RGT)
-        # CYCL: Orbital Cycle
-        # GRAN: Granule region (1-14)
-        # RL: Data Release
-        # VERS: Product Version
-        # AUX: Auxiliary flags
-        # SFX: Suffix (h5)
-        (
-            PRD,
-            HEM,
-            YY,
-            MM,
-            DD,
-            HH,
-            MN,
-            SS,
-            TRK,
-            CYCL,
-            GRAN,
-            RL,
-            VERS,
-            AUX,
-            SFX,
-        ) = rx.findall(producer_granule_id).pop()
-        gran_cycles.append(CYCL)
-        gran_tracks.append(TRK)
-        gran_dates.append(
-            str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
-        )
-        gran_s3urls.append(
-            f"s3://nsidc-cumulus-prod-protected/ATLAS/{PRD}/{RL}/{YY}/{MM}/{DD}/{producer_granule_id}"
-        )
+
+        if int(gran["producer_granule_id"][3:5]) > 13:
+            continue
+            # ultimately use this to get the s3urls from the metadata
+            # gran_s3urls.append(gran["links"][])
+
+        else:
+            # PRD: ICESat-2 product
+            # HEM: Sea Ice Hemisphere flag
+            # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
+            # TRK: Reference Ground Track (RGT)
+            # CYCL: Orbital Cycle
+            # GRAN: Granule region (1-14)
+            # RL: Data Release
+            # VERS: Product Version
+            # AUX: Auxiliary flags
+            # SFX: Suffix (h5)
+            (
+                PRD,
+                HEM,
+                YY,
+                MM,
+                DD,
+                HH,
+                MN,
+                SS,
+                TRK,
+                CYCL,
+                GRAN,
+                RL,
+                VERS,
+                AUX,
+                SFX,
+            ) = rx.findall(producer_granule_id).pop()
+            gran_cycles.append(CYCL)
+            gran_tracks.append(TRK)
+            gran_dates.append(
+                str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
+            )
+            gran_s3urls.append(
+                f"s3://nsidc-cumulus-prod-protected/ATLAS/{PRD}/{RL}/{YY}/{MM}/{DD}/{producer_granule_id}"
+            )
     # list of granule parameters
     gran_list = []
     # granule IDs

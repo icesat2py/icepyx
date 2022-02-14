@@ -213,7 +213,10 @@ class Query(GenQuery):
         # Check necessary combination of input has been specified
         if (
             (product is None or spatial_extent is None)
-            and (date_range is None or cycles is None or tracks is None)
+            or (
+                (date_range is None and cycles is None and tracks is None)
+                and int(product[-2:]) <= 13
+            )
             and files is None
         ):
             raise ValueError(

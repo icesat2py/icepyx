@@ -338,9 +338,18 @@ class Read:
 
         wanted_vars = list(wanted_dict.keys())
 
+        print(grp_path)
+        print(wanted_groups_tiered)
+        print(wanted_dict)
+        print(wanted_vars)
+
         if grp_path in ["orbit_info", "ancillary_data"]:
+            # print(grp_path)
+            # print(wanted_groups_tiered[0])
+            # # print(wanted_groups_tiered)
+            # print(wanted_vars)
             grp_spec_vars = [
-                wanted_vars[i]
+                print(wanted_vars[i])
                 for i, x in enumerate(wanted_groups_tiered[0])
                 if x == grp_path
             ]

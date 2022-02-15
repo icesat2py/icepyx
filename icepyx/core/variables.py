@@ -135,7 +135,7 @@ class Variables:
             return self._avail
 
     @staticmethod
-    def parse_var_list(varlist, tiered=True):
+    def parse_var_list(varlist, tiered=True, tiered_vars=False):
         """
         Parse a list of path strings into tiered lists and names of variables
 
@@ -148,6 +148,13 @@ class Variables:
             Whether to return the paths (sans variable name) as a nested list of component strings
             (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments']])
             or a single list of path strings (e.g. ['orbit_info','ancillary_data','gt1l/land_ice_segments'])
+
+        tiered_vars : boolean, default False
+            Whether or not to append a list of the variable names to the nested list of component strings
+            (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments'],
+                ['sc_orient','atlas_sdp_gps_epoch','h_li']]))
+
+        Jessica NOTE: add this tiered vars functionality, then use it in read ln 582 (set to true) and ultimately circa line 339 to avoid the index error
 
         Examples
         --------

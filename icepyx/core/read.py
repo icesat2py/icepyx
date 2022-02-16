@@ -348,7 +348,6 @@ class Read:
                 for i, x in enumerate(wanted_groups_tiered[0])
                 if x == grp_path
             ]
-            print(grp_spec_vars)
 
             for var in grp_spec_vars:
                 is2ds = is2ds.assign({var: ("gran_idx", ds[var].data)})
@@ -385,10 +384,16 @@ class Read:
             spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
             # add a test for the new function (called here)!
 
+            # print(wanted_dict)
+
             grp_spec_vars = [
-                k for k, v in wanted_dict.items() if any(grp_path in x for x in v)
+                k
+                for k, v in wanted_dict.items()
+                if any(f"{grp_path}/{k}" in x for x in v)
             ]
             print(grp_spec_vars)
+
+            print(ds)
 
             ds = (
                 ds.reset_coords(drop=False)
@@ -396,8 +401,7 @@ class Read:
                 .assign_coords(spot=("spot", [spot]))
                 .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
             )
-
-            # print(ds)
+            # print(ds[grp_spec_vars])
             grp_spec_vars.append("gt")
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"

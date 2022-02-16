@@ -154,8 +154,6 @@ class Variables:
             (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments'],
                 ['sc_orient','atlas_sdp_gps_epoch','h_li']]))
 
-        Jessica NOTE: add this tiered vars functionality, then use it in read ln 582 (set to true) and ultimately circa line 339 to avoid the index error
-
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1') # doctest: +SKIP
@@ -222,7 +220,10 @@ class Variables:
         else:
             num = np.max([v.count("/") for v in varlist])
             #         print('max needed: ' + str(num))
-            paths = [[] for i in range(num)]
+            if tiered_vars == True:
+                paths = [[] for i in range(num + 1)]
+            else:
+                paths = [[] for i in range(num)]
 
         # print(self._cust_options['variables'])
         for vn in varlist:
@@ -244,6 +245,8 @@ class Variables:
                     for i in range(j, num):
                         paths[i].append("none")
                         i = i + 1
+                    if tiered_vars == True:
+                        paths[num].append(vkey)
 
         return vgrp, paths
 

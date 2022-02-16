@@ -336,23 +336,19 @@ class Read:
         Xarray Dataset with variables from the ds variable group added.
         """
 
-        wanted_vars = list(wanted_dict.keys())
+        # wanted_vars = list(wanted_dict.keys())
 
         print(grp_path)
-        print(wanted_groups_tiered)
-        print(wanted_dict)
-        print(wanted_vars)
+        # print(wanted_groups_tiered)
+        # print(wanted_dict)
 
         if grp_path in ["orbit_info", "ancillary_data"]:
-            # print(grp_path)
-            # print(wanted_groups_tiered[0])
-            # # print(wanted_groups_tiered)
-            # print(wanted_vars)
             grp_spec_vars = [
-                print(wanted_vars[i])
+                wanted_groups_tiered[-1][i]
                 for i, x in enumerate(wanted_groups_tiered[0])
                 if x == grp_path
             ]
+            print(grp_spec_vars)
 
             for var in grp_spec_vars:
                 is2ds = is2ds.assign({var: ("gran_idx", ds[var].data)})
@@ -392,7 +388,7 @@ class Read:
             grp_spec_vars = [
                 k for k, v in wanted_dict.items() if any(grp_path in x for x in v)
             ]
-            # print(grp_spec_vars)
+            print(grp_spec_vars)
 
             ds = (
                 ds.reset_coords(drop=False)
@@ -579,7 +575,9 @@ class Read:
             # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
             wanted_groups_set.remove("orbit_info")
             # returns the wanted groups as a list of lists with group path string elements separated
-            _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
+            _, wanted_groups_tiered = Variables.parse_var_list(
+                groups_list, tiered=True, tiered_vars=True
+            )
 
             for grp_path in ["orbit_info"] + list(wanted_groups_set):
                 ds = self._read_single_var(file, grp_path)

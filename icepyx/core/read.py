@@ -311,9 +311,9 @@ class Read:
         return False, None
 
     @staticmethod
-    def _add_var_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
+    def _add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
         """
-        Add the new variable group to the dataset template.
+        Add the new variables in the group to the dataset template.
 
         Parameters
         ----------
@@ -338,7 +338,7 @@ class Read:
 
         # wanted_vars = list(wanted_dict.keys())
 
-        print(grp_path)
+        # print(grp_path)
         # print(wanted_groups_tiered)
         # print(wanted_dict)
 
@@ -391,10 +391,10 @@ class Read:
                 for k, v in wanted_dict.items()
                 if any(f"{grp_path}/{k}" in x for x in v)
             ]
-            print(grp_spec_vars)
 
-            print(ds)
+            # print(ds)
 
+            # DevNOTE: the issue seems to be that the incoming ds has mismatching delta time lengths, and they're not brought in as coordinates for the canopy/canopy_hy
             ds = (
                 ds.reset_coords(drop=False)
                 .expand_dims(dim=["spot", "gran_idx"])
@@ -403,9 +403,26 @@ class Read:
             )
             # print(ds[grp_spec_vars])
             grp_spec_vars.append("gt")
+
+            # Use this to handle issues specific to group paths that are more nested
+            tiers = len(wanted_groups_tiered)
+            if tiers > 3 and grp_path.count("/") == tiers - 2:
+                # Handle attribute conflicts that arose from data descriptions during merging
+                for var in grp_spec_vars:
+                    ds[var].attrs = ds.attrs
+                for k in ds[var].attrs.keys():
+                    ds.attrs.pop(k)
+                # warnings.warn(
+                #     "Due to the number of layers of variable group paths, some attributes have been dropped from your DataSet during merging",
+                #     UserWarning,
+                # )
+
+                # assign delta-time coordinates for the deeper layer variable
+
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
             )
+
             # print(is2ds)
 
             # re-cast some dtypes to make array smaller
@@ -486,7 +503,7 @@ class Read:
         )
         return is2ds
 
-    def _read_single_var(self, file, grp_path):
+    def _read_single_grp(self, file, grp_path):
         """
         For a given file and variable group path, construct an Intake catalog and use it to read in the data.
 
@@ -520,12 +537,10 @@ class Read:
                 grp_paths=grp_path,
                 extra_engine_kwargs={"phony_dims": "access"},
             )
-
             ds = grpcat[self._source_type].read()
 
         return ds
 
-    # NOTE: for non-gridded datasets only
     def _build_single_file_dataset(self, file, groups_list):
         """
         Create a single xarray dataset with all of the wanted variables/groups from the wanted var list for a single data file/url.
@@ -545,7 +560,7 @@ class Read:
         Xarray Dataset
         """
 
-        file_product = self._read_single_var(file, "/").attrs["identifier_product_type"]
+        file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
         assert (
             file_product == self._prod
         ), "Your product specification does not match the product specification within your files."
@@ -582,10 +597,12 @@ class Read:
             _, wanted_groups_tiered = Variables.parse_var_list(
                 groups_list, tiered=True, tiered_vars=True
             )
-
+            print(wanted_groups_set)
             for grp_path in ["orbit_info"] + list(wanted_groups_set):
-                ds = self._read_single_var(file, grp_path)
-                is2ds = Read._add_var_to_ds(
+                print(grp_path)
+                ds = self._read_single_grp(file, grp_path)
+                # print(ds)
+                is2ds = Read._add_vars_to_ds(
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )
 

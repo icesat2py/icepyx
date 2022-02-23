@@ -545,20 +545,37 @@ class Read:
         # with h5py.File(filepath,'r') as h5pt:
         #     prod_id = h5pt.attrs["identifier_product_type"]
 
-        is2ds = self._build_dataset_template(file)
+        # DEVNOTE: does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
+        # if a gridded product
+        if self._prod in [
+            "ATL14",
+            "ATL15",
+            "ATL16",
+            "ATL17",
+            "ATL18",
+            "ATL19",
+            "ATL20",
+            "ATL21",
+        ]:
+            is2ds = xr.open_dataset(file)
 
-        # returns the wanted groups as a single list of full group path strings
-        wanted_dict, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
-        wanted_groups_set = set(wanted_groups)
-        # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
-        wanted_groups_set.remove("orbit_info")
-        # returns the wanted groups as a list of lists with group path string elements separated
-        _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
+        else:
+            is2ds = self._build_dataset_template(file)
 
-        for grp_path in ["orbit_info"] + list(wanted_groups_set):
-            ds = self._read_single_var(file, grp_path)
-            is2ds = Read._add_var_to_ds(
-                is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
+            # returns the wanted groups as a single list of full group path strings
+            wanted_dict, wanted_groups = Variables.parse_var_list(
+                groups_list, tiered=False
             )
+            wanted_groups_set = set(wanted_groups)
+            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            wanted_groups_set.remove("orbit_info")
+            # returns the wanted groups as a list of lists with group path string elements separated
+            _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
+
+            for grp_path in ["orbit_info"] + list(wanted_groups_set):
+                ds = self._read_single_var(file, grp_path)
+                is2ds = Read._add_var_to_ds(
+                    is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
+                )
 
         return is2ds

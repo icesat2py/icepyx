@@ -1,4 +1,5 @@
 import fnmatch
+import grp
 import os
 import warnings
 
@@ -404,20 +405,29 @@ class Read:
             # print(ds[grp_spec_vars])
             grp_spec_vars.append("gt")
 
-            # Use this to handle issues specific to group paths that are more nested
-            tiers = len(wanted_groups_tiered)
-            if tiers > 3 and grp_path.count("/") == tiers - 2:
-                # Handle attribute conflicts that arose from data descriptions during merging
-                for var in grp_spec_vars:
-                    ds[var].attrs = ds.attrs
-                for k in ds[var].attrs.keys():
-                    ds.attrs.pop(k)
-                # warnings.warn(
-                #     "Due to the number of layers of variable group paths, some attributes have been dropped from your DataSet during merging",
-                #     UserWarning,
-                # )
+            # # Use this to handle issues specific to group paths that are more nested
+            # tiers = len(wanted_groups_tiered)
+            # if tiers > 3 and grp_path.count("/") == tiers - 2:
+            #     # Handle attribute conflicts that arose from data descriptions during merging
+            #     for var in grp_spec_vars:
+            #         ds[var].attrs = ds.attrs
+            #     for k in ds[var].attrs.keys():
+            #         ds.attrs.pop(k)
+            #     # warnings.warn(
+            #     #     "Due to the number of layers of variable group paths, some attributes have been dropped from your DataSet during merging",
+            #     #     UserWarning,
+            #     # )
 
-                # assign delta-time coordinates for the deeper layer variable
+            #     # assign delta-time coordinates for the deeper layer variable
+            #     up_grp_path = grp_path.rsplit("/")[0]
+
+            #     print(is2ds.sel(spot=spot).delta_time)
+
+            #     # ds.assign_coords(delta_time=is2ds.sel(spot=spot).delta_time)
+            #     print(is2ds)
+
+            #     ds=ds.sel(spot=spot).assign_coords({'delta_time':is2ds.sel(spot=spot).delta_time.data})
+            #     # print(ds)
 
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
@@ -428,6 +438,92 @@ class Read:
             # re-cast some dtypes to make array smaller
             is2ds["gt"] = is2ds.gt.astype(str)
             is2ds["spot"] = is2ds.spot.astype(np.uint8)
+
+        return is2ds, ds[grp_spec_vars]
+
+    @staticmethod
+    def _combine_nested_vars(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
+        """
+        Add the new variables in the group to the dataset template.
+
+        Parameters
+        ----------
+        is2ds : Xarray dataset
+            Template dataset to add new variables to.
+        ds : Xarray dataset
+            Dataset containing the group to add
+        grp_path : str
+            hdf5 group path read into ds
+        wanted_groups_tiered : list of lists
+            A list of lists of deconstructed group + variable paths.
+            The first list contains the first portion of the group name (between consecutive "/"),
+            the second list contains the second portion of the group name, etc.
+            "none" is used to fill in where paths are shorter than the longest path.
+        wanted_dict : dict
+            Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
+
+        Returns
+        -------
+        Xarray Dataset with variables from the ds variable group added.
+        """
+
+        # wanted_vars = list(wanted_dict.keys())
+
+        # print(grp_path)
+        # print(wanted_groups_tiered)
+        # print(wanted_dict)
+
+        # print(wanted_dict)
+
+        grp_spec_vars = [
+            k for k, v in wanted_dict.items() if any(f"{grp_path}/{k}" in x for x in v)
+        ]
+
+        # print(ds)
+
+        # DevNOTE: the issue seems to be that the incoming ds has mismatching delta time lengths, and they're not brought in as coordinates for the canopy/canopy_hy
+        # ds = (
+        #     ds.reset_coords(drop=False)
+        #     .expand_dims(dim=["spot", "gran_idx"])
+        #     .assign_coords(spot=("spot", [spot]))
+        #     .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
+        # )
+        # # print(ds[grp_spec_vars])
+        # grp_spec_vars.append("gt")
+
+        # # Use this to handle issues specific to group paths that are more nested
+        # tiers = len(wanted_groups_tiered)
+        # if tiers > 3 and grp_path.count("/") == tiers - 2:
+        #     # Handle attribute conflicts that arose from data descriptions during merging
+        #     for var in grp_spec_vars:
+        #         ds[var].attrs = ds.attrs
+        #     for k in ds[var].attrs.keys():
+        #         ds.attrs.pop(k)
+        #     # warnings.warn(
+        #     #     "Due to the number of layers of variable group paths, some attributes have been dropped from your DataSet during merging",
+        #     #     UserWarning,
+        #     # )
+
+        #     # assign delta-time coordinates for the deeper layer variable
+        #     up_grp_path = grp_path.rsplit("/")[0]
+
+        #     print(is2ds.sel(spot=spot).delta_time)
+
+        #     # ds.assign_coords(delta_time=is2ds.sel(spot=spot).delta_time)
+        #     print(is2ds)
+
+        #     ds=ds.sel(spot=spot).assign_coords({'delta_time':is2ds.sel(spot=spot).delta_time.data})
+        #     # print(ds)
+
+        print(grp_spec_vars)
+
+        is2ds = is2ds.assign(ds[grp_spec_vars])
+
+        # print(is2ds)
+
+        # re-cast some dtypes to make array smaller
+        # is2ds["gt"] = is2ds.gt.astype(str)
+        # is2ds["spot"] = is2ds.spot.astype(np.uint8)
 
         return is2ds
 
@@ -593,17 +689,39 @@ class Read:
             wanted_groups_set = set(wanted_groups)
             # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
             wanted_groups_set.remove("orbit_info")
+            # Note: the sorting is critical for datasets with highly nested groups
+            wanted_groups_list = ["orbit_info"] + sorted(wanted_groups_set)
             # returns the wanted groups as a list of lists with group path string elements separated
             _, wanted_groups_tiered = Variables.parse_var_list(
                 groups_list, tiered=True, tiered_vars=True
             )
-            print(wanted_groups_set)
-            for grp_path in ["orbit_info"] + list(wanted_groups_set):
-                print(grp_path)
+
+            while wanted_groups_list:
+                grp_path = wanted_groups_list[0]
+                wanted_groups_list = wanted_groups_list[1:]
+                # Note this will fail with an index error on the last run
                 ds = self._read_single_grp(file, grp_path)
-                # print(ds)
-                is2ds = Read._add_vars_to_ds(
+                print(grp_path)
+                is2ds, ds = Read._add_vars_to_ds(
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )
+
+                # if there are any deeper nested variables, get those so they have actual coordinates and add them
+                if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
+                    print("deep nested paths")
+                    for grp_path2 in wanted_groups_list:
+                        if grp_path in grp_path2:
+                            sub_ds = self._read_single_grp(file, grp_path2)
+                            # print(ds)
+                            # print(sub_ds)
+                            ds = Read._combine_nested_vars(
+                                ds, sub_ds, grp_path2, wanted_groups_tiered, wanted_dict
+                            )
+                            wanted_groups_list.remove(grp_path2)
+                    is2ds = is2ds.merge(ds, join="outer", combine_attrs="no_conflicts")
+
+                print(is2ds)
+
+                # Notes (next steps): test on ATL06; reset kernal and try again; figure out gran_idx generation to be unique for ATL08files
 
         return is2ds

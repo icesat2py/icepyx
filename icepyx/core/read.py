@@ -1,5 +1,4 @@
 import fnmatch
-import grp
 import os
 import warnings
 
@@ -337,12 +336,6 @@ class Read:
         Xarray Dataset with variables from the ds variable group added.
         """
 
-        # wanted_vars = list(wanted_dict.keys())
-
-        # print(grp_path)
-        # print(wanted_groups_tiered)
-        # print(wanted_dict)
-
         if grp_path in ["orbit_info", "ancillary_data"]:
             grp_spec_vars = [
                 wanted_groups_tiered[-1][i]
@@ -399,7 +392,6 @@ class Read:
             )
 
             grp_spec_vars.append("gt")
-
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
             )
@@ -411,23 +403,18 @@ class Read:
         return is2ds, ds[grp_spec_vars]
 
     @staticmethod
-    def _combine_nested_vars(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
+    def _combine_nested_vars(is2ds, ds, grp_path, wanted_dict):
         """
-        Add the new variables in the group to the dataset template.
+        Add the deeply nested variables to a dataset with appropriate coordinate information.
 
         Parameters
         ----------
         is2ds : Xarray dataset
-            Template dataset to add new variables to.
+            Dataset to add deeply nested variables to.
         ds : Xarray dataset
-            Dataset containing the group to add
+            Dataset containing proper dimensions for the variables being added
         grp_path : str
             hdf5 group path read into ds
-        wanted_groups_tiered : list of lists
-            A list of lists of deconstructed group + variable paths.
-            The first list contains the first portion of the group name (between consecutive "/"),
-            the second list contains the second portion of the group name, etc.
-            "none" is used to fill in where paths are shorter than the longest path.
         wanted_dict : dict
             Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
 
@@ -640,11 +627,9 @@ class Read:
                         if grp_path in grp_path2:
                             sub_ds = self._read_single_grp(file, grp_path2)
                             ds = Read._combine_nested_vars(
-                                ds, sub_ds, grp_path2, wanted_groups_tiered, wanted_dict
+                                ds, sub_ds, grp_path2, wanted_dict
                             )
                             wanted_groups_list.remove(grp_path2)
                     is2ds = is2ds.merge(ds, join="outer", combine_attrs="no_conflicts")
-
-                # Notes (next steps):  open an issue; maybe add a fn to generate unique gran ids
 
         return is2ds

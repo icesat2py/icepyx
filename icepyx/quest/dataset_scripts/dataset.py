@@ -1,9 +1,10 @@
 import warnings
+from ../../core/query import GenQuery
 
 warnings.filterwarnings("ignore")
 
 
-class DataSet:
+class DataSet(GenQuery):
 
     """
     Parent Class for all supported datasets (i.e. ATL03, ATL07, MODIS, etc.)

@@ -1,4 +1,3 @@
-.. _resource_ref_label:
 
 ICESat-2 Resource Guide
 =======================

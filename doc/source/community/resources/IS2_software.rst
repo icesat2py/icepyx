@@ -1,7 +1,5 @@
-.. _resource_software_label:
-
-Open-Source Software packages
------------------------------
+Open-Source Packages
+--------------------
 ICESat-2 can be tricky to process for the first time, especially if working with the ATL03 data. Software packages have been developed to make ICESat-2 data analysis easier for new and experienced users. 
 Here, we highlight some commonly-used software packages developed by the science community. Most of these can be used alongside Icepyx to facilitate ICESat-2 data processing.
 Most of these packages are callable through Python, though others may require access to other software. Keep this in mind before attempting to use any package or plugin.
@@ -19,13 +17,6 @@ Most of these packages are callable through Python, though others may require ac
   - A Python library designed to simplify the co-registration of cryospheric datasets.
   - Matches georeferencing parameters across data sets, allowing a user to derive a time series across multiple datasets for a given region.
   - Currently valid datasets include ICESat, ICESat-2, and Operation IceBridge.
-   
-* `PhotonLabeler <https://github.com/Oht0nger/PhoLabeler>`_
-  
-  - by Lonesome Malambo
-  - A MATLAB-based user interface that allows for manual interpretation of ICESat-2 photons.
-  - Users may classify photons based on surface type, signal/noise likelihood, or other user-defined labels.
-  - Derives simple statistics for any user-defined photon classifications.
     
 * `PhoREAL <https://github.com/icesat-2UT/PhoREAL>`_
 
@@ -34,11 +25,6 @@ Most of these packages are callable through Python, though others may require ac
   - Allows for quick processing of ATL03/08 data, which may then be used to generate 2-D plots of ICESat-2 surface heights.
   - Users may also convert processed data to .las, .csv, and .kml file formats.
   
-
-   
-
-
-.. _complementary_GH_repos_label:
 
 Complementary GitHub Repositories
 ---------------------------------
@@ -81,5 +67,11 @@ Additional resources having to do specifically with obtaining ICESat-2 data are 
   - We hope to capitalize on some of the concepts of data access, indexing, and processing presented in pointCollection to improve our interfacing with ICESat-2 data within icepyx.
 
 
-Non Open-Source Software packages
----------------------------------
+MATLAB Packages
+---------------
+* `PhotonLabeler <https://github.com/Oht0nger/PhoLabeler>`_
+  
+  - by Lonesome Malambo
+  - A MATLAB-based user interface that allows for manual interpretation of ICESat-2 photons.
+  - Users may classify photons based on surface type, signal/noise likelihood, or other user-defined labels.
+  - Derives simple statistics for any user-defined photon classifications.

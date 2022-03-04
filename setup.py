@@ -26,7 +26,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["*tests"]),
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRE,
-    python_requires=">=3",
+    python_requires="==3.9.10",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",

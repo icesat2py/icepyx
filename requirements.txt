@@ -10,7 +10,6 @@ intake
 intake-xarray
 matplotlib
 numpy
-python==3.9.10
 requests
 shapely
 xarray

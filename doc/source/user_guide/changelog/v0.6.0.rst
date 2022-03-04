@@ -1,6 +1,6 @@
 .. _whatsnew_060:
 
-What's new in 0.6.0 (2 March 2022)
+What's new in 0.6.0 (4 March 2022)
 -----------------------------------
 
 These are the changes in icepyx 0.6.0 See :ref:`release` for a full changelog
@@ -39,7 +39,6 @@ Maintenance
     * add try to variables module for gridded products required variables list
 
 
-
 Documentation
 ^^^^^^^^^^^^^
 
@@ -53,12 +52,9 @@ Documentation
     * add download links to example notebooks
 
 - Update readthedocs build dependencies (#261)
-
-
-Other
-^^^^^
-
-- None
+- Updating ICESat-2 Resources Pages (#263)
+    * Updated resource guides
+    * Created separate resource pages
 
 
 Contributors

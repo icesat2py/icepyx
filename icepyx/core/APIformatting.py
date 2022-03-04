@@ -194,7 +194,7 @@ def combine_params(*param_dicts):
     --------
     >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
     >>> reqparams = {'page_size': 2000, 'page_num': 1}
-    >>> icepyx.core.APIformatting.combine_params(CMRparams, reqparams)
+    >>> ipx.core.APIformatting.combine_params(CMRparams, reqparams)
     {'short_name': 'ATL06',
     'version': '002',
     'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
@@ -224,8 +224,8 @@ def to_string(params):
     --------
     >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
     >>> reqparams = {'page_size': 2000, 'page_num': 1}
-    >>> params = icepyx.core.APIformatting.combine_params(CMRparams, reqparams)
-    >>> icepyx.core.APIformatting.to_string(params)
+    >>> params = ipx.core.APIformatting.combine_params(CMRparams, reqparams)
+    >>> ipx.core.APIformatting.to_string(params)
     'short_name=ATL06&version=002&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=2000&page_num=1'
     """
     param_list = []
@@ -325,7 +325,7 @@ class Parameters:
             }
         elif self.partype == "required":
             self._poss_keys = {
-                "search": ["page_size", "page_num"],
+                "search": ["page_size"],
                 "download": [
                     "page_size",
                     "page_num",
@@ -442,7 +442,7 @@ class Parameters:
                 reqkeys = self.poss_keys[self._reqtype]
                 defaults = {
                     "page_size": 2000,
-                    "page_num": 1,
+                    "page_num": 0,
                     "request_mode": "async",
                     "include_meta": "Y",
                     "client_string": "icepyx",
@@ -450,19 +450,10 @@ class Parameters:
                 for key in reqkeys:
                     if key in kwargs:
                         self._fmted_keys.update({key: kwargs[key]})
-                    #                 elif key in defaults:
-                    #                     if key is 'page_num':
-                    #                         pnum = math.ceil(len(is2obj.granules)/reqparams['page_size'])
-                    #                         if pnum > 0:
-                    #                             reqparams.update({key:pnum})
-                    #                         else:
-                    #                             reqparams.update({key:defaults[key]})
                     elif key in defaults:
                         self._fmted_keys.update({key: defaults[key]})
                     else:
                         pass
-
-                self._fmted_keys["page_num"] = 1
 
         else:
             if self.check_values == True and kwargs == None:

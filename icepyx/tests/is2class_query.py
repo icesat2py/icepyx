@@ -20,7 +20,7 @@ def test_reqconfig_params():
     # test for search params
     reg_a.build_reqconfig_params("search")
     obs_keys = reg_a.reqparams.keys()
-    exp_keys_all = ["page_size", "page_num"]
+    exp_keys_all = ["page_size"]
     assert all(keys in obs_keys for keys in exp_keys_all)
 
     # test for download params
@@ -37,36 +37,6 @@ def test_reqconfig_params():
         "include_meta",
     ]
     assert all(keys in obs_keys for keys in exp_keys_all)
-
-
-def test_properties():
-    reg_a = ipx.Query(
-        "ATL06",
-        [-64, 66, -55, 72],
-        ["2019-02-22", "2019-02-28"],
-        start_time="03:30:00",
-        end_time="21:30:00",
-        version="2",
-    )
-    obs_list = [
-        reg_a.product,
-        reg_a.dates,
-        reg_a.start_time,
-        reg_a.end_time,
-        reg_a.product_version,
-        reg_a.spatial_extent,
-    ]
-    exp_list = [
-        "ATL06",
-        ["2019-02-22", "2019-02-28"],
-        "03:30:00",
-        "21:30:00",
-        "002",
-        ["bounding box", [-64, 66, -55, 72]],
-    ]
-
-    for obs, expected in zip(obs_list, exp_list):
-        assert obs == expected
 
 
 # BestPractices: should do additional properties tests for each potential property type (e.g. spatial extent can have type bounding_box or polygon)

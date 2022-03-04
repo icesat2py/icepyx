@@ -1,15 +1,15 @@
 Query Class
-=================
+===========
 
 .. currentmodule:: icepyx
 
-
-Constructor
------------
+Constructors
+------------
 
 .. autosummary::
    :toctree: ../../_icepyx/
 
+   GenQuery
    Query
 
 
@@ -21,8 +21,8 @@ Attributes
 
    Query.CMRparams
    Query.cycles
-   Query.dataset
-   Query.dataset_version
+   Query.product
+   Query.product_version
    Query.dates
    Query.end_time
    Query.file_vars
@@ -41,8 +41,8 @@ Methods
    :toctree: ../../_icepyx/
 
    Query.avail_granules
-   Query.dataset_all_info
-   Query.dataset_summary_info
+   Query.product_all_info
+   Query.product_summary_info
    Query.download_granules
    Query.earthdata_login
    Query.latest_version

@@ -10,11 +10,20 @@ import warnings
 # check that downloaded data is subset? or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
-@pytest.fixture
-def reg(scope="module"):
-    return ipx.Query(
-        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="004"
-    )
+@pytest.fixture(
+    scope="module",
+    params=[
+        dict(product="ATL14", spatial_extent=[-28, 62, -10, 68], version="001"),
+        dict(
+            product="ATL06",
+            spatial_extent=[-55, 68, -48, 71],
+            date_range=["2019-02-22", "2019-02-28"],
+            version="004",
+        ),
+    ],
+)
+def reg(request):
+    return ipx.Query(**request.param)
 
 
 @pytest.fixture

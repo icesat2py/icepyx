@@ -28,4 +28,4 @@ jobs:
           author_name: GitHub Action
           message: "GitHub action UML generation auto-update"
           add: "./doc/source/user_guide/documentation/*"
-          ref: git branch --show-current
+          branch: git branch --show-current

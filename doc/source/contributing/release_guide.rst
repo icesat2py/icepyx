@@ -92,7 +92,7 @@ If you have to create a merge commit message, you've done something wrong and ne
 Tag the Release
 ---------------
 
-Last, but potentially most importantly, we need to tag the release.
+Last, but potentially most importantly, we need to tag and create the release.
 This step will trigger the package to be built and update the distribution available from conda and PyPI.
 GitHub makes this easy - on the repo's home page, simply select "Releases" from the right hand side, and then the "Draft a New Release" button.
 Add a new tag with the version number of your release, making sure it points to the `main` branch (by default, GitHub will suggest the `development` branch!)
@@ -108,6 +108,8 @@ git push --delete origin tagname
 See `this guide <https://devconnected.com/how-to-delete-local-and-remote-tags-on-git/>`_ on how to delete local and remote git tags.
 
 Then you can go back to the beginning of this step to create a new tag and release.
+Alternatively, you may be better off yanking the previous release (but leaving the tag) and increasing your patch number in a new tag+release.
+This may be necessary if you have a failing release already on PyPI.
 
 
 Finishing Up

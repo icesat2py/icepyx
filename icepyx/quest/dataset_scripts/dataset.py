@@ -12,13 +12,14 @@ class DataSet(GenQuery):
     colocated data class
     """
 
-    def __init__(self, boundingbox, timeframe):
+    def __init__(self, spatial_extent=None, date_range=None, start_time=None, end_time=None):
         """
         * use existing Icepyx functionality to initialise this
         :param timeframe: datetime
         """
-        self.bounding_box = boundingbox
-        self.time_frame = timeframe
+        super().__init__(spatial_extent, date_range, start_time, end_time)
+        # self.bounding_box = boundingbox
+        # self.time_frame = timeframe
 
     def _fmt_coordinates(self):
         # use icepyx geospatial module (icepyx core)
@@ -38,7 +39,7 @@ class DataSet(GenQuery):
         """
         raise NotImplementedError
 
-    def search_data(self, delta_t):
+    def search_data(self):
         """
         query dataset given the spatio temporal criteria
         and other params specic to the dataset

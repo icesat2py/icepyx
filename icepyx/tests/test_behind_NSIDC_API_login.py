@@ -13,7 +13,7 @@ import warnings
 @pytest.fixture(
     scope="module",
     params=[
-        dict(product="ATL14", spatial_extent=[-28, 62, -10, 68], version="001"),
+        dict(product="ATL14", spatial_extent=[20, 79, 28, 80], version="001"),
         dict(
             product="ATL06",
             spatial_extent=[-55, 68, -48, 71],

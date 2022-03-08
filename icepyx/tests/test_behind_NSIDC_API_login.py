@@ -10,8 +10,8 @@ import warnings
 # check that downloaded data is subset? or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
-@pytest.fixture
-def reg(scope="module"):
+@pytest.fixture(scope="module")
+def reg():
     live_reg = ipx.Query(
         "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="004"
     )
@@ -19,8 +19,8 @@ def reg(scope="module"):
     del live_reg
 
 
-@pytest.fixture
-def session(reg, scope="module"):
+@pytest.fixture(scope="module")
+def session(reg):
     capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
     ed_obj = Earthdata(
         "icepyx_devteam",

@@ -9,7 +9,7 @@ def mock_settings_env_vars():
         "os.environ",
         {
             "EARTHDATA_USERNAME": "icepyx_devteam",
-            "EARTHDATA_PASSWORD": "EARTHDATA_PASSWORD",
+            "EARTHDATA_PASSWORD": "fake_earthdata_password",
             "EARTHDATA_EMAIL": "icepyx.dev@gmail.com",
         },
     ):

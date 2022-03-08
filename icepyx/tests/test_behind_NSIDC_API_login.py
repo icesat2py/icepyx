@@ -22,14 +22,15 @@ def reg(scope="module"):
 @pytest.fixture
 def session(reg, scope="module"):
     capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
-    live_session = Earthdata(
+    ed_obj = Earthdata(
         "icepyx_devteam",
         "icepyx.dev@gmail.com",
         capability_url=capability_url,
         pswd=os.getenv("NSIDC_LOGIN"),
-    )._start_session()
-    yield live_session
-    live_session.close()
+    )
+    ed_obj._start_session()
+    yield ed_obj.session
+    ed_obj.session.close()
 
 
 ########## is2ref module ##########
@@ -41,8 +42,6 @@ def test_get_custom_options_output(session):
     obs = is2ref._get_custom_options(session, "ATL06", "004")
     with open("./icepyx/tests/ATL06v04_options.json") as exp_json:
         exp = json.load(exp_json)
-        print(exp.keys())
-        # print(exp)
         assert all(keys in obs.keys() for keys in exp.keys())
         assert all(obs[key] == exp[key] for key in exp.keys())
 

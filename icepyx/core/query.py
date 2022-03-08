@@ -984,6 +984,12 @@ class Query(GenQuery):
         ):
             del self._subsetparams
 
+        # Don't allow data orders if the granule search used cycles+tracks
+        if "readable_granule_name[]" in self.CMRparams.keys():
+            raise NotImplementedError(
+                "Data orders identifying granules using cycles and tracks are not supported by NSIDC"
+            )
+
         # REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, "_granules"):
             self.granules

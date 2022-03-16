@@ -363,13 +363,14 @@ class Read:
                 pass
 
             try:
-                # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
-                is2ds["data_start_utc"] = np.datetime64(
-                    is2ds.data_start_utc.data[0].astype(str)[:-1]
-                )
-                is2ds["data_end_utc"] = np.datetime64(
-                    is2ds.data_end_utc.data[0].astype(str)[:-1]
-                )
+                if is2ds["data_end_utc"].data[0] == "Z":
+                    # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
+                    is2ds["data_start_utc"] = np.datetime64(
+                        is2ds.data_start_utc.data[0].astype(str)[:-1]
+                    )
+                    is2ds["data_end_utc"] = np.datetime64(
+                        is2ds.data_end_utc.data[0].astype(str)[:-1]
+                    )
 
             except AttributeError:
                 pass

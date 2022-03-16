@@ -363,13 +363,21 @@ class Read:
                 pass
 
             try:
-                # DevNote: these lines may cause a NumPy Warning, as explained here: https://numpy.org/doc/stable/release/1.11.0-notes.html?
-                # The below line will silence this warning...
-                # warnings.filterwarnings(
-                #     "default", category=DeprecationWarning, module=np.astype()
-                # )
-                is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
-                is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
+                if (
+                    hasattr(is2ds, "data_start_utc")
+                    and is2ds["data_start_utc"].data[0].astype(str).endswith("Z")
+                ):
+                    # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
+                    is2ds["data_start_utc"] = np.datetime64(
+                        is2ds.data_start_utc.data[0].astype(str)[:-1]
+                    )
+                    is2ds["data_end_utc"] = np.datetime64(
+                        is2ds.data_end_utc.data[0].astype(str)[:-1]
+                    )
+                else:
+                    is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
+                    is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
+
             except AttributeError:
                 pass
 

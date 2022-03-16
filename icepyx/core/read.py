@@ -371,6 +371,9 @@ class Read:
                     is2ds["data_end_utc"] = np.datetime64(
                         is2ds.data_end_utc.data[0].astype(str)[:-1]
                     )
+                else:
+                    is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
+                    is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
 
             except AttributeError:
                 pass

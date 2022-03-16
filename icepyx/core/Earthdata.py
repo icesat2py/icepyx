@@ -129,7 +129,7 @@ class Earthdata:
         try:
             url = "urs.earthdata.nasa.gov"
             self.uid, _, self.pswd = netrc.netrc(self.netrc).authenticators(url)
-            session = self._start_session()
+            self._start_session()
 
         except:
             # if not using an environmental variable for password
@@ -137,7 +137,7 @@ class Earthdata:
                 self.pswd = getpass.getpass("Earthdata Login password: ")
             for i in range(attempts):
                 try:
-                    session = self._start_session()
+                    self._start_session()
                     break
                 except KeyError:
                     pass

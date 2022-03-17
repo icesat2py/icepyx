@@ -14,19 +14,12 @@ Bug fixes
 - manually remove 'z' from datetime string (#294)
 
 
-
-
 Maintenance
 ^^^^^^^^^^^
 
 - update action add-and-commit v8 and remove branch/ref keywords (#290)
 - add read-in functionality for deeply nested variables (e.g. ATL08) (#281)
-
-
-Documentation
-^^^^^^^^^^^^^
-
-- None
+-  icepyx tracking (traffic and pypi) updates (#295) 
 
 
 Contributors

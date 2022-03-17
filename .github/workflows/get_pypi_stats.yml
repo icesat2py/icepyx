@@ -23,7 +23,7 @@ jobs:
     # Calculates pypi stats and clones and stores in CSV file
     - name: Update pypi stats files
       run: |
-        pip install -r requirements.txt requirements-dev.txt
+        pip install -r requirements.txt pypistats
         python ./doc/source/tracking/pypistats/get_pypi_stats.py
 
     # Commits files to repository

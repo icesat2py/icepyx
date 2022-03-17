@@ -24,12 +24,21 @@ def _validate_product(product):
             "ATL04",
             "ATL06",
             "ATL07",
+            "ATL07QL",
             "ATL08",
             "ATL09",
+            "ATL09QL",
             "ATL10",
             "ATL11",
             "ATL12",
             "ATL13",
+            "ATL14",
+            "ATL15",
+            "ATL16",
+            "ATL17",
+            "ATL19",
+            "ATL20",
+            "ATL21",
         ], "Please enter a valid product"
     else:
         raise TypeError("Please enter a product string")
@@ -250,7 +259,7 @@ def _default_varlists(product):
 
     else:
         print(
-            "THE REQUESTED PRODUCT DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUTDE, AND LONGITUDE WILL BE RETURNED"
+            "THE REQUESTED PRODUCT DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUDE, AND LONGITUDE WILL BE RETURNED"
         )
         return common_list
 

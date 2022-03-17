@@ -600,15 +600,15 @@ def test_correct_granule_list_returned():
         "ATL06",
         [-55, 68, -48, 71],
         ["2019-02-20", "2019-02-28"],
-        version="3",
+        version="5",
     )
 
     (obs_grans,) = reg_a.avail_granules(ids=True)
     exp_grans = [
-        "ATL06_20190221121851_08410203_003_01.h5",
-        "ATL06_20190222010344_08490205_003_01.h5",
-        "ATL06_20190225121032_09020203_003_01.h5",
-        "ATL06_20190226005526_09100205_003_01.h5",
+        "ATL06_20190221121851_08410203_005_01.h5",
+        "ATL06_20190222010344_08490205_005_01.h5",
+        "ATL06_20190225121032_09020203_005_01.h5",
+        "ATL06_20190226005526_09100205_005_01.h5",
     ]
     assert set(obs_grans) == set(exp_grans)
 
@@ -628,5 +628,5 @@ def test_avail_granule_CMR_error():
     ermsg = "An error was returned from NSIDC in regards to your query: temporal start datetime is invalid: [badinput] is not a valid datetime."
     with pytest.raises(NsidcQueryError, match=re.escape(ermsg)):
         CMRparams = {"version": "003", "temporal": "badinput", "short_name": "ATL08"}
-        reqparams = {"page_size": 1, "page_num": 1}
+        reqparams = {"page_size": 1}
         Granules().get_avail(CMRparams=CMRparams, reqparams=reqparams)

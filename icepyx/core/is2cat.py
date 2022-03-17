@@ -92,10 +92,10 @@ def build_catalog(
     **kwargs :
         Keyword arguments to be passed through to `intake.catalog.Catalog.from_dict()`.
         Keywords needed to override default inputs include:
-            - `source_args_dict` # highest level source information; keys include: "urlpath", "path_as_pattern", driver-specific ("xarray_kwargs" is default)
-            - `metadata_dict`
-            - `source_dict` # individual source entry  information (default is supplied by data object; "name", "description", "driver", "args")
-            - `defaults_dict`  # catalog "name", "description", "metadata", "entries", etc.
+        - `source_args_dict` # highest level source information; keys include: "urlpath", "path_as_pattern", driver-specific ("xarray_kwargs" is default)
+        - `metadata_dict`
+        - `source_dict` # individual source entry  information (default is supplied by data object; "name", "description", "driver", "args")
+        - `defaults_dict`  # catalog "name", "description", "metadata", "entries", etc.
 
     Returns
     -------

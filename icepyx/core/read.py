@@ -265,8 +265,8 @@ class Read:
 
         Examples
         --------
-        >>> reader = ipx.Read(path_root, "ATL06", pattern)
-        >>> reader.vars
+        >>> reader = ipx.Read(path_root, "ATL06", pattern) # doctest: +SKIP
+        >>> reader.vars  # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 
@@ -311,9 +311,9 @@ class Read:
         return False, None
 
     @staticmethod
-    def _add_var_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
+    def _add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
         """
-        Add the new variable group to the dataset template.
+        Add the new variables in the group to the dataset template.
 
         Parameters
         ----------
@@ -336,11 +336,9 @@ class Read:
         Xarray Dataset with variables from the ds variable group added.
         """
 
-        wanted_vars = list(wanted_dict.keys())
-
         if grp_path in ["orbit_info", "ancillary_data"]:
             grp_spec_vars = [
-                wanted_vars[i]
+                wanted_groups_tiered[-1][i]
                 for i, x in enumerate(wanted_groups_tiered[0])
                 if x == grp_path
             ]
@@ -363,13 +361,21 @@ class Read:
                 pass
 
             try:
-                # DevNote: these lines may cause a NumPy Warning, as explained here: https://numpy.org/doc/stable/release/1.11.0-notes.html?
-                # The below line will silence this warning...
-                # warnings.filterwarnings(
-                #     "default", category=DeprecationWarning, module=np.astype()
-                # )
-                is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
-                is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
+                if (
+                    hasattr(is2ds, "data_start_utc")
+                    and is2ds["data_start_utc"].data[0].astype(str).endswith("Z")
+                ):
+                    # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
+                    is2ds["data_start_utc"] = np.datetime64(
+                        is2ds.data_start_utc.data[0].astype(str)[:-1]
+                    )
+                    is2ds["data_end_utc"] = np.datetime64(
+                        is2ds.data_end_utc.data[0].astype(str)[:-1]
+                    )
+                else:
+                    is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
+                    is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
+
             except AttributeError:
                 pass
 
@@ -381,9 +387,10 @@ class Read:
             # add a test for the new function (called here)!
 
             grp_spec_vars = [
-                k for k, v in wanted_dict.items() if any(grp_path in x for x in v)
+                k
+                for k, v in wanted_dict.items()
+                if any(f"{grp_path}/{k}" in x for x in v)
             ]
-            # print(grp_spec_vars)
 
             ds = (
                 ds.reset_coords(drop=False)
@@ -392,16 +399,56 @@ class Read:
                 .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
             )
 
-            # print(ds)
             grp_spec_vars.append("gt")
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
             )
-            # print(is2ds)
 
             # re-cast some dtypes to make array smaller
             is2ds["gt"] = is2ds.gt.astype(str)
             is2ds["spot"] = is2ds.spot.astype(np.uint8)
+
+        return is2ds, ds[grp_spec_vars]
+
+    @staticmethod
+    def _combine_nested_vars(is2ds, ds, grp_path, wanted_dict):
+        """
+        Add the deeply nested variables to a dataset with appropriate coordinate information.
+
+        Parameters
+        ----------
+        is2ds : Xarray dataset
+            Dataset to add deeply nested variables to.
+        ds : Xarray dataset
+            Dataset containing proper dimensions for the variables being added
+        grp_path : str
+            hdf5 group path read into ds
+        wanted_dict : dict
+            Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
+
+        Returns
+        -------
+        Xarray Dataset with variables from the ds variable group added.
+        """
+
+        grp_spec_vars = [
+            k for k, v in wanted_dict.items() if any(f"{grp_path}/{k}" in x for x in v)
+        ]
+
+        # # Use this to handle issues specific to group paths that are more nested
+        # tiers = len(wanted_groups_tiered)
+        # if tiers > 3 and grp_path.count("/") == tiers - 2:
+        #     # Handle attribute conflicts that arose from data descriptions during merging
+        #     for var in grp_spec_vars:
+        #         ds[var].attrs = ds.attrs
+        #     for k in ds[var].attrs.keys():
+        #         ds.attrs.pop(k)
+        #     # warnings.warn(
+        #     #     "Due to the number of layers of variable group paths, some attributes have been dropped from your DataSet during merging",
+        #     #     UserWarning,
+        #     # )
+
+        is2ds = is2ds.assign(ds[grp_spec_vars])
 
         return is2ds
 
@@ -477,7 +524,7 @@ class Read:
         )
         return is2ds
 
-    def _read_single_var(self, file, grp_path):
+    def _read_single_grp(self, file, grp_path):
         """
         For a given file and variable group path, construct an Intake catalog and use it to read in the data.
 
@@ -511,12 +558,10 @@ class Read:
                 grp_paths=grp_path,
                 extra_engine_kwargs={"phony_dims": "access"},
             )
-
             ds = grpcat[self._source_type].read()
 
         return ds
 
-    # NOTE: for non-gridded datasets only
     def _build_single_file_dataset(self, file, groups_list):
         """
         Create a single xarray dataset with all of the wanted variables/groups from the wanted var list for a single data file/url.
@@ -536,7 +581,7 @@ class Read:
         Xarray Dataset
         """
 
-        file_product = self._read_single_var(file, "/").attrs["identifier_product_type"]
+        file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
         assert (
             file_product == self._prod
         ), "Your product specification does not match the product specification within your files."
@@ -545,20 +590,54 @@ class Read:
         # with h5py.File(filepath,'r') as h5pt:
         #     prod_id = h5pt.attrs["identifier_product_type"]
 
-        is2ds = self._build_dataset_template(file)
+        # DEVNOTE: does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
+        # if a gridded product
+        if self._prod in [
+            "ATL14",
+            "ATL15",
+            "ATL16",
+            "ATL17",
+            "ATL18",
+            "ATL19",
+            "ATL20",
+            "ATL21",
+        ]:
+            is2ds = xr.open_dataset(file)
 
-        # returns the wanted groups as a single list of full group path strings
-        wanted_dict, wanted_groups = Variables.parse_var_list(groups_list, tiered=False)
-        wanted_groups_set = set(wanted_groups)
-        # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
-        wanted_groups_set.remove("orbit_info")
-        # returns the wanted groups as a list of lists with group path string elements separated
-        _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
+        else:
+            is2ds = self._build_dataset_template(file)
 
-        for grp_path in ["orbit_info"] + list(wanted_groups_set):
-            ds = self._read_single_var(file, grp_path)
-            is2ds = Read._add_var_to_ds(
-                is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
+            # returns the wanted groups as a single list of full group path strings
+            wanted_dict, wanted_groups = Variables.parse_var_list(
+                groups_list, tiered=False
             )
+            wanted_groups_set = set(wanted_groups)
+            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            wanted_groups_set.remove("orbit_info")
+            # Note: the sorting is critical for datasets with highly nested groups
+            wanted_groups_list = ["orbit_info"] + sorted(wanted_groups_set)
+            # returns the wanted groups as a list of lists with group path string elements separated
+            _, wanted_groups_tiered = Variables.parse_var_list(
+                groups_list, tiered=True, tiered_vars=True
+            )
+
+            while wanted_groups_list:
+                grp_path = wanted_groups_list[0]
+                wanted_groups_list = wanted_groups_list[1:]
+                ds = self._read_single_grp(file, grp_path)
+                is2ds, ds = Read._add_vars_to_ds(
+                    is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
+                )
+
+                # if there are any deeper nested variables, get those so they have actual coordinates and add them
+                if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
+                    for grp_path2 in wanted_groups_list:
+                        if grp_path in grp_path2:
+                            sub_ds = self._read_single_grp(file, grp_path2)
+                            ds = Read._combine_nested_vars(
+                                ds, sub_ds, grp_path2, wanted_dict
+                            )
+                            wanted_groups_list.remove(grp_path2)
+                    is2ds = is2ds.merge(ds, join="outer", combine_attrs="no_conflicts")
 
         return is2ds

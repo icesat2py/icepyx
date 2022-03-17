@@ -10,16 +10,27 @@ import warnings
 # check that downloaded data is subset? or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
-@pytest.fixture
-def reg(scope="module"):
-    return ipx.Query("ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"])
+@pytest.fixture(scope="module")
+def reg():
+    live_reg = ipx.Query(
+        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="004"
+    )
+    yield live_reg
+    del live_reg
 
 
-@pytest.fixture
-def session(reg, scope="module"):
-    return Earthdata(
-        "icepyx_devteam", "icepyx.dev@gmail.com", capability_url="", pswd=os.getenv("NSIDC_LOGIN")
-    )._start_session()
+@pytest.fixture(scope="module")
+def session(reg):
+    capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
+    ed_obj = Earthdata(
+        "icepyx_devteam",
+        "icepyx.dev@gmail.com",
+        capability_url=capability_url,
+        pswd=os.getenv("NSIDC_LOGIN"),
+    )
+    ed_obj._start_session()
+    yield ed_obj.session
+    ed_obj.session.close()
 
 
 ########## is2ref module ##########
@@ -29,7 +40,8 @@ import json
 
 def test_get_custom_options_output(session):
     obs = is2ref._get_custom_options(session, "ATL06", "004")
-    with open("./ATL06v04_options.json", "r") as exp:
+    with open("./icepyx/tests/ATL06v04_options.json") as exp_json:
+        exp = json.load(exp_json)
         assert all(keys in obs.keys() for keys in exp.keys())
         assert all(obs[key] == exp[key] for key in exp.keys())
 
@@ -38,8 +50,9 @@ def test_get_custom_options_output(session):
 # NOTE: best this test can do at the moment is a successful download with no errors...
 def test_download_granules_with_subsetting(reg, session):
     path = "./downloads_subset"
-    reg.order_granules(session)
-    reg.download_granules(session, path)
+    reg._session = session
+    reg.order_granules()
+    reg.download_granules(path)
 
 
 # def test_download_granules_without_subsetting(reg_a, session):

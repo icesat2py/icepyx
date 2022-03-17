@@ -1,0 +1,69 @@
+.. _whatsnew_060:
+
+What's new in 0.6.0 (4 March 2022)
+-----------------------------------
+
+These are the changes in icepyx 0.6.0 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- add ability to only order one page by specifying 'page-num' (#87)
+- add environmental variable option for Earthdata credentials (#200)
+- Super query - turn Query into a superclass called GenQuery (#249)
+- Update or skip all existing docstring tests (#259)
+
+  - add docstring tests to pytest ini
+
+- splashy front page (#260)
+- QUEST  (Query_Unify_Explore_SpatioTemporal) - Colocated data framework (#273)
+
+  - Introduce framework to implement icepyx functionality (query & download) to other data sets
+
+
+Bug fixes
+~~~~~~~~~
+
+- update docstring test config params (#256)
+- update commit action version in traffic action and data (#258)
+- update OA data sizes for CI tests (#262)
+- comment out tests failing due to OA issue (#268)
+
+
+Maintenance
+^^^^^^^^^^^
+
+- use Cmr-search-after instead of paging (#87)
+- minor tweaks for gridded product access (#276)
+
+  - check if data product is gridded before parsing filename for gran_IDs
+  - update required inputs for query object based on product
+  - add try to variables module for gridded products required variables list
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- Use MyST-NB to render jupyter notebook and markdown files and other docs fixes (#196)
+- automate pypi statistics tracking and figure updates
+- clarify which branch badges in README point to (#267)
+- improve example notebooks in docs (#265)
+
+  - Turn examples into a dedicated section
+  - update and standardize example headings and levels
+  - update notebook links to rtd rendering (from GH)
+  - add download links to example notebooks
+
+- Update readthedocs build dependencies (#261)
+- Updating ICESat-2 Resources Pages (#263)
+
+  - Updated resource guides
+  - Created separate resource pages
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.5.0..v0.6.0|HEAD

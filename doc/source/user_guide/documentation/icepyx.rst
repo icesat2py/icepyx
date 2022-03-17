@@ -1,3 +1,5 @@
+.. _api_doc_ref:
+
 icepyx Documentation (API Reference)
 ====================================
 
@@ -20,4 +22,5 @@ Diagrams are updated automatically after a pull request (PR) is approved and bef
 
    query
    read
+   quest
    components

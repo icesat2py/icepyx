@@ -35,10 +35,9 @@ jobs:
     
     # Commits files to repository
     - name: Commit changes
-      uses: EndBug/add-and-commit@v7
+      uses: EndBug/add-and-commit@v8
       with:
         author_name: Jessica Scheick
         message: "GitHub traffic auto-update"
         add: "./doc/source/tracking/traffic/*"
 #         add: "./traffic/*"
-        branch: "traffic"  # commits to branch "traffic"

@@ -244,13 +244,13 @@
 <polygon fill="none" stroke="black" points="1315,-0.5 1315,-294.5 1804,-294.5 1804,-0.5 1315,-0.5"/>
 <text text-anchor="middle" x="1559.5" y="-279.3" font-family="Times,serif" font-size="14.00">Variables</text>
 <polyline fill="none" stroke="black" points="1315,-271.5 1804,-271.5 "/>
-<text text-anchor="start" x="1323" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : NoneType, list</text>
+<text text-anchor="start" x="1323" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : list, NoneType</text>
 <text text-anchor="start" x="1323" y="-241.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
 <text text-anchor="start" x="1323" y="-226.3" font-family="Times,serif" font-size="14.00">_vartype</text>
 <text text-anchor="start" x="1323" y="-211.3" font-family="Times,serif" font-size="14.00">_version : NoneType</text>
 <text text-anchor="start" x="1323" y="-196.3" font-family="Times,serif" font-size="14.00">path : NoneType</text>
 <text text-anchor="start" x="1323" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType</text>
-<text text-anchor="start" x="1323" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : dict, NoneType</text>
+<text text-anchor="start" x="1323" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
 <polyline fill="none" stroke="black" points="1315,-158.5 1804,-158.5 "/>
 <text text-anchor="start" x="1323" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(vartype, avail, wanted, session, product, version, path)</text>
 <text text-anchor="start" x="1323" y="-128.3" font-family="Times,serif" font-size="14.00">_check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)</text>

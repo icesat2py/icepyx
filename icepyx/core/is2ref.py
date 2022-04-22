@@ -162,11 +162,20 @@ def _get_custom_options(session, product, version):
 
 # DevGoal: populate this with default variable lists for all of the products!
 # DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with product not being in the list, though it should since it was checked as valid earlier...)
+# Test for common_list vars in all data products...
 def _default_varlists(product):
     """
     Return a list of default variables to select and send to the NSIDC subsetter.
     """
-    common_list = ["delta_time", "latitude", "longitude"]
+    common_list = [
+        "delta_time",
+        "latitude",
+        "longitude",
+        "det_ab_flag",
+        "ph_id_channel",
+        "ph_id_pulse",
+        "ph_id_count",
+    ]
 
     if product == "ATL06":
         return common_list + [

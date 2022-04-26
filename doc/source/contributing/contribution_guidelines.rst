@@ -15,6 +15,7 @@ Ways to Contribute
 - Share your use cases and examples (as Jupyter Notebooks, scripts, etc.)
 - Submit bug reports and feature requests
 - Write code for everyone to use
+- Add ancillary dataset
 - Fix typos
 - Improve documentation and testing
 

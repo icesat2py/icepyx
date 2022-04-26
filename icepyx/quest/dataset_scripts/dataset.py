@@ -1,5 +1,5 @@
 import warnings
-from ../../core/query import GenQuery
+from icepyx.core.query import GenQuery
 
 warnings.filterwarnings("ignore")
 

@@ -79,3 +79,18 @@ Alternatively, in a command line or terminal, navigate to the folder in your clo
 .. code-block::
 
   pip install -e.
+
+Considerations with Jupyter Notebook
+------------------------------------
+
+Note if you are working in jupyter notebook, you may need to dynamically reload icepyx using:
+   
+.. code-block::
+
+    %load_ext autoreload
+    import icepyx as ipx
+    %autoreload 2
+    
+OTHER CONSIDERATIONS HERE 
+
+

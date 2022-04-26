@@ -468,6 +468,10 @@ class Variables:
                 "granule_end_utc",
                 "start_delta_time",
                 "end_delta_time",
+                "det_ab_flag",
+                "ph_id_channel",
+                "ph_id_pulse",
+                "ph_id_count",
             ]
         elif self._vartype == "file":
             nec_varlist = [
@@ -477,6 +481,10 @@ class Variables:
                 "rgt",
                 "data_start_utc",
                 "data_end_utc",
+                "det_ab_flag",
+                "ph_id_channel",
+                "ph_id_pulse",
+                "ph_id_count",
             ]
 
         try:

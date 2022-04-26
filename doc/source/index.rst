@@ -30,7 +30,7 @@ ICESat-2 datasets to enable scientific discovery.
     ---
     :img-top: https://cdn-icons-png.flaticon.com/128/2498/2498074.png
 
-    **Getting Started**
+    **Getting started**
     ^^^^^^^^^^^^^^^^^^^
 
     New to ICESat-2 or icepyx?
@@ -46,27 +46,28 @@ ICESat-2 datasets to enable scientific discovery.
     :img-top: https://cdn-icons-png.flaticon.com/128/3730/3730041.png
 
 
-    **User Guide**
+    **Development Guide**
     ^^^^^^^^^^^^^^
 
-    The user guide provides in-depth information on the tools and functionality
-    available for obtaining and interacting with ICESat-2 data products.
+    Have an idea or an ancillary dataset to contribute to icepyx? Go here for in-depth information on best practices 
+    for developing and contributing code to icepyx. 
 
     .. link-button:: api_doc_ref
         :type: ref
-        :text: Software Docs
+        :text: Development Guide
         :classes: stretched-link btn-outline-primary btn-block
 
     ---
     :img-top: https://cdn-icons-png.flaticon.com/128/1283/1283342.png
 
-    **Community**
+    **Get in touch**
     ^^^^^^^^^^^^^
 
     icepyx is more than just software!
     We're a community of data producers, managers, and users
     who collaborate openly and share code and skills
-    for every step along the entire data pipeline.
+    for every step along the entire data pipeline. Find resources for
+    your questions here!
 
     .. link-button:: contact_ref_label
         :type: ref

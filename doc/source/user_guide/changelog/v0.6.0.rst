@@ -3,8 +3,13 @@
 What's new in 0.6.0 (4 March 2022)
 -----------------------------------
 
-These are the changes in icepyx 0.6.0 See :ref:`release` for a full changelog
+These are the changes in icepyx 0.6.0 (0.6.1) See :ref:`release` for a full changelog
 including other versions of icepyx.
+
+Release 0.6.0 turned into release 0.6.1 due to a tagging + timing issue where the last pull request
+was merged after the tag was created.
+Increasing the version to 0.6.1 enabled us to quickly troubleshoot and fix our available builds,
+but a new release log was not created.
 
 
 New Features

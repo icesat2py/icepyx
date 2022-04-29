@@ -201,7 +201,7 @@
 <polyline fill="none" stroke="black" points="1195,-106 1570,-106 "/>
 <text text-anchor="start" x="1203" y="-90.8" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list)</text>
 <text text-anchor="start" x="1203" y="-75.8" font-family="Times,serif" font-size="14.00">avail(options, internal)</text>
-<text text-anchor="start" x="1203" y="-60.8" font-family="Times,serif" font-size="14.00">parse_var_list(varlist, tiered)</text>
+<text text-anchor="start" x="1203" y="-60.8" font-family="Times,serif" font-size="14.00">parse_var_list(varlist, tiered, tiered_vars)</text>
 <text text-anchor="start" x="1203" y="-45.8" font-family="Times,serif" font-size="14.00">remove(all, var_list, beam_list, keyword_list)</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query -->

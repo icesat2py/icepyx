@@ -93,5 +93,31 @@ Note if you are working in jupyter notebook, you may need to dynamically reload 
     import icepyx as ipx
     %autoreload 2
     
+Steps for working with icepyx locally
+-------------------------------------
 
+On this page we briefly provide general steps for using icepyx. 
 
+1. Sign up for a GitHub account: Sign up for your github account (visit https://github.com/ and  ‘sign up for GitHub account’)
+
+2. Clone the icepyx repo: Open a terminal window. Navigate to the folder on your computer where you want to add icepyx code. For example, 
+
+.. code-block::
+
+    cd /Users/YOURNAMEHERE/documents/ICESat-2
+    
+Within this folder, clone the icepyx repo by writing 
+
+.. code-block::
+
+    git clone https://github.com/icesat2py/icepyx.git
+    
+You should receive confirmation in terminal of the files loading into your workspace. For help navigating git and github, see this `guide <https://the-turing-way.netlify.app/collaboration/github-novice/github-novice-firststeps.html?highlight=github%20account>`__.
+
+For future sessions with icepyx, write 
+
+.. code-block::
+
+    git pull https://github.com/icesat2py/icepyx.git
+    
+to ensure you have the most up to date version of icepyx in your library. 

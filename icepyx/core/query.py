@@ -984,24 +984,37 @@ class Query(GenQuery):
         ):
             del self._subsetparams
 
-        # Don't allow data orders if the granule search used cycles+tracks
-        if "readable_granule_name[]" in self.CMRparams.keys():
-            raise NotImplementedError(
-                "Data orders identifying granules using cycles and tracks are not supported by NSIDC"
-            )
-
         # REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, "_granules"):
             self.granules
-        self._granules.place_order(
-            self.CMRparams,
-            self.reqparams,
-            self.subsetparams(**kwargs),
-            verbose,
-            subset,
-            session=self._session,
-            geom_filepath=self._geom_filepath,
-        )
+
+        # Place multiple orders, one per granule, if readable_granule_name is used.
+        if "readable_granule_name[]" in self.CMRparams.keys():
+            gran_name_list = self.CMRparams["readable_granule_name[]"]
+            tempCMRparams = self.CMRparams
+            for gran in gran_name_list:
+                tempCMRparams.update({"readable_granule_name[]": gran})
+                print(tempCMRparams)
+                self._granules.place_order(
+                    tempCMRparams,
+                    self.reqparams,
+                    self.subsetparams(**kwargs),
+                    verbose,
+                    subset,
+                    session=self._session,
+                    geom_filepath=self._geom_filepath,
+                )
+
+        else:
+            self._granules.place_order(
+                self.CMRparams,
+                self.reqparams,
+                self.subsetparams(**kwargs),
+                verbose,
+                subset,
+                session=self._session,
+                geom_filepath=self._geom_filepath,
+            )
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
     def download_granules(

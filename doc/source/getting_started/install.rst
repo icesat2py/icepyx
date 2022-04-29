@@ -87,10 +87,11 @@ Note if you are working in jupyter notebook, you may need to dynamically reload 
    
 .. code-block::
 
+    pip install -e.
+    
     %load_ext autoreload
     import icepyx as ipx
     %autoreload 2
     
-OTHER CONSIDERATIONS HERE 
 
 

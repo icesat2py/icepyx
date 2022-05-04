@@ -361,10 +361,9 @@ class Read:
                 pass
 
             try:
-                if (
-                    hasattr(is2ds, "data_start_utc")
-                    and is2ds["data_start_utc"].data[0].astype(str).endswith("Z")
-                ):
+                if hasattr(is2ds, "data_start_utc") and is2ds["data_start_utc"].data[
+                    0
+                ].astype(str).endswith("Z"):
                     # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
                     is2ds["data_start_utc"] = np.datetime64(
                         is2ds.data_start_utc.data[0].astype(str)[:-1]
@@ -392,16 +391,26 @@ class Read:
                 if any(f"{grp_path}/{k}" in x for x in v)
             ]
 
+            # Unique index based on:
+            try:
+                photon_ids = np.ones_like(len(ds.delta_time.data)) + max(ds.photon_ids)
+            except AttributeError:
+                photon_ids = range(0, len(ds.delta_time.data))
+
             ds = (
                 ds.reset_coords(drop=False)
                 .expand_dims(dim=["spot", "gran_idx"])
                 .assign_coords(spot=("spot", [spot]))
                 .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
+                .expand_dims(photon_idx=photon_ids)
             )
 
-            grp_spec_vars.append("gt")
+            grp_spec_vars.extend(["gt", "photon_idx"])
+
+            # should this be a while loop, to keep modifying the photon_ids until they work?
+            # hopefully, with Rel006, this will be moot because the photon_ids will actually be unique
             is2ds = is2ds.merge(
-                ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
+                ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
             )
 
             # re-cast some dtypes to make array smaller
@@ -449,6 +458,14 @@ class Read:
         #     # )
 
         is2ds = is2ds.assign(ds[grp_spec_vars])
+
+        try:
+            # if (hasattr(is2ds, "data_start_utc")):
+            is2ds = _make_np_datetime(is2ds, "data_start_utc")
+            is2ds = _make_np_datetime(is2ds, "data_end_utc")
+
+        except AttributeError:
+            pass
 
         return is2ds
 

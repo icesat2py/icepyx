@@ -16,20 +16,27 @@ from icepyx.core.variables import list_of_dict_vals
 def _make_np_datetime(df, keyword):
     """
     Typecast the specified keyword dimension/coordinate/variable into a numpy datetime object.
+
     Removes the timezone ('Z') in UTC timestamps in ICESat-2 data.
+
     Parameters
     ----------
     df : DataFrame
         Dataframe object
+
     keyword : str
         name of the time variable, coordinate, or dimension
+
     Outputs
     -------
     DataFrame with timezone removed.
+
     Example
     -------
     >>> df = xr.DataArray({"time": '2019-01-11T05:26:31.323722Z'})
     >>> _make_np_datetime(df, "time")
+
+
     """
 
     if df[keyword].data[0].astype(str).endswith("Z"):

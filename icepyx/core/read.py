@@ -413,10 +413,23 @@ class Read:
                 if any(f"{grp_path}/{k}" in x for x in v)
             ]
 
-            # Unique index based on:
+            # # Unique index based on:
+            # # https://icesat-2.gsfc.nasa.gov/sites/default/files/page_files/ICESat2_ATL03_ATBD_r005.pdf
+            # # (Section 7.4 Photon Identifier Parameter, p143)
+            # det_flag = is2ds.det_flag.values[0]
+            # channel = ds.ph_id_channel.data
+            # pulse = ds.ph_id_pulse.data
+            # count = ds.ph_id_count.data
+            # photon_ids = np.zeros_like(channel).astype(np.int64)
+            # # check what the range of possible count values is (is 5 digits too many? )
+            # for i in range(0,len(photon_ids)):
+            #     photon_ids[i] = int(f"{det_flag:1d}{channel[i]:03d}{pulse[i]:03d}{count[i]:05d}")
+
             try:
-                photon_ids = np.ones_like(len(ds.delta_time.data)) + max(ds.photon_ids)
-            except AttributeError:
+                photon_ids.append(
+                    range(0, len(ds.delta_time.data)) + max(ds.photon_ids)
+                )
+            except NameError:
                 photon_ids = range(0, len(ds.delta_time.data))
 
             ds = (
@@ -427,13 +440,33 @@ class Read:
                 .expand_dims(photon_idx=photon_ids)
             )
 
+            grp_spec_vars.remove("ph_id_channel")
+            grp_spec_vars.remove("ph_id_pulse")
+            grp_spec_vars.remove("ph_id_count")
             grp_spec_vars.extend(["gt", "photon_idx"])
 
             # should this be a while loop, to keep modifying the photon_ids until they work?
             # hopefully, with Rel006, this will be moot because the photon_ids will actually be unique
-            is2ds = is2ds.merge(
-                ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
-            )
+            try:
+                is2ds = is2ds.merge(
+                    ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
+                )
+
+            # NOTE we won't be able to get around this error without creating a new, unique index for merging on.
+            # the next step is to start implementing that, and in the small cases where that's still an issue with duplicates,
+            # (or maybe as an alternative solution here?) we'll need to just create a new index.
+            except ValueError as e:
+                if "photon_idx" in str(e):
+                    warnings.warn(
+                        "Your photon IDs contained duplicates and were altered to enable merging.\
+                        DO NOT USE THEM FOR DATA PROVENANCE!"
+                    )
+
+                    ds["photon_idx"] = ds.photon_idx.data + 1.0e5
+
+                    is2ds = is2ds.merge(
+                        ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
+                    )
 
             # re-cast some dtypes to make array smaller
             is2ds["gt"] = is2ds.gt.astype(str)
@@ -480,8 +513,6 @@ class Read:
         #     #     UserWarning,
         #     # )
 
-        is2ds = is2ds.assign(ds[grp_spec_vars])
-
         try:
             # if (hasattr(is2ds, "data_start_utc")):
             is2ds = _make_np_datetime(is2ds, "data_start_utc")
@@ -489,6 +520,18 @@ class Read:
 
         except AttributeError:
             pass
+
+        if grp_path in ["ancillary_data/atlas_engineering"]:
+            # get and store the det_ab_flag
+            try:
+                det_ab_flag = ds["det_ab_flag"].values[0]
+                is2ds = is2ds.assign(det_flag=("gran_idx", [det_ab_flag]))
+
+            except KeyError:
+                pass
+
+        else:
+            is2ds = is2ds.assign(ds[grp_spec_vars])
 
         return is2ds
 
@@ -655,8 +698,11 @@ class Read:
             wanted_groups_set = set(wanted_groups)
             # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
             wanted_groups_set.remove("orbit_info")
+            wanted_groups_set.remove("ancillary_data")
             # Note: the sorting is critical for datasets with highly nested groups
-            wanted_groups_list = ["orbit_info"] + sorted(wanted_groups_set)
+            wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
+                wanted_groups_set
+            )
             # returns the wanted groups as a list of lists with group path string elements separated
             _, wanted_groups_tiered = Variables.parse_var_list(
                 groups_list, tiered=True, tiered_vars=True

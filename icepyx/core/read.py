@@ -440,33 +440,30 @@ class Read:
                 .expand_dims(photon_idx=photon_ids)
             )
 
-            grp_spec_vars.remove("ph_id_channel")
-            grp_spec_vars.remove("ph_id_pulse")
-            grp_spec_vars.remove("ph_id_count")
             grp_spec_vars.extend(["gt", "photon_idx"])
 
             # should this be a while loop, to keep modifying the photon_ids until they work?
             # hopefully, with Rel006, this will be moot because the photon_ids will actually be unique
-            try:
-                is2ds = is2ds.merge(
-                    ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
-                )
+            # try:
+            is2ds = is2ds.merge(
+                ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
+            )
 
             # NOTE we won't be able to get around this error without creating a new, unique index for merging on.
             # the next step is to start implementing that, and in the small cases where that's still an issue with duplicates,
             # (or maybe as an alternative solution here?) we'll need to just create a new index.
-            except ValueError as e:
-                if "photon_idx" in str(e):
-                    warnings.warn(
-                        "Your photon IDs contained duplicates and were altered to enable merging.\
-                        DO NOT USE THEM FOR DATA PROVENANCE!"
-                    )
+            # except ValueError as e:
+            #     if "photon_idx" in str(e):
+            #         warnings.warn(
+            #             "Your photon IDs contained duplicates and were altered to enable merging.\
+            #             DO NOT USE THEM FOR DATA PROVENANCE!"
+            #         )
 
-                    ds["photon_idx"] = ds.photon_idx.data + 1.0e5
+            #         ds["photon_idx"] = ds.photon_idx.data + 1.0e5
 
-                    is2ds = is2ds.merge(
-                        ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
-                    )
+            #         is2ds = is2ds.merge(
+            #             ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
+            #         )
 
             # re-cast some dtypes to make array smaller
             is2ds["gt"] = is2ds.gt.astype(str)

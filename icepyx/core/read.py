@@ -444,7 +444,7 @@ class Read:
         is2ds : Xarray dataset
             Dataset to add deeply nested variables to.
         ds : Xarray dataset
-            Dataset containing proper dimensions for the variables being added
+            Dataset containing improper dimensions for the variables being added
         grp_path : str
             hdf5 group path read into ds
         wanted_dict : dict
@@ -455,6 +455,7 @@ class Read:
         Xarray Dataset with variables from the ds variable group added.
         """
 
+        # Dev Goal: improve this type of iterating to minimize amount of looping required. Would a path handling library be useful here?
         grp_spec_vars = [
             k for k, v in wanted_dict.items() if any(f"{grp_path}/{k}" in x for x in v)
         ]
@@ -624,6 +625,7 @@ class Read:
 
         # DEVNOTE: does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
         # if a gridded product
+        # DEVNOTE: not all of these products are actually gridded
         if self._prod in [
             "ATL14",
             "ATL15",

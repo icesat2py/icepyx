@@ -992,6 +992,10 @@ class Query(GenQuery):
         if "readable_granule_name[]" in self.CMRparams.keys():
             gran_name_list = self.CMRparams["readable_granule_name[]"]
             tempCMRparams = self.CMRparams
+            if len(gran_name_list) > 1:
+                print(
+                    "NSIDC only allows ordering of one granule by name at a time; your orders will be placed accordingly."
+                )
             for gran in gran_name_list:
                 tempCMRparams.update({"readable_granule_name[]": gran})
                 print(tempCMRparams)

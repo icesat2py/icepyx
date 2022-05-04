@@ -13,6 +13,35 @@ from icepyx.core.variables import list_of_dict_vals
 # from icepyx.core.query import Query
 
 
+def _make_np_datetime(df, keyword):
+    """
+    Typecast the specified keyword dimension/coordinate/variable into a numpy datetime object.
+    Removes the timezone ('Z') in UTC timestamps in ICESat-2 data.
+    Parameters
+    ----------
+    df : DataFrame
+        Dataframe object
+    keyword : str
+        name of the time variable, coordinate, or dimension
+    Outputs
+    -------
+    DataFrame with timezone removed.
+    Example
+    -------
+    >>> df = xr.DataArray({"time": '2019-01-11T05:26:31.323722Z'})
+    >>> _make_np_datetime(df, "time")
+    """
+
+    if df[keyword].data[0].astype(str).endswith("Z"):
+        # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
+        df[keyword] = np.datetime64(df[keyword].data[0].astype(str)[:-1])
+
+    else:
+        df[keyword] = df[keyword].astype(np.datetime64)
+
+    return df
+
+
 # Dev note: function fully tested (except else, which don't know how to get to)
 def _check_datasource(filepath):
     """
@@ -340,7 +369,7 @@ class Read:
             grp_spec_vars = [
                 wanted_groups_tiered[-1][i]
                 for i, x in enumerate(wanted_groups_tiered[0])
-                if x == grp_path
+                if (x == grp_path and wanted_groups_tiered[1][i] == "none")
             ]
 
             for var in grp_spec_vars:
@@ -360,23 +389,9 @@ class Read:
             except KeyError:
                 pass
 
-            try:
-                if hasattr(is2ds, "data_start_utc") and is2ds["data_start_utc"].data[
-                    0
-                ].astype(str).endswith("Z"):
-                    # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
-                    is2ds["data_start_utc"] = np.datetime64(
-                        is2ds.data_start_utc.data[0].astype(str)[:-1]
-                    )
-                    is2ds["data_end_utc"] = np.datetime64(
-                        is2ds.data_end_utc.data[0].astype(str)[:-1]
-                    )
-                else:
-                    is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
-                    is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
-
-            except AttributeError:
-                pass
+            if hasattr(is2ds, "data_start_utc"):
+                is2ds = _make_np_datetime(is2ds, "data_start_utc")
+                is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
         else:
             import re

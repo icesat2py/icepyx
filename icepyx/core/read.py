@@ -414,8 +414,9 @@ class Read:
             ]
 
             try:
-                photon_ids = range(0, len(ds.delta_time.data)) + max(is2ds.photon_idx)
-
+                photon_ids = range(0, len(ds.delta_time.data)) + np.full_like(
+                    ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
+                )
             except AttributeError:
                 photon_ids = range(0, len(ds.delta_time.data))
 

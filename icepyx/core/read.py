@@ -426,7 +426,13 @@ class Read:
             #     photon_ids[i] = int(f"{det_flag:1d}{channel[i]:03d}{pulse[i]:03d}{count[i]:05d}")
 
             try:
-                photon_ids = range(0, len(ds.delta_time.data)) + max(is2ds.photon_idx)
+                photon_ids = (
+                    range(0, len(ds.delta_time.data))
+                    + np.full_like(
+                        ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
+                    )
+                    + 1
+                )
             except AttributeError:
                 photon_ids = range(0, len(ds.delta_time.data))
 
@@ -462,6 +468,12 @@ class Read:
 
                     ds["photon_idx"] = ds.photon_idx.data + 1.0e5
 
+                    is2ds = is2ds.merge(
+                        ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
+                    )
+
+                else:
+                    warnings.warn("the read-in is about to error")
                     is2ds = is2ds.merge(
                         ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
                     )

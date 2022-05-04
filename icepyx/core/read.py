@@ -426,7 +426,7 @@ class Read:
             #     photon_ids[i] = int(f"{det_flag:1d}{channel[i]:03d}{pulse[i]:03d}{count[i]:05d}")
 
             try:
-                photon_ids = np.ones_like(len(ds.delta_time.data)) + max(ds.photon_ids)
+                photon_ids = range(0, len(ds.delta_time.data)) + max(is2ds.photon_idx)
             except AttributeError:
                 photon_ids = range(0, len(ds.delta_time.data))
 

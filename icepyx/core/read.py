@@ -39,9 +39,9 @@ def _make_np_datetime(df, keyword):
 
     """
 
-    if df[keyword].data[0].astype(str).endswith("Z"):
+    if df[keyword].str.endswith("Z"):
         # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
-        df[keyword] = np.datetime64(df[keyword].data[0].astype(str)[:-1])
+        df.update({keyword: df[keyword].str[:-1].astype(np.datetime64)})
 
     else:
         df[keyword] = df[keyword].astype(np.datetime64)

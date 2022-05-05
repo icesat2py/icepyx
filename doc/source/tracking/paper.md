@@ -8,13 +8,53 @@ tags:
   - elevation
   - community
 authors:
-  - name: Jessica Scheick^[Co-first author] # note this makes a footnote saying 'Co-first author'
+  - name: Jessica Scheick^[Corresponding author] # note this makes a footnote
     orcid: 0000-0000-0000-0000
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Author Without ORCID^[Co-first author] # note this makes a footnote saying 'Co-first author'
+  - name: Wei Ji Leong
     affiliation: 2
-  - name: Author with no affiliation^[Corresponding author]
+  - name: Kelsey Bisson
     affiliation: 3
+  - name: 
+    affiliation: 3
+  - name: 
+    affiliation: 3
+  - name: 
+    affiliation: 3
+  - name: 
+    affiliation: 3
+  - name: 
+    affiliation: 3
+
+Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes to reviewing the JOSS submission will be moved into ABC order after the first three and before the non-publication contributors to icepyx.
+
+Jessica Scheick
+Wei Ji Leong
+Kelsey Bisson
+
+Anthony Arendt
+Shashank B
+Zach Fair
+Raphael Hagen
+Scott Henderson
+Friedrich Knuth
+Tian Li
+Zheng Liu
+Romina Piunno
+Facu Sapienza
+Landung "Don" Setiawan
+Trey Stafford
+Amy Steiker
+Tyler Sutterley
+Bruce Wallin
+Learn2Pheonix
+
+
+
+
+
+
+  
 affiliations:
  - name: University of New Hampshire, USA
    index: 1
@@ -97,7 +137,21 @@ Figures to include: icepyx in context of other tools
 # Acknowledgements
 
 We acknowledge funding support from NASA and the University of Washington eScience Institute.
-Anthony Arendt, Fernando Perez, Lindsey Heagey, and the Pangeo team provided invaluable support and guidance
-in establishing this library and welcoming us to the open-source community.
+Anthony Arendt, Fernando Perez, Lindsey Heagey, and the Pangeo team provided invaluable support and guidance in establishing this library and welcoming us to the open-source community.
+Amy Steiker, Mikala Beig, Nick Kotlinski, Luis Lopez, and many others at the National Snow and Ice Data Center (NSIDC) provide technical support and data access guidance.
+The icepyx contributors list also includes many Hackweek planners and participants who shared ideas and embraced the opportunity to engage in open-science practices.
+
+<!-- Acknowledgments
+Mikala Beig
+Alex DiBella 
+Tom Johnson
+Nick K
+Luis Lopez
+Fernando Perez
+David Shean
+Rachel Tilling
+Anna Valentine
+Bidhya -->
+
 
 # References

@@ -496,17 +496,7 @@ class Read:
         except AttributeError:
             pass
 
-        if grp_path in ["ancillary_data/atlas_engineering"]:
-            # get and store the det_ab_flag
-            try:
-                det_ab_flag = ds["det_ab_flag"].values[0]
-                is2ds = is2ds.assign(det_flag=("gran_idx", [det_ab_flag]))
-
-            except KeyError:
-                pass
-
-        else:
-            is2ds = is2ds.assign(ds[grp_spec_vars])
+        is2ds = is2ds.assign(ds[grp_spec_vars])
 
         return is2ds
 

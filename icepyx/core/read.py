@@ -489,7 +489,6 @@ class Read:
         #     # )
 
         try:
-            # if (hasattr(is2ds, "data_start_utc")):
             is2ds = _make_np_datetime(is2ds, "data_start_utc")
             is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
@@ -640,7 +639,6 @@ class Read:
 
         # DEVNOTE: does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
         # if a gridded product
-        # DEVNOTE: not all of these products are actually gridded
         if self._prod in [
             "ATL14",
             "ATL15",

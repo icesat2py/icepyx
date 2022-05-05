@@ -424,12 +424,17 @@ class Read:
             except AttributeError:
                 photon_ids = range(0, len(ds.delta_time.data))
 
+            hold_delta_times = ds.delta_time.data
             ds = (
                 ds.reset_coords(drop=False)
                 .expand_dims(dim=["spot", "gran_idx"])
-                .assign_coords(spot=("spot", [spot]))
+                .assign_coords(
+                    spot=("spot", [spot]), delta_time=("delta_time", photon_ids)
+                )
                 .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
-                .expand_dims(photon_idx=photon_ids)
+                .rename_dims({"delta_time": "photon_idx"})
+                .rename({"delta_time": "photon_idx"})
+                .assign_coords(delta_time=("photon_idx", hold_delta_times))
             )
 
             grp_spec_vars.extend(["gt", "photon_idx"])

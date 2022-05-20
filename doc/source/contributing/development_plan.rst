@@ -1,7 +1,7 @@
 icepyx Development Plan
 =======================
 
-This page provides a high-level overview of some focus areas of ongoing and for future icepyx development.
+This page provides a high-level overview of focus areas for icepyx's ongoing and future development.
 This list is not exclusive or highly specific.
 Instead, specific development tasks and new functionality implementations are driven by individual developers/teams.
 
@@ -36,8 +36,8 @@ by providing easy ways to manipulate ICESat-2 data in the appropriate input type
 Workflows showcasing complex analyses to answer pressing science questions provide an opportunity for new reseachers to build on existing work.
 
 Validation and Integration with Other Products
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The complexity of multiple data access systems, many with different metadata formats and API access types, 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The complexity of multiple data access systems, often with different metadata formats and API access types, 
 presents a challenge for finding and integrating diverse datasets. 
 Driven by researcher use cases, icepyx contains a framework for easily adding a new product/sensor to an existing data analysis pipeline,
 improving researcher ability to easily compare diverse datasets across varying sensor types and spatial and temporal scales.

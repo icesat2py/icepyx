@@ -22,9 +22,18 @@ Research is the primary driver for development of icepyx functionality.
 We encourage you to use icepyx as a framework for finding and processing your ICESat-2 data, 
 from designing your analysis to writing code to analyze your data to generating presentation-quality figures.
 We welcome example use cases from all disciplines.
+Some topics currently being investigated using ICESat-2 data:
+  - snow height in non-glaciated regions
+  - subsurface ocean structure (including bathymetry)
+  - vegetation canopy height
+  - glacier ice velocity
+  - sea level change
+  - archaeological site discovery
+  - phytoplankton concentrations under sea ice
+  - iceberg detection
 
 Please :ref:`contact us<contact_ref_label>`
-if you have any questions or would like to submit your example workflow showcasing your research!
+if you have any questions or would like to submit an example workflow showcasing your research!
 
 Data Analysis and Interaction
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -39,7 +48,7 @@ Validation and Integration with Other Products
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The complexity of multiple data access systems, often with different metadata formats and API access types, 
 presents a challenge for finding and integrating diverse datasets. 
-Driven by researcher use cases, icepyx contains a framework for easily adding a new product/sensor to an existing data analysis pipeline,
+Driven by researcher use cases, icepyx contains a consistent framework for adding a new product/sensor to an existing data analysis pipeline,
 improving researcher ability to easily compare diverse datasets across varying sensor types and spatial and temporal scales.
 
 Modifying the Development Plan
@@ -47,5 +56,6 @@ Modifying the Development Plan
 Everyone is invited to review and propose new themes for the Development Plan.
 icepyx is continually evolving and its direction is driven by your feedback and contributions.
 
-If you'd like to add a theme to this development plan, please submit your idea as a GitHub issue to solicit community feedback.
-Once there is agreement on your idea, submit a pull request to update the Development Plan, including a link to the discussion issue.
+If you'd like to add a theme to this development plan,
+please submit your idea in `GitHub Discussions<https://github.com/icesat2py/icepyx/discussions>`_ to solicit community feedback.
+Once there is agreement on your idea, submit a pull request to update the Development Plan, including a link to the discussion.

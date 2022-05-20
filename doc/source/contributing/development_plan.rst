@@ -2,7 +2,7 @@ icepyx Development Plan
 =======================
 
 This page provides a high-level overview of focus areas for icepyx's ongoing and future development.
-This list is not exclusive or highly specific.
+This list is intentionally general and not exhaustive.
 Instead, specific development tasks and new functionality implementations are driven by individual developers/teams.
 
 Our ongoing efforts are tracked as issues on our GitHub `issue tracker <https://github.com/icesat2py/icepyx/issues>`_.
@@ -13,18 +13,18 @@ Major Themes for Development
 
 Enhancing User Interactivity and Visualization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-icepyx aims to continually reduce the need for researchers to rewrite "routine" code by enabling easy visualization
-throughout the data inquiry to analyzed data presentation process and provide a simple, community-based framework for reproducibility.
+icepyx aims to continually reduce the need for researchers to rewrite "routine" code by
+enabling easy end-to-end data visualization and providing a simple, community-based framework for reproducibility.
 
 Open Science Example Use Cases
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Research is the primary driver for development of icepyx functionality.
-If you are or plan to work on a project using ICESat-2 data, we encourage you to use icepyx as a framework for finding and processing your data, 
+We encourage you to use icepyx as a framework for finding and processing your ICESat-2 data, 
 from designing your analysis to writing code to analyze your data to generating presentation-quality figures.
 We welcome example use cases from all disciplines.
 
-We would love for you to submit your example workflow showcasing your research.
-Please :ref:`contact us<contact_ref_label>` if you have any questions or would like some guidance to get involved!
+Please :ref:`contact us<contact_ref_label>`
+if you have any questions or would like to submit your example workflow showcasing your research!
 
 Data Analysis and Interaction
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

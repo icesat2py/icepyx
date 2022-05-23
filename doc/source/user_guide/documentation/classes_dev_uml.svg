@@ -70,7 +70,7 @@
 <text text-anchor="start" x="739.5" y="-917.3" font-family="Times,serif" font-size="14.00">_file_vars</text>
 <text text-anchor="start" x="739.5" y="-902.3" font-family="Times,serif" font-size="14.00">_granules</text>
 <text text-anchor="start" x="739.5" y="-887.3" font-family="Times,serif" font-size="14.00">_order_vars</text>
-<text text-anchor="start" x="739.5" y="-872.3" font-family="Times,serif" font-size="14.00">_prod : NoneType, str</text>
+<text text-anchor="start" x="739.5" y="-872.3" font-family="Times,serif" font-size="14.00">_prod : str, NoneType</text>
 <text text-anchor="start" x="739.5" y="-857.3" font-family="Times,serif" font-size="14.00">_readable_granule_name : list</text>
 <text text-anchor="start" x="739.5" y="-842.3" font-family="Times,serif" font-size="14.00">_reqparams</text>
 <text text-anchor="start" x="739.5" y="-827.3" font-family="Times,serif" font-size="14.00">_s3login_credentials</text>
@@ -300,7 +300,7 @@
 <text text-anchor="start" x="2174.5" y="-226.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
 <text text-anchor="start" x="2174.5" y="-211.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
 <text text-anchor="start" x="2174.5" y="-196.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
-<text text-anchor="start" x="2174.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType, str</text>
+<text text-anchor="start" x="2174.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : str, NoneType</text>
 <text text-anchor="start" x="2174.5" y="-166.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
 <polyline fill="none" stroke="black" points="2166.5,-158.5 2682.5,-158.5 "/>
 <text text-anchor="start" x="2174.5" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(query_obj, product, spatial_extent, date_range, cycles, tracks)</text>

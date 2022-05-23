@@ -57,5 +57,5 @@ Everyone is invited to review and propose new themes for the Development Plan.
 icepyx is continually evolving and its direction is driven by your feedback and contributions.
 
 If you'd like to add a theme to this development plan,
-please submit your idea in `GitHub Discussions<https://github.com/icesat2py/icepyx/discussions>`_ to solicit community feedback.
+please submit your idea in `GitHub Discussions <https://github.com/icesat2py/icepyx/discussions>`_ to solicit community feedback.
 Once there is agreement on your idea, submit a pull request to update the Development Plan, including a link to the discussion.

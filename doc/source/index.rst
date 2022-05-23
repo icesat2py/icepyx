@@ -45,14 +45,26 @@ ICESat-2 datasets to enable scientific discovery.
     ---
     :img-top: https://cdn-icons-png.flaticon.com/128/3730/3730041.png
 
-
-    **Development Guide**
+    **User Guide**
     ^^^^^^^^^^^^^^
+    The user guide provides in-depth information on the tools and functionality
+    available for obtaining and interacting with ICESat-2 data products.
+
+    .. link-button:: api_doc_ref
+        :type: ref
+        :text: Software Docs
+        :classes: stretched-link btn-outline-primary btn-block
+
+    ---
+    :img-top: https://cdn-icons-png.flaticon.com/512/4230/4230997.png
+    
+    **Development Guide**
+    ^^^^^^^^^^^^^^^^^^^^^
 
     Have an idea or an ancillary dataset to contribute to icepyx? Go here for in-depth information on best practices 
     for developing and contributing code to icepyx. 
 
-    .. link-button:: api_doc_ref
+    .. link-button:: dev_guide_label
         :type: ref
         :text: Development Guide
         :classes: stretched-link btn-outline-primary btn-block

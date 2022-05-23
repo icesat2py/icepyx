@@ -12,7 +12,7 @@ Projects and Organizations
 Projects and organizations that use icepyx.
 
 - `NSIDC <https://nsidc.org/data/icesat-2/tools>`_
-- `IceFlow <https://github.com/nsidc/NSIDC-Data-Tutorials/tree/main/notebooks/iceflow>`_`
+- `IceFlow <https://github.com/nsidc/NSIDC-Data-Tutorials/tree/main/notebooks/iceflow>`_
 - `University of Washington e-Science institute <https://escience.washington.edu/>`_
 - `ICESat-2 Hackweeks <https://icesat-2.hackweek.io/>`_
 - `SlideRule <http://icesat2sliderule.org/>`_

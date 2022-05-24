@@ -23,15 +23,14 @@ jobs:
     # Calculates pypi stats and clones and stores in CSV file
     - name: Update pypi stats files
       run: |
-        pip install -r requirements.txt
+        pip install -r requirements.txt pypistats
         python ./doc/source/tracking/pypistats/get_pypi_stats.py
 
     # Commits files to repository
     - name: Commit changes
-      uses: EndBug/add-and-commit@v7
+      uses: EndBug/add-and-commit@v8
       with:
         author_name: learn2phoenix
         message: "Pypi stats auto-update"
         add: "./doc/source/tracking/pypistats/*"
 #         add: "./pypistats/*"
-        branch: "traffic"  # commits to branch "traffic"

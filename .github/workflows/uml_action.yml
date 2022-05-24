@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: set up environment
         run: |
           pip install -r requirements.txt
@@ -23,9 +25,8 @@ jobs:
           rm ./packages_dev_uml.svg
           mv ./*.svg ./doc/source/user_guide/documentation/
       - name: Commit changes
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v8
         with:
           author_name: GitHub Action
           message: "GitHub action UML generation auto-update"
           add: "./doc/source/user_guide/documentation/*"
-          ref: git branch --show-current

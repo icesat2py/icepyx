@@ -1017,7 +1017,7 @@ class Query(GenQuery):
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        restart: boolean, default false
+        restart : boolean, default false
             If previous download was terminated unexpectedly. Run again with restart set to True to continue.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.

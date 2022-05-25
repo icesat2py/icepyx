@@ -3,6 +3,7 @@
     "CONTRIBUTORS.rst"
   ],
   "imageSize": 100,
+  "contributorsSortAlphabetically": true,
   "commit": false,
   "contributors": [
     {

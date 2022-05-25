@@ -124,6 +124,7 @@ ICESat-2 datasets to enable scientific discovery.
    :hidden:
    :caption: Contributing
 
+   contributing/contributors_link
    contributing/contribution_guidelines
    contributing/attribution_link
    contributing/development_plan

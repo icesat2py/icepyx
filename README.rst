@@ -1,12 +1,9 @@
 icepyx
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 ======
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|GitHub license| |Conda install| |Pypi install|
+|GitHub license| |Conda install| |Pypi install| |Contributors|
 
 Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
 
@@ -20,6 +17,10 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx
+
+.. |Contributors| image:: https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square
+    :alt: All Contributors
+    :target: https://github.com/icesat2py/icepyx/blob/main/CONTRIBUTORS.rst
 
 .. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
@@ -131,24 +132,3 @@ For more information, please visit `the informational
 page <https://sustainable-open-science-and-software.github.io/>`__ or
 download the `participant information
 sheet <https://sustainable-open-science-and-software.github.io/assets/PIS_sustainable_software.pdf>`__.
-
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/JessicaS11"><img src="https://avatars.githubusercontent.com/u/11756442?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jessica</b></sub></a><br /><a href="https://github.com/icesat2py/icepyx/issues?q=author%3AJessicaS11" title="Bug reports">🐛</a> <a href="https://github.com/icesat2py/icepyx/commits?author=JessicaS11" title="Code">💻</a> <a href="#content-JessicaS11" title="Content">🖋</a> <a href="https://github.com/icesat2py/icepyx/commits?author=JessicaS11" title="Documentation">📖</a> <a href="#design-JessicaS11" title="Design">🎨</a> <a href="#example-JessicaS11" title="Examples">💡</a> <a href="#ideas-JessicaS11" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-JessicaS11" title="Maintenance">🚧</a> <a href="#mentoring-JessicaS11" title="Mentoring">🧑‍🏫</a> <a href="#projectManagement-JessicaS11" title="Project Management">📆</a> <a href="#question-JessicaS11" title="Answering Questions">💬</a> <a href="https://github.com/icesat2py/icepyx/pulls?q=is%3Apr+reviewed-by%3AJessicaS11" title="Reviewed Pull Requests">👀</a></td>
-  </tr>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

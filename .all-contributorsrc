@@ -40,6 +40,23 @@
         "tutorial"
       ]
     }
+      "login": "kelseybisson",
+      "name": "Kelsey Bisson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48059682?v=4",
+      "profile": "http://bisson.work",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "example",
+        "ideas",
+        "mentoring",
+        "question",
+        "review",
+        "tutorial"
+      ]
+    }
   ],
   "contributorsPerLine": 7,
   "projectName": "icepyx",

@@ -3,7 +3,7 @@ Project Contributors
 
 The following people have made contributions to the project (in alphabetical
 order by last name) and are considered "The icepyx Developers".
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/docs/en/emoji-key>`_):
 
 * `Nicole Abib <https://github.com/nabib/>`_ - University of Oregon
 * `Anthony Arendt <https://github.com/aaarendt/>`_ - University of Washington

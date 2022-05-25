@@ -3,7 +3,7 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|GitHub license| |Conda install| |Pypi install|
+|GitHub license| |Conda install| |Pypi install| |Contributors|
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
@@ -21,6 +21,10 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx
+
+.. |Contributors| image:: https://img.shields.io/badge/all_contributors-24-orange.svg?style=flat-square
+    :alt: All Contributors
+    :target: https://github.com/icesat2py/icepyx/blob/main/CONTRIBUTORS.rst
 
 .. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest

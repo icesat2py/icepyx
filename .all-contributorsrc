@@ -24,6 +24,21 @@
         "question",
         "review"
       ]
+    },
+    {
+      "login": "zachghiaccio",
+      "name": "Zach Fair",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48361714?v=4",
+      "profile": "https://github.com/zachghiaccio",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "question",
+        "review",
+        "tutorial"
+      ]
     }
   ],
   "contributorsPerLine": 7,

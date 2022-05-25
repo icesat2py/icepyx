@@ -5,10 +5,6 @@ icepyx
 
 |GitHub license| |Conda install| |Pypi install| |Contributors|
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
 
 Current development version (development branch): |Docs Status dev| |Travis dev Build Status| |Code Coverage dev|
@@ -22,7 +18,7 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx
 
-.. |Contributors| image:: https://img.shields.io/badge/all_contributors-24-orange.svg?style=flat-square
+.. |Contributors| image:: https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square
     :alt: All Contributors
     :target: https://github.com/icesat2py/icepyx/blob/main/CONTRIBUTORS.rst
 

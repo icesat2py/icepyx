@@ -24,6 +24,23 @@
         "question",
         "review"
       ]
+    },
+    {
+      "login": "kelseybisson",
+      "name": "Kelsey Bisson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48059682?v=4",
+      "profile": "http://bisson.work",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "example",
+        "ideas",
+        "mentoring",
+        "question",
+        "review",
+        "tutorial"
+      ]
     }
   ],
   "contributorsPerLine": 7,

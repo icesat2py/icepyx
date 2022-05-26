@@ -13,6 +13,47 @@ from icepyx.core.variables import list_of_dict_vals
 # from icepyx.core.query import Query
 
 
+def _make_np_datetime(df, keyword):
+    """
+    Typecast the specified keyword dimension/coordinate/variable into a numpy datetime object.
+
+    Removes the timezone ('Z') in UTC timestamps in ICESat-2 data.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Dataframe object
+
+    keyword : str
+        name of the time variable, coordinate, or dimension
+
+    Outputs
+    -------
+    DataFrame with timezone removed.
+
+    Example
+    -------
+    >>> ds = xr.Dataset({"time": ("time_idx", [b'2019-01-11T05:26:31.323722Z'])}, coords={"time_idx": [0]})
+    >>> _make_np_datetime(ds, "time")
+    <xarray.Dataset>
+    Dimensions:   (time_idx: 1)
+    Coordinates:
+      * time_idx  (time_idx) int64 0
+    Data variables:
+        time      (time_idx) datetime64[ns] 2019-01-11T05:26:31.323722
+
+    """
+
+    if df[keyword].str.endswith("Z"):
+        # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
+        df.update({keyword: df[keyword].str[:-1].astype(np.datetime64)})
+
+    else:
+        df[keyword] = df[keyword].astype(np.datetime64)
+
+    return df
+
+
 # Dev note: function fully tested (except else, which don't know how to get to)
 def _check_datasource(filepath):
     """
@@ -340,7 +381,7 @@ class Read:
             grp_spec_vars = [
                 wanted_groups_tiered[-1][i]
                 for i, x in enumerate(wanted_groups_tiered[0])
-                if x == grp_path
+                if (x == grp_path and wanted_groups_tiered[1][i] == "none")
             ]
 
             for var in grp_spec_vars:
@@ -360,24 +401,9 @@ class Read:
             except KeyError:
                 pass
 
-            try:
-                if (
-                    hasattr(is2ds, "data_start_utc")
-                    and is2ds["data_start_utc"].data[0].astype(str).endswith("Z")
-                ):
-                    # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
-                    is2ds["data_start_utc"] = np.datetime64(
-                        is2ds.data_start_utc.data[0].astype(str)[:-1]
-                    )
-                    is2ds["data_end_utc"] = np.datetime64(
-                        is2ds.data_end_utc.data[0].astype(str)[:-1]
-                    )
-                else:
-                    is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
-                    is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
-
-            except AttributeError:
-                pass
+            if hasattr(is2ds, "data_start_utc"):
+                is2ds = _make_np_datetime(is2ds, "data_start_utc")
+                is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
         else:
             import re
@@ -392,16 +418,34 @@ class Read:
                 if any(f"{grp_path}/{k}" in x for x in v)
             ]
 
+            try:
+                photon_ids = (
+                    range(0, len(ds.delta_time.data))
+                    + np.full_like(
+                        ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
+                    )
+                    + 1
+                )
+            except AttributeError:
+                photon_ids = range(0, len(ds.delta_time.data))
+
+            hold_delta_times = ds.delta_time.data
             ds = (
                 ds.reset_coords(drop=False)
                 .expand_dims(dim=["spot", "gran_idx"])
-                .assign_coords(spot=("spot", [spot]))
+                .assign_coords(
+                    spot=("spot", [spot]), delta_time=("delta_time", photon_ids)
+                )
                 .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
+                .rename_dims({"delta_time": "photon_idx"})
+                .rename({"delta_time": "photon_idx"})
+                .assign_coords(delta_time=("photon_idx", hold_delta_times))
             )
 
-            grp_spec_vars.append("gt")
+            grp_spec_vars.extend(["gt", "photon_idx"])
+
             is2ds = is2ds.merge(
-                ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
+                ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
             )
 
             # re-cast some dtypes to make array smaller
@@ -420,7 +464,7 @@ class Read:
         is2ds : Xarray dataset
             Dataset to add deeply nested variables to.
         ds : Xarray dataset
-            Dataset containing proper dimensions for the variables being added
+            Dataset containing improper dimensions for the variables being added
         grp_path : str
             hdf5 group path read into ds
         wanted_dict : dict
@@ -431,6 +475,7 @@ class Read:
         Xarray Dataset with variables from the ds variable group added.
         """
 
+        # Dev Goal: improve this type of iterating to minimize amount of looping required. Would a path handling library be useful here?
         grp_spec_vars = [
             k for k, v in wanted_dict.items() if any(f"{grp_path}/{k}" in x for x in v)
         ]
@@ -447,6 +492,13 @@ class Read:
         #     #     "Due to the number of layers of variable group paths, some attributes have been dropped from your DataSet during merging",
         #     #     UserWarning,
         #     # )
+
+        try:
+            is2ds = _make_np_datetime(is2ds, "data_start_utc")
+            is2ds = _make_np_datetime(is2ds, "data_end_utc")
+
+        except AttributeError:
+            pass
 
         is2ds = is2ds.assign(ds[grp_spec_vars])
 
@@ -614,8 +666,11 @@ class Read:
             wanted_groups_set = set(wanted_groups)
             # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
             wanted_groups_set.remove("orbit_info")
+            wanted_groups_set.remove("ancillary_data")
             # Note: the sorting is critical for datasets with highly nested groups
-            wanted_groups_list = ["orbit_info"] + sorted(wanted_groups_set)
+            wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
+                wanted_groups_set
+            )
             # returns the wanted groups as a list of lists with group path string elements separated
             _, wanted_groups_tiered = Variables.parse_var_list(
                 groups_list, tiered=True, tiered_vars=True

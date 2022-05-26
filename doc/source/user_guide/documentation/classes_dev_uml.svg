@@ -70,7 +70,7 @@
 <text text-anchor="start" x="739.5" y="-917.3" font-family="Times,serif" font-size="14.00">_file_vars</text>
 <text text-anchor="start" x="739.5" y="-902.3" font-family="Times,serif" font-size="14.00">_granules</text>
 <text text-anchor="start" x="739.5" y="-887.3" font-family="Times,serif" font-size="14.00">_order_vars</text>
-<text text-anchor="start" x="739.5" y="-872.3" font-family="Times,serif" font-size="14.00">_prod : str, NoneType</text>
+<text text-anchor="start" x="739.5" y="-872.3" font-family="Times,serif" font-size="14.00">_prod : NoneType, str</text>
 <text text-anchor="start" x="739.5" y="-857.3" font-family="Times,serif" font-size="14.00">_readable_granule_name : list</text>
 <text text-anchor="start" x="739.5" y="-842.3" font-family="Times,serif" font-size="14.00">_reqparams</text>
 <text text-anchor="start" x="739.5" y="-827.3" font-family="Times,serif" font-size="14.00">_s3login_credentials</text>
@@ -163,7 +163,7 @@
 <polygon fill="none" stroke="black" points="1022,-38 1022,-257 1275,-257 1275,-38 1022,-38"/>
 <text text-anchor="middle" x="1148.5" y="-241.8" font-family="Times,serif" font-size="14.00">Parameters</text>
 <polyline fill="none" stroke="black" points="1022,-234 1275,-234 "/>
-<text text-anchor="start" x="1030" y="-218.8" font-family="Times,serif" font-size="14.00">_fmted_keys : dict, NoneType</text>
+<text text-anchor="start" x="1030" y="-218.8" font-family="Times,serif" font-size="14.00">_fmted_keys : NoneType, dict</text>
 <text text-anchor="start" x="1030" y="-203.8" font-family="Times,serif" font-size="14.00">_poss_keys : dict</text>
 <text text-anchor="start" x="1030" y="-188.8" font-family="Times,serif" font-size="14.00">_reqtype : NoneType, str</text>
 <text text-anchor="start" x="1030" y="-173.8" font-family="Times,serif" font-size="14.00">fmted_keys</text>
@@ -218,11 +218,11 @@
 <text text-anchor="middle" x="1713.5" y="-842.8" font-family="Times,serif" font-size="14.00">Read</text>
 <polyline fill="none" stroke="black" points="1443.5,-835 1983.5,-835 "/>
 <text text-anchor="start" x="1451.5" y="-819.8" font-family="Times,serif" font-size="14.00">_catalog_path : NoneType</text>
-<text text-anchor="start" x="1451.5" y="-804.8" font-family="Times,serif" font-size="14.00">_filelist : NoneType, list</text>
+<text text-anchor="start" x="1451.5" y="-804.8" font-family="Times,serif" font-size="14.00">_filelist : list, NoneType</text>
 <text text-anchor="start" x="1451.5" y="-789.8" font-family="Times,serif" font-size="14.00">_is2catalog : Catalog</text>
 <text text-anchor="start" x="1451.5" y="-774.8" font-family="Times,serif" font-size="14.00">_out_obj : Dataset</text>
 <text text-anchor="start" x="1451.5" y="-759.8" font-family="Times,serif" font-size="14.00">_pattern : str</text>
-<text text-anchor="start" x="1451.5" y="-744.8" font-family="Times,serif" font-size="14.00">_prod : str, NoneType</text>
+<text text-anchor="start" x="1451.5" y="-744.8" font-family="Times,serif" font-size="14.00">_prod : NoneType, str</text>
 <text text-anchor="start" x="1451.5" y="-729.8" font-family="Times,serif" font-size="14.00">_read_vars</text>
 <text text-anchor="start" x="1451.5" y="-714.8" font-family="Times,serif" font-size="14.00">_source_type : str</text>
 <text text-anchor="start" x="1451.5" y="-699.8" font-family="Times,serif" font-size="14.00">data_source : NoneType</text>
@@ -244,7 +244,7 @@
 <polygon fill="none" stroke="black" points="1315,-0.5 1315,-294.5 1804,-294.5 1804,-0.5 1315,-0.5"/>
 <text text-anchor="middle" x="1559.5" y="-279.3" font-family="Times,serif" font-size="14.00">Variables</text>
 <polyline fill="none" stroke="black" points="1315,-271.5 1804,-271.5 "/>
-<text text-anchor="start" x="1323" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : list, NoneType</text>
+<text text-anchor="start" x="1323" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : NoneType, list</text>
 <text text-anchor="start" x="1323" y="-241.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
 <text text-anchor="start" x="1323" y="-226.3" font-family="Times,serif" font-size="14.00">_vartype</text>
 <text text-anchor="start" x="1323" y="-211.3" font-family="Times,serif" font-size="14.00">_version : NoneType</text>
@@ -300,17 +300,17 @@
 <text text-anchor="start" x="2174.5" y="-226.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
 <text text-anchor="start" x="2174.5" y="-211.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
 <text text-anchor="start" x="2174.5" y="-196.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
-<text text-anchor="start" x="2174.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : str, NoneType</text>
+<text text-anchor="start" x="2174.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType, str</text>
 <text text-anchor="start" x="2174.5" y="-166.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
 <polyline fill="none" stroke="black" points="2166.5,-158.5 2682.5,-158.5 "/>
 <text text-anchor="start" x="2174.5" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(query_obj, product, spatial_extent, date_range, cycles, tracks)</text>
 <text text-anchor="start" x="2174.5" y="-128.3" font-family="Times,serif" font-size="14.00">generate_OA_parameters(): list</text>
 <text text-anchor="start" x="2174.5" y="-113.3" font-family="Times,serif" font-size="14.00">grid_bbox(binsize): list</text>
 <text text-anchor="start" x="2174.5" y="-98.3" font-family="Times,serif" font-size="14.00">make_request(base_url, payload)</text>
-<text text-anchor="start" x="2174.5" y="-83.3" font-family="Times,serif" font-size="14.00">parallel_request_OA(): </text>
+<text text-anchor="start" x="2174.5" y="-83.3" font-family="Times,serif" font-size="14.00">parallel_request_OA(): da.array</text>
 <text text-anchor="start" x="2174.5" y="-68.3" font-family="Times,serif" font-size="14.00">query_icesat2_filelist(): tuple</text>
-<text text-anchor="start" x="2174.5" y="-53.3" font-family="Times,serif" font-size="14.00">request_OA_data(paras): </text>
-<text text-anchor="start" x="2174.5" y="-38.3" font-family="Times,serif" font-size="14.00">viz_elevation(): </text>
+<text text-anchor="start" x="2174.5" y="-53.3" font-family="Times,serif" font-size="14.00">request_OA_data(paras): da.array</text>
+<text text-anchor="start" x="2174.5" y="-38.3" font-family="Times,serif" font-size="14.00">viz_elevation(): (hv.DynamicMap, hv.Layout)</text>
 </g>
 </g>
 </svg>

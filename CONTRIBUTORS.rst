@@ -18,7 +18,6 @@ Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/d
 * `Fernando Perez <https://github.com/fperez>`_ - University of California, Berkeley
 * `Romina Piunno <https://github.com/RomiP>`_ - University of Toronto
 * `Facundo Sapienza <https://github.com/facusapienza21>`_ - University of California, Berkeley
-* `Jessica Scheick <https://github.com/jessicas11>`_ - Unaffiliated (ORCID: `0000-0002-3421-4459 <https://www.orcid.org/0000-0002-3421-4459>`_)
 * `David Shean <https://github.com/dshean>`_ - University of Washington
 * `Ben Smith <https://github.com/smithb>`_ - University of Washington
 * `Trey Stafford <https://github.com/trey-stafford>`_ - NSIDC, University of Colorado

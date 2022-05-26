@@ -25,6 +25,38 @@
         "question",
         "review"
       ]
+    },
+    {
+      "login": "zachghiaccio",
+      "name": "Zach Fair",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48361714?v=4",
+      "profile": "https://github.com/zachghiaccio",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "question",
+        "review",
+        "tutorial"
+      ]
+    }
+      "login": "kelseybisson",
+      "name": "Kelsey Bisson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48059682?v=4",
+      "profile": "http://bisson.work",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "example",
+        "ideas",
+        "mentoring",
+        "question",
+        "review",
+        "tutorial"
+      ]
     }
   ],
   "contributorsPerLine": 7,

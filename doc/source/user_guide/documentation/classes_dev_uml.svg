@@ -18,7 +18,7 @@
 <text text-anchor="start" x="8" y="-196.3" font-family="Times,serif" font-size="14.00">capability_url</text>
 <text text-anchor="start" x="8" y="-181.3" font-family="Times,serif" font-size="14.00">email</text>
 <text text-anchor="start" x="8" y="-166.3" font-family="Times,serif" font-size="14.00">netrc : NoneType</text>
-<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : NoneType, str</text>
+<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : str, NoneType</text>
 <text text-anchor="start" x="8" y="-136.3" font-family="Times,serif" font-size="14.00">session : Session</text>
 <text text-anchor="start" x="8" y="-121.3" font-family="Times,serif" font-size="14.00">uid</text>
 <polyline fill="none" stroke="black" points="0,-113.5 301,-113.5 "/>
@@ -165,7 +165,7 @@
 <polyline fill="none" stroke="black" points="1022,-234 1275,-234 "/>
 <text text-anchor="start" x="1030" y="-218.8" font-family="Times,serif" font-size="14.00">_fmted_keys : NoneType, dict</text>
 <text text-anchor="start" x="1030" y="-203.8" font-family="Times,serif" font-size="14.00">_poss_keys : dict</text>
-<text text-anchor="start" x="1030" y="-188.8" font-family="Times,serif" font-size="14.00">_reqtype : str, NoneType</text>
+<text text-anchor="start" x="1030" y="-188.8" font-family="Times,serif" font-size="14.00">_reqtype : NoneType, str</text>
 <text text-anchor="start" x="1030" y="-173.8" font-family="Times,serif" font-size="14.00">fmted_keys</text>
 <text text-anchor="start" x="1030" y="-158.8" font-family="Times,serif" font-size="14.00">partype</text>
 <text text-anchor="start" x="1030" y="-143.8" font-family="Times,serif" font-size="14.00">poss_keys</text>

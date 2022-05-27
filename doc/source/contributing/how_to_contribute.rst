@@ -1,3 +1,5 @@
+.. _dev_guide_label: 
+
 How to contribute
 =================
 

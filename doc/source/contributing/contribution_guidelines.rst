@@ -56,14 +56,12 @@ icepyx is licensed under the `BSD-3 license <https://opensource.org/licenses/BSD
 
 Ways to Contribute
 ------------------
-.. to do add links to direct these bullets to the rest of the document
 
-- Share your use cases and examples (as Jupyter Notebooks, scripts, etc.)
-- Submit bug reports and feature requests
+- Share your use cases and examples (as Jupyter Notebooks, scripts, etc, see `Adding Examples`_)
+- Submit bug reports and feature requests, see `Reporting a bug`_ or `Requesting a Feature`_
 - Write code for everyone to use
-- Add ancillary dataset
-- Fix typos
-- Improve documentation and testing
+- `Add ancillary dataset`_
+- Fix typos and improve documentation and testing see  `Improving Documentation and Testing`_
 
 The best way to report a problem, request a feature, find out if others are working on a similar problem or application, or let us know you'd like to contribute some code is to find the *Issues* tab and check if your problem/suggestion has already been reported. If so, please provide any additional information in the ongoing discussion. Otherwise, feel free to create a new issue and submit your problem or suggestions.
 
@@ -73,7 +71,7 @@ Requesting a Feature
 Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Please give your suggestion a clear title and let us know if this is something you'd like to work on and contribute.
 
 
-Reporting a Bug
+Reporting a bug
 ---------------
 Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Give your issue a clear title and describe the steps required to recreate it in as much detail as possible. If you can, include a small example that reproduces the error. More information and minimal examples will help us resolve issues faster.
 
@@ -95,6 +93,10 @@ Adding Examples
 ---------------
 We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "development" branch, following the steps outlined below for `Contributing Code`_.
 
+
+Add ancillary dataset
+---------------------
+If you have an idea for a dataset that complements ICESat-2 data, please consider adding search and download capabilities through our QUEST module, which is written in object oriented code and designed to allow easy incorporation of other datasets. Stay tuned for a tutorial on how to add your dataset.
 
 Improving Documentation and Testing
 -----------------------------------

@@ -595,12 +595,19 @@ class Read:
 
         """
 
+        # add an icepyx issue for this KeyError (or dig into why the NSIDC subsetter still includes this info)
         try:
             grpcat = is2cat.build_catalog(
                 file, self._pattern, self._source_type, grp_paths=grp_path
             )
+            # print(grp_path)
             ds = grpcat[self._source_type].read()
 
+        except OSError:
+            # print("for some reason this group doesn't exist in this file")
+            ds = None
+            return ds
+            
         # NOTE: could also do this with h5py, but then would have to read in each variable in the group separately
         except ValueError:
             grpcat = is2cat.build_catalog(
@@ -680,6 +687,11 @@ class Read:
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
                 ds = self._read_single_grp(file, grp_path)
+
+                # needed to handle certain beams missing when NSIDC subsets files (see line 599)
+                if ds is None:
+                    continue
+
                 is2ds, ds = Read._add_vars_to_ds(
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )

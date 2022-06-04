@@ -208,8 +208,12 @@ class Query(GenQuery):
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
     ):
         # warnings.filterwarnings("always")
-        # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
+        # warnings.warn("Please note: as of 2020-05-05,
+        # a major reorganization of the core icepyx.query code
+        # may result in errors produced by now depricated functions.
+        # Please see our documentation pages or example notebooks for updates.")
 
+        # TODO: make this "check" more readable
         # Check necessary combination of input has been specified
         if (
             (product is None or spatial_extent is None)

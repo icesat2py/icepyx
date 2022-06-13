@@ -104,6 +104,7 @@ class GenQuery:
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
         # validate & init spatial extent
+        # (val.spatial() returns the the following three parameters)
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
             spatial_extent
         )
@@ -516,7 +517,7 @@ class Query(GenQuery):
     def subsetparams(self, **kwargs):
         """
         Display the subsetting key:value pairs that will be submitted. It generates the dictionary if it does not already exist
-        and returns an empty dictionary if subsetting is set to False during ordering.
+        and returns an empty dictionary if subsetting is set to False during ordering.a
 
         Parameters
         ----------
@@ -921,7 +922,8 @@ class Query(GenQuery):
             return granules.info(self.granules.avail)
 
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
-    # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
+    # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
+    # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
     def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
         """
         Place an order for the available granules for the query object.
@@ -988,7 +990,8 @@ class Query(GenQuery):
         ):
             del self._subsetparams
 
-        # REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
+        # REFACTOR: add checks here to see if the granules object has been created,
+        # and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, "_granules"):
             self.granules
         self._granules.place_order(

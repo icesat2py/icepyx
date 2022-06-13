@@ -1,7 +1,9 @@
 import geopandas as gpd
 from shapely.geometry import Polygon
 
+
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
+
 def geodataframe(extent_type, spatial_extent, file=False):
     """
     Return a geodataframe of the spatial extent

@@ -109,69 +109,112 @@ def tracks(track):
 
 
 # DevGoal: clean up; turn into classes (see validate_inputs_classes.py)
+
 def spatial(spatial_extent):
     """
     Validate the input spatial extent and return the needed parameters to the query object.
+
+    spatial_extent : expects one of the following:
+
+        * list of coordinates (stored in a list OR np.ndarray) as one of:
+            * bounding box
+                * provided in the order: [lower-left-longitude, lower-left-latitude,
+                                         upper-right-longitude, upper-right-latitude].)
+            * polygon
+                * provided as coordinate pairs in decimal degrees as one of:
+                    * [(longitude1, latitude1), (longitude2, latitude2), ...
+                      ... (longitude_n,latitude_n), (longitude1,latitude1)]
+                    * [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
+                * your list must contain at least four points, where the first and last are identical.
+                    * TODO: Make polygon close automatically if the first/last points aren't identical, throw warn
+        * string representing a geospatial polygon file (kml, shp, gpkg)
+            * full file path
+            * file must contain more than one polygon
     """
 
     scalar_types = (int, float, np.int64)
 
+    # Check if spatial_extent is a bounding box or a polygon (list of coords)
+    # Check if spatial_extent is a "list" or an "numpy.ndarray"
     if isinstance(spatial_extent, (list, np.ndarray)):
 
         # bounding box
-        if len(spatial_extent) == 4 and all(
-            isinstance(i, scalar_types) for i in spatial_extent
-        ):
-            assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value"
-            assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value"
-            assert (
-                -180 <= spatial_extent[0] <= 180
-            ), "Invalid longitude value"  # tighten these ranges depending on actual allowed inputs
-            assert -180 <= spatial_extent[2] <= 180, "Invalid longitude value"
+        if len(spatial_extent) == 4 and all(isinstance(i, scalar_types) for i in spatial_extent):
+
+            # Latitude must be between -90 and 90 (inclusive); check for this here
+            assert -90 <= spatial_extent[1] <= 90, "Invalid latitude value (must be between -90 and 90, inclusive)"
+            assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value (must be between -90 and 90, inclusive)"
+
+            # tighten these ranges depending on actual allowed inputs
+            # TODO: inquire about this; see if we know the "actual allowed inputs" and if this can be fixed now
+
+            assert -180 <= spatial_extent[0] <= 180, "Invalid longitude value (must be between -180 and 180, inclusive)"
+            assert -180 <= spatial_extent[2] <= 180, "Invalid longitude value (must be between -180 and 180, inclusive)"
+
+            # If the longitude's signs differ...
             if np.sign(spatial_extent[0]) != np.sign(spatial_extent[2]):
-                assert (
-                    spatial_extent[0] >= spatial_extent[2]
-                ), "Invalid bounding box longitudes"
+                # If the lower left longitude is less than the upper right longitude, throw an error
+                assert (spatial_extent[0] >= spatial_extent[2]), "Invalid bounding box longitudes"
+
+            # Else, if longitude signs are the same...
             else:
-                assert (
-                    spatial_extent[0] <= spatial_extent[2]
-                ), "Invalid bounding box longitudes"
-            assert (
-                spatial_extent[1] <= spatial_extent[3]
-            ), "Invalid bounding box latitudes"
+                # If the lower left longitude is greater than the upper right longitude, throw an error
+                assert (spatial_extent[0] <= spatial_extent[2]), "Invalid bounding box longitudes"
+
+            # If the lower left latitude is greater than the upper right latitude, throw an error
+            assert (spatial_extent[1] <= spatial_extent[3]), "Invalid bounding box latitudes"
+
+            # initialize _spat_extent "private variable"; it's just spatial_extent's longs/lats but as floats
             _spat_extent = [float(x) for x in spatial_extent]
+
+            # we now know extent_type is "bounding_box" so set this accordingly
             extent_type = "bounding_box"
 
         # user-entered polygon as list of lon, lat coordinate pairs
-        elif all(type(i) in [list, tuple, np.ndarray] for i in spatial_extent) and all(
-            all(isinstance(i[j], scalar_types) for j in range(len(i)))
-            for i in spatial_extent
-        ):
-            if any(len(i) != 2 for i in spatial_extent):
-                raise ValueError(
-                    "Each element in spatial_extent should be a list or tuple of length 2"
-                )
-            assert (
-                len(spatial_extent) >= 4
-            ), "Your spatial extent polygon has too few vertices"
-            assert (
-                spatial_extent[0][0] == spatial_extent[-1][0]
-            ), "Starting longitude doesn't match ending longitude"
-            assert (
-                spatial_extent[0][1] == spatial_extent[-1][1]
-            ), "Starting latitude doesn't match ending latitude"
-            polygon = (",".join([str(c) for xy in spatial_extent for c in xy])).split(
-                ","
-            )
 
+        # (NOTE: The all() function returns True if all items in an iterable are true, otherwise it returns False.)
+
+        # TODO: Write this "check" as a separate function? maybe do the same with bounding box?
+        elif all(type(i) in [list, tuple, np.ndarray] for i in spatial_extent) \
+                and all(all(isinstance(i[j], scalar_types) for j in range(len(i))) for i in spatial_extent):
+
+            # Check to make sure all elements of spatial_extent are coordinate pairs; if not, raise an error
+            if any(len(i) != 2 for i in spatial_extent):
+                raise ValueError("Each element in spatial_extent should be a list or tuple of length 2")
+
+            # If there are less than 4 vertices, raise an error
+            assert (len(spatial_extent) >= 4), "Your spatial extent polygon has too few vertices"
+
+            # TODO: Write unit test for this method.
+            if (spatial_extent[0][0] != spatial_extent[-1][0]) or ( spatial_extent[0][1] != spatial_extent[-1][1]):
+
+                # Throw a warning
+                warnings.warn("WARNING: Polygon's first and last point's coordinates differ,"
+                              " closing the polygon automatically.")
+                # Add starting long/lat to end
+                if isinstance(spatial_extent, list):
+                    # use list.append() method
+                    spatial_extent.append(spatial_extent[0])
+
+                elif isinstance(spatial_extent, np.ndarray):
+                    # use np.insert() method
+                    spatial_extent = np.insert(spatial_extent, len(spatial_extent), spatial_extent[0])
+
+            polygon = (",".join([str(c) for xy in spatial_extent for c in xy])).split(",")
+
+            # set extent_type to polygon
             extent_type = "polygon"
+
+            # make all elements of polygon floats
             polygon = [float(i) for i in polygon]
 
+            # create a geodataframe object from polygon
             gdf = geospatial.geodataframe(extent_type, polygon, file=False)
             _spat_extent = gdf.iloc[0].geometry
 
             # _spat_extent = polygon
             # extent_type = 'polygon'
+            # TODO: Check if this DevGoal is still ongoing
             # #DevGoal: properly format this input type (and any polygon type) so that it is clockwise (and only contains 1 pole)!!
             # warnings.warn("this type of input is not yet well handled and you may not be able to find data")
 
@@ -183,12 +226,25 @@ def spatial(spatial_extent):
             assert (
                 len(spatial_extent) % 2 == 0
             ), "Your spatial extent polygon list should have an even number of entries"
-            assert (
-                spatial_extent[0] == spatial_extent[-2]
-            ), "Starting longitude doesn't match ending longitude"
-            assert (
-                spatial_extent[1] == spatial_extent[-1]
-            ), "Starting latitude doesn't match ending latitude"
+
+            # TODO: Make polygon close automatically + throw warning
+            # TODO: Test this method
+            #assert (spatial_extent[0] == spatial_extent[-2]), "Starting longitude doesn't match ending longitude"
+            #assert (spatial_extent[1] == spatial_extent[-1] ), "Starting latitude doesn't match ending latitude"
+
+            warnings.warn("WARNING: Polygon's first and last point's coordinates differ,"
+                          " closing the polygon automatically.")
+            # Add starting long/lat to end
+            if isinstance(spatial_extent, list):
+                # use list.append() method
+                spatial_extent.append(spatial_extent[0])
+                spatial_extent.append(spatial_extent[1])
+
+            elif isinstance(spatial_extent, np.ndarray):
+                # use np.insert() method
+                spatial_extent = np.insert(spatial_extent, len(spatial_extent), spatial_extent[0])
+                spatial_extent = np.insert(spatial_extent, len(spatial_extent), spatial_extent[1])
+
             extent_type = "polygon"
             polygon = [float(i) for i in spatial_extent]
 
@@ -204,27 +260,42 @@ def spatial(spatial_extent):
 
         # DevGoal: write a test for this?
         # make sure there is nothing set to _geom_filepath since its existence determines later steps
+        # TODO: make sure this is valid; PyCharm doesn't seem to like this but it makes sense to do.
         try:
             del _geom_filepath
         except:
             UnboundLocalError
 
-    # DevGoal: revisit this section + geospatial.geodataframe. There might be some good ways to combine the functionality in these checks with that
+    # DevGoal: revisit this section + geospatial.geodataframe.
+    # There might be some good ways to combine the functionality in these checks with that
+
+    # Else if spatial_extent is a string (i.e. a (potential) filename)
     elif isinstance(spatial_extent, str):
-        assert os.path.exists(
-            spatial_extent
-        ), "Check that the path and filename of your geometry file are correct"
-        # DevGoal: more robust polygon inputting (see Bruce's code): correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
+        # Check if the filename path exists; if not, throw an error
+        # TODO: Trigger this error and see what it looks like
+        assert os.path.exists(spatial_extent), "Check that the path and filename of your geometry file are correct"
+
+        # DevGoal: more robust polygon inputting (see Bruce's code):
+        # correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
+
+        # If the filename has extension kml, shp, or gpkg:
         if spatial_extent.split(".")[-1] in ["kml", "shp", "gpkg"]:
             extent_type = "polygon"
             gdf = geospatial.geodataframe(extent_type, spatial_extent, file=True)
             # print(gdf.iloc[0].geometry)
-            # DevGoal: does the below line mandate that only the first polygon will be read? Perhaps we should require files containing only one polygon?
-            # RAPHAEL - It only selects the first polygon if there are multiple. Unless we can supply the CMR params with muliple polygon inputs we should probably req a single polygon.
-            _spat_extent = gdf.iloc[0].geometry
-            # _spat_extent = apifmt._fmt_polygon(spatial_extent)
-            _geom_filepath = spatial_extent
+            # DevGoal: does the below line mandate that only the first polygon will be read?
+            # Perhaps we should require files containing only one polygon?
 
+            # RAPHAEL - It only selects the first polygon if there are multiple.
+            # Unless we can supply the CMR params with muliple polygon inputs
+            # we should probably req a single polygon.
+
+            _spat_extent = gdf.iloc[0].geometry
+
+            # _spat_extent = apifmt._fmt_polygon(spatial_extent)
+
+            _geom_filepath = spatial_extent
+        # Filename has an invalid extension type; raise a TypeError
         else:
             raise TypeError("Input spatial extent file must be a kml, shp, or gpkg")
 

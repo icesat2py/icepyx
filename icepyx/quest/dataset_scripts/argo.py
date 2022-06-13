@@ -6,46 +6,85 @@ import os
 import numpy as np
 
 class Argo(DataSet):
+	"""
+	Initialises an Argo Dataset object
+	Used to query physical Argo profiles
+	-> biogeochemical Argo (BGC) not included
 
+	Examples
+    --------
+    # example with profiles available
+    >>> reg_a = Argo([-154, 30,-143, 37], ['2022-04-12', '2022-04-26'])
+	>>> reg_a.search_data()
+	>>> print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
+	   pres    temp     lat      lon
+	0   3.9  18.608  33.401 -153.913
+	1   5.7  18.598  33.401 -153.913
+	2   7.7  18.588  33.401 -153.913
+	3   9.7  18.462  33.401 -153.913
+	4  11.7  18.378  33.401 -153.913
+
+	# example with no profiles
+	>>> reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
+	>>> reg_a.search_data()
+	Warning: Query returned no profiles
+	Please try different search parameters
+
+
+	See Also
+	--------
+	DataSet
+	GenQuery
+	"""
 	def __init__(self, boundingbox, timeframe):
 		super().__init__(boundingbox, timeframe)
 		self.profiles = None
 
 
-	def search_data(self, presRange=None):
+	def search_data(self, presRange=None, printURL=False):
 		"""
 		query dataset given the spatio temporal criteria
-		and other params specic to the dataset
+		and other params specific to the dataset
 		"""
 
-		# todo: these need to be formatted to satisfy query
+		# builds URL to be submitted
 		baseURL = 'https://argovis.colorado.edu/selection/profiles/'
-		startDateQuery = '?startDate=' + self._start.strftime('%Y-%m-%d')
-		endDateQuery = '&endDate=' + self._end.strftime('%Y-%m-%d')
-		shapeQuery = '&shape=' + self._fmt_coordinates()
-
-		if not presRange == None:
-			pressRangeQuery = '&presRange;=' + presRange
-			url = baseURL + startDateQuery + endDateQuery + pressRangeQuery + shapeQuery
-		else:
-			url = baseURL + startDateQuery + endDateQuery + shapeQuery
-
 		payload = {'startDate': self._start.strftime('%Y-%m-%d'),
 				   'endDate': self._end.strftime('%Y-%m-%d'),
 				   'shape': [self._fmt_coordinates()]}
-		resp = requests.get(baseURL, params=payload)
-		print(resp.url)
+		if presRange:
+			payload['presRange'] = presRange
 
-		# resp = requests.get(url)
+		# submit request
+		resp = requests.get(baseURL, params=payload)
+
+		if printURL:
+			print(resp.url)
 
 		# Consider any status other than 2xx an error
 		if not resp.status_code // 100 == 2:
-			return "Error: Unexpected response {}".format(resp)
+			msg = "Error: Unexpected response {}".format(resp)
+			print(msg)
+			return
+
 		selectionProfiles = resp.json()
-		self.profiles = self._parse_into_df(selectionProfiles)
+
+		# check for the existence of profiles from query
+		if selectionProfiles == []:
+			msg = 'Warning: Query returned no profiles\n' \
+				  'Please try different search parameters'
+			print(msg)
+			return
+
+		# if profiles are found, save them to self as dataframe
+		self._parse_into_df(selectionProfiles)
 
 	def _fmt_coordinates(self):
-		# todo: make this more robust but for now it works
+		"""
+		Convert spatial extent into format needed by argovis
+		i.e. list of polygon coords [[[lat1,lon1],[lat2,lon2],...]]
+		"""
+
 		gdf = geodataframe(self.extent_type, self._spat_extent)
 		coordinates_array = np.asarray(gdf.geometry[0].exterior.coords)
 		x = ''
@@ -61,6 +100,11 @@ class Argo(DataSet):
 
 
 	def _parse_into_df(self, profiles):
+		"""
+		Stores profiles returned by query into dataframe
+		saves profiles back to self.profiles
+		returns None
+		"""
 		# initialize dict
 		meas_keys = profiles[0]['measurements'][0].keys()
 		df = pd.DataFrame(columns=meas_keys)
@@ -81,3 +125,4 @@ if __name__ == '__main__':
 	# profiles available
 	reg_a = Argo([-154, 30,-143, 37], ['2022-04-12', '2022-04-26'])
 	reg_a.search_data()
+	print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())

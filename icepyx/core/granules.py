@@ -459,7 +459,7 @@ class Granules:
             # Save orderIDs to file to avoid resubmitting order in case kernel breaks down.
             # save orderIDs for every 5 orders when more than 10 orders are submitted.
             # DevNote: These numbers are hard coded for now. Consider to allow user to set them in future?
-            if reqparams["page_num"] >= 10 and i % 5 == 0:
+            if reqparams["page_num"] >= 10:
                 with open(order_fn, "w") as fid:
                     json.dump({"orderIDs": self.orderIDs}, fid)
 

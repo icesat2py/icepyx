@@ -998,7 +998,6 @@ class Query(GenQuery):
                 )
             for gran in gran_name_list:
                 tempCMRparams.update({"readable_granule_name[]": gran})
-                print(tempCMRparams)
                 self._granules.place_order(
                     tempCMRparams,
                     self.reqparams,

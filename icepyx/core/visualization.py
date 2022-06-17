@@ -13,7 +13,7 @@ import holoviews as hv
 import numpy as np
 import pandas as pd
 import requests
-from holoviews.operation.datashader import rasterize
+from holoviews.operation.datashader import rasterize, spread
 from tqdm import tqdm
 
 import icepyx as ipx
@@ -510,14 +510,14 @@ class Visualize:
             tiles = hv.element.tiles.EsriImagery().opts(
                 xaxis=None, yaxis=None, width=450, height=450
             )
-            map_cycle = tiles * rasterize(
+            map_cycle = tiles * spread(rasterize(
                 raster_cycle, aggregator=ds.mean("elevation")
-            ).opts(colorbar=True, tools=["hover"])
-            map_rgt = tiles * rasterize(
+            ).opts(colorbar=True, tools=["hover"]), px=4)
+            map_rgt = tiles * spread(rasterize(
                 raster_rgt, aggregator=ds.mean("elevation")
-            ).opts(colorbar=True, tools=["hover"])
-            lineplot_rgt = rasterize(curve_rgt, aggregator=ds.mean("elevation")).opts(
-                width=450, height=450, cmap=["blue"]
-            )
+            ).opts(colorbar=True, tools=["hover"]), px=4)
+            lineplot_rgt = spread(rasterize(curve_rgt, aggregator=ds.mean("elevation")).opts(
+                width=400, height=450, cmap=["blue"]
+            ), px=4)
 
             return map_cycle, map_rgt + lineplot_rgt

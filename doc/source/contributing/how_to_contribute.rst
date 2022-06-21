@@ -39,7 +39,7 @@ For help navigating git and github, see this `guide <https://the-turing-way.netl
 Considerations with Jupyter Notebook
 ------------------------------------
 
-Note if you are working in jupyter notebook, you may need to dynamically reload icepyx using:
+Note if you are working in jupyter notebook, you may need to dynamically reload icepyx each time using:
    
 .. code-block::
 

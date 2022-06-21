@@ -91,7 +91,7 @@ Other Resources
 
 Adding Examples
 ---------------
-We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "development" branch, following the steps outlined below for `Contributing Code`_.
+We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "development" branch, following the steps outlined above for `Contributing Code`_.
 
 
 Add ancillary dataset

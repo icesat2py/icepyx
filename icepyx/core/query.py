@@ -105,6 +105,7 @@ class GenQuery:
     ):
         # validate & init spatial extent
         # (val.spatial() returns the the following three parameters)
+        # TODO: turn into "Spatial" object
         self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
             spatial_extent
         )
@@ -124,7 +125,7 @@ class GenQuery:
 # Note: add files to docstring once implemented
 # DevNote: currently this class is not tested
 class Query(GenQuery):
-    r"""
+    """
     Query and get ICESat-2 data
 
     ICESat-2 Data object to query, obtain, and perform basic operations on

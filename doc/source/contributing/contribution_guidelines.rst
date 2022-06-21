@@ -57,7 +57,8 @@ icepyx is licensed under the `BSD-3 license <https://opensource.org/licenses/BSD
 Ways to Contribute
 ------------------
 
-- Share your use cases and examples (as Jupyter Notebooks, scripts, etc, see `Adding Examples`_)
+- Submit bug reports and feature requests, see `Requesting a feature`_ or `Reporting a bug`_
+- Write code for everyone to use, or share your use cases and examples (as Jupyter Notebooks, scripts, etc, see `Adding Examples`_ or `Add ancillary dataset`_)
 - Submit bug reports and feature requests, see `Reporting a bug`_ or `Requesting a Feature`_
 - Write code for everyone to use
 - `Add ancillary dataset`_

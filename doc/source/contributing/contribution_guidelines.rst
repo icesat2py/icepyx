@@ -85,7 +85,10 @@ Please do not create issues to ask for help. A faster way to reach the community
 Other Resources
 ^^^^^^^^^^^^^^^
 - Check out our :ref:`ICESat-2 Open-Source Resources Guide<resource_ref_label>` for a host of tools and code for getting and working with ICESat-2 data
-- The `2019 ICESat-2 Hackweek Tutorial repo <https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials>`_ and [in progress] `2020 ICESat-2 Hackweek  Tutorial repo <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_ are great resources for learning basic Python and development skills, learning about ICESat-2 data, setting up a computational environment, and finding and analyzing ICESat-2 datasets.
+- The ICESat-2 Hackweek Tutorial repositories are great resources for learning basic Python and development skills, learning about ICESat-2 data, setting up a computational environment, and finding and analyzing ICESat-2 datasets.
+    - 2019 repo: <https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials>`_
+    - 2020 repo: <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_
+    - 2022 repo: <https://github.com/ICESAT-2HackWeek/website2022>`_
 - A great set of `interactive tutorials <https://learngitbranching.js.org>`_ for learning and practicing using git
 - Let us know about the helpful tools you've found by posting on our discourse forum as indicated above (`Questions and Help`_)!
 

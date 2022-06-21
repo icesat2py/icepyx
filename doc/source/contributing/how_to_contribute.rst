@@ -22,9 +22,13 @@ In all cases, please follow the guidelines below.
 More details following each of these steps follow:
 
 1. Sign up for your github account (visit https://github.com/ and  ‘sign up for GitHub account’)
+
 2. For the purposes of adding your name to the contributors list, you need to create a new branch. You can do this by clicking the down arrow next to ‘development’ and making a new branch titled ‘new_contributor’ (or whatever you want to name it - the naming doesn't matter much as it will only be a temporary branch). 
+
 3. Navigate to the new branch you created, click on CONTRIBUTORS.rst, and edit the document by adding your name in alphabetical order. After you do this, commit your changes and add a commit message ‘Added [your name here] to contributors list.’ 
+
 4. After committing the changes, open a pull request to merge your branch into the development branch. Members of the icepyx community will review these changes.
+
 5. After you’ve added yourself to the contributors list, clone the icepyx repo by navigating to `icepyx <https://github.com/icesat2py/icepyx>`__, clicking on the green ‘code’ button, copying the https link, then in your terminal where you want the folder, type:
 
         git clone https://github.com/icesat2py/icepyx.

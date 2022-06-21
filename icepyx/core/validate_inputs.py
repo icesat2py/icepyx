@@ -136,6 +136,9 @@ def spatial(spatial_extent):
 
     # Check if spatial_extent is a bounding box or a polygon (list of coords)
     # Check if spatial_extent is a "list" or an "numpy.ndarray"
+
+    # NOTE: I think that the input is assumed to be "strings"; thats why we must cast to float later
+    # This may also "flatten" the array so geospatial.geodataframe will work
     if isinstance(spatial_extent, (list, np.ndarray)):
 
         # bounding box
@@ -186,7 +189,7 @@ def spatial(spatial_extent):
             assert (len(spatial_extent) >= 4), "Your spatial extent polygon has too few vertices"
 
             # TODO: Write unit test for this method.
-            if (spatial_extent[0][0] != spatial_extent[-1][0]) or ( spatial_extent[0][1] != spatial_extent[-1][1]):
+            if (spatial_extent[0][0] != spatial_extent[-1][0]) or (spatial_extent[0][1] != spatial_extent[-1][1]):
 
                 # Throw a warning
                 warnings.warn("WARNING: Polygon's first and last point's coordinates differ,"
@@ -221,16 +224,16 @@ def spatial(spatial_extent):
         # user-entered polygon as a single list of lon and lat coordinates
         elif all(isinstance(i, scalar_types) for i in spatial_extent):
             assert (
-                len(spatial_extent) >= 8
+                    len(spatial_extent) >= 8
             ), "Your spatial extent polygon has too few vertices"
             assert (
-                len(spatial_extent) % 2 == 0
+                    len(spatial_extent) % 2 == 0
             ), "Your spatial extent polygon list should have an even number of entries"
 
             # TODO: Make polygon close automatically + throw warning
             # TODO: Test this method
-            #assert (spatial_extent[0] == spatial_extent[-2]), "Starting longitude doesn't match ending longitude"
-            #assert (spatial_extent[1] == spatial_extent[-1] ), "Starting latitude doesn't match ending latitude"
+            # assert (spatial_extent[0] == spatial_extent[-2]), "Starting longitude doesn't match ending longitude"
+            # assert (spatial_extent[1] == spatial_extent[-1] ), "Starting latitude doesn't match ending latitude"
 
             warnings.warn("WARNING: Polygon's first and last point's coordinates differ,"
                           " closing the polygon automatically.")
@@ -260,7 +263,7 @@ def spatial(spatial_extent):
 
         # DevGoal: write a test for this?
         # make sure there is nothing set to _geom_filepath since its existence determines later steps
-        # TODO: make sure this is valid; PyCharm doesn't seem to like this but it makes sense to do.
+
         try:
             del _geom_filepath
         except:
@@ -302,6 +305,7 @@ def spatial(spatial_extent):
     # DevGoal: currently no specific test for this if statement...
     if "_geom_filepath" not in locals():
         _geom_filepath = None
+    #TODO: Check this warning.
     return extent_type, _spat_extent, _geom_filepath
 
 

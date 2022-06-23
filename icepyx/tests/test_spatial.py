@@ -2,50 +2,13 @@ import pytest
 import warnings
 import datetime as dt
 import numpy as np
+from shapely.geometry import Polygon
+
 import icepyx.core.validate_inputs_spatial as sp
 
 
-#################### "General" Tests ###################################################################
-
-'''
-Test properties/"getters"
-'''
-def test_extent_type_property():
-
-
-def test_spatial_extent_property():
-
-
-def test_geom_file_property():
-
-################## End General Tests ##################################################################
-'''
-polygon
-create a test for each “possible input type”
-make sure the expected “type”/output is created
-make sure that bad lats/longs are handled
-outside of real lat/long values
-make sure that too few inputs throws an error
-make sure polygons are automatically closed
-make sure the resultant polygon is correct (first point == last point)
-make sure that a warning is given to the user
-make sure that the extent_type is correct on output
-polygon file
-create a test for each “possible input file type”
-kml, shp, gpkg
-make sure bad input file types throw the correct error
-make sure files with multiple polygons throw a warning and only select the first polygon
-make sure the expected “type”/output is created
-make sure input files that do not exist throw an error
-make sure the extent_type is correct on output
-make sure an error is thrown if the resultant extent type isn’t a “good type” 
-
-
-
-'''
-
 # ######### "Bounding Box" input tests ################################################################################
-
+# (Note that these ALSO test the @property functions for the class for bounding boxes)
 
 def test_intlist_bbox():
     """
@@ -84,39 +47,199 @@ def test_numpyfloatlist_bbox():
     assert npfloatlist_bbox.spatial_extent == [-64.2, 66.2, -55.5, 72.5]
 
 
+# ########## Bounding Box Assertion Error tests #############################################
+# (input for all of these tests is bad; ensuring the spatial class catches this)
+
 def test_too_few_bbox_points():
+    with pytest.raises(AssertionError):
+        too_few_bbox_points = sp.Spatial([-64.2, 66.2, -55.5])
+
 
 def test_too_many_bbox_points():
+    with pytest.raises(AssertionError):
+        too_many_bbox_points = sp.Spatial([-64.2, 66.2, -55.5, 72.5, 0])
 
 
 def test_invalid_low_latitude_1_bbox():
+    with pytest.raises(AssertionError):
+        low_lat_1_bbox = sp.Spatial([-64.2, -90.2, -55.5, 72.5])
+
 
 def test_invalid_high_latitude_1_bbox():
+    with pytest.raises(AssertionError):
+        high_lat_1_bbox = sp.Spatial([-64.2, 90.2, -55.5, 72.5])
+
 
 def test_invalid_low_latitude_3_bbox():
+    with pytest.raises(AssertionError):
+        low_lat_3_bbox = sp.Spatial([-64.2, 66.2, -55.5, -90.5])
+
 
 def test_invalid_high_latitude_3_bbox():
+    with pytest.raises(AssertionError):
+        high_lat_3_bbox = sp.Spatial([-64.2, 66.2, -55.5, 90.5])
 
 
 def test_invalid_low_longitude_0_bbox():
+    with pytest.raises(AssertionError):
+        low_lon_0_bbox = sp.Spatial([-180.2, 66.2, -55.5, 72.5])
+
 
 def test_invalid_high_longitude_0_bbox():
+    with pytest.raises(AssertionError):
+        high_lon_0_bbox = sp.Spatial([180.2, 66.2, -55.5, 72.5])
+
 
 def test_invalid_low_longitude_2_bbox():
+    with pytest.raises(AssertionError):
+        low_lon_2_bbox = sp.Spatial([-64.2, 66.2, -180.5, 72.5])
+
 
 def test_invalid_high_longitude_2_bbox():
+    with pytest.raises(AssertionError):
+        high_lon_2_bbox = sp.Spatial([-64.2, 66.2, 180.5, 72.5])
 
 
 def test_diff_sign_lowleft_lt_upright_longitude_bbox():
+    with pytest.raises(AssertionError):
+        long_ll_lt_ur_ds_bbox = sp.Spatial([-64.2, 66.2, 55.5, 72.5])
+
 
 def test_same_sign_lowleft_gt_upright_longitude_bbox():
+    with pytest.raises(AssertionError):
+        long_ll_gt_ur_ss_bbox = sp.Spatial([-55.5, 66.2, -64.2, 72.5])
+
 
 def test_same_sign_lowleft_gt_upright_latitude_bbox():
+    with pytest.raises(AssertionError):
+        lat_ll_gt_ur_ss_bbox = sp.Spatial([-64.2, 72.5, -55.5, 66.2])
+
+
+def test_bad_values_bbox():
+    with pytest.raises(ValueError):
+        bad_input = sp.Spatial(["a", "b", "c", "d"])
+
+# ############### END BOUNDING BOX TESTS ################################################################
+
+# ######### "Polygon" input tests (NOT FROM FILE) ######################################################
+
+
+def test_list_pairs_polygon():
+    poly_list_pair = sp.Spatial([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+    expected_poly_list_pair = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_list_pair.extent_type == "polygon"
+    assert poly_list_pair.extent_file is None
+    assert poly_list_pair.spatial_extent == expected_poly_list_pair
+
+
+def test_tuple_latlon_pairs():
+    poly_tuple_pair = sp.Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
+    expected_poly_tuple_pair = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_tuple_pair.extent_type == "polygon"
+    assert poly_tuple_pair.extent_file is None
+    assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
+
+
+def test_intlist_latlon_coords():
+    poly_list = sp.Spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68])
+    expected_poly_list = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_list.extent_type == "polygon"
+    assert poly_list.extent_file is None
+    assert poly_list.spatial_extent == expected_poly_list
+
+
+def test_floatlist_latlon_coords():
+    poly_float_list = sp.Spatial([-55.0, 68.7, -55.0, 71, -48, 71, -48, 68.7, -55.0, 68.7])
+    expected_poly_float_list = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_float_list.extent_type == "polygon"
+    assert poly_float_list.extent_file is None
+    assert poly_float_list.spatial_extent == expected_poly_float_list
+
+# numpy array tests
+
+def test_numpy_list_pairs_polygon():
+    poly_list_pair = sp.Spatial(np.array([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]))
+    expected_poly_list_pair = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_list_pair.extent_type == "polygon"
+    assert poly_list_pair.extent_file is None
+    assert poly_list_pair.spatial_extent == expected_poly_list_pair
+
+
+def test_numpy_tuple_latlon_pairs():
+    poly_tuple_pair = sp.Spatial(np.array([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]))
+    expected_poly_tuple_pair = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_tuple_pair.extent_type == "polygon"
+    assert poly_tuple_pair.extent_file is None
+    assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
+
+
+def test_numpy_intlist_latlon_coords():
+    poly_list = sp.Spatial(np.array([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68]))
+    expected_poly_list = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_list.extent_type == "polygon"
+    assert poly_list.extent_file is None
+    assert poly_list.spatial_extent == expected_poly_list
+
+
+# ########## Polygon Assertion Error tests ############################################################
+# (input for all of these tests is bad; ensuring the spatial class catches this)
+
+'''
 
 
 
+make sure that bad lats/longs are handled
+
+outside of real lat/long values
+
+make sure that too few inputs throws an error
+'''
+def test_bad_values_bbox():
+    with pytest.raises(ValueError):
+        bad_input = sp.Spatial(["a", "b", "c", "d"])
+# ###################### Automatically Closed Polygon Tests ###########################################################
+
+"""
+make sure the resultant polygon is correct (first point == last point)
+make sure that a warning is given to the user
+make sure that the extent_type is correct on output
+"""
 
 
+def test_poly_tuple_latlon_pairs_auto_close():
+    poly_tuple_pair = sp.Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68)])
+    expected_poly_tuple_pair = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
 
+    assert poly_tuple_pair.extent_type == "polygon"
+    assert poly_tuple_pair.extent_file is None
+    assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
 
-#def test_too_few_poly_points():
+# ###################### END POLYGON NO FILE TESTS ####################################################################
+# ######### Geom File Input Tests ######################################################
+
+'''
+make sure bad input file types throw the correct error
+make sure files with multiple polygons throw a warning and only select the first polygon
+make sure the expected “type”/output is created
+make sure input files that do not exist throw an error
+make sure the extent_type is correct on output
+make sure an error is thrown if the resultant extent type isn’t a “good type” 
+'''
+
+# ########## Geom File Assertion Error tests ############################################################
+
+# (input for all of these tests is bad; ensuring the spatial class catches this)
+
+"""
+polygon file
+create a test for each “possible input file type”
+kml, shp, gpkg
+"""
+

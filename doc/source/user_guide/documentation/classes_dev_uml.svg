@@ -307,10 +307,10 @@
 <text text-anchor="start" x="2174.5" y="-128.3" font-family="Times,serif" font-size="14.00">generate_OA_parameters(): list</text>
 <text text-anchor="start" x="2174.5" y="-113.3" font-family="Times,serif" font-size="14.00">grid_bbox(binsize): list</text>
 <text text-anchor="start" x="2174.5" y="-98.3" font-family="Times,serif" font-size="14.00">make_request(base_url, payload)</text>
-<text text-anchor="start" x="2174.5" y="-83.3" font-family="Times,serif" font-size="14.00">parallel_request_OA(): </text>
+<text text-anchor="start" x="2174.5" y="-83.3" font-family="Times,serif" font-size="14.00">parallel_request_OA(): da.array</text>
 <text text-anchor="start" x="2174.5" y="-68.3" font-family="Times,serif" font-size="14.00">query_icesat2_filelist(): tuple</text>
-<text text-anchor="start" x="2174.5" y="-53.3" font-family="Times,serif" font-size="14.00">request_OA_data(paras): </text>
-<text text-anchor="start" x="2174.5" y="-38.3" font-family="Times,serif" font-size="14.00">viz_elevation(): </text>
+<text text-anchor="start" x="2174.5" y="-53.3" font-family="Times,serif" font-size="14.00">request_OA_data(paras): da.array</text>
+<text text-anchor="start" x="2174.5" y="-38.3" font-family="Times,serif" font-size="14.00">viz_elevation(): (hv.DynamicMap, hv.Layout)</text>
 </g>
 </g>
 </svg>

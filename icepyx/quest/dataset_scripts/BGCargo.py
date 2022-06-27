@@ -52,9 +52,29 @@ class BGC_Argo(Argo):
 		# if profiles are found, save them to self as dataframe
 		self._parse_into_df(selectionProfiles)
 
+	def _parse_into_df(self, profiles):
+		"""
+		Stores profiles returned by query into dataframe
+		saves profiles back to self.profiles
+		returns None
+		"""
+		# initialize dict
+		meas_keys = profiles[0]['bgcMeas'][0].keys()
+		df = pd.DataFrame(columns=meas_keys)
+		for profile in profiles:
+			profileDf = pd.DataFrame(profile['bgcMeas'])
+			profileDf['cycle_number'] = profile['cycle_number']
+			profileDf['profile_id'] = profile['_id']
+			profileDf['lat'] = profile['lat']
+			profileDf['lon'] = profile['lon']
+			profileDf['date'] = profile['date']
+			df = pd.concat([df, profileDf], sort=False)
+		self.profiles = df
 
 if __name__ == '__main__':
-	reg_a = BGC_Argo([-154, 30, -143, 37], ['2022-04-12', '2022-04-26'])
+	# no profiles available
+	# reg_a = BGC_Argo([-154, 30, -143, 37], ['2022-04-12', '2022-04-26'])
+	# 24 profiles available
 	reg_a = BGC_Argo([-150, 30, -120, 60], ['2022-06-07', '2022-06-21'])
 	reg_a.search_data(['doxy', 'pres'], printURL=True)
 	print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())

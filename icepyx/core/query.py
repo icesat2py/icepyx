@@ -53,14 +53,14 @@ class GenQuery:
         The required date format is 'YYYY-MM-DD' strings, where
         YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
         Currently, a list of specific dates (rather than a range) is not accepted.
-        DevGoal: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
-        DevGoal: allow searches with a list of dates, rather than a range.
+        TODO: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
+        TODO: allow searches with a list of dates, rather than a range.
     start_time : HH:mm:ss, default 00:00:00
         Start time in UTC/Zulu (24 hour clock). If None, use default.
-        DevGoal: check for time in date-range date-time object, if that's used for input.
+        TODO: check for time in date-range date-time object, if that's used for input.
     end_time : HH:mm:ss, default 23:59:59
         End time in UTC/Zulu (24 hour clock). If None, use default.
-        DevGoal: check for time in date-range date-time object, if that's used for input.
+        TODO: check for time in date-range date-time object, if that's used for input.
 
     Examples
     --------
@@ -140,7 +140,7 @@ class Query(GenQuery):
     ----------
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
-        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
+        Avai5nlable data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : string, default most recent version
         Product version, given as a 3 digit string. If no version is given, the current
         version is used. Example: "004"
@@ -183,7 +183,7 @@ class Query(GenQuery):
 
     >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a = Query('ATL06', aoi, reg_a_dates)
+    >>> reg_a 5k= Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v005
     ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))

@@ -145,7 +145,8 @@ def test_tuple_latlon_pairs():
 def test_intlist_latlon_coords():
     poly_list = sp.Spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68])
     expected_poly_list = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
-
+    print(poly_list.spatial_extent)
+    print(expected_poly_list)
     assert poly_list.extent_type == "polygon"
     assert poly_list.extent_file is None
     assert poly_list.spatial_extent == expected_poly_list
@@ -153,13 +154,14 @@ def test_intlist_latlon_coords():
 
 def test_floatlist_latlon_coords():
     poly_float_list = sp.Spatial([-55.0, 68.7, -55.0, 71, -48, 71, -48, 68.7, -55.0, 68.7])
-    expected_poly_float_list = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+    expected_poly_float_list = Polygon([[-55.0, 68.7], [-55.0, 71], [-48, 71], [-48, 68.7], [-55.0, 68.7]])
 
     assert poly_float_list.extent_type == "polygon"
     assert poly_float_list.extent_file is None
     assert poly_float_list.spatial_extent == expected_poly_float_list
 
 # numpy array tests
+
 
 def test_numpy_list_pairs_polygon():
     poly_list_pair = sp.Spatial(np.array([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]))
@@ -191,27 +193,21 @@ def test_numpy_intlist_latlon_coords():
 # ########## Polygon Assertion Error tests ############################################################
 # (input for all of these tests is bad; ensuring the spatial class catches this)
 
-'''
+def test_odd_num_lat_long_list_poly_throws_error():
+    with pytest.raises(AssertionError):
+        bad_input = sp.Spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55])
 
 
-
-make sure that bad lats/longs are handled
-
-outside of real lat/long values
-
-make sure that too few inputs throws an error
-'''
-def test_bad_values_bbox():
+def test_wrong_num_lat_long_tuple_poly_throws_error():
     with pytest.raises(ValueError):
-        bad_input = sp.Spatial(["a", "b", "c", "d"])
+        bad_input = sp.Spatial([(-55, 68, 69), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
+
+
+def test_bad_value_types_poly():
+    with pytest.raises(ValueError):
+        bad_input = sp.Spatial(["a", "b", "c", "d", "e"])
+
 # ###################### Automatically Closed Polygon Tests ###########################################################
-
-"""
-make sure the resultant polygon is correct (first point == last point)
-make sure that a warning is given to the user
-make sure that the extent_type is correct on output
-"""
-
 
 def test_poly_tuple_latlon_pairs_auto_close():
     poly_tuple_pair = sp.Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68)])
@@ -220,6 +216,15 @@ def test_poly_tuple_latlon_pairs_auto_close():
     assert poly_tuple_pair.extent_type == "polygon"
     assert poly_tuple_pair.extent_file is None
     assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
+
+
+def test_poly_list_auto_close():
+    poly_list = sp.Spatial([-55, 68, -55, 71, -48, 71, -48, 68])
+    expected_poly_list = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_list.extent_type == "polygon"
+    assert poly_list.extent_file is None
+    assert poly_list.spatial_extent == expected_poly_list
 
 # ###################### END POLYGON NO FILE TESTS ####################################################################
 # ######### Geom File Input Tests ######################################################

@@ -44,7 +44,6 @@ def validate_polygon_pairs(spatial_extent):
     # If there are less than 4 vertices, raise an error
     assert (len(spatial_extent) >= 4), "Your spatial extent polygon has too few vertices"
 
-    # TODO: Write unit test for this method.
     if (spatial_extent[0][0] != spatial_extent[-1][0]) or (spatial_extent[0][1] != spatial_extent[-1][1]):
 
         # Throw a warning
@@ -87,22 +86,19 @@ def validate_polygon_list(spatial_extent):
             len(spatial_extent) % 2 == 0
     ), "Your spatial extent polygon list should have an even number of entries"
 
-    # TODO: Test this method
-    # assert (spatial_extent[0] == spatial_extent[-2]), "Starting longitude doesn't match ending longitude"
-    # assert (spatial_extent[1] == spatial_extent[-1] ), "Starting latitude doesn't match ending latitude"
+    if (spatial_extent[0] != spatial_extent[-2]) or (spatial_extent[1] != spatial_extent[-1]):
+        warnings.warn("WARNING: Polygon's first and last point's coordinates differ,"
+                      " closing the polygon automatically.")
+        # Add starting long/lat to end
+        if isinstance(spatial_extent, list):
+            # use list.append() method
+            spatial_extent.append(spatial_extent[0])
+            spatial_extent.append(spatial_extent[1])
 
-    warnings.warn("WARNING: Polygon's first and last point's coordinates differ,"
-                  " closing the polygon automatically.")
-    # Add starting long/lat to end
-    if isinstance(spatial_extent, list):
-        # use list.append() method
-        spatial_extent.append(spatial_extent[0])
-        spatial_extent.append(spatial_extent[1])
-
-    elif isinstance(spatial_extent, np.ndarray):
-        # use np.insert() method
-        spatial_extent = np.insert(spatial_extent, len(spatial_extent), spatial_extent[0])
-        spatial_extent = np.insert(spatial_extent, len(spatial_extent), spatial_extent[1])
+        elif isinstance(spatial_extent, np.ndarray):
+            # use np.insert() method
+            spatial_extent = np.insert(spatial_extent, len(spatial_extent), spatial_extent[0])
+            spatial_extent = np.insert(spatial_extent, len(spatial_extent), spatial_extent[1])
 
     extent_type = "polygon"
     polygon = [float(i) for i in spatial_extent]

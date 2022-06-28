@@ -21,6 +21,7 @@ from icepyx.core.granules import Granules as Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
+import icepyx.core.validate_inputs_spatial as sp
 from icepyx.core.visualization import Visualize
 
 
@@ -44,7 +45,6 @@ class GenQuery:
         or
         [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
         Your list must contain at least four points, where the first and last are identical.
-        DevGoal: adapt code so the polygon is automatically closed if need be
         Geospatial polygon files are entered as strings with the full file path and
         must contain only one polygon with the area of interest.
         Currently supported formats are: kml, shp, and gpkg
@@ -104,13 +104,14 @@ class GenQuery:
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
         # validate & init spatial extent
-        # (val.spatial() returns the the following three parameters)
-        # TODO: turn into "Spatial" object
-        self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
-            spatial_extent
-        )
+
+        sp_extent = sp.Spatial(spatial_extent)
+        self.extent_type = sp_extent.extent_type
+        self._spat_extent = sp_extent.spatial_extent
+        self._geom_filepath = sp_extent.extent_file
 
         # valiidate and init temporal constraints
+        # TODO: Update this to use Temporal class when completed
         if date_range:
             self._start, self._end = val.temporal(date_range, start_time, end_time)
 
@@ -215,7 +216,6 @@ class Query(GenQuery):
         # may result in errors produced by now depricated functions.
         # Please see our documentation pages or example notebooks for updates.")
 
-        # TODO: make this "check" more readable
         # Check necessary combination of input has been specified
         if (
             (product is None or spatial_extent is None)

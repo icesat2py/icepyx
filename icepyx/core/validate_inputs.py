@@ -105,3 +105,52 @@ def tracks(track):
 
         return track_list
 
+
+def temporal(date_range, start_time, end_time):
+    """
+    Validate the input temporal parameters and return the needed parameters to the query object.
+    """
+    if isinstance(date_range, list):
+        if len(date_range) == 2:
+            _start = dt.datetime.strptime(date_range[0], "%Y-%m-%d")
+            _end = dt.datetime.strptime(date_range[1], "%Y-%m-%d")
+            assert _start.date() <= _end.date(), "Your date range is invalid"
+
+        else:
+            raise ValueError(
+                "Your date range list is the wrong length. It should have start and end dates only."
+            )
+
+    # DevGoal: accept more date/time input formats
+    #         elif isinstance(date_range, date-time object):
+    #             print('it is a date-time object')
+    #         elif isinstance(date_range, dict):
+    #             print('it is a dictionary. now check the keys for start and end dates')
+
+    if start_time is None:
+        _start = _start.combine(
+            _start.date(), dt.datetime.strptime("00:00:00", "%H:%M:%S").time()
+        )
+    else:
+        if isinstance(start_time, str):
+            _start = _start.combine(
+                _start.date(), dt.datetime.strptime(start_time, "%H:%M:%S").time()
+            )
+        else:
+            raise TypeError("Please enter your start time as a string")
+
+    if end_time is None:
+        _end = _start.combine(
+            _end.date(), dt.datetime.strptime("23:59:59", "%H:%M:%S").time()
+        )
+    else:
+        if isinstance(end_time, str):
+            _end = _start.combine(
+                _end.date(), dt.datetime.strptime(end_time, "%H:%M:%S").time()
+            )
+        else:
+            raise TypeError("Please enter your end time as a string")
+
+    return _start, _end
+
+

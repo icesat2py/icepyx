@@ -53,7 +53,7 @@ class GenQuery:
         The required date format is 'YYYY-MM-DD' strings, where
         YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
         Currently, a list of specific dates (rather than a range) is not accepted.
-        TODO: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
+        TODO: accept date-time objects, dicts (with 'start_date' and 'end_date' keys), and DOY inputs.
         TODO: allow searches with a list of dates, rather than a range.
     start_time : HH:mm:ss, default 00:00:00
         Start time in UTC/Zulu (24 hour clock). If None, use default.

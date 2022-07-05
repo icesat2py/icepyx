@@ -164,24 +164,65 @@ def validate_date_range_dict(date_range, start_time, end_time):
 
     #   else; raise valueerror, some invalid type
     else:
-    # end_date
-    #   if is datetime
+        raise ValueError("Invalid type for key 'start_date'.\n"
+                         "Dicts containing date ranges must have the following keys:\n"
+                         "start_date: start date, type can be of dt.datetime, dt.date, or string\n"
+                         "end_date: end date, type can be of dt.datetime, dt.date, or string")
+
+    if end_time is not None:
+        warnings.warn("Warning: \"end_date\" given as datetime, but end_time argument was provided. \n"
+                      "This argument will be ignored and the time from the end_date datetime object"
+                      " will be used as end times.")
+
+    # ######################### end_date #######################################
+    # if is datetime
+
+    if isinstance(_end_date, dt.datetime):
+        # Ignore start/end times, return raw start date
         if end_time is not None:
             warnings.warn("Warning: \"end_date\" given as datetime, but end_time argument was provided. \n"
                           "This argument will be ignored and the time from the end_date datetime object"
                           " will be used as end times.")
-    #   if is only date
-    #   if is string date
-    #   else; raise valueerror, some invalid type
+        # if is only date
+    elif isinstance(_end_date, dt.date):
+        _end_date = dt.datetime.combine(
+            _end_date, end_time.time()
+        )
 
+        # if is string date
+    elif isinstance(_end_date, str):
+        _end_date = dt.datetime.strptime(_end_date, "%Y-%m-%d")
 
-    return 0, 0
+        #   else; raise valueerror, some invalid type
+    else:
+        raise ValueError("Invalid type for key 'end_date'.\n"
+                         "Dicts containing date ranges must have the following keys:\n"
+                         "start_date: start date, type can be of dt.datetime, dt.date, or string\n"
+                         "end_date: end date, type can be of dt.datetime, dt.date, or string")
+
+    return _start_date, _end_date
 
 
 def validate_date_list_datestr(date_range, start_time, end_time):
 
-    return 0, 0
 
+    """
+     Validates a LIST OF DATES provided in the form of a list of strings.
+     Strings must be of format: "YYYY-MM-DD" (Otherwise, datetime.strptime() will throw ValueError)
+
+     Returns the datetimes as datetime objects
+     by combining the start/end dates with their respective start/end times.
+
+     """
+
+    _start = dt.datetime.strptime(date_range[0], "%Y-%m-%d")
+    _end = dt.datetime.strptime(date_range[1], "%Y-%m-%d")
+
+    check_valid_date_range(_start, _end)
+
+    _start, _end = make_datetime(_start, _end, start_time, end_time)
+
+    return _start, _end
 
 def validate_date_list_datetime(date_range, start_time, end_time):
 

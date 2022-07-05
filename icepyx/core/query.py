@@ -141,7 +141,7 @@ class Query(GenQuery):
     ----------
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
-        Avai5nlable data products can be found at: https://nsidc.org/data/icesat-2/data-sets
+        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : string, default most recent version
         Product version, given as a 3 digit string. If no version is given, the current
         version is used. Example: "004"
@@ -184,7 +184,7 @@ class Query(GenQuery):
 
     >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a 5k= Query('ATL06', aoi, reg_a_dates)
+    >>> reg_a = Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v005
     ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
@@ -518,7 +518,7 @@ class Query(GenQuery):
     def subsetparams(self, **kwargs):
         """
         Display the subsetting key:value pairs that will be submitted. It generates the dictionary if it does not already exist
-        and returns an empty dictionary if subsetting is set to False during ordering.a
+        and returns an empty dictionary if subsetting is set to False during ordering.
 
         Parameters
         ----------

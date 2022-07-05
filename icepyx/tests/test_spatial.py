@@ -209,6 +209,7 @@ def test_bad_value_types_poly():
 
 # ###################### Automatically Closed Polygon Tests ###########################################################
 
+
 def test_poly_tuple_latlon_pairs_auto_close():
     poly_tuple_pair = sp.Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68)])
     expected_poly_tuple_pair = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
@@ -229,22 +230,33 @@ def test_poly_list_auto_close():
 # ###################### END POLYGON NO FILE TESTS ####################################################################
 # ######### Geom File Input Tests ######################################################
 
+
+def test_poly_file_simple_one_poly():
+    poly_from_file = sp.Spatial("simple_test_poly.gpkg")
+    print(poly_from_file.extent_file)
+    print(poly_from_file.spatial_extent)
+    expected_poly = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    assert poly_from_file.extent_type == "polygon"
+    assert poly_from_file.extent_file is not None
+    assert poly_from_file.extent_file == "simple_test_poly.gpkg"
+    assert poly_from_file.spatial_extent == expected_poly
+
+
 '''
-make sure bad input file types throw the correct error
-make sure files with multiple polygons throw a warning and only select the first polygon
-make sure the expected “type”/output is created
-make sure input files that do not exist throw an error
-make sure the extent_type is correct on output
-make sure an error is thrown if the resultant extent type isn’t a “good type” 
+TODO: test files with multiple polygons throw a warning and only select the first polygon
 '''
 
 # ########## Geom File Assertion Error tests ############################################################
 
 # (input for all of these tests is bad; ensuring the spatial class catches this)
 
-"""
-polygon file
-create a test for each “possible input file type”
-kml, shp, gpkg
-"""
 
+def test_bad_poly_inputfile_name_throws_error():
+    with pytest.raises(AssertionError):
+        bad_input = sp.Spatial("bad_filename.gpkg")
+
+
+def test_bad_poly_inputfile_type_throws_error():
+    with pytest.raises(TypeError):
+        bad_input = sp.Spatial("test_read.py")

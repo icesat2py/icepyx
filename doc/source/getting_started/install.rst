@@ -79,5 +79,3 @@ Alternatively, in a command line or terminal, navigate to the folder in your clo
 .. code-block::
 
   pip install -e.
-
-

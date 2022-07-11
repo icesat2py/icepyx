@@ -1,6 +1,6 @@
 .. _dev_guide_label: 
 
-How to contribute
+How to Contribute
 =================
 
 On this page we briefly provide basic instructions for contributing code to icepyx. 

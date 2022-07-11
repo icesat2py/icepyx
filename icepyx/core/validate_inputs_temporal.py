@@ -203,38 +203,10 @@ def validate_date_range_dict(date_range, start_time, end_time):
     return _start_date, _end_date
 
 
-def validate_date_list_datestr(date_range, start_time, end_time):
-
-
-    """
-     Validates a LIST OF DATES provided in the form of a list of strings.
-     Strings must be of format: "YYYY-MM-DD" (Otherwise, datetime.strptime() will throw ValueError)
-
-     Returns the datetimes as datetime objects
-     by combining the start/end dates with their respective start/end times.
-
-     """
-
-    _start = dt.datetime.strptime(date_range[0], "%Y-%m-%d")
-    _end = dt.datetime.strptime(date_range[1], "%Y-%m-%d")
-
-    check_valid_date_range(_start, _end)
-
-    _start, _end = make_datetime(_start, _end, start_time, end_time)
-
-    return _start, _end
-
-def validate_date_list_datetime(date_range, start_time, end_time):
-
-    return 0, 0
-
-
-def validate_date_list_date(date_range, start_time, end_time):
-
-    return 0, 0
-
 
 '''
+
+
  date_range : list of 'YYYY-MM-DD' strings
         Date range of interest, provided as start and end dates, inclusive.
         The required date format is 'YYYY-MM-DD' strings, where
@@ -290,7 +262,6 @@ class Temporal:
             if all(isinstance(i, str) for i in date_range):
                 self._datelist, self._isrange = validate_date_range_datestr(date_range, start_time, end_time)
             elif all(isinstance(i, dt.datetime) for i in date_range):
-                # TODO: Throw a warning if start_time/end_time are not "None" and use dt object
                 self._starttime, self._isrange = validate_date_range_datetime(date_range, start_time, end_time)
             elif all(isinstance(i, dt.date) for i in date_range):
                 self._starttime,  self._isrange = validate_date_range_date(date_range, start_time, end_time)
@@ -302,23 +273,11 @@ class Temporal:
                 raise TypeError("date_range must be a list of one of the following: \n")
 
         else:
-            # assume list of dates (1, or 3 or more)
-            if all(isinstance(i, str) for i in date_range):
-                self._datelist, self._isrange = validate_date_list_datestr(date_range, start_time, end_time)
-            elif all(isinstance(i, dt.datetime) for i in date_range):
-                self._datelist, self._isrange = validate_date_list_datetime(date_range, start_time, end_time)
-            elif all(isinstance(i, dt.date) for i in date_range):
-                self._datelist, self._isrange = validate_date_list_date(date_range, start_time, end_time)
-            else:
-                # input type is invalid
-                # TODO: Flesh out this TypeError once this class is done
-                raise TypeError("date_range must be a list of one of the following: \n")
+            raise ValueError(
+                "Your date range list is the wrong length. It should have start and end dates only."
+            )
 
     @property
     def datetimes(self):
         return self._datelist
-    
-    @property
-    def is_range(self):
-        return self._isrange
 

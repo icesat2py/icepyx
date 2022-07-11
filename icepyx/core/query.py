@@ -1,27 +1,27 @@
 import datetime as dt
-import os
-import requests
-import json
-import warnings
-import pprint
-import time
 import geopandas as gpd
+import json
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 from pathlib import Path
+import pprint
+import requests
+import time
+import warnings
 
-from icepyx.core.Earthdata import Earthdata
 import icepyx.core.APIformatting as apifmt
-import icepyx.core.is2ref as is2ref
+from icepyx.core.Earthdata import Earthdata
+import icepyx.core.geospatial as geospatial
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules as Granules
-
+import icepyx.core.is2ref as is2ref
 # QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
 # from icepyx.core.granules import Granules
-from icepyx.core.variables import Variables as Variables
-import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
 import icepyx.core.validate_inputs_spatial as sp
+import icepyx.core.validate_inputs_temporal as tp
+from icepyx.core.variables import Variables as Variables
 from icepyx.core.visualization import Visualize
 
 
@@ -111,13 +111,12 @@ class GenQuery:
         self._geom_filepath = sp_extent.extent_file
 
         # valiidate and init temporal constraints
-        # TODO: Update this to use Temporal class when completed
         if date_range:
-            self._start, self._end = val.temporal(date_range, start_time, end_time)
+            self._temporal = tp.Temporal(date_range, start_time, end_time)
 
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self.extent_type, self._spat_extent, self._start, self._end
+            self.extent_type, self._spat_extent, self._temporal., self._end
         )
         return str
 

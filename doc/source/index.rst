@@ -30,7 +30,7 @@ ICESat-2 datasets to enable scientific discovery.
     ---
     :img-top: https://cdn-icons-png.flaticon.com/128/2498/2498074.png
 
-    **Getting started**
+    **Getting Started**
     ^^^^^^^^^^^^^^^^^^^
 
     New to ICESat-2 or icepyx?
@@ -72,8 +72,8 @@ ICESat-2 datasets to enable scientific discovery.
     ---
     :img-top: https://cdn-icons-png.flaticon.com/128/1283/1283342.png
 
-    **Get in touch**
-    ^^^^^^^^^^^^^
+    **Get in Touch**
+    ^^^^^^^^^^^^^^^^
 
     icepyx is more than just software!
     We're a community of data producers, managers, and users

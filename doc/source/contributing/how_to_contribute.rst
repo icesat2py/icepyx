@@ -3,7 +3,7 @@
 How to Contribute
 =================
 
-On this page we briefly provide basic instructions for contributing code to icepyx. 
+On this page we briefly provide basic instructions for contributing to icepyx. 
 For contribution examples, please see contribution guidelines.
 In all cases, please follow the guidelines below. 
 
@@ -17,11 +17,11 @@ In all cases, please follow the guidelines below.
 
 5. Submit a pull request of your temporary branch into development. You're officially part of our community!
 
-6. For all future code contributions, create a new branch from the development branch and work from this branch. 
+6. For all future contributions, create a new branch from the development branch and work from this branch. 
 
 More details following each of these steps follow:
 
-1. Sign up for your github account (visit https://github.com/ and  ‘sign up for GitHub account’)
+1. Sign up for your GitHub account (visit https://github.com/ and  ‘sign up for GitHub account’).
 
 2. For the purposes of adding your name to the contributors list, you need to create a new branch. You can do this by clicking the down arrow next to ‘development’ and making a new branch titled ‘new_contributor’ (or whatever you want to name it - the naming doesn't matter much as it will only be a temporary branch). 
 
@@ -39,7 +39,7 @@ For help navigating git and github, see this `guide <https://the-turing-way.netl
 Considerations with Jupyter Notebook
 ------------------------------------
 
-Note if you are working in jupyter notebook, you may need to dynamically reload icepyx each time using:
+Note if you are working in Jupyter Notebook, you may need to dynamically reload icepyx each time using:
    
 .. code-block::
 
@@ -54,7 +54,7 @@ Steps for working with icepyx locally
 
 On this page we briefly provide general steps for using icepyx. 
 
-1. Sign up for a GitHub account: Sign up for your github account (visit https://github.com/ and  ‘sign up for GitHub account’)
+1. Sign up for a GitHub account: Sign up for your GitHub account (visit https://github.com/ and  ‘sign up for GitHub account’).
 
 2. Clone the icepyx repo: Open a terminal window. Navigate to the folder on your computer where you want to add icepyx code. For example, 
 
@@ -76,6 +76,4 @@ For future sessions with icepyx, write
 
     git pull https://github.com/icesat2py/icepyx.git
     
-to ensure you have the most up to date version of icepyx in your library. 
-
-
+to ensure you have the most up to date version of icepyx in your library.

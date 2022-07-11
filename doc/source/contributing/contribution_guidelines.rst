@@ -18,7 +18,7 @@ By having a *development* branch for daily work, we enable the *main* branch to 
 
 First Steps
 ^^^^^^^^^^^
-Before you begin writing code, please first check out our issues page. Someone may already be working on the same problem, and you may be able to contribute directly to their efforts. If not, create a new issue to describe what you plan to do.
+Before you begin writing code, please first check out our *Issues* tab. Someone may already be working on the same problem, and you may be able to contribute directly to their efforts. If not, create a new issue to describe what you plan to do.
 
 General Guidelines
 ^^^^^^^^^^^^^^^^^^
@@ -57,11 +57,9 @@ icepyx is licensed under the `BSD-3 license <https://opensource.org/licenses/BSD
 Ways to Contribute
 ------------------
 
-- Submit bug reports and feature requests, see `Requesting a feature`_ or `Reporting a bug`_
-- Write code for everyone to use, or share your use cases and examples (as Jupyter Notebooks, scripts, etc, see `Adding Examples`_ or `Add ancillary dataset`_)
-- Submit bug reports and feature requests, see `Reporting a bug`_ or `Requesting a Feature`_
-- Write code for everyone to use
-- `Add ancillary dataset`_
+- Submit bug reports and feature requests, see `Requesting a Feature`_ or `Reporting a Bug`_
+- Write code for everyone to use, or share your use cases and examples (as Jupyter Notebooks, scripts, etc, see `Adding Examples`_)
+- `Add Ancillary Dataset`_
 - Fix typos and improve documentation and testing see  `Improving Documentation and Testing`_
 
 The best way to report a problem, request a feature, find out if others are working on a similar problem or application, or let us know you'd like to contribute some code is to find the *Issues* tab and check if your problem/suggestion has already been reported. If so, please provide any additional information in the ongoing discussion. Otherwise, feel free to create a new issue and submit your problem or suggestions.
@@ -72,7 +70,7 @@ Requesting a Feature
 Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Please give your suggestion a clear title and let us know if this is something you'd like to work on and contribute.
 
 
-Reporting a bug
+Reporting a Bug
 ---------------
 Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Give your issue a clear title and describe the steps required to recreate it in as much detail as possible. If you can, include a small example that reproduces the error. More information and minimal examples will help us resolve issues faster.
 
@@ -86,9 +84,9 @@ Other Resources
 ^^^^^^^^^^^^^^^
 - Check out our :ref:`ICESat-2 Open-Source Resources Guide<resource_ref_label>` for a host of tools and code for getting and working with ICESat-2 data
 - The ICESat-2 Hackweek Tutorial repositories are great resources for learning basic Python and development skills, learning about ICESat-2 data, setting up a computational environment, and finding and analyzing ICESat-2 datasets.
-    - 2019 repo: <https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials>`_
-    - 2020 repo: <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_
-    - 2022 repo: <https://github.com/ICESAT-2HackWeek/website2022>`_
+    - 2019 repo: `<https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials>`_
+    - 2020 repo: `<https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_
+    - 2022 Jupyter book: `<https://icesat-2.hackweek.io/intro.html>`_
 - A great set of `interactive tutorials <https://learngitbranching.js.org>`_ for learning and practicing using git
 - Let us know about the helpful tools you've found by posting on our discourse forum as indicated above (`Questions and Help`_)!
 
@@ -98,9 +96,9 @@ Adding Examples
 We are delighted you'd like to contribute your `icepyx <https://github.com/icesat2py/icepyx>`_ example! Examples may be in the form of executable scripts or interactive Jupyter Notebooks. Please make sure that each example has a descriptive name so someone not familiar with your project understands its general behavior. Fully working examples should be submitted using a pull request to the "development" branch, following the steps outlined above for `Contributing Code`_.
 
 
-Add ancillary dataset
+Add Ancillary Dataset
 ---------------------
-If you have an idea for a dataset that complements ICESat-2 data, please consider adding search and download capabilities through our QUEST module, which is written in object oriented code and designed to allow easy incorporation of other datasets. Stay tuned for a tutorial on how to add your dataset.
+If you have an idea for a dataset that complements ICESat-2 data, please consider adding search and download capabilities through our QUEST module, which is written in object-oriented code and designed to allow easy incorporation of other datasets. Stay tuned for a tutorial on how to add your dataset.
 
 Improving Documentation and Testing
 -----------------------------------

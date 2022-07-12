@@ -47,6 +47,7 @@ ICESat-2 datasets to enable scientific discovery.
 
     **User Guide**
     ^^^^^^^^^^^^^^
+    
     The user guide provides in-depth information on the tools and functionality
     available for obtaining and interacting with ICESat-2 data products.
 

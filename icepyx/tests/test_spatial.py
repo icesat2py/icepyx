@@ -232,7 +232,7 @@ def test_poly_list_auto_close():
 
 
 def test_poly_file_simple_one_poly():
-    poly_from_file = sp.Spatial("icepyx/doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg")
+    poly_from_file = sp.Spatial("./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg")
     print(poly_from_file.extent_file)
     print(poly_from_file.spatial_extent)
     expected_poly = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
@@ -259,4 +259,4 @@ def test_bad_poly_inputfile_name_throws_error():
 
 def test_bad_poly_inputfile_type_throws_error():
     with pytest.raises(TypeError):
-        bad_input = sp.Spatial("icepyx/tests/test_read.py")
+        bad_input = sp.Spatial("./icepyx/tests/test_read.py")

@@ -105,10 +105,7 @@ class GenQuery:
     ):
         # validate & init spatial extent
 
-        sp_extent = sp.Spatial(spatial_extent)
-        self.extent_type = sp_extent.extent_type
-        self._spat_extent = sp_extent.spatial_extent
-        self._geom_filepath = sp_extent.extent_file
+        self._sp_extent = sp.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
         # TODO: Update this to use Temporal class when completed
@@ -117,7 +114,7 @@ class GenQuery:
 
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self.extent_type, self._spat_extent, self._start, self._end
+            self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._start, self._end
         )
         return str
 
@@ -260,7 +257,7 @@ class Query(GenQuery):
 
     def __str__(self):
         str = "Product {2} v{3}\n{0}\nDate range {1}".format(
-            self.spatial_extent, self.dates, self.product, self.product_version
+            self._sp_extent.spatial_extent, self.dates, self.product, self.product_version
         )
         return str
 
@@ -335,14 +332,15 @@ class Query(GenQuery):
 
         """
 
-        if self.extent_type == "bounding_box":
-            return ("bounding box", self._spat_extent)
-        elif self.extent_type == "polygon":
+        if self._sp_extent.extent_type == "bounding_box":
+            return "bounding box", self._sp_extent.spatial_extent
+        elif self._sp_extent.extent_type == "polygon":
             # return ['polygon', self._spat_extent]
-            # Note: self._spat_extent is a shapely geometry object
-            return ("polygon", self._spat_extent.exterior.coords.xy)
+            # Note: self._sp_extent._spat_extent is a shapely geometry object
+            return ("polygon", self._sp_extent.spatial_extent.exterior.coords.xy)
         else:
             return ("unknown spatial type", None)
+
 
     @property
     def dates(self):
@@ -481,8 +479,8 @@ class Query(GenQuery):
             self._CMRparams.build_params(
                 product=self.product,
                 version=self._version,
-                extent_type=self.extent_type,
-                spatial_extent=self._spat_extent,
+                extent_type=self._sp_extent.extent_type,
+                spatial_extent=self._sp_extent.spatial_extent,
                 **kwargs,
             )
 
@@ -554,15 +552,15 @@ class Query(GenQuery):
                 self._subsetparams = apifmt.Parameters("subset")
             if self._geom_filepath is not None:
                 self._subsetparams.build_params(
-                    geom_filepath=self._geom_filepath,
-                    extent_type=self.extent_type,
-                    spatial_extent=self._spat_extent,
+                    geom_filepath=self._sp_extent.extent_file,
+                    extent_type=self._sp_extent.extent_type,
+                    spatial_extent=self._sp_extent.spatial_extent,
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
-                    extent_type=self.extent_type,
-                    spatial_extent=self._spat_extent,
+                    extent_type=self._sp_extent.extent_type,
+                    spatial_extent=self._sp_extent.spatial_extent,
                     **kwargs,
                 )
 
@@ -1086,7 +1084,7 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        gdf = geospatial.geodataframe(self.extent_type, self._spat_extent)
+        gdf = geospatial.geodataframe(self._sp_extent.extent_type, self._sp_extent.spatial_extent)
 
         try:
             from shapely.geometry import Polygon

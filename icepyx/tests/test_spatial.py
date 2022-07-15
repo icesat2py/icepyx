@@ -1,5 +1,7 @@
 import datetime as dt
 import numpy as np
+import os
+from pathlib import Path
 import pytest
 from shapely.geometry import Polygon
 import warnings
@@ -232,14 +234,15 @@ def test_poly_list_auto_close():
 
 
 def test_poly_file_simple_one_poly():
-    poly_from_file = sp.Spatial("./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg")
-    print(poly_from_file.extent_file)
-    print(poly_from_file.spatial_extent)
+
+    poly_from_file = sp.Spatial(str(Path('../../doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()))
+    #print(poly_from_file.extent_file)
+    #print(poly_from_file.spatial_extent)
     expected_poly = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
 
     assert poly_from_file.extent_type == "polygon"
     assert poly_from_file.extent_file is not None
-    assert poly_from_file.extent_file == "simple_test_poly.gpkg"
+    assert poly_from_file.extent_file == str(Path('../../doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
     assert poly_from_file.spatial_extent == expected_poly
 
 
@@ -259,4 +262,4 @@ def test_bad_poly_inputfile_name_throws_error():
 
 def test_bad_poly_inputfile_type_throws_error():
     with pytest.raises(TypeError):
-        bad_input = sp.Spatial("./icepyx/tests/test_read.py")
+        bad_input = sp.Spatial(str(Path('../tests/test_read.py').resolve()))

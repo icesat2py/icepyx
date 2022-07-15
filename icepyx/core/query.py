@@ -86,7 +86,7 @@ class GenQuery:
 
     Initializing Query with a geospatial polygon file.
 
-    >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+    >>> aoi = str(Path('../../doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = GenQuery(aoi, reg_a_dates)
     >>> print(reg_a)
@@ -179,7 +179,7 @@ class Query(GenQuery):
 
     Initializing Query with a geospatial polygon file.
 
-    >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+    >>> aoi = str(Path('../../doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a)
@@ -257,7 +257,7 @@ class Query(GenQuery):
 
     def __str__(self):
         str = "Product {2} v{3}\n{0}\nDate range {1}".format(
-            self._sp_extent.spatial_extent, self.dates, self.product, self.product_version
+            self.spatial_extent, self.dates, self.product, self.product_version
         )
         return str
 
@@ -340,7 +340,6 @@ class Query(GenQuery):
             return ("polygon", self._sp_extent.spatial_extent.exterior.coords.xy)
         else:
             return ("unknown spatial type", None)
-
 
     @property
     def dates(self):
@@ -550,7 +549,7 @@ class Query(GenQuery):
         else:
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
-            if self._geom_filepath is not None:
+            if self._sp_extent.extent_file is not None:
                 self._subsetparams.build_params(
                     geom_filepath=self._sp_extent.extent_file,
                     extent_type=self._sp_extent.extent_type,

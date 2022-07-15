@@ -111,12 +111,12 @@ def validate_polygon_list(spatial_extent):
 def validate_polygon_file(spatial_extent):
 
     # Check if the filename path exists; if not, throw an error
-
+    #print("print statements work \n")
+    #print("SPATIAL EXTENT: " + spatial_extent + "\n")
     assert os.path.exists(spatial_extent), "Check that the path and filename of your geometry file are correct"
 
     # DevGoal: more robust polygon inputting (see Bruce's code):
     # correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
-
 
     if spatial_extent.split(".")[-1] in ["kml", "shp", "gpkg"]:
         extent_type = "polygon"

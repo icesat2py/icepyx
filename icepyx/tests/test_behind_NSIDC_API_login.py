@@ -21,7 +21,7 @@ def reg():
 
 @pytest.fixture(scope="module")
 def session(reg):
-    capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
+    capability_url = "https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
     ed_obj = Earthdata(
         "icepyx_devteam",
         "icepyx.dev@gmail.com",
@@ -40,7 +40,7 @@ import json
 
 def test_get_custom_options_output(session):
     obs = is2ref._get_custom_options(session, "ATL06", "004")
-    with open("./icepyx/tests/ATL06v04_options.json") as exp_json:
+    with open("ATL06v04_options.json") as exp_json:
         exp = json.load(exp_json)
         assert all(keys in obs.keys() for keys in exp.keys())
         assert all(obs[key] == exp[key] for key in exp.keys())

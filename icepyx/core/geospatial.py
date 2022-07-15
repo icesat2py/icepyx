@@ -32,9 +32,9 @@ def geodataframe(extent_type, spatial_extent, file=False):
     Examples
     --------
     >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-    >>> gdf = geodataframe(reg_a.extent_type, reg_a._spat_extent)
+    >>> gdf = geodataframe(reg_a._sp_extent.extent_type, reg_a._sp_extent.spatial_extent)
     >>> gdf.geometry
-    0    POLYGON ((-55.00000 68.00000, -55.00000 71.000...
+    0   POLYGON ((-55.00000 68.00000, -55.00000 71.000...
     Name: geometry, dtype: geometry
     """
 

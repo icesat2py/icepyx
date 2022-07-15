@@ -262,4 +262,4 @@ def test_bad_poly_inputfile_name_throws_error():
 
 def test_bad_poly_inputfile_type_throws_error():
     with pytest.raises(TypeError):
-        bad_input = sp.Spatial(str(Path('./tests/test_read.py').resolve()))
+        bad_input = sp.Spatial(str(Path('./icepyx/tests/test_read.py').resolve()))

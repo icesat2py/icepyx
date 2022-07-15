@@ -307,6 +307,10 @@ class Query(GenQuery):
         return self._version
 
     @property
+    def spatial(self):
+        return self._sp_extent
+
+    @property
     def spatial_extent(self):
         """
         Return an array showing the spatial extent of the query object.

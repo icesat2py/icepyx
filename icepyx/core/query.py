@@ -105,10 +105,7 @@ class GenQuery:
     ):
         # validate & init spatial extent
 
-        sp_extent = sp.Spatial(spatial_extent)
-        self.extent_type = sp_extent.extent_type
-        self._spat_extent = sp_extent.spatial_extent
-        self._geom_filepath = sp_extent.extent_file
+        self._sp_extent = sp.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
         if date_range:
@@ -116,7 +113,7 @@ class GenQuery:
 
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self.extent_type, self._spat_extent, self._temporal., self._end
+            self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._temporal.start, self._temporal.end
         )
         return str
 
@@ -140,7 +137,7 @@ class Query(GenQuery):
     ----------
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
-        Avai5nlable data products can be found at: https://nsidc.org/data/icesat-2/data-sets
+        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : string, default most recent version
         Product version, given as a 3 digit string. If no version is given, the current
         version is used. Example: "004"
@@ -183,7 +180,7 @@ class Query(GenQuery):
 
     >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a 5k= Query('ATL06', aoi, reg_a_dates)
+    >>> reg_a = Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v005
     ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
@@ -309,6 +306,13 @@ class Query(GenQuery):
         return self._version
 
     @property
+    def spatial(self):
+        return self._sp_extent
+    @property
+    def temporal(self):
+        return self._temporal
+
+    @property
     def spatial_extent(self):
         """
         Return an array showing the spatial extent of the query object.
@@ -334,12 +338,12 @@ class Query(GenQuery):
 
         """
 
-        if self.extent_type == "bounding_box":
-            return ("bounding box", self._spat_extent)
-        elif self.extent_type == "polygon":
+        if self._sp_extent.extent_type == "bounding_box":
+            return "bounding box", self._sp_extent.spatial_extent
+        elif self._sp_extent.extent_type == "polygon":
             # return ['polygon', self._spat_extent]
-            # Note: self._spat_extent is a shapely geometry object
-            return ("polygon", self._spat_extent.exterior.coords.xy)
+            # Note: self._sp_extent._spat_extent is a shapely geometry object
+            return ("polygon", self._sp_extent.spatial_extent.exterior.coords.xy)
         else:
             return ("unknown spatial type", None)
 
@@ -359,8 +363,8 @@ class Query(GenQuery):
             return ["No temporal parameters set"]
         else:
             return [
-                self._start.strftime("%Y-%m-%d"),
-                self._end.strftime("%Y-%m-%d"),
+                self._temporal.start.strftime("%Y-%m-%d"),
+                self._temporal.end.strftime("%Y-%m-%d"),
             ]  # could also use self._start.date()
 
     @property
@@ -381,7 +385,7 @@ class Query(GenQuery):
         if not hasattr(self, "_start"):
             return ["No temporal parameters set"]
         else:
-            return self._start.strftime("%H:%M:%S")
+            return self._temporal.start.strftime("%H:%M:%S")
 
     @property
     def end_time(self):
@@ -401,7 +405,7 @@ class Query(GenQuery):
         if not hasattr(self, "_end"):
             return ["No temporal parameters set"]
         else:
-            return self._end.strftime("%H:%M:%S")
+            return self._temporal.end.strftime("%H:%M:%S")
 
     @property
     def cycles(self):
@@ -480,8 +484,8 @@ class Query(GenQuery):
             self._CMRparams.build_params(
                 product=self.product,
                 version=self._version,
-                extent_type=self.extent_type,
-                spatial_extent=self._spat_extent,
+                extent_type=self._sp_extent.extent_type,
+                spatial_extent=self._sp_extent.spatial_extent,
                 **kwargs,
             )
 
@@ -517,7 +521,7 @@ class Query(GenQuery):
     def subsetparams(self, **kwargs):
         """
         Display the subsetting key:value pairs that will be submitted. It generates the dictionary if it does not already exist
-        and returns an empty dictionary if subsetting is set to False during ordering.a
+        and returns an empty dictionary if subsetting is set to False during ordering.
 
         Parameters
         ----------
@@ -551,17 +555,17 @@ class Query(GenQuery):
         else:
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
-            if self._geom_filepath is not None:
+            if self._sp_extent.extent_file is not None:
                 self._subsetparams.build_params(
-                    geom_filepath=self._geom_filepath,
-                    extent_type=self.extent_type,
-                    spatial_extent=self._spat_extent,
+                    geom_filepath=self._sp_extent.extent_file,
+                    extent_type=self._sp_extent.extent_type,
+                    spatial_extent=self._sp_extent.spatial_extent,
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
-                    extent_type=self.extent_type,
-                    spatial_extent=self._spat_extent,
+                    extent_type=self._sp_extent.extent_type,
+                    spatial_extent=self._sp_extent.spatial_extent,
                     **kwargs,
                 )
 
@@ -1001,7 +1005,7 @@ class Query(GenQuery):
             verbose,
             subset,
             session=self._session,
-            geom_filepath=self._geom_filepath,
+            geom_filepath=self._sp_extent.extent_file,
         )
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
@@ -1085,7 +1089,7 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        gdf = geospatial.geodataframe(self.extent_type, self._spat_extent)
+        gdf = geospatial.geodataframe(self._sp_extent.extent_type, self._sp_extent.spatial_extent)
 
         try:
             from shapely.geometry import Polygon

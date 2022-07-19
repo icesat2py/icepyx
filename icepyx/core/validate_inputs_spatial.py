@@ -13,13 +13,11 @@ def validate_bounding_box(spatial_extent):
     assert -90 <= spatial_extent[3] <= 90, "Invalid latitude value (must be between -90 and 90, inclusive)"
 
     # tighten these ranges depending on actual allowed inputs
-    # TODO: inquire about this; see if we know the "actual allowed inputs" and if this can be fixed now
-
+    # TODO: inquire about this; see if we know the "actual allowed inputs" and if this can be fixed
     assert -180 <= spatial_extent[0] <= 180, "Invalid longitude value (must be between -180 and 180, inclusive)"
     assert -180 <= spatial_extent[2] <= 180, "Invalid longitude value (must be between -180 and 180, inclusive)"
 
     # If the longitude's signs differ...
-
     if np.sign(spatial_extent[0]) != np.sign(spatial_extent[2]):
         # If the lower left longitude is less than the upper right longitude, throw an error
         assert (spatial_extent[0] >= spatial_extent[2]), "Invalid bounding box longitudes"
@@ -77,8 +75,8 @@ def validate_polygon_pairs(spatial_extent):
 
 
 def validate_polygon_list(spatial_extent):
-    # user-entered polygon as a single list of lon and lat coordinates
 
+    # user-entered polygon as a single list of lon and lat coordinates
     assert (
             len(spatial_extent) >= 8
     ), "Your spatial extent polygon has too few vertices"
@@ -89,6 +87,7 @@ def validate_polygon_list(spatial_extent):
     if (spatial_extent[0] != spatial_extent[-2]) or (spatial_extent[1] != spatial_extent[-1]):
         warnings.warn("WARNING: Polygon's first and last point's coordinates differ,"
                       " closing the polygon automatically.")
+
         # Add starting long/lat to end
         if isinstance(spatial_extent, list):
             # use list.append() method
@@ -110,33 +109,33 @@ def validate_polygon_list(spatial_extent):
 
 
 def validate_polygon_file(spatial_extent):
+
     # Check if the filename path exists; if not, throw an error
-    # TODO: Trigger this error and see what it looks like
+    #print("print statements work \n")
+    #print("SPATIAL EXTENT: " + spatial_extent + "\n")
     assert os.path.exists(spatial_extent), "Check that the path and filename of your geometry file are correct"
 
     # DevGoal: more robust polygon inputting (see Bruce's code):
     # correct for clockwise/counterclockwise coordinates, deal with simplification, etc.
 
-    # If the filename has extension kml, shp, or gpkg:
     if spatial_extent.split(".")[-1] in ["kml", "shp", "gpkg"]:
         extent_type = "polygon"
         gdf = geospatial.geodataframe(extent_type, spatial_extent, file=True)
-        # print(gdf.iloc[0].geometry)
+
         # DevGoal: does the below line mandate that only the first polygon will be read?
         # Perhaps we should require files containing only one polygon?
 
         # RAPHAEL - It only selects the first polygon if there are multiple.
         # Unless we can supply the CMR params with muliple polygon inputs
         # we should probably req a single polygon.
+
         # TODO: Require a single polygon OR throw a warning that only the first polygon will be selected?
-        # Need to run some tests to figure out how this is done. It's unclear
-        # if geopandas can detect this
+
         gdf_result = gdf.iloc[0].geometry
 
         # _spat_extent = apifmt._fmt_polygon(spatial_extent)
         return "polygon", gdf_result, spatial_extent
 
-    # Filename has an invalid extension type; raise a TypeError
     else:
         raise TypeError("Input spatial extent file must be a kml, shp, or gpkg")
 
@@ -175,8 +174,6 @@ class Spatial:
                               Else, it is the name of the file that _spat_ext is retrieved/validated from.
               """
 
-        # TODO: Ask/check if these "local variable" names must be diff. than in other files
-
         scalar_types = (int, float, np.int64)
 
         # Check if spatial_extent is a list of coordinates (bounding box or polygon)
@@ -204,7 +201,6 @@ class Spatial:
         elif isinstance(spatial_extent, str):
             self._ext_type, self._spatial_ext, self._geom_file = validate_polygon_file(spatial_extent)
 
-    # TODO: Make string different if from file
     def __str__(self):
         if self.extent_file is not None:
             return "Extent type: {0}\nSource file: {1}\nCoordinates: {2}".format(self._ext_type,

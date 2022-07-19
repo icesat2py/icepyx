@@ -12,7 +12,7 @@ def geodataframe(extent_type, spatial_extent, file=False):
     ----------
     extent_type : string
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
-    TODO: FIX THIS COMMENT SO THE WARNING GOES AWAY
+
     spatial_extent : string
         A string of the spatial extent. If file is False, the string should be a
         list of coordinates in decimal degrees of [lower-left-longitude,
@@ -32,9 +32,9 @@ def geodataframe(extent_type, spatial_extent, file=False):
     Examples
     --------
     >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-    >>> gdf = geodataframe(reg_a.extent_type, reg_a._spat_extent)
+    >>> gdf = geodataframe(reg_a.spatial.extent_type, reg_a.spatial.spatial_extent)
     >>> gdf.geometry
-    0    POLYGON ((-55.00000 68.00000, -55.00000 71.000...
+    0   POLYGON ((-55.00000 68.00000, -55.00000 71.000...
     Name: geometry, dtype: geometry
     """
 
@@ -53,15 +53,13 @@ def geodataframe(extent_type, spatial_extent, file=False):
             spatial_extent[1],
             spatial_extent[1],
         ]
-        # DevGoal: check to see that the box is actually correctly constructed; have not checked actual location of test coordinates
-        # TODO: "spatial" (in validate_inputs) needs a "check_bounding_box" method.
-        # TODO: Make sure there is a test case that ensures this gdf is constructed as expected (correct coords, order, etc.)
+        # DevGoal: check to see that the box is actually correctly constructed;
+        # have not checked actual location of test coordinates
+        # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
         gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx, boxy)))])
 
     # DevGoal: Currently this if/else within this elif are not tested...
     # DevGoal: the crs setting and management needs to be improved
-
-    #extent_type is a polygon, file is false
 
     elif extent_type == "polygon" and file == False:
         # DevGoal: look into when/if this if is even called.

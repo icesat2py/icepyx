@@ -33,33 +33,6 @@ def check_valid_date_range(start, end):
     assert start.date() <= end.date(), "Your date range is invalid"
 
 
-def make_datetime(start_date, end_date, start_time, end_time):
-
-    """
-    Helper function for creating combined datetime objects
-    out of start/end dates and their respective start/end times
-
-    Parameters
-    ----------
-    start_date, end_date: datetime objects that only contain date
-    start_time, end_time: datetime objects that only contain time
-
-    Returns
-    -------
-    start_datetime: start datetime object, combination of start_date + start_time
-    end_datetime: end datetime object, combination of end_date +  end_time
-
-    """
-
-    _start_datetime = dt.datetime.combine(
-        start_date.date(), start_time.time()
-    )
-    _end_datetime = dt.datetime.combine(
-        end_date.date(), end_time.time()
-    )
-    return _start_datetime, _end_datetime
-
-
 def validate_date_range_datestr(date_range, start_time, end_time):
 
     """
@@ -77,7 +50,14 @@ def validate_date_range_datestr(date_range, start_time, end_time):
 
     check_valid_date_range(_start, _end)
 
-    _start, _end = make_datetime(_start, _end, start_time, end_time)
+
+    _start = dt.datetime.combine(
+            _start, start_time
+        )
+
+    _end = dt.datetime.combine(
+            _end, end_time
+        )
 
     return _start, _end
 
@@ -88,7 +68,7 @@ def validate_date_range_datetime(date_range, start_time, end_time):
 
     Validates a date RANGE provided in the form of a list of datetime objects (list must be of length 2).
 
-    NOTE: if start_time OR end_time are not none, throw a warning! These will be ignored
+    TODO: if start_time OR end_time are not none, throw a warning! These will be ignored
     in favor of the times inside of the date_range datetime objects.
 
     Returns the start and end datetimes as datetime objects
@@ -98,7 +78,22 @@ def validate_date_range_datetime(date_range, start_time, end_time):
 
     check_valid_date_range(date_range[0], date_range[1])
 
-    _start, _end = make_datetime(date_range[0].date(), date_range[1].date(), date_range[0].time(), date_range[1].time())
+    if end_time is not None:
+        warnings.warn("Warning: \"start_date\" given as datetime, but start_time argument was provided. \n"
+                      "This argument will be ignored and the time from the start_date datetime object"
+                      " will be used as start times.")
+    if start_time is not None:
+        warnings.warn("Warning: \"end_date\" given as datetime, but end_time argument was provided. \n"
+                      "This argument will be ignored and the time from the end_date datetime object"
+                      " will be used as end times.")
+
+    _start = dt.datetime.combine(
+        date_range[0], start_time.time()
+    )
+
+    _end = dt.datetime.combine(
+        date_range[1], end_time.time()
+    )
 
     return _start, _end
 
@@ -116,7 +111,13 @@ def validate_date_range_date(date_range, start_time, end_time):
 
     check_valid_date_range(date_range[0], date_range[1])
 
-    _start, _end = make_datetime(date_range[0], date_range[1], start_time, end_time)
+    _start = dt.datetime.combine(
+        date_range[0], start_time.time()
+    )
+
+    _end = dt.datetime.combine(
+        date_range[1], end_time.time()
+    )
 
     return _start, _end
 
@@ -161,7 +162,9 @@ def validate_date_range_dict(date_range, start_time, end_time):
     # if is string date
     elif isinstance(_start_date, str):
         _start_date = dt.datetime.strptime(_start_date, "%Y-%m-%d")
-
+        _start_date = dt.datetime.combine(
+            _start_date, start_time.time()
+        )
     #   else; raise valueerror, some invalid type
     else:
         raise ValueError("Invalid type for key 'start_date'.\n"
@@ -192,6 +195,9 @@ def validate_date_range_dict(date_range, start_time, end_time):
         # if is string date
     elif isinstance(_end_date, str):
         _end_date = dt.datetime.strptime(_end_date, "%Y-%m-%d")
+        _end_date = dt.datetime.combine(
+            _end_date, end_time.time()
+        )
 
         #   else; raise valueerror, some invalid type
     else:
@@ -258,15 +264,14 @@ class Temporal:
         if len(date_range) == 2:
             # range, list of dates
             # can be date objects, dicts, datetime objects, DOY input (YYYY-DOY)
-
-            if all(isinstance(i, str) for i in date_range):
-                self._datelist, self._isrange = validate_date_range_datestr(date_range, start_time, end_time)
+            if isinstance(date_range, dict):
+                self._start, self._end = validate_date_range_dict(date_range, start_time, end_time)
+            elif all(isinstance(i, str) for i in date_range):
+                self._start, self._end = validate_date_range_datestr(date_range, start_time, end_time)
             elif all(isinstance(i, dt.datetime) for i in date_range):
-                self._starttime, self._isrange = validate_date_range_datetime(date_range, start_time, end_time)
+                self._start, self._end = validate_date_range_datetime(date_range, start_time, end_time)
             elif all(isinstance(i, dt.date) for i in date_range):
-                self._starttime,  self._isrange = validate_date_range_date(date_range, start_time, end_time)
-            elif all(isinstance(i, dict) for i in date_range):
-                self._starttime,  self._isrange = validate_date_range_dict(date_range, start_time, end_time)
+                self._start,  self._end = validate_date_range_date(date_range, start_time, end_time)
             else:
                 # input type is invalid
                 # TODO: Flesh out this TypeError once this class is done
@@ -278,6 +283,12 @@ class Temporal:
             )
 
     @property
-    def datetimes(self):
-        return self._datelist
+    def start(self):
+        return self._start
+
+    @property
+    def end(self):
+        return self._end
+
+
 

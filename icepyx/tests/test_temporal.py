@@ -11,30 +11,30 @@ import icepyx.core.validate_inputs_temporal as tp
 
 def test_range_str_yyyymmdd_list_no_start_end_time():
     result = tp.Temporal(["2016-01-01", "2020-01-01"])
-    expected_range = ([dt.datetime(2016, 1, 1, 0, 0, 0), dt.datetime(2020, 1, 1, 0, 0, 0)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    expected_range = ([dt.datetime(2016, 1, 1, 0, 0, 0), dt.datetime(2020, 1, 1, 23, 59, 59)])
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 
 def test_range_str_yyyydoy_list_no_start_end_time():
     result = tp.Temporal(["2016-14", "2020-40"])
-    expected_range = ([dt.datetime(2016, 1, 14, 0, 0, 0), dt.datetime(2020, 2, 9, 0, 0, 0)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    expected_range = ([dt.datetime(2016, 1, 14, 0, 0, 0), dt.datetime(2020, 2, 9, 23, 59, 59)])
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 
 def test_range_str_yyyymmdd_dict_no_start_end_time():
     result = tp.Temporal({"start_date": "2016-01-01", "end_date": "2020-01-01"})
-    expected_range = ([dt.datetime(2016, 1, 1, 0, 0, 0), dt.datetime(2020, 1, 1, 0, 0, 0)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    expected_range = ([dt.datetime(2016, 1, 1, 0, 0, 0), dt.datetime(2020, 1, 1, 23, 59, 59)])
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 
 def test_range_str_yyyydoy_dict_no_start_end_time():
     result = tp.Temporal({"start_date": "2016-14", "end_date": "2020-40"})
-    expected_range = ([dt.datetime(2016, 1, 14, 0, 0, 0), dt.datetime(2020, 2, 9, 0, 0, 0)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    expected_range = ([dt.datetime(2016, 1, 14, 0, 0, 0), dt.datetime(2020, 2, 9, 23, 59, 59)])
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 # Test using actual start/end time inputs
 
@@ -44,29 +44,28 @@ def test_range_str_yyyydoy_dict_no_start_end_time():
 def test_range_str_yyyymmdd_list_string_start_end():
     result = tp.Temporal(["2016-01-01", "2020-01-01"], "01:00:00", "13:10:01")
     expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
-
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 def test_range_str_yyyydoy_list_string_start_end():
     result = tp.Temporal(["2016-14", "2020-40"], "01:00:00", "13:10:01")
     expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 
 def test_range_str_yyyymmdd_dict_string_start_end():
     result = tp.Temporal({"start_date": "2016-01-01", "end_date": "2020-01-01"}, "01:00:00", "13:10:01")
     expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 
 def test_range_str_yyyydoy_dict_string_start_end():
     result = tp.Temporal({"start_date": "2016-14", "end_date": "2020-40"}, "01:00:00", "13:10:01")
     expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 # dt.time start/end
 
@@ -74,29 +73,29 @@ def test_range_str_yyyydoy_dict_string_start_end():
 def test_range_str_yyyymmdd_list_time_start_end():
     result = tp.Temporal(["2016-01-01", "2020-01-01"], dt.time(1, 0, 0), dt.time(13, 10, 1))
     expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 
 def test_range_str_yyyydoy_list_time_start_end():
     result = tp.Temporal(["2016-14", "2020-40"], dt.time(1, 0, 0), dt.time(13, 10, 1))
     expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 
 def test_range_str_yyyymmdd_dict_time_start_end():
     result = tp.Temporal({"start_date": "2016-01-01", "end_date": "2020-01-01"}, dt.time(1, 0, 0), dt.time(13, 10, 1))
     expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 
 def test_range_str_yyyydoy_dict_time_start_end():
     result = tp.Temporal({"start_date": "2016-14", "end_date": "2020-40"}, dt.time(1, 0, 0), dt.time(13, 10, 1))
     expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
-    assert result.is_range is True
-    assert result.datetimes == expected_range
+    assert result.start == expected_range[0]
+    assert result.end == expected_range[1]
 
 # Date Range Errors
 
@@ -146,11 +145,3 @@ def test_range_str_bad_range():
 # will throw errors if the user inputs a bad value of either type
 
 # ####### END DATE RANGE TESTS #############
-
-
-# ####### BEGIN DATE LIST TESTS ###########
-
-# Date List Errors
-# (The following inputs are bad, testing to ensure the temporal class handles this elegantly)
-
-# ####### END DATE LIST TESTS #############

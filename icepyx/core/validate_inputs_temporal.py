@@ -31,7 +31,10 @@ def convert_string_to_date(date):
         except ValueError:
             pass
     # TODO: "complete" this error so it's more informative
-    raise ValueError('no valid date format found')
+    raise ValueError('No valid date format found. The following formats are accepted:\n'
+                     '%Y-%m-%d\n'
+                     '%Y-%-j\n'
+                     '%Y-%j\n')
 
 
 def check_valid_date_range(start, end):
@@ -51,18 +54,60 @@ def check_valid_date_range(start, end):
 
     """
 
-    assert start.date() <= end.date(), "Your date range is invalid"
+    assert start.date() <= end.date(), "Your date range is invalid; end date MUST be on or after the start date."
 
+
+def validate_times(start_time, end_time):
+
+    """
+    Validates the start and end times passed into __init__ function and returns them as datetime.time objects OR
+    None type objects.
+
+
+    Parameters
+    ----------
+    start_time: Start time, can be one of: str, datetime.time
+    end_time:  End time, can be one of: str, datetime.time
+
+    Returns
+    -------
+    start_time, end_time as datetime.time objects OR None type objects (i.e. if one of the parameters is a None type)
+    """
+    valid_time_types = (str, dt.time)
+
+    # Validate start/end time types; then convert them to the appropriate datetime object
+    if start_time is not None:
+        # user specified a start time, need to first check if it's a valid type (if not, throw an AssertionError)
+        assert isinstance(start_time, valid_time_types), "start_time must be one of the following types: \n" \
+                                                         "str (format: HH:MM:SS)\n" \
+                                                         "datetime.time"
+
+        # if start_time is a string, then it must be converted to a datetime using strptime
+        if isinstance(start_time, str):
+            start_time = dt.datetime.strptime(start_time, "%H:%M:%S").time()
+
+    if end_time is not None:
+        # user specified an end time, need to first check if it's a valid type (if not, throw an AssertionError)
+        assert isinstance(end_time, valid_time_types), "end_time must be one of the following types: \n" \
+                                                       "str (format: HH:MM:SS)\n" \
+                                                       "datetime.time"
+        # if end_time is a string, then it must be converted to a datetime using strptime
+        if not isinstance(end_time, dt.time):
+            end_time = dt.datetime.strptime(end_time, "%H:%M:%S").time()
+
+    return start_time, end_time
 
 def validate_date_range_datestr(date_range, start_time, end_time):
 
     """
 
     Validates a date RANGE provided in the form of a list of strings (list must be of length 2).
-    Strings must be of format: "YYYY-MM-DD" (Otherwise, datetime.strptime() will throw ValueError)
+    Strings must be of formats accepted by validate_inputs_temporal.convert_string_to_date().
 
     Returns the start and end datetimes as datetime objects
     by combining the start/end dates with their respective start/end times.
+
+    If start and/or end times are not provided, the default options are 00:00:00 and 23:59:59, respectively.
 
     """
     # Check if start format is valid
@@ -71,20 +116,15 @@ def validate_date_range_datestr(date_range, start_time, end_time):
     # Check if end format is valid
     _end = convert_string_to_date(date_range[1])
 
+    # Check if date range passed in is valid
     check_valid_date_range(_start, _end)
 
     if start_time is None:
         # if user did not specify a start time, default to start time of 00:00:00
         start_time = dt.datetime.strptime("00:00:00", "%H:%M:%S").time()
-    else:
-        if isinstance(start_time, dt.datetime):
-            start_time = start_time.time()
 
     if end_time is None:
         end_time = dt.datetime.strptime("23:59:59", "%H:%M:%S").time()
-    else:
-        if isinstance(end_time, dt.datetime):
-            end_time = end_time.time()
 
     _start = dt.datetime.combine(
             _start, start_time
@@ -103,11 +143,7 @@ def validate_date_range_datetime(date_range, start_time, end_time):
 
     Validates a date RANGE provided in the form of a list of datetime objects (list must be of length 2).
 
-    TODO: if start_time OR end_time are not none, throw a warning! These will be ignored
-    in favor of the times inside of the date_range datetime objects.
-
-    Returns the start and end datetimes as datetime objects
-    by combining the start/end dates with their respective start/end times.
+    Returns the start and end datetimes as datetime objects.
 
     """
 
@@ -134,27 +170,25 @@ def validate_date_range_date(date_range, start_time, end_time):
     Returns the start and end datetimes as datetime objects
     by combining the start/end dates with their respective start/end times.
 
+    If start and/or end times are not provided, the default options are 00:00:00 and 23:59:59, respectively.
+
     """
 
     check_valid_date_range(date_range[0], date_range[1])
 
-    if start_time is not None:
-        start_time = dt.datetime.strptime(start_time, "%H:%M:%S")
-    else:
+    if start_time is None:
         # if user did not specify a start time, default to start time of 00:00:00
-        start_time = dt.datetime.strptime("00:00:00", "%H:%M:%S")
+        start_time = dt.datetime.strptime("00:00:00", "%H:%M:%S").time()
 
-    if end_time is not None:
-        end_time = dt.datetime.strptime(end_time, "%H:%M:%S")
-    else:
-        end_time = dt.datetime.strptime("23:59:59", "%H:%M:%S")
+    if end_time is None:
+        end_time = dt.datetime.strptime("23:59:59", "%H:%M:%S").time()
 
     _start = dt.datetime.combine(
-        date_range[0], start_time.time()
+        date_range[0], start_time
     )
 
     _end = dt.datetime.combine(
-        date_range[1], end_time.time()
+        date_range[1], end_time
     )
 
     return _start, _end
@@ -167,26 +201,33 @@ def validate_date_range_dict(date_range, start_time, end_time):
          start_date: start date, type can be of dt.datetime, dt.date, or string
          end_date: end date, type can be of dt.datetime, dt.date, or string
 
-      NOTE: The keys MUST have the exact names/formatting above or a ValueError will be thrown by this function.
-      NOTE: If the keys are of type dt.datetime, the start_time/end_time parameters will be ignored!
+      Keys MUST have the exact names/formatting above or a ValueError will be thrown by this function.
+      If the keys are of type dt.datetime, the start_time/end_time parameters will be ignored!
 
      Returns the start and end datetimes as datetime objects
-     by combining the start/end dates with their respective start/end times.
+     by combining the start/end dates with their respective start/end times (if the dict type is not datetime).
 
+     If start and/or end times are not provided, the default options are 00:00:00 and 23:59:59, respectively.
      """
 
+    # Try to get keys from date_range dict
     _start_date = date_range.get("start_date")
     _end_date = date_range.get("end_date")
+
+    # If either is none, then we can assume bad keys and raise a ValueError for the user
 
     if _start_date is None or _end_date is None:
         raise ValueError("Dicts containing date ranges must have the following keys:\n"
                          "start_date: start date, type can be of dt.datetime, dt.date, or string\n"
                          "end_date: end date, type can be of dt.datetime, dt.date, or string")
 
+    # Ensure the date range is valid
+
     check_valid_date_range(convert_string_to_date(_start_date), convert_string_to_date(_end_date))
 
     # start_date
-    #   if is datetime
+
+    #  if is datetime
     if isinstance(_start_date, dt.datetime):
         # Ignore start/end times, return raw start date
         if start_time is not None:
@@ -197,9 +238,6 @@ def validate_date_range_dict(date_range, start_time, end_time):
     elif isinstance(_start_date, dt.date):
         if start_time is None:
             start_time = dt.datetime.strptime("00:00:00", "%H:%M:%S").time()
-        else:
-            if isinstance(start_time, dt.datetime):
-                start_time = start_time.time()
 
         _start_date = dt.datetime.combine(
             _start_date, start_time
@@ -210,9 +248,6 @@ def validate_date_range_dict(date_range, start_time, end_time):
         if start_time is None:
             # if user did not specify a start time, default to start time of 00:00:00
             start_time = dt.datetime.strptime("00:00:00", "%H:%M:%S").time()
-        else:
-            if isinstance(start_time, dt.datetime):
-                start_time = start_time.time()
 
         _start_date = convert_string_to_date(_start_date)
 
@@ -239,9 +274,6 @@ def validate_date_range_dict(date_range, start_time, end_time):
     elif isinstance(_end_date, dt.date):
         if end_time is None:
             end_time = dt.datetime.strptime("23:59:59", "%H:%M:%S").time()
-        else:
-            if isinstance(end_time, dt.datetime):
-                end_time = end_time.time()
 
         _end_date = dt.datetime.combine(
             _end_date, end_time
@@ -251,9 +283,7 @@ def validate_date_range_dict(date_range, start_time, end_time):
     elif isinstance(_end_date, str):
         if end_time is None:
             end_time = dt.datetime.strptime("23:59:59", "%H:%M:%S").time()
-        else:
-            if isinstance(end_time, dt.datetime):
-                end_time = end_time.time()
+
         _end_date = convert_string_to_date(_end_date)
 
         _end_date = dt.datetime.combine(
@@ -291,54 +321,38 @@ def validate_date_range_dict(date_range, start_time, end_time):
 class Temporal:
     def __init__(self, date_range, start_time=None, end_time=None):
 
-        valid_time_types = (str, dt.time)
-
-        # Validate start/end time types; then convert them to the appropriate datetime object
-
-        if start_time is not None:
-            # user specified a start time, need to first check if it's a valid type (if not, throw an AssertionError)
-            assert isinstance(start_time, valid_time_types), "start_time must be one of the following types: \n" \
-                                                             "str (format: HH:MM:SS)\n" \
-                                                             "datetime.time"
-            # if start_time is a string, then it must be converted to a datetime using strptime
-            if not isinstance(start_time, dt.time):
-                start_time = dt.datetime.strptime(start_time, "%H:%M:%S")
-        # else:
-            # if user did not specify a start time, default to start time of 00:00:00
-            # start_time = dt.datetime.strptime("00:00:00", "%H:%M:%S")
-
-        if end_time is not None:
-            # user specified an end time, need to first check if it's a valid type (if not, throw an AssertionError)
-            assert isinstance(end_time, valid_time_types), "end_time must be one of the following types: \n" \
-                                                             "str (format: HH:MM:SS)\n" \
-                                                             "datetime.time"
-            # if end_time is a string, then it must be converted to a datetime using strptime
-            if not isinstance(end_time, dt.time):
-                end_time = dt.datetime.strptime(end_time, "%H:%M:%S")
-
-        # else:
-            # if user did not specify an end time, default to end time of 23:59:59
-            # end_time = dt.datetime.strptime("23:59:59", "%H:%M:%S")
+        start_time, end_time = validate_times(start_time, end_time)
 
         if len(date_range) == 2:
-            # range, list of dates
+
             # can be date objects, dicts, datetime objects, DOY input (YYYY-DOY)
+
+            # date range is provided as dict of strings, dates, or datetimes
             if isinstance(date_range, dict):
                 self._start, self._end = validate_date_range_dict(date_range, start_time, end_time)
+            # date range is provided as list of strings
             elif all(isinstance(i, str) for i in date_range):
                 self._start, self._end = validate_date_range_datestr(date_range, start_time, end_time)
+            # date range is provided as list of datetimes
             elif all(isinstance(i, dt.datetime) for i in date_range):
                 self._start, self._end = validate_date_range_datetime(date_range, start_time, end_time)
+            # date range is provided as list of dates
             elif all(isinstance(i, dt.date) for i in date_range):
                 self._start,  self._end = validate_date_range_date(date_range, start_time, end_time)
             else:
                 # input type is invalid
-                # TODO: Flesh out this TypeError once this class is done
-                raise TypeError("date_range must be a list of one of the following: \n")
+                raise TypeError("date_range must be a list of one of the following: \n"
+                                "   list of strs with one of the following formats: \n"
+                                "       YYYY-MM-DD, YYYY-DOY \n"
+                                "   list of datetime.date or datetime.datetime objects \n"
+                                "   dict with the following keys:\n"
+                                "       start_date: start date, type can be datetime.datetime, datetime.date, or str\n"
+                                "       end_date: end date, type can be datetime.datetime, datetime.date, or str\n"
+                                )
 
         else:
             raise ValueError(
-                "Your date range list is the wrong length. It should have start and end dates only."
+                "Your date range list is the wrong length. It should be of length 2, with start and end dates only."
             )
 
     @property

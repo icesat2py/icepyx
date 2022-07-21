@@ -1,8 +1,8 @@
-import pytest
-import warnings
 import datetime as dt
 import numpy as np
+import pytest
 from shapely.geometry import Polygon
+import warnings
 
 import icepyx.core.validate_inputs_temporal as tp
 

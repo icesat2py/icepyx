@@ -50,7 +50,7 @@ Members of the icepyx community will review your changes and may ask you to make
 icepyx follows the `all-contributors <https://github.com/all-contributors/all-contributors>`_ specification using the contributors bot to add new contributors.
 You are also welcome to add yourself by adding a comment with the text:
 
-.. code-block::
+.. code-block:: none
 
     @all-contributors add @[GitHub_handle] for a, b, and c
 

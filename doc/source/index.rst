@@ -62,8 +62,8 @@ ICESat-2 datasets to enable scientific discovery.
     **Development Guide**
     ^^^^^^^^^^^^^^^^^^^^^
 
-    Have an idea or an ancillary dataset to contribute to icepyx? Go here for in-depth information on best practices 
-    for developing and contributing code to icepyx. 
+    Have an idea or an ancillary dataset to contribute to icepyx? Go here for information on best practices 
+    for developing and contributing to icepyx.
 
     .. link-button:: dev_guide_label
         :type: ref

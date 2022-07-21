@@ -107,15 +107,15 @@ class GenQuery:
 
         self._sp_extent = sp.Spatial(spatial_extent)
 
-        # valiidate and init temporal constraints
+        # validate and init temporal constraints
         if date_range:
             self._temporal = tp.Temporal(date_range, start_time, end_time)
 
     def __str__(self):
-        str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
+        result = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._temporal.start, self._temporal.end
         )
-        return str
+        return result
 
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
@@ -308,6 +308,7 @@ class Query(GenQuery):
     @property
     def spatial(self):
         return self._sp_extent
+
     @property
     def temporal(self):
         return self._temporal
@@ -359,7 +360,7 @@ class Query(GenQuery):
         >>> reg_a.dates
         ['2019-02-20', '2019-02-28']
         """
-        if not hasattr(self, "_start"):
+        if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
         else:
             return [
@@ -382,7 +383,7 @@ class Query(GenQuery):
         >>> reg_a.start_time
         '12:30:30'
         """
-        if not hasattr(self, "_start"):
+        if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
         else:
             return self._temporal.start.strftime("%H:%M:%S")
@@ -402,7 +403,7 @@ class Query(GenQuery):
         >>> reg_a.end_time
         '10:20:20'
         """
-        if not hasattr(self, "_end"):
+        if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
         else:
             return self._temporal.end.strftime("%H:%M:%S")

@@ -1,10 +1,7 @@
-import datetime as dt
 import numpy as np
-import os
 from pathlib import Path
 import pytest
 from shapely.geometry import Polygon
-import warnings
 
 import icepyx.core.validate_inputs_spatial as sp
 
@@ -166,7 +163,7 @@ def test_floatlist_latlon_coords():
 
 
 def test_numpy_list_pairs_polygon():
-    poly_list_pair = sp.Spatial(np.array([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]))
+    poly_list_pair = sp.Spatial(np.ndarray([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]))
     expected_poly_list_pair = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
 
     assert poly_list_pair.extent_type == "polygon"
@@ -175,7 +172,7 @@ def test_numpy_list_pairs_polygon():
 
 
 def test_numpy_tuple_latlon_pairs():
-    poly_tuple_pair = sp.Spatial(np.array([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]))
+    poly_tuple_pair = sp.Spatial(np.ndarray([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]))
     expected_poly_tuple_pair = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
 
     assert poly_tuple_pair.extent_type == "polygon"
@@ -184,7 +181,7 @@ def test_numpy_tuple_latlon_pairs():
 
 
 def test_numpy_intlist_latlon_coords():
-    poly_list = sp.Spatial(np.array([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68]))
+    poly_list = sp.Spatial(np.ndarray([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68]))
     expected_poly_list = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
 
     assert poly_list.extent_type == "polygon"

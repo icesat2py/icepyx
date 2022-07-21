@@ -47,9 +47,10 @@ def test_range_str_yyyymmdd_list_string_start_end():
     assert result.start == expected_range[0]
     assert result.end == expected_range[1]
 
+
 def test_range_str_yyyydoy_list_string_start_end():
     result = tp.Temporal(["2016-14", "2020-40"], "01:00:00", "13:10:01")
-    expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
+    expected_range = ([dt.datetime(2016, 1, 14, 1, 0, 0), dt.datetime(2020, 2, 9, 13, 10, 1)])
     assert result.start == expected_range[0]
     assert result.end == expected_range[1]
 
@@ -63,7 +64,7 @@ def test_range_str_yyyymmdd_dict_string_start_end():
 
 def test_range_str_yyyydoy_dict_string_start_end():
     result = tp.Temporal({"start_date": "2016-14", "end_date": "2020-40"}, "01:00:00", "13:10:01")
-    expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
+    expected_range = ([dt.datetime(2016, 1, 14, 1, 0, 0), dt.datetime(2020, 2, 9, 13, 10, 1)])
     assert result.start == expected_range[0]
     assert result.end == expected_range[1]
 
@@ -79,7 +80,7 @@ def test_range_str_yyyymmdd_list_time_start_end():
 
 def test_range_str_yyyydoy_list_time_start_end():
     result = tp.Temporal(["2016-14", "2020-40"], dt.time(1, 0, 0), dt.time(13, 10, 1))
-    expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
+    expected_range = ([dt.datetime(2016, 1, 14, 1, 0, 0), dt.datetime(2020, 2, 9, 13, 10, 1)])
     assert result.start == expected_range[0]
     assert result.end == expected_range[1]
 
@@ -93,7 +94,7 @@ def test_range_str_yyyymmdd_dict_time_start_end():
 
 def test_range_str_yyyydoy_dict_time_start_end():
     result = tp.Temporal({"start_date": "2016-14", "end_date": "2020-40"}, dt.time(1, 0, 0), dt.time(13, 10, 1))
-    expected_range = ([dt.datetime(2016, 1, 1, 1, 0, 0), dt.datetime(2020, 1, 1, 13, 10, 1)])
+    expected_range = ([dt.datetime(2016, 1, 14, 1, 0, 0), dt.datetime(2020, 2, 9, 13, 10, 1)])
     assert result.start == expected_range[0]
     assert result.end == expected_range[1]
 
@@ -138,7 +139,7 @@ def test_bad_dict_length():
 
 
 def test_range_str_bad_range():
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         result = tp.Temporal({"start_date": "2020-01-01", "end_date": "2016-01-01"})
 
 # NOTE: Not testing bad datetime/time inputs because it is assumed the datetime library

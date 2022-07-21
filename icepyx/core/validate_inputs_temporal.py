@@ -1,17 +1,37 @@
 import datetime as dt
-from dateutil import parser
-import os
 import warnings
-import geopandas as gpd
-import numpy as np
 
-import icepyx.core.APIformatting as apifmt
-import icepyx.core.geospatial as geospatial
 
 '''
 Helper functions for validation of dates
 
 '''
+
+
+def convert_string_to_date(date):
+    """
+    Converts a string to a datetime object.
+    Throws an error if an invalid format is passed in.
+
+    Parameters
+    ----------
+    date: a string containing the date value.
+    Current supported date formats are:
+
+    "YYYY-MM-DD"
+    "YYYY-DOY"
+
+    Returns
+    -------
+    datetime object, representing the date from the string parameter.
+    """
+    for fmt in ('%Y-%m-%d', '%Y-%-j', '%Y-%j'):
+        try:
+            return dt.datetime.strptime(date, fmt)
+        except ValueError:
+            pass
+    # TODO: "complete" this error so it's more informative
+    raise ValueError('no valid date format found')
 
 
 def check_valid_date_range(start, end):
@@ -46,10 +66,10 @@ def validate_date_range_datestr(date_range, start_time, end_time):
 
     """
     # Check if start format is valid
-    _start = parser.parse(date_range[0])
+    _start = convert_string_to_date(date_range[0])
 
     # Check if end format is valid
-    _end = parser.parse(date_range[1])
+    _end = convert_string_to_date(date_range[1])
 
     check_valid_date_range(_start, _end)
 
@@ -163,6 +183,8 @@ def validate_date_range_dict(date_range, start_time, end_time):
                          "start_date: start date, type can be of dt.datetime, dt.date, or string\n"
                          "end_date: end date, type can be of dt.datetime, dt.date, or string")
 
+    check_valid_date_range(convert_string_to_date(_start_date), convert_string_to_date(_end_date))
+
     # start_date
     #   if is datetime
     if isinstance(_start_date, dt.datetime):
@@ -192,7 +214,7 @@ def validate_date_range_dict(date_range, start_time, end_time):
             if isinstance(start_time, dt.datetime):
                 start_time = start_time.time()
 
-        _start_date = parser.parse(_start_date)
+        _start_date = convert_string_to_date(_start_date)
 
         _start_date = dt.datetime.combine(
             _start_date, start_time
@@ -229,7 +251,10 @@ def validate_date_range_dict(date_range, start_time, end_time):
     elif isinstance(_end_date, str):
         if end_time is None:
             end_time = dt.datetime.strptime("23:59:59", "%H:%M:%S").time()
-        _end_date = parser.parse(_end_date)
+        else:
+            if isinstance(end_time, dt.datetime):
+                end_time = end_time.time()
+        _end_date = convert_string_to_date(_end_date)
 
         _end_date = dt.datetime.combine(
             _end_date, end_time
@@ -323,6 +348,8 @@ class Temporal:
     @property
     def end(self):
         return self._end
+
+
 
 
 

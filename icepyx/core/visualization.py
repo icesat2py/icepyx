@@ -152,6 +152,7 @@ class Visualize:
                 cycles=cycles,
                 tracks=tracks,
             )
+            
 
         self.product = is2ref._validate_OA_product(query_obj.product)
 

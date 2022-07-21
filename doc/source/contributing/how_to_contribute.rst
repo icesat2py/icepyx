@@ -56,7 +56,8 @@ You are also welcome to add yourself by adding a comment with the text:
 
 where a, b, etc. is a list of the appropriate `contribution emojis <https://allcontributors.org/docs/en/emoji-key>`_.
 The bot will open a separate PR to add the contributor or new contribution types!
-1. Repeat these steps, creating a new branch and ultimately a pull request for each change.
+
+5. Repeat these steps, creating a new branch and ultimately a pull request for each change.
 More, smaller pull requests are easier to debug and merge than fewer large ones, so create pull requests regularly!
 
     

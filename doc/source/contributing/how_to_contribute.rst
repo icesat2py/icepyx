@@ -16,13 +16,13 @@ Contributing for the first time
 Navigate to the folder on your computer where you want to store icepyx. 
 For example, 
 
-.. code-block::
+.. code-block:: shell
 
     cd /Users/YOURNAMEHERE/documents/ICESat-2
     
 Within this folder, clone the icepyx repo by executing 
 
-.. code-block::
+.. code-block:: shell
 
     git clone https://github.com/icesat2py/icepyx.git
     
@@ -67,7 +67,7 @@ Steps for working with icepyx locally
 Each time you begin working on icepyx (and especially each time you are about to create a new branch),
 update your local copy of icepyx with
 
-.. code-block::
+.. code-block:: shell
 
     git pull https://github.com/icesat2py/icepyx.git
     
@@ -75,7 +75,7 @@ to ensure you have the most up to date version of icepyx in your library.
 
 
 If you are modifying portions of code, you will need to run
-.. code-block::
+.. code-block:: shell
 
     pip install -e.
 
@@ -87,13 +87,13 @@ Considerations with Jupyter Notebook
 
 If you are working in Jupyter Notebook, in addition to manually installing your working version in your Python environment with
 
-.. code-block::
+.. code-block:: shell
 
     pip install -e.
 
 you will need to dynamically reload icepyx within your notebook by executing
    
-.. code-block::
+.. code-block:: python
     
     %load_ext autoreload
     import icepyx as ipx

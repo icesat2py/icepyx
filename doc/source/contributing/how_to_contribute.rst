@@ -11,7 +11,6 @@ For contribution examples, please see contribution guidelines.
 Contributing for the first time
 -------------------------------
 1. If you don't have one, sign up for a GitHub account (visit https://github.com/ and ‘sign up for GitHub account’).
-
 1. Clone the icepyx repo: Open a terminal window. 
 Navigate to the folder on your computer where you want to store icepyx. 
 For example, 
@@ -37,15 +36,12 @@ Every time you contribute
 1. To add new content, you need to create a new branch.
 You can do this on GitHub by clicking the down arrow next to ‘development’ and making a new branch
 (you can give it whatever name you want - the naming doesn't matter much as it will only be a temporary branch). 
-
 1. Navigate to the new branch you created.
 Make any edits or additions on this branch (this can be done locally or on GitHub directly). 
 After you do this, commit your changes and add a descriptive commit message.
-
 1. After committing the changes, push them to GitHub if you were working locally.
 Then, open a pull request to merge your branch into the development branch.
 Members of the icepyx community will review your changes and may ask you to make some more.
-
 1. If this is your PR, someone on the icepyx team should add you to the contributors list.
 icepyx follows the `all-contributors <https://github.com/all-contributors/all-contributors>`_ specification using the contributors bot to add new contributors.
 You are also welcome to add yourself by adding a comment with the text:
@@ -55,7 +51,6 @@ You are also welcome to add yourself by adding a comment with the text:
 
 where a, b, etc. is a list of the appropriate `contribution emojis <https://allcontributors.org/docs/en/emoji-key>`_.
 The bot will open a separate PR to add the contributor or new contribution types!
-
 1. Repeat these steps, creating a new branch and ultimately a pull request for each change.
 More, smaller pull requests are easier to debug and merge than fewer large ones, so create pull requests regularly!
 

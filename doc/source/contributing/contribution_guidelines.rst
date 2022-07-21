@@ -23,12 +23,12 @@ The best way to report a problem, request a feature, find out if others are work
 
 Requesting a Feature
 --------------------
-Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Please give your suggestion a clear title and let us know if this is something you'd like to work on and contribute.
+Find the *Issues* tab at the top of GitHub repository and click the *New Issue* button. Please give your suggestion a clear title and let us know if this is something you'd like to work on and contribute.
 
 
 Reporting a Bug
 ---------------
-Find the *Issues* tab at the top of GitHub repository and click *New Issue* button. Give your issue a clear title and describe the steps required to recreate it in as much detail as possible. If you can, include a small example that reproduces the error. More information and minimal examples will help us resolve issues faster.
+Find the *Issues* tab at the top of GitHub repository and click the *New Issue* button. Give your issue a clear title and describe the steps required to recreate it in as much detail as possible. If you can, include a small example that reproduces the error. More information and minimal examples will help us resolve issues faster.
 
 
 Questions and Help
@@ -39,9 +39,8 @@ Please do not create issues to ask for help. A faster way to reach the community
 Other Resources
 ^^^^^^^^^^^^^^^
 - Check out our :ref:`ICESat-2 Open-Source Resources Guide<resource_ref_label>` for a host of tools and code for getting and working with ICESat-2 data
-- The `2019 ICESat-2 Hackweek Tutorial repo <https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials>`_ and [in progress] `2020 ICESat-2 Hackweek  Tutorial repo <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_ are great resources for learning basic Python and development skills, learning about ICESat-2 data, setting up a computational environment, and finding and analyzing ICESat-2 datasets.
 - A great set of `interactive tutorials <https://learngitbranching.js.org>`_ for learning and practicing using git
-- Let us know about the helpful tools you've found by posting on our discourse forum as indicated above (`Questions and Help`_)!
+- Let us know about the helpful tools you've found (`Questions and Help`_)!
 
 
 Adding Examples

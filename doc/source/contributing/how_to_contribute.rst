@@ -46,7 +46,7 @@ After you do this, commit your changes and add a descriptive commit message.
 Then, open a pull request to merge your branch into the development branch.
 Members of the icepyx community will review your changes and may ask you to make some more.
 
-4. If this is your PR, someone on the icepyx team should add you to the contributors list.
+4. If this is your first PR, someone on the icepyx team should add you to the contributors list.
 icepyx follows the `all-contributors <https://github.com/all-contributors/all-contributors>`_ specification using the contributors bot to add new contributors.
 You are also welcome to add yourself by adding a comment with the text:
 

@@ -112,8 +112,13 @@ class GenQuery:
             self._temporal = tp.Temporal(date_range, start_time, end_time)
 
     def __str__(self):
+<<<<<<< HEAD
         result = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._temporal.start, self._temporal.end
+=======
+        str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
+            self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._start, self._end
+>>>>>>> 758fd23 (attempting to fix spatial tests)
         )
         return result
 
@@ -256,7 +261,7 @@ class Query(GenQuery):
 
     def __str__(self):
         str = "Product {2} v{3}\n{0}\nDate range {1}".format(
-            self.spatial_extent, self.dates, self.product, self.product_version
+            self._sp_extent.spatial_extent, self.dates, self.product, self.product_version
         )
         return str
 
@@ -347,6 +352,7 @@ class Query(GenQuery):
             return ("polygon", self._sp_extent.spatial_extent.exterior.coords.xy)
         else:
             return ("unknown spatial type", None)
+
 
     @property
     def dates(self):

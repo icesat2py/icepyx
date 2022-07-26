@@ -1,9 +1,105 @@
+import geopandas as gpd
 import os
 import warnings
 import numpy as np
+from shapely.geometry import Polygon
 
 import icepyx.core.APIformatting as apifmt
-import icepyx.core.geospatial as geospatial
+
+# DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
+
+
+def geodataframe(extent_type, spatial_extent, file=False):
+    """
+    Return a geodataframe of the spatial extent
+
+    Parameters
+    ----------
+    extent_type : string
+        One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
+
+    spatial_extent : string or list
+        A list containing the spatial extent OR a string containing a filename.
+        If file is False, spatial_extent should be a
+        list of coordinates in decimal degrees of [lower-left-longitude,
+        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
+        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
+
+        If file is True, spatial_extent is a string containing the full file path and filename to the
+        file containing the desired spatial extent.
+
+    file : boolean, default False
+        Indication for whether the spatial_extent string is a filename or coordinate list
+
+    See Also
+    --------
+    icepyx.Query
+
+    Examples
+    --------
+    >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+    >>> gdf = geodataframe(reg_a.spatial.extent_type, reg_a.spatial.spatial_extent)
+    >>> gdf.geometry
+    0   POLYGON ((-55.00000 68.00000, -55.00000 71.000...
+    Name: geometry, dtype: geometry
+    """
+
+    if extent_type == "bounding_box":
+        boxx = [
+            spatial_extent[0],
+            spatial_extent[0],
+            spatial_extent[2],
+            spatial_extent[2],
+            spatial_extent[0],
+        ]
+        boxy = [
+            spatial_extent[1],
+            spatial_extent[3],
+            spatial_extent[3],
+            spatial_extent[1],
+            spatial_extent[1],
+        ]
+        # DevGoal: check to see that the box is actually correctly constructed;
+        # have not checked actual location of test coordinates
+        # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
+        gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx, boxy)))])
+
+    # DevGoal: Currently this if/else within this elif are not tested...
+    # DevGoal: the crs setting and management needs to be improved
+
+    elif extent_type == "polygon" and file == False:
+
+        # if spatial_extent is already a Polygon
+        if isinstance(spatial_extent, Polygon):
+            spatial_extent_geom = spatial_extent
+
+        # else, spatial_extent must be a list of floats (or list of tuples of floats)
+        else:
+            spatial_extent_geom = Polygon(
+                # syntax of dbl colon is- "start:stop:steps"
+                # 0::2 = start at 0, grab every other coord after
+                # 1::2 = start at 1, grab every other coord after
+                zip(spatial_extent[0::2], spatial_extent[1::2])
+            )  # spatial_extent
+        # TODO: check if the crs param should always just be epsg:4326 for everything OR if it should be a parameter
+        gdf = gpd.GeoDataFrame(
+            index=[0], crs="epsg:4326", geometry=[spatial_extent_geom]
+        )
+
+    # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
+    # DevGoal: Currently this elif isn't tested...
+    elif extent_type == "polygon" and file == True:
+        gdf = gpd.read_file(spatial_extent)
+
+    else:
+        raise TypeError(
+            "Your spatial extent type is not an accepted input and a geodataframe cannot be constructed"
+        )
+        # TODO: Get this working again
+        # DevNote: can't get test for this else to pass if print the extent_type in the string...
+        # raise TypeError("Your spatial extent type (" + extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
+
+    return gdf
 
 
 def validate_bounding_box(spatial_extent):
@@ -62,7 +158,7 @@ def validate_polygon_pairs(spatial_extent):
     polygon = [float(i) for i in polygon]
 
     # create a geodataframe object from polygon
-    gdf = geospatial.geodataframe("polygon", polygon, file=False)
+    gdf = geodataframe("polygon", polygon, file=False)
     spatial_extent = gdf.iloc[0].geometry
 
     # TODO: Check if this DevGoal is still ongoing
@@ -102,7 +198,7 @@ def validate_polygon_list(spatial_extent):
     extent_type = "polygon"
     polygon = [float(i) for i in spatial_extent]
 
-    gdf = geospatial.geodataframe(extent_type, polygon, file=False)
+    gdf = geodataframe(extent_type, polygon, file=False)
     spatial_extent = gdf.iloc[0].geometry
 
     return "polygon", spatial_extent, None
@@ -120,7 +216,7 @@ def validate_polygon_file(spatial_extent):
 
     if spatial_extent.split(".")[-1] in ["kml", "shp", "gpkg"]:
         extent_type = "polygon"
-        gdf = geospatial.geodataframe(extent_type, spatial_extent, file=True)
+        gdf = geodataframe(extent_type, spatial_extent, file=True)
 
         # DevGoal: does the below line mandate that only the first polygon will be read?
         # Perhaps we should require files containing only one polygon?

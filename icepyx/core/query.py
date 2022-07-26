@@ -19,9 +19,8 @@ from icepyx.core.granules import Granules as Granules
 # QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
 # from icepyx.core.granules import Granules
 from icepyx.core.variables import Variables as Variables
-import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
-import icepyx.core.validate_inputs_spatial as sp
+import icepyx.core.spatial as sp
 from icepyx.core.visualization import Visualize
 
 
@@ -1087,7 +1086,7 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        gdf = geospatial.geodataframe(self._sp_extent.extent_type, self._sp_extent.spatial_extent)
+        gdf = sp.geodataframe(self._sp_extent.extent_type, self._sp_extent.spatial_extent)
 
         try:
             from shapely.geometry import Polygon

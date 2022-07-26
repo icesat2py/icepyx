@@ -1,4 +1,5 @@
 import datetime as dt
+import geopandas as gpd
 import numpy as np
 import os
 from pathlib import Path
@@ -6,11 +7,13 @@ import pytest
 from shapely.geometry import Polygon
 import warnings
 
-import icepyx.core.validate_inputs_spatial as sp
+import icepyx.core.spatial as sp
+
 
 
 # ######### "Bounding Box" input tests ################################################################################
 # (Note that these ALSO test the @property functions for the class for bounding boxes)
+
 
 def test_intlist_bbox():
     """
@@ -263,3 +266,27 @@ def test_bad_poly_inputfile_name_throws_error():
 def test_bad_poly_inputfile_type_throws_error():
     with pytest.raises(TypeError):
         bad_input = sp.Spatial(str(Path('./icepyx/tests/test_read.py').resolve()))
+
+########## geodataframe ##########
+def test_gdf_from_bbox():
+    obs = sp.geodataframe("bounding_box", [-55, 68, -48, 71])
+    geom = [Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))]
+    exp = gpd.GeoDataFrame(geometry=geom)
+
+    # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
+    assert obs.geometry[0] == exp.geometry[0]
+
+
+# TestQuestions: 1) Do these need to be tested?
+# 2) Is the best way to test them with lengthy inputs and seeing if the gdfs are the same?
+# def test_gdf_from_strpoly():
+
+# def test_gdf_from_filepoly():
+
+
+def test_bad_extent_input():
+    ermsg = "Your spatial extent type is not an accepted input and a geodataframe cannot be constructed"
+    # DevNote: can't get the test to pass if the extent_type is included. Not sure why the strings "don't match"
+    # ermsg = "Your spatial extent type (polybox) is not an accepted input and a geodataframe cannot be constructed"
+    with pytest.raises(TypeError, match=ermsg):
+        sp.geodataframe("polybox", [1, 2, 3, 4])

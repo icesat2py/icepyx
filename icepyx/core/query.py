@@ -112,13 +112,9 @@ class GenQuery:
             self._temporal = tp.Temporal(date_range, start_time, end_time)
 
     def __str__(self):
-<<<<<<< HEAD
+
         result = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._temporal.start, self._temporal.end
-=======
-        str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._start, self._end
->>>>>>> 758fd23 (attempting to fix spatial tests)
         )
         return result
 

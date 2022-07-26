@@ -999,6 +999,7 @@ class Query(GenQuery):
         # and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, "_granules"):
             self.granules
+            
         self._granules.place_order(
             self.CMRparams,
             self.reqparams,
@@ -1008,6 +1009,37 @@ class Query(GenQuery):
             session=self._session,
             geom_filepath=self._sp_extent.extent_file,
         )
+
+        # Place multiple orders, one per granule, if readable_granule_name is used.
+        if "readable_granule_name[]" in self.CMRparams.keys():
+            gran_name_list = self.CMRparams["readable_granule_name[]"]
+            tempCMRparams = self.CMRparams
+            if len(gran_name_list) > 1:
+                print(
+                    "NSIDC only allows ordering of one granule by name at a time; your orders will be placed accordingly."
+                )
+            for gran in gran_name_list:
+                tempCMRparams.update({"readable_granule_name[]": gran})
+                self._granules.place_order(
+                    tempCMRparams,
+                    self.reqparams,
+                    self.subsetparams(**kwargs),
+                    verbose,
+                    subset,
+                    session=self._session,
+                    geom_filepath=self._sp_extent.extent_file,
+                )
+
+        else:
+            self._granules.place_order(
+                self.CMRparams,
+                self.reqparams,
+                self.subsetparams(**kwargs),
+                verbose,
+                subset,
+                session=self._session,
+                geom_filepath=self._sp_extent.extent_file,
+            )
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
     def download_granules(

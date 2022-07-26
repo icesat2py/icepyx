@@ -4,7 +4,6 @@ import warnings
 
 '''
 Helper functions for validation of dates
-
 '''
 
 
@@ -20,6 +19,7 @@ def convert_string_to_date(date):
 
     "YYYY-MM-DD"
     "YYYY-DOY"
+
 
     Returns
     -------
@@ -42,16 +42,13 @@ def check_valid_date_range(start, end):
     """
     Helper function for checking date ranges
     An AssertionError is raised if the start date is later than the end date.
-
     Parameters
     ----------
     start: datetime object containing a start date
     end: datetime object containing an end date
-
     Returns
     -------
     boolean (true if date range is valid, false otherwise)
-
     """
 
     assert start.date() <= end.date(), "Your date range is invalid; end date MUST be on or after the start date."
@@ -62,6 +59,7 @@ def validate_times(start_time, end_time):
     """
     Validates the start and end times passed into __init__ function and returns them as datetime.time objects OR
     None type objects.
+
 
 
     Parameters
@@ -100,15 +98,14 @@ def validate_times(start_time, end_time):
 def validate_date_range_datestr(date_range, start_time, end_time):
 
     """
-
     Validates a date RANGE provided in the form of a list of strings (list must be of length 2).
     Strings must be of formats accepted by validate_inputs_temporal.convert_string_to_date().
+
 
     Returns the start and end datetimes as datetime objects
     by combining the start/end dates with their respective start/end times.
 
     If start and/or end times are not provided, the default options are 00:00:00 and 23:59:59, respectively.
-
     """
     # Check if start format is valid
     _start = convert_string_to_date(date_range[0])
@@ -140,10 +137,10 @@ def validate_date_range_datestr(date_range, start_time, end_time):
 def validate_date_range_datetime(date_range, start_time, end_time):
 
     """
-
     Validates a date RANGE provided in the form of a list of datetime objects (list must be of length 2).
 
     Returns the start and end datetimes as datetime objects.
+
 
     """
 
@@ -164,13 +161,13 @@ def validate_date_range_datetime(date_range, start_time, end_time):
 def validate_date_range_date(date_range, start_time, end_time):
 
     """
-
     Validates a date RANGE provided in the form of a list of Date objects (list must be of length 2).
-
     Returns the start and end datetimes as datetime objects
     by combining the start/end dates with their respective start/end times.
 
     If start and/or end times are not provided, the default options are 00:00:00 and 23:59:59, respectively.
+
+
 
     """
 
@@ -362,8 +359,3 @@ class Temporal:
     @property
     def end(self):
         return self._end
-
-
-
-
-

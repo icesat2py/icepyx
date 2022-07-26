@@ -257,7 +257,7 @@ class Query(GenQuery):
 
     def __str__(self):
         str = "Product {2} v{3}\n{0}\nDate range {1}".format(
-            self._sp_extent.spatial_extent, self.dates, self.product, self.product_version
+            self.spatial_extent, self.dates, self.product, self.product_version
         )
         return str
 

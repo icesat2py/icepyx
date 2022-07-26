@@ -473,9 +473,9 @@ class Query(GenQuery):
         # dictionary of optional CMR parameters
         kwargs = {}
         # temporal CMR parameters
-        if hasattr(self, "_start") and hasattr(self, "_end"):
-            kwargs["start"] = self._start
-            kwargs["end"] = self._end
+        if hasattr(self, "_temporal"):
+            kwargs["start"] = self._temporal.start
+            kwargs["end"] = self._temporal.end
         # granule name CMR parameters (orbital or file name)
         # DevGoal: add to file name search to optional queries
         if hasattr(self, "_readable_granule_name"):
@@ -549,9 +549,9 @@ class Query(GenQuery):
             self._subsetparams = apifmt.Parameters("subset")
 
         # temporal subsetting parameters
-        if hasattr(self, "_start") and hasattr(self, "_end"):
-            kwargs["start"] = self._start
-            kwargs["end"] = self._end
+        if hasattr(self, "temporal"):
+            kwargs["start"] = self._temporal.start
+            kwargs["end"] = self._temporal.end
 
         if self._subsetparams == None and not kwargs:
             return {}

@@ -1,0 +1,92 @@
+{
+  "files": [
+    "CONTRIBUTORS.rst"
+  ],
+  "imageSize": 100,
+  "contributorsSortAlphabetically": true,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "JessicaS11",
+      "name": "Jessica",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11756442?v=4",
+      "profile": "https://github.com/JessicaS11",
+      "contributions": [
+        "bug",
+        "code",
+        "content",
+        "doc",
+        "design",
+        "example",
+        "ideas",
+        "maintenance",
+        "mentoring",
+        "projectManagement",
+        "question",
+        "review"
+      ]
+    },
+    {
+      "login": "zachghiaccio",
+      "name": "Zach Fair",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48361714?v=4",
+      "profile": "https://github.com/zachghiaccio",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "question",
+        "review",
+        "tutorial"
+      ]
+    },
+    {
+      "login": "kelseybisson",
+      "name": "Kelsey Bisson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48059682?v=4",
+      "profile": "http://bisson.work",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "example",
+        "ideas",
+        "mentoring",
+        "question",
+        "review",
+        "tutorial"
+      ]
+    },
+    {
+      "login": "nitin-ravinder",
+      "name": "nitin-ravinder",
+      "avatar_url": "https://avatars.githubusercontent.com/u/86551841?v=4",
+      "profile": "https://github.com/nitin-ravinder",
+      "contributions": [
+        "bug",
+        "review"
+      ]
+    },
+    {
+      "login": "sjh1024",
+      "name": "Sarah Hall",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51332703?v=4",
+      "profile": "https://www.linkedin.com/in/sarah-hall-902a9b150/",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "maintenance",
+        "test"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "icepyx",
+  "projectOwner": "icesat2py",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}

@@ -152,5 +152,3 @@ def temporal(date_range, start_time, end_time):
             raise TypeError("Please enter your end time as a string")
 
     return _start, _end
-
-

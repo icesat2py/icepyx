@@ -6,8 +6,16 @@ icepyx ChangeLog
 This is the list of changes made to icepyx in between each release.
 Full details can be found in the `commit logs <https://github.com/icesat2py/icepyx/commits>`_.
 
-Latest Release (Version 0.6.2)
+Latest Release (Version 0.6.3)
 ------------------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   v0.6.3
+      
+Version 0.6.2
+-------------
 
 .. toctree::
    :maxdepth: 2

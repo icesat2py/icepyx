@@ -58,6 +58,29 @@
         "review",
         "tutorial"
       ]
+    },
+    {
+      "login": "nitin-ravinder",
+      "name": "nitin-ravinder",
+      "avatar_url": "https://avatars.githubusercontent.com/u/86551841?v=4",
+      "profile": "https://github.com/nitin-ravinder",
+      "contributions": [
+        "bug",
+        "review"
+      ]
+    },
+    {
+      "login": "sjh1024",
+      "name": "Sarah Hall",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51332703?v=4",
+      "profile": "https://www.linkedin.com/in/sarah-hall-902a9b150/",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "maintenance",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

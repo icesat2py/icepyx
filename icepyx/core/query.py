@@ -113,7 +113,10 @@ class GenQuery:
 
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._start, self._end
+            self._sp_extent.extent_type,
+            self._sp_extent.spatial_extent,
+            self._start,
+            self._end,
         )
         return str
 
@@ -206,11 +209,6 @@ class Query(GenQuery):
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
     ):
-        # warnings.filterwarnings("always")
-        # warnings.warn("Please note: as of 2020-05-05,
-        # a major reorganization of the core icepyx.query code
-        # may result in errors produced by now depricated functions.
-        # Please see our documentation pages or example notebooks for updates.")
 
         # Check necessary combination of input has been specified
         if (
@@ -1108,7 +1106,9 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        gdf = sp.geodataframe(self._sp_extent.extent_type, self._sp_extent.spatial_extent)
+        gdf = sp.geodataframe(
+            self._sp_extent.extent_type, self._sp_extent.spatial_extent
+        )
 
         try:
             from shapely.geometry import Polygon

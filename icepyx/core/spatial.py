@@ -1,7 +1,7 @@
 import geopandas as gpd
 import numpy as np
 import os
-from pathlib import Path
+from shapely.geometry import box
 from shapely.geometry import Polygon
 import warnings
 
@@ -32,6 +32,13 @@ def geodataframe(extent_type, spatial_extent, file=False):
     file : boolean, default False
         Indication for whether the spatial_extent string is a filename or coordinate list
 
+    Returns
+    -------
+    gdf : GeoDataFrame
+        Returns a GeoPandas GeoDataFrame containing the spatial extent.
+        The GeoDataFrame will have only one entry unless a geospatial file
+        was submitted.
+
     See Also
     --------
     icepyx.Query
@@ -45,25 +52,43 @@ def geodataframe(extent_type, spatial_extent, file=False):
     Name: geometry, dtype: geometry
     """
 
+    xdateline = check_dateline(extent_type, spatial_extent)
+
     if extent_type == "bounding_box":
-        boxx = [
-            spatial_extent[0],
-            spatial_extent[0],
-            spatial_extent[2],
-            spatial_extent[2],
-            spatial_extent[0],
-        ]
-        boxy = [
-            spatial_extent[1],
-            spatial_extent[3],
-            spatial_extent[3],
-            spatial_extent[1],
-            spatial_extent[1],
-        ]
-        # DevGoal: check to see that the box is actually correctly constructed;
-        # have not checked actual location of test coordinates
-        # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
-        gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx, boxy)))])
+        if xdateline == True:
+            cartesian_lons = [i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]]
+            cartesian_spatial_extent = [
+                item
+                for pair in zip(cartesian_lons, spatial_extent[1::2])
+                for item in pair
+            ]
+            bbox = box(*cartesian_spatial_extent)
+        else:
+            bbox = box(*spatial_extent)
+
+        # boxx = [
+        #     spatial_extent[0],
+        #     spatial_extent[0],
+        #     spatial_extent[2],
+        #     spatial_extent[2],
+        #     spatial_extent[0],
+        # ]
+        # boxy = [
+        #     spatial_extent[1],
+        #     spatial_extent[3],
+        #     spatial_extent[3],
+        #     spatial_extent[1],
+        #     spatial_extent[1],
+        # ]
+        # # DevGoal: check to see that the box is actually correctly constructed;
+        # # have not checked actual location of test coordinates
+        # # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
+
+        # boxx, boxy = check_dateline(boxx,boxy)
+
+        # gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx, boxy)))])
+        gdf = gpd.GeoDataFrame(geometry=bbox, crs="epsg:4326")
+        # TODO: add CRS to above line
 
     # DevGoal: Currently this if/else within this elif are not tested...
     # DevGoal: the crs setting and management needs to be improved
@@ -76,6 +101,16 @@ def geodataframe(extent_type, spatial_extent, file=False):
 
         # else, spatial_extent must be a list of floats (or list of tuples of floats)
         else:
+            if xdateline == True:
+                cartesian_lons = [
+                    i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]
+                ]
+                spatial_extent = [
+                    item
+                    for pair in zip(cartesian_lons, spatial_extent[1::2])
+                    for item in pair
+                ]
+
             spatial_extent_geom = Polygon(
                 # syntax of dbl colon is- "start:stop:steps"
                 # 0::2 = start at 0, grab every other coord after
@@ -101,6 +136,42 @@ def geodataframe(extent_type, spatial_extent, file=False):
         # raise TypeError("Your spatial extent type (" + extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
 
     return gdf
+
+
+def check_dateline(extent_type, spatial_extent):
+    """
+    Check if a bounding box or polygon input cross the dateline.
+
+    Parameters
+    ----------
+    extent_type : string
+        One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
+
+    spatial_extent : list
+        A list containing the spatial extent, either a
+        list of coordinates in decimal degrees of [lower-left-longitude,
+        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
+        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
+
+
+    Returns
+    -------
+    boolean
+        indicating whether or not the spatial extent crosses the dateline.
+    """
+
+    if extent_type == "bounding_box":
+        if spatial_extent[0] > spatial_extent[2]:
+            return True
+        else:
+            return False
+    elif extent_type == "polygon":
+        if something:
+            return True
+        else:
+            return False
+    # else:
+    #     pass
 
 
 def validate_bounding_box(spatial_extent):
@@ -210,8 +281,8 @@ def validate_polygon_pairs(spatial_extent):
     polygon = [float(i) for i in polygon]
 
     # create a geodataframe object from polygon
-    gdf = geodataframe("polygon", polygon, file=False)
-    spatial_extent = gdf.iloc[0].geometry
+    # gdf = geodataframe("polygon", polygon, file=False)
+    # spatial_extent = gdf.iloc[0].geometry
 
     # TODO: Check if this DevGoal is still ongoing
 
@@ -219,7 +290,7 @@ def validate_polygon_pairs(spatial_extent):
     # so that it is clockwise (and only contains 1 pole)!!
     # warnings.warn("this type of input is not yet well handled and you may not be able to find data")
 
-    return "polygon", spatial_extent, None
+    return "polygon", polygon, None
 
 
 def validate_polygon_list(spatial_extent):
@@ -272,33 +343,33 @@ def validate_polygon_list(spatial_extent):
                 spatial_extent, len(spatial_extent), spatial_extent[1]
             )
 
-    extent_type = "polygon"
+    # extent_type = "polygon"
     polygon = [float(i) for i in spatial_extent]
 
-    gdf = geodataframe(extent_type, polygon, file=False)
-    spatial_extent = gdf.iloc[0].geometry
+    # gdf = geodataframe(extent_type, polygon, file=False)
+    # spatial_extent = gdf.iloc[0].geometry
 
-    return "polygon", spatial_extent, None
+    return "polygon", polygon, None
 
 
 def validate_polygon_file(spatial_extent):
     """
-       Validates the spatial_extent parameter as a polygon from a file.
+    Validates the spatial_extent parameter as a polygon from a file.
 
-       If the spatial_extent parameter contains a valid polygon,
-       returns a tuple containing the Spatial object parameters for the polygon;
+    If the spatial_extent parameter contains a valid polygon,
+    returns a tuple containing the Spatial object parameters for the polygon;
 
-       otherwise, throw an error containing the reason the polygon/polygon file is invalid.
+    otherwise, throw an error containing the reason the polygon/polygon file is invalid.
 
-       Parameters
-       ----------
-       spatial_extent: string
-                        A string representing a geospatial polygon file (kml, shp, gpkg)
-                        * must provide full file path
-                        * recommended for file to only contain 1 polygon.
-                            * if multiple polygons, only the first polygon is selected at this time.
+    Parameters
+    ----------
+    spatial_extent: string
+                     A string representing a geospatial polygon file (kml, shp, gpkg)
+                     * must provide full file path
+                     * recommended for file to only contain 1 polygon.
+                         * if multiple polygons, only the first polygon is selected at this time.
 
-       """
+    """
 
     # Check if the filename path exists; if not, throw an error
     # print("print statements work \n")

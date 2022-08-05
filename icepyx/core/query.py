@@ -113,8 +113,8 @@ class GenQuery:
 
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self._sp_extent.extent_type,
-            self._sp_extent.spatial_extent,
+            self._spatial.extent_type,
+            self._spatial.extent,
             self._start,
             self._end,
         )
@@ -310,7 +310,9 @@ class Query(GenQuery):
 
         See Also
         --------
-        icepyx.core.Spatial
+        spatial.extent
+        Spatial.extent_type
+        Spatial.extent_file
 
         Examples
         --------
@@ -365,12 +367,12 @@ class Query(GenQuery):
 
         """
 
-        if self._sp_extent.extent_type == "bounding_box":
-            return ("bounding box", self._sp_extent.spatial_extent)
-        elif self._sp_extent.extent_type == "polygon":
+        if self._spatial.extent_type == "bounding_box":
+            return "bounding box", self._spatial.extent
+        elif self._spatial.extent_type == "polygon":
             # return ['polygon', self._spat_extent]
-            # Note: self._sp_extent._spat_extent is a shapely geometry object
-            return ("polygon", self._sp_extent.spatial_extent.exterior.coords.xy)
+            # Note: self._spatial._spat_extent is a shapely geometry object
+            return ("polygon", self._spatial.extent.exterior.coords.xy)
         else:
             return ("unknown spatial type", None)
 
@@ -511,8 +513,8 @@ class Query(GenQuery):
             self._CMRparams.build_params(
                 product=self.product,
                 version=self._version,
-                extent_type=self._sp_extent.extent_type,
-                spatial_extent=self._sp_extent.spatial_extent,
+                extent_type=self._spatial.extent_type,
+                spatial_extent=self._spatial.extent,
                 **kwargs,
             )
 
@@ -584,15 +586,15 @@ class Query(GenQuery):
                 self._subsetparams = apifmt.Parameters("subset")
             if self._sp_extent.extent_file is not None:
                 self._subsetparams.build_params(
-                    geom_filepath=self._sp_extent.extent_file,
-                    extent_type=self._sp_extent.extent_type,
-                    spatial_extent=self._sp_extent.spatial_extent,
+                    geom_filepath=self._spatial.extent_file,
+                    extent_type=self._spatial.extent_type,
+                    spatial_extent=self._spatial.extent,
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
-                    extent_type=self._sp_extent.extent_type,
-                    spatial_extent=self._sp_extent.spatial_extent,
+                    extent_type=self._spatial.extent_type,
+                    spatial_extent=self._spatial.extent,
                     **kwargs,
                 )
 
@@ -1148,7 +1150,7 @@ class Query(GenQuery):
 
             gv.extension("bokeh")
 
-            line_geoms = Polygon(gdf["geometry"][0]).boundary
+            line_geoms = Polygon(getgdf["geometry"][0]).boundary
             bbox_poly = gv.Path(line_geoms).opts(color="red", line_color="red")
             tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
             return tile * bbox_poly

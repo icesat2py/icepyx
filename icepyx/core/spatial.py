@@ -53,6 +53,7 @@ def geodataframe(extent_type, spatial_extent, file=False):
     """
 
     xdateline = check_dateline(extent_type, spatial_extent)
+    print("this should cross the dateline:" + str(xdateline))
 
     if extent_type == "bounding_box":
         if xdateline == True:
@@ -165,8 +166,13 @@ def check_dateline(extent_type, spatial_extent):
             return True
         else:
             return False
+
+    # this works properly, but limits the user to at most 270 deg longitude...
     elif extent_type == "polygon":
-        if something:
+        lonlist = spatial_extent[0:-1:2]
+        if np.any(
+            abs(lonlist[i] - lonlist[i + 1]) > 270 for i in range(len(lonlist) - 1)
+        ):
             return True
         else:
             return False

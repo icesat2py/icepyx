@@ -37,6 +37,8 @@ class GenQuery:
     spatial_extent : list of coordinates or string (i.e. file name)
         Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
         geospatial polygon file.
+        You can submit at most one bounding box or list of polygon coordinates.
+        Geospatial polygon files may contain multiple features (polygons).
         Bounding box coordinates should be provided in decimal degrees as
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
         Polygon coordinates should be provided as coordinate pairs in decimal degrees as

@@ -106,7 +106,7 @@ class GenQuery:
     ):
         # validate & init spatial extent
 
-        self._sp_extent = spat.Spatial(spatial_extent)
+        self._spatial = sp.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
         # TODO: Update this to use Temporal class when completed
@@ -308,40 +308,28 @@ class Query(GenQuery):
     @property
     def spatial(self):
         """
-        Return the Spatial object containing spatial extent information for the query object.
+        Return the spatial object, which provides the underlying funtionality for validating
+        and formatting geospatial objects. The spatial object has several properties to enable
+        user access to the stored spatial extent in multiple formats.
 
         See Also
         --------
-        spatial.extent
+        Spatial.spatial_extent
         Spatial.extent_type
         Spatial.extent_file
 
         Examples
         --------
-        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> print(reg_a.spatial)
-        Extent type: bounding_box
-        Coordinates: [-55.0, 68.0, -48.0, 71.0]
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.spatial # doctest: +SKIP
+        <icepyx.core.spatial.Spatial at [location]>
 
-        >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
-        >>> reg_a_dates = ['2019-02-20','2019-02-28']
-        >>> reg_a = ipx.Query('ATL06', reg_a_poly, reg_a_dates)
-        >>> print(reg_a.spatial)
-        Extent type: polygon
-        Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+        >>> reg_a.spatial.extent()
 
-
-        >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
-        >>> reg_a_dates = ['2019-02-22','2019-02-28']
-        >>> reg_a = ipx.Query('ATL06', aoi, reg_a_dates)
-        >>> print(reg_a.spatial) # doctest: +SKIP
-        Extent type: polygon
-        Source file: ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
-        Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
-
+        >>> reg_a.spatial.extent(gdf=False)
 
         """
-        return self._sp_extent
+        return self._spatial
 
     @property
     def spatial_extent(self):
@@ -374,11 +362,11 @@ class Query(GenQuery):
         """
 
         if self._spatial.extent_type == "bounding_box":
-            return "bounding box", self._spatial.extent
+            return "bounding box", self._spatial.spatial_extent
         elif self._spatial.extent_type == "polygon":
             # return ['polygon', self._spat_extent]
             # Note: self._spatial._spat_extent is a shapely geometry object
-            return ("polygon", self._spatial.extent.exterior.coords.xy)
+            return ("polygon", self._spatial.spatial_extent.exterior.coords.xy)
         else:
             return ("unknown spatial type", None)
 
@@ -590,7 +578,7 @@ class Query(GenQuery):
         else:
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
-            if self._sp_extent.extent_file is not None:
+            if self._spatial.extent_file is not None:
                 self._subsetparams.build_params(
                     geom_filepath=self._spatial.extent_file,
                     extent_type=self._spatial.extent_type,

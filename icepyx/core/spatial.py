@@ -611,3 +611,47 @@ class Spatial:
         ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
         """
         return self._geom_file
+
+    # ----------------------------------------------------------------------
+    # Methods
+
+    def get_input_case(self):
+        """
+        Check the user's spatial input for special cases like multiple polygons, small areas, or prime meridion crossings.
+
+        Note: currently this function detects these special cases.
+        They are not yet handled in all situations.
+
+        Returns
+        -------
+        case_flag : list of strings, default []
+            A list of possible "special cases" that will need to be handled during certain operations.
+            These may include multiple polygons ('multiple_polys'), small areas ('small_spat'),
+            dispersed polygons ('spread_polys'), and prime meridion crossings ('xmeridion').
+
+        Examples
+        --------
+
+        """
+
+        case_flag = []
+
+        # if bbox or polygon input:
+        #     check for prime meridion crossings (note somewhere these aren't checked for file inputs)
+
+        # if len(self._spatial_ext.geometry) > 1:
+        #     case_flag.append("multiple_polys")
+
+        # if
+
+
+"""flow:
+in init, remove any step that converts to a gdf/Polygon automatically. Just check for valid inputs.
+
+then, run the get input cases to see if any of those are applicable
+
+then, work through the rest of the code for when things need to be altered (based on the input type and cases)
+
+also have a geodataframe function that can create those when needed...
+
+"""

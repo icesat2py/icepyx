@@ -66,12 +66,8 @@ def _fmt_spatial(ext_type, extent):
     ext_type : string
         Spatial extent type. Must be one of ['bounding_box', 'polygon'] for data searching
         or one of ['bbox, 'Boundingshape'] for subsetting.
-    extent : list
-        Spatial extent, with input format dependent on the extent type and search.
-        Bounding box (bounding_box, bbox) coordinates should be provided in decimal degrees as
-        [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon (polygon, Boundingshape) coordinates should be provided in decimal degrees as
-        [longitude, latitude, longitude2, latitude2... longituden, latituden].
+    extent : shapely Polygon object
+        Spatial extent, stored as a shapely Polygon object
 
     Returns
     -------
@@ -90,22 +86,24 @@ def _fmt_spatial(ext_type, extent):
         fmt_extent = ",".join(map(str, extent))
 
     elif ext_type == "polygon":
-        # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-        poly = extent.simplify(0.05, preserve_topology=False)
-        poly = orient(poly, sign=1.0)
 
-        # Format dictionary to polygon coordinate pairs for API submission
-        polygon = (
-            ",".join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])
-        ).split(",")
-        extent = [float(i) for i in polygon]
+        # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
+        # poly = extent.simplify(0.05, preserve_topology=False)
+        # poly = orient(poly, sign=1.0)
+
+        # # Format dictionary to polygon coordinate pairs for API submission
+        # polygon = (
+        #     ",".join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])
+        # ).split(",")
+        # extent = [float(i) for i in polygon]
         fmt_extent = ",".join(map(str, extent))
 
     # DevNote: this elif currently does not have a test (seems like it would just be testing geopandas?)
     elif ext_type == "Boundingshape":
-        poly = orient(extent, sign=1.0)
-        fmt_extent = gpd.GeoSeries(poly).to_json()
-        fmt_extent = fmt_extent.replace(" ", "")  # remove spaces for API call
+        # poly = orient(extent, sign=1.0)
+        # fmt_extent = gpd.GeoSeries(poly).to_json()
+        # fmt_extent = fmt_extent.replace(" ", "")  # remove spaces for API call
+        fmt_extent = ",".join(map(str, extent))
 
     return {ext_type: fmt_extent}
 

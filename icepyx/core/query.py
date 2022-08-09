@@ -20,7 +20,7 @@ from icepyx.core.granules import Granules as Granules
 # from icepyx.core.granules import Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.validate_inputs as val
-import icepyx.core.spatial as sp
+import icepyx.core.spatial as spat
 from icepyx.core.visualization import Visualize
 
 
@@ -104,7 +104,7 @@ class GenQuery:
     ):
         # validate & init spatial extent
 
-        self._sp_extent = sp.Spatial(spatial_extent)
+        self._sp_extent = spat.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
         # TODO: Update this to use Temporal class when completed
@@ -1106,7 +1106,7 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        gdf = sp.geodataframe(
+        gdf = spat.geodataframe(
             self._sp_extent.extent_type, self._sp_extent.spatial_extent
         )
 

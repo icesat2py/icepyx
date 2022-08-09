@@ -88,7 +88,7 @@ def geodataframe(extent_type, spatial_extent, file=False):
         # boxx, boxy = check_dateline(boxx,boxy)
 
         # gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx, boxy)))])
-        gdf = gpd.GeoDataFrame(geometry=bbox, crs="epsg:4326")
+        gdf = gpd.GeoDataFrame(geometry=[bbox], crs="epsg:4326")
         # TODO: add CRS to above line
 
     # DevGoal: Currently this if/else within this elif are not tested...
@@ -170,9 +170,19 @@ def check_dateline(extent_type, spatial_extent):
     # this works properly, but limits the user to at most 270 deg longitude...
     elif extent_type == "polygon":
         lonlist = spatial_extent[0:-1:2]
-        if np.any(
-            abs(lonlist[i] - lonlist[i + 1]) > 270 for i in range(len(lonlist) - 1)
+        if (
+            np.any(
+                abs(lonlist[i] - lonlist[i + 1]) > 270 for i in range(len(lonlist) - 1)
+            )
+            == True
         ):
+            print(
+                [
+                    abs(lonlist[i] - lonlist[i + 1]) > 270
+                    for i in range(len(lonlist) - 1)
+                ]
+            )
+            print("printed something?")
             return True
         else:
             return False
@@ -537,21 +547,35 @@ class Spatial:
             )
 
     @property
-    def spatial_extent(self):
+    def extent(self):
         """
         Return the coordinates of the spatial extent of the Spatial object.
 
-        Examples
-        --------
-        >>> reg_a = Spatial([-55, 68, -48, 71])
-        >>> reg_a.spatial_extent
-        [-55.0, 68.0, -48.0, 71.0]
-
-        >>> reg_a = Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
-        >>> reg_a.spatial_extent.exterior.coords.xy
-        (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0]))
+        The result will be returned as an array.
         """
+
         return self._spatial_ext
+
+    @property
+    def extent_as_gdf(self):
+        """
+        Return the spatial extent of the query object as a GeoPandas GeoDataframe.
+
+        Returns
+        -------
+        extent_gdf : GeoDataframe
+            A GeoDataframe containing the spatial region of interest.
+        """
+
+        # TODO: test this
+        if not hasattr(self, "_gdf_spat"):
+            if self._geom_file is not None:
+                self._gdf_spat = geodataframe(
+                    self._ext_type, self._spatial_ext, file=True
+                )
+            else:
+                self._gdf_spat = geodataframe(self._ext_type, self._spatial_ext)
+        return self._gdf_spat
 
     @property
     def extent_type(self):

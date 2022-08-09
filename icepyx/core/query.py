@@ -350,6 +350,10 @@ class Query(GenQuery):
         Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
         Polygon data is [[array of longitudes],[array of corresponding latitudes]].
 
+        Returns
+        -------
+        tuple of length 2
+
         Examples
         --------
 
@@ -1140,18 +1144,21 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        gdf = spat.geodataframe(
-            self._sp_extent.extent_type, self._sp_extent.spatial_extent
-        )
+        # if hasattr(self._spatial, "_geom_file"):
+        #     gdf = sp.geodataframe(self._spatial.extent_type, self._spatial._geom_file, file=True)
+        # else:
+        #     gdf = sp.geodataframe(self._spatial.extent_type, self._spatial.extent)
 
+        getgdf = self._spatial.extent_as_gdf
+        print(getgdf)
         try:
             from shapely.geometry import Polygon
             import geoviews as gv
 
             gv.extension("bokeh")
 
-            line_geoms = Polygon(getgdf["geometry"][0]).boundary
-            bbox_poly = gv.Path(line_geoms).opts(color="red", line_color="red")
+            # line_geoms = Polygon(getgdf["geometry"]).boundary
+            bbox_poly = gv.Path(getgdf["geometry"]).opts(color="red", line_color="red")
             tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
             return tile * bbox_poly
 

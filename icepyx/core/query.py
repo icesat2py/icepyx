@@ -334,7 +334,7 @@ class Query(GenQuery):
         """
 
         if self._sp_extent.extent_type == "bounding_box":
-            return "bounding box", self._sp_extent.spatial_extent
+            return ("bounding box", self._sp_extent.spatial_extent)
         elif self._sp_extent.extent_type == "polygon":
             # return ['polygon', self._spat_extent]
             # Note: self._sp_extent._spat_extent is a shapely geometry object

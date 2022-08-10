@@ -316,15 +316,18 @@ def test_bad_poly_inputfile_type_throws_error():
 
 ########## geodataframe ##########
 
-
 def test_gdf_from_one_bbox():
+
     obs = spat.geodataframe("bounding_box", [-55, 68, -48, 71])
     geom = [Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))]
     exp = gpd.GeoDataFrame(geometry=geom)
 
-    print(obs.geometry[0])
-    print(exp.geometry[0])
+    # print(obs.geometry[0])
+    # print(exp.geometry[0])
+
+    # print(exp)
     # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
+    
     assert obs.geometry[0] == exp.geometry[0]
 
 def test_gdf_from_multi_bbox():
@@ -341,6 +344,7 @@ def test_gdf_from_multi_bbox():
 
 # TestQuestions: 1) Do these need to be tested?
 # 2) Is the best way to test them with lengthy inputs and seeing if the gdfs are the same?
+
 # def test_gdf_from_strpoly_one_simple():
 
 # def test_gdf_from_strpoly_multi_simple():

@@ -1,8 +1,10 @@
+from re import X
 import geopandas as gpd
 import numpy as np
 import os
 from shapely.geometry import box
 from shapely.geometry import Polygon
+from shapely.geometry.polygon import orient
 import warnings
 
 import icepyx.core.APIformatting as apifmt
@@ -10,7 +12,7 @@ import icepyx.core.APIformatting as apifmt
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 
 
-def geodataframe(extent_type, spatial_extent, file=False):
+def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     """
     Return a geodataframe of the spatial extent
 
@@ -52,7 +54,10 @@ def geodataframe(extent_type, spatial_extent, file=False):
     Name: geometry, dtype: geometry
     """
 
-    xdateline = check_dateline(extent_type, spatial_extent)
+    if xdateline is not None:
+        xdateline = xdateline
+    else:
+        xdateline = check_dateline(extent_type, spatial_extent)
     print("this should cross the dateline:" + str(xdateline))
 
     if extent_type == "bounding_box":
@@ -67,22 +72,6 @@ def geodataframe(extent_type, spatial_extent, file=False):
         else:
             bbox = box(*spatial_extent)
 
-        # boxx = [
-        #     spatial_extent[0],
-        #     spatial_extent[0],
-        #     spatial_extent[2],
-        #     spatial_extent[2],
-        #     spatial_extent[0],
-        # ]
-        # boxy = [
-        #     spatial_extent[1],
-        #     spatial_extent[3],
-        #     spatial_extent[3],
-        #     spatial_extent[1],
-        #     spatial_extent[1],
-        # ]
-        # # DevGoal: check to see that the box is actually correctly constructed;
-        # # have not checked actual location of test coordinates
         # # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
 
         # boxx, boxy = check_dateline(boxx,boxy)
@@ -126,6 +115,7 @@ def geodataframe(extent_type, spatial_extent, file=False):
     # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
     # DevGoal: Currently this elif isn't tested...
     elif extent_type == "polygon" and file == True:
+        print(spatial_extent)
         gdf = gpd.read_file(spatial_extent)
 
     else:
@@ -163,7 +153,12 @@ def check_dateline(extent_type, spatial_extent):
 
     if extent_type == "bounding_box":
         if spatial_extent[0] > spatial_extent[2]:
+            warnings.warn(
+                "Your bounding box was identified as crossing the dateline."
+                "If this is not correct, please add `xdateline=False` to your `ipx.Query`"
+            )
             return True
+
         else:
             return False
 
@@ -182,7 +177,10 @@ def check_dateline(extent_type, spatial_extent):
                     for i in range(len(lonlist) - 1)
                 ]
             )
-            print("printed something?")
+            warnings.warn(
+                "Your polygon was identified as crossing the dateline."
+                "If this is not correct, please add `xdateline=False` to your `ipx.Query`"
+            )
             return True
         else:
             return False
@@ -420,7 +418,7 @@ def validate_polygon_file(spatial_extent):
 
 
 class Spatial:
-    def __init__(self, spatial_extent):
+    def __init__(self, spatial_extent, **kwarg):
         """
         Validates input from "spatial_extent" argument, then creates a Spatial object with validated inputs
         as properties of the object.
@@ -455,6 +453,9 @@ class Spatial:
           * _geom_file: If spatial_extent was NOT a filename, this is None.
                         Else, it is the name of the file that _spat_ext is retrieved/validated from.
 
+        xdateline : boolean, default None
+            Optional keyword argument to let user specify whether the spatial input crosses the dateline or not.
+
          See Also
          --------
          icepyx.Query
@@ -486,7 +487,6 @@ class Spatial:
          Extent Type: polygon
          Source file: ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
          Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
-
         """
 
         scalar_types = (int, float, np.int64)
@@ -532,9 +532,18 @@ class Spatial:
 
         # Check if spatial_extent is a string (i.e. a (potential) filename)
         elif isinstance(spatial_extent, str):
-            self._ext_type, self._spatial_ext, self._geom_file = validate_polygon_file(
+            self._ext_type, self._gdf_spat, self._geom_file = validate_polygon_file(
                 spatial_extent
             )
+            self._spatial_ext = self._gdf_spat.geometry.unary_union.boundary
+
+        # check for cross dateline keyword submission
+        if "xdateline" in kwarg.keys():
+            self._xdateln = kwarg["xdateline"]
+            assert self._xdateln in [
+                True,
+                False,
+            ], "Your 'xdateline' value is invalid. It must be boolean."
 
     def __str__(self):
         if self.extent_file is not None:
@@ -568,13 +577,20 @@ class Spatial:
         """
 
         # TODO: test this
+        if hasattr(self, "_xdateln"):
+            xdateln = self._xdateln
+        else:
+            xdateln = None
+
         if not hasattr(self, "_gdf_spat"):
             if self._geom_file is not None:
                 self._gdf_spat = geodataframe(
-                    self._ext_type, self._spatial_ext, file=True
+                    self._ext_type, self._spatial_ext, file=True, xdateline=xdateln
                 )
             else:
-                self._gdf_spat = geodataframe(self._ext_type, self._spatial_ext)
+                self._gdf_spat = geodataframe(
+                    self._ext_type, self._spatial_ext, xdateline=xdateln
+                )
         return self._gdf_spat
 
     @property
@@ -615,6 +631,77 @@ class Spatial:
     # ----------------------------------------------------------------------
     # Methods
 
+    # TODO: can use this docstring as a todo list
+    def fmt_for_CMR(self):
+        """
+        Format the spatial extent for the CMR API.
+
+        CMR spatial inputs must be formatted a specific way.
+        This method formats the given spatial extent to be a valid submission.
+        For large/complex polygons, this includes simplifying the polygon.
+        Coordinates will be properly ordered, and the required string formatting applied.
+        For small regions, a buffer may be added.
+
+        Returns
+        -------
+        string
+            Properly formatted string of spatial data for submission to CMR API.
+
+
+        """
+        # CMR keywords: ['bounding_box', 'polygon']
+        if self._ext_type == "bounding_box":
+            cmr_extent = ",".join(map(str, self._spatial_ext))
+
+        elif self._ext_type == "polygon":
+            poly = self.extent_as_gdf.geometry[0]
+            # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
+            poly = poly.simplify(0.05, preserve_topology=False)
+            poly = orient(poly, sign=1.0)
+
+            # Format dictionary to polygon coordinate pairs for API submission
+            polygon = (
+                ",".join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])
+            ).split(",")
+            extent = [float(i) for i in polygon]
+
+            # TODO: explore how this will be impacted if the polygon is read in from a shapefile and crosses the dateline
+            if hasattr(self, "_xdateln") and self._xdateln == True:
+                neg_lons = [i if i < 181.0 else i - 360 for i in extent[0:-1:2]]
+                extent = [item for pair in zip(neg_lons, extent[1::2]) for item in pair]
+
+            cmr_extent = ",".join(map(str, extent))
+
+        return cmr_extent
+
+    def _fmt_for_EGI(self):
+        """
+        Format the spatial extent input into a subsetting key value for submission to EGI (the NSIDC DAAC API).
+
+        EGI spatial inputs must be formatted a specific way.
+        This method formats the given spatial extent to be a valid submission.
+        For large/complex polygons, this includes simplifying the polygon.
+        Coordinates will be properly ordered, and the required string formatting applied.
+
+        Returns
+        -------
+        string
+            Properly formatted json string for submission to EGI (NSIDC API).
+        """
+
+        # subsetting keywords: ['bbox','Boundingshape'] - these are set in APIformatting
+        if self._ext_type == "bounding_box":
+            egi_extent = ",".join(map(str, self._spatial_ext))
+
+        # TODO: add handling for polygons that cross the dateline
+        elif self._ext_type == "polygon":
+            poly = self.extent_as_gdf.geometry[0]
+            poly = orient(poly, sign=1.0)
+            egi_extent = gpd.GeoSeries(poly).to_json()
+            egi_extent = egi_extent.replace(" ", "")  # remove spaces for API call
+
+        return egi_extent
+
     def get_input_case(self):
         """
         Check the user's spatial input for special cases like multiple polygons, small areas, or prime meridion crossings.
@@ -643,15 +730,3 @@ class Spatial:
         #     case_flag.append("multiple_polys")
 
         # if
-
-
-"""flow:
-in init, remove any step that converts to a gdf/Polygon automatically. Just check for valid inputs.
-
-then, run the get input cases to see if any of those are applicable
-
-then, work through the rest of the code for when things need to be altered (based on the input type and cases)
-
-also have a geodataframe function that can create those when needed...
-
-"""

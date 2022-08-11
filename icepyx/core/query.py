@@ -63,6 +63,14 @@ class GenQuery:
         End time in UTC/Zulu (24 hour clock). If None, use default.
         TODO: check for time in date-range date-time object, if that's used for input.
 
+    Arguments
+    ---------
+    xdateline : boolean, default None
+        Keyword argument to enforce spatial inputs that cross the dateline.
+
+        WARNING: This will allow your request to be properly submitted and visualized.
+        However, this flag WILL NOT automatically correct for incorrectly ordered spatial inputs.
+
     Examples
     --------
     Init with bounding box
@@ -102,11 +110,18 @@ class GenQuery:
     """
 
     def __init__(
-        self, spatial_extent=None, date_range=None, start_time=None, end_time=None
+        self,
+        spatial_extent=None,
+        date_range=None,
+        start_time=None,
+        end_time=None,
+        **kwargs,
     ):
         # validate & init spatial extent
-
-        self._spatial = sp.Spatial(spatial_extent)
+        if "xdateline" in kwargs.keys():
+            self._spatial = sp.Spatial(spatial_extent, xdateline=kwargs["xdateline"])
+        else:
+            self._spatial = sp.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
         # TODO: Update this to use Temporal class when completed
@@ -210,6 +225,7 @@ class Query(GenQuery):
         cycles=None,
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
+        **kwargs,
     ):
 
         # Check necessary combination of input has been specified
@@ -235,7 +251,7 @@ class Query(GenQuery):
 
         self._prod = is2ref._validate_product(product)
 
-        super().__init__(spatial_extent, date_range, start_time, end_time)
+        super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
         self._version = val.prod_version(self.latest_version(), version)
 
@@ -343,6 +359,8 @@ class Query(GenQuery):
         Returns
         -------
         tuple of length 2
+        First tuple element is the spatial type ("bounding box" or "polygon").
+        Second tuple element is the spatial extent as a list of coordinates.
 
         Examples
         --------
@@ -359,16 +377,16 @@ class Query(GenQuery):
         # NOTE Is this where we wanted to put the file-based test/example?
         # The test file path is: examples/supporting_files/simple_test_poly.gpkg
 
+        See Also
+        --------
+        Spatial.extent
+        Spatial.extent_type
+
         """
 
-        if self._spatial.extent_type == "bounding_box":
-            return "bounding box", self._spatial.spatial_extent
-        elif self._spatial.extent_type == "polygon":
-            # return ['polygon', self._spat_extent]
-            # Note: self._spatial._spat_extent is a shapely geometry object
-            return ("polygon", self._spatial.spatial_extent.exterior.coords.xy)
-        else:
-            return ("unknown spatial type", None)
+        return (self._spatial._ext_type, self._spatial._spatial_ext)
+
+        # return self._spatial.extent
 
     @property
     def dates(self):
@@ -508,7 +526,7 @@ class Query(GenQuery):
                 product=self.product,
                 version=self._version,
                 extent_type=self._spatial.extent_type,
-                spatial_extent=self._spatial.extent,
+                spatial_extent=self._spatial.fmt_for_CMR(),
                 **kwargs,
             )
 
@@ -582,13 +600,13 @@ class Query(GenQuery):
                 self._subsetparams.build_params(
                     geom_filepath=self._spatial.extent_file,
                     extent_type=self._spatial.extent_type,
-                    spatial_extent=self._spatial.extent,
+                    spatial_extent=self._spatial._fmt_for_EGI(),
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
                     extent_type=self._spatial.extent_type,
-                    spatial_extent=self._spatial.extent,
+                    spatial_extent=self._spatial._fmt_for_EGI(),
                     **kwargs,
                 )
 
@@ -1156,7 +1174,7 @@ class Query(GenQuery):
             world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
             f, ax = plt.subplots(1, figsize=(12, 6))
             world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
-            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
+            getgdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
             plt.show()
 
     def visualize_elevation(self):

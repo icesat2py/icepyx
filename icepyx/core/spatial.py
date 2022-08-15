@@ -470,7 +470,7 @@ class Spatial:
         [-55.0, 68.0, -48.0, 71.0]
 
         >>> reg_a = Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
-        >>> reg_a.spatial_extent.geometry
+        >>> reg_a.spatial_extent.exterior.coords.xy
         0   POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
         """
         return self._spatial_ext

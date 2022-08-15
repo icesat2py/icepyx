@@ -391,12 +391,9 @@ class Spatial:
 
          >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
          >>> reg_a = Spatial(aoi)
-         >>> print(reg_a)
+         >>> print(reg_a) # doctest: +SKIP
          Extent Type: polygon
-         Source file: str(
-                        Path(
-                            "./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg"
-                        ).resolve()
+         Source file: ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
          Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
 
         """
@@ -505,7 +502,7 @@ class Spatial:
 
 
         >>> reg_a = Spatial(str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()))
-        >>> reg_a.extent_file
+        >>> reg_a.extent_file # doctest: +SKIP
         ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
         """
         return self._geom_file

@@ -470,8 +470,8 @@ class Spatial:
         [-55.0, 68.0, -48.0, 71.0]
 
         >>> reg_a = Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
-        >>> reg_a.spatial_extent
-        POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+        >>> reg_a.spatial_extent.geometry
+        0   POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
         """
         return self._spatial_ext
 
@@ -484,11 +484,11 @@ class Spatial:
         --------
         >>> reg_a = Spatial([-55, 68, -48, 71])
         >>> reg_a.extent_type
-        bounding_box
+        'bounding_box'
 
         >>> reg_a = Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
         >>> reg_a.extent_type
-        polygon
+        'polygon'
         """
         return self._ext_type
 
@@ -502,7 +502,7 @@ class Spatial:
         --------
         >>> reg_a = Spatial([-55, 68, -48, 71])
         >>> reg_a.extent_file
-        None
+
 
         >>> reg_a = Spatial(str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()))
         >>> reg_a.extent_file

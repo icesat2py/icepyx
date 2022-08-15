@@ -108,16 +108,17 @@ def validate_bounding_box(spatial_extent):
     Validates the spatial_extent parameter as a bounding box.
 
     If the spatial_extent is a valid bounding box, returns a tuple containing the Spatial object parameters
-    for the bounding box;
-
-    otherwise, throw an error containing the reason the bounding box is invalid.
+    for the bounding box; otherwise, throw an error containing the reason the bounding box is invalid.
 
     Parameters
     ----------
-    spatial_extent: a list OR np.ndarray of strings, numerics, or tuples
-                    representing bounding box coordinates in decimal degrees,
-                    provided in the order: [lower-left-longitude, lower-left-latitude,
-                                            upper-right-longitude, upper-right-latitude])
+    spatial_extent: list or np.ndarray
+                    A list or np.ndarray of strings, numerics, or tuples
+                    representing bounding box coordinates in decimal degrees.
+
+                    Must be provided in the order:
+                    [lower-left-longitude, lower-left-latitude,
+                    upper-right-longitude, upper-right-latitude])
     """
 
     # Latitude must be between -90 and 90 (inclusive); check for this here
@@ -165,10 +166,11 @@ def validate_polygon_pairs(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: a list OR np.ndarray of tuples
-                    representing polygon coordinate pairs in decimal degrees in the order:
-                        [(longitude1, latitude1), (longitude2, latitude2), ...
-                          ... (longitude_n,latitude_n), (longitude1,latitude1)]
+    spatial_extent: list or np.ndarray
+
+                    A list or np.ndarray of tuples representing polygon coordinate pairs in decimal degrees in the order:
+                    [(longitude1, latitude1), (longitude2, latitude2), ...
+                    ... (longitude_n,latitude_n), (longitude1,latitude1)]
 
                     If the first and last coordinate pairs are NOT equal,
                     the polygon will be closed automatically (last point will be connected to the first point).
@@ -231,10 +233,11 @@ def validate_polygon_list(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: a list OR np.ndarray of strings, numerics, or tuples representing polygon coordinates,
-                     provided as coordinate pairs in decimal degrees in the order:
-                        [longitude1, latitude1, longitude2, latitude2, ...
-                          ... longitude_n,latitude_n, longitude1,latitude1]
+    spatial_extent: list or np.ndarray
+                    A list or np.ndarray of strings, numerics, or tuples representing polygon coordinates,
+                    provided as coordinate pairs in decimal degrees in the order:
+                    [longitude1, latitude1, longitude2, latitude2, ...
+                    ... longitude_n,latitude_n, longitude1,latitude1]
 
                     If the first and last coordinate pairs are NOT equal,
                     the polygon will be closed automatically (last point will be connected to the first point).
@@ -289,9 +292,10 @@ def validate_polygon_file(spatial_extent):
 
        Parameters
        ----------
-       spatial_extent: string representing a geospatial polygon file (kml, shp, gpkg)
-                        * full file path
-                        * recommended for file to only contain 1 polygon;
+       spatial_extent: string
+                        A string representing a geospatial polygon file (kml, shp, gpkg)
+                        * must provide full file path
+                        * recommended for file to only contain 1 polygon.
                             * if multiple polygons, only the first polygon is selected at this time.
 
        """

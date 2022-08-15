@@ -306,11 +306,11 @@ class Query(GenQuery):
     @property
     def spatial(self):
         """
-        Returns the Spatial object containing spatial extent information for the query object.
+        Return the Spatial object containing spatial extent information for the query object.
 
         See Also
         --------
-        icepyx.Spatial
+        icepyx.core.Spatial
 
         Examples
         --------
@@ -318,7 +318,7 @@ class Query(GenQuery):
         >>> print(reg_a.spatial)
         Extent type: bounding_box
         Coordinates: [-55.0, 68.0, -48.0, 71.0]
-
+        # Should return "None"
 
         >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
         >>> reg_a_dates = ['2019-02-20','2019-02-28']

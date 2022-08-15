@@ -1,6 +1,7 @@
 import geopandas as gpd
 import numpy as np
 import os
+from pathlib import Path
 from shapely.geometry import Polygon
 import warnings
 
@@ -103,6 +104,21 @@ def geodataframe(extent_type, spatial_extent, file=False):
 
 
 def validate_bounding_box(spatial_extent):
+    """
+    Validates the spatial_extent parameter as a bounding box.
+
+    If the spatial_extent is a valid bounding box, returns a tuple containing the Spatial object parameters
+    for the bounding box;
+
+    otherwise, throw an error containing the reason the bounding box is invalid.
+
+    Parameters
+    ----------
+    spatial_extent: a list OR np.ndarray of strings, numerics, or tuples
+                    representing bounding box coordinates in decimal degrees,
+                    provided in the order: [lower-left-longitude, lower-left-latitude,
+                                            upper-right-longitude, upper-right-latitude])
+    """
 
     # Latitude must be between -90 and 90 (inclusive); check for this here
     assert (
@@ -139,6 +155,24 @@ def validate_bounding_box(spatial_extent):
 
 
 def validate_polygon_pairs(spatial_extent):
+    """
+    Validates the spatial_extent parameter as a polygon from coordinate pairs.
+
+    If the spatial_extent is a valid polygon, returns a tuple containing the Spatial object parameters
+    for the polygon;
+
+    otherwise, throw an error containing the reason the polygon is invalid.
+
+    Parameters
+    ----------
+    spatial_extent: a list OR np.ndarray of tuples
+                    representing polygon coordinate pairs in decimal degrees in the order:
+                        [(longitude1, latitude1), (longitude2, latitude2), ...
+                          ... (longitude_n,latitude_n), (longitude1,latitude1)]
+
+                    If the first and last coordinate pairs are NOT equal,
+                    the polygon will be closed automatically (last point will be connected to the first point).
+    """
     # Check to make sure all elements of spatial_extent are coordinate pairs; if not, raise an error
     if any(len(i) != 2 for i in spatial_extent):
         raise ValueError(
@@ -187,6 +221,24 @@ def validate_polygon_pairs(spatial_extent):
 
 
 def validate_polygon_list(spatial_extent):
+    """
+    Validates the spatial_extent parameter as a polygon from a list of coordinates.
+
+    If the spatial_extent is a valid polygon, returns a tuple containing the Spatial object parameters
+    for the polygon;
+
+    otherwise, throw an error containing the reason the polygon is invalid.
+
+    Parameters
+    ----------
+    spatial_extent: a list OR np.ndarray of strings, numerics, or tuples representing polygon coordinates,
+                     provided as coordinate pairs in decimal degrees in the order:
+                        [longitude1, latitude1, longitude2, latitude2, ...
+                          ... longitude_n,latitude_n, longitude1,latitude1]
+
+                    If the first and last coordinate pairs are NOT equal,
+                    the polygon will be closed automatically (last point will be connected to the first point).
+    """
 
     # user-entered polygon as a single list of lon and lat coordinates
     assert len(spatial_extent) >= 8, "Your spatial extent polygon has too few vertices"
@@ -227,6 +279,22 @@ def validate_polygon_list(spatial_extent):
 
 
 def validate_polygon_file(spatial_extent):
+    """
+       Validates the spatial_extent parameter as a polygon from a file.
+
+       If the spatial_extent parameter contains a valid polygon,
+       returns a tuple containing the Spatial object parameters for the polygon;
+
+       otherwise, throw an error containing the reason the polygon/polygon file is invalid.
+
+       Parameters
+       ----------
+       spatial_extent: string representing a geospatial polygon file (kml, shp, gpkg)
+                        * full file path
+                        * recommended for file to only contain 1 polygon;
+                            * if multiple polygons, only the first polygon is selected at this time.
+
+       """
 
     # Check if the filename path exists; if not, throw an error
     # print("print statements work \n")
@@ -266,8 +334,10 @@ class Spatial:
         Validates input from "spatial_extent" argument, then creates a Spatial object with validated inputs
         as properties of the object.
 
-        Parameters:
+        Spatial objects are to be used by icepyx.Query to store validated geospatial information required by the Query.
 
+        Parameters
+        ----------
         spatial_extent : expects one of the following:
             * list of coordinates
              (stored in a list of strings, list of numerics, list of tuples, OR np.ndarray) as one of:
@@ -285,12 +355,50 @@ class Spatial:
             * string representing a geospatial polygon file (kml, shp, gpkg)
                 * full file path
                 * recommended for file to only contain 1 polygon; if multiple, only selects first polygon rn
-        Properties:
+
+          Properties
+          ----------
           * _spat_ext: The validated/formatted input from spatial_extent,
                        represents coordinates of a polygon or bounding box.
           * _ext_type: The extent type of spatial_extent, one of: polygon, bounding_box
           * _geom_file: If spatial_extent was NOT a filename, this is None.
                         Else, it is the name of the file that _spat_ext is retrieved/validated from.
+
+         See Also
+         --------
+         icepyx.Query
+
+
+         Examples
+         --------
+         Initializing Spatial with a bounding box.
+
+         >>> reg_a_bbox = [-55, 68, -48, 71]
+         >>> reg_a = Spatial(reg_a_bbox)
+         >>> print(reg_a)
+         Extent type: bounding_box
+         Coordinates: [-55.0, 68.0, -48.0, 71.0]
+
+         Initializing Query with a list of polygon vertex coordinate pairs.
+
+         >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
+         >>> reg_a = Spatial(reg_a_poly)
+         >>> print(reg_a)
+         Extent type: polygon
+         Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+
+         Initializing Query with a geospatial polygon file.
+
+         >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+         >>> reg_a = Spatial(aoi)
+         >>> print(reg_a)
+         Extent Type: polygon
+         Source file: str(
+                        Path(
+                            "./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg"
+                        ).resolve()
+         Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+
         """
 
         scalar_types = (int, float, np.int64)
@@ -346,18 +454,58 @@ class Spatial:
                 self._ext_type, self._geom_file, self._spatial_ext
             )
         else:
-            return "Extent type: {0} \nCoordinates: {1}".format(
+            return "Extent type: {0}\nCoordinates: {1}".format(
                 self._ext_type, self._spatial_ext
             )
 
     @property
     def spatial_extent(self):
+        """
+        Return the coordinates of the spatial extent of the Spatial object.
+
+        Examples
+        --------
+        >>> reg_a = Spatial([-55, 68, -48, 71])
+        >>> reg_a.spatial_extent
+        [-55.0, 68.0, -48.0, 71.0]
+
+        >>> reg_a = Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
+        >>> reg_a.spatial_extent
+        POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+        """
         return self._spatial_ext
 
     @property
     def extent_type(self):
+        """
+        Return the extent type of the Spatial object as a string.
+
+        Examples
+        --------
+        >>> reg_a = Spatial([-55, 68, -48, 71])
+        >>> reg_a.extent_type
+        bounding_box
+
+        >>> reg_a = Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
+        >>> reg_a.extent_type
+        polygon
+        """
         return self._ext_type
 
     @property
     def extent_file(self):
+        """
+        Return the path to the geospatial polygon file containing the Spatial object's spatial extent.
+        If the spatial extent did not come from a file (i.e. user entered list of coordinates), this will return None.
+
+        Examples
+        --------
+        >>> reg_a = Spatial([-55, 68, -48, 71])
+        >>> reg_a.extent_file
+        None
+
+        >>> reg_a = Spatial(str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()))
+        >>> reg_a.extent_file
+        str(Path("./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg").resolve()
+        """
         return self._geom_file

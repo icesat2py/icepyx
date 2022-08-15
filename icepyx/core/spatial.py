@@ -471,7 +471,7 @@ class Spatial:
 
         >>> reg_a = Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
         >>> reg_a.spatial_extent.exterior.coords.xy
-        0   POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+        (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0]))
         """
         return self._spatial_ext
 
@@ -506,6 +506,6 @@ class Spatial:
 
         >>> reg_a = Spatial(str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()))
         >>> reg_a.extent_file
-        str(Path("./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg").resolve()
+        ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
         """
         return self._geom_file

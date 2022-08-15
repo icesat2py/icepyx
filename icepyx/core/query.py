@@ -333,10 +333,7 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06', aoi, reg_a_dates)
         >>> print(reg_a.spatial)
         Extent Type: polygon
-        Source file: str(
-                        Path(
-                            "./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg"
-                        ).resolve()
+        Source file: ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
         Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
 
 

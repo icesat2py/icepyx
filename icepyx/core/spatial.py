@@ -427,7 +427,7 @@ class Spatial:
 
         Parameters
         ----------
-        spatial_extent : expects one of the following:
+        spatial_extent : list or string
             * list of coordinates
              (stored in a list of strings, list of numerics, list of tuples, OR np.ndarray) as one of:
                 * bounding box
@@ -445,16 +445,16 @@ class Spatial:
                 * full file path
                 * recommended for file to only contain 1 polygon; if multiple, only selects first polygon rn
 
-          Properties
-          ----------
-          * _spat_ext: The validated/formatted input from spatial_extent,
-                       represents coordinates of a polygon or bounding box.
-          * _ext_type: The extent type of spatial_extent, one of: polygon, bounding_box
-          * _geom_file: If spatial_extent was NOT a filename, this is None.
-                        Else, it is the name of the file that _spat_ext is retrieved/validated from.
-
         xdateline : boolean, default None
             Optional keyword argument to let user specify whether the spatial input crosses the dateline or not.
+
+        Properties
+        ----------
+        * _spat_ext: The validated/formatted input from spatial_extent,
+                    represents coordinates of a polygon or bounding box.
+        * _ext_type: The extent type of spatial_extent, one of: polygon, bounding_box
+        * _geom_file: If spatial_extent was NOT a filename, this is None.
+                    Else, it is the name of the file that _spat_ext is retrieved/validated from.
 
          See Also
          --------

@@ -1044,7 +1044,7 @@ class Query(GenQuery):
                     verbose,
                     subset,
                     session=self._session,
-                    geom_filepath=self.spatial.extent_file,
+                    geom_filepath=self._spatial._geom_file,
                 )
 
         else:
@@ -1055,7 +1055,7 @@ class Query(GenQuery):
                 verbose,
                 subset,
                 session=self._session,
-                geom_filepath=self.spatial.extent_file,
+                geom_filepath=self._spatial._geom_file,
             )
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!

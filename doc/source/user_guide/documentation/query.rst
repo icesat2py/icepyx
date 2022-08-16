@@ -29,6 +29,7 @@ Attributes
    Query.granules
    Query.order_vars
    Query.reqparams
+   Query.spatial
    Query.spatial_extent
    Query.subsetparams
    Query.start_time

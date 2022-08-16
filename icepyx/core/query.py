@@ -12,16 +12,15 @@ import warnings
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.Earthdata import Earthdata
-import icepyx.core.geospatial as geospatial
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules as Granules
 import icepyx.core.is2ref as is2ref
 # QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
 # from icepyx.core.granules import Granules
-import icepyx.core.validate_inputs as val
-import icepyx.core.validate_inputs_spatial as sp
-import icepyx.core.validate_inputs_temporal as tp
 from icepyx.core.variables import Variables as Variables
+import icepyx.core.validate_inputs as val
+import icepyx.core.spatial as spat
+import icepyx.core.temporal as tp
 from icepyx.core.visualization import Visualize
 
 
@@ -53,14 +52,12 @@ class GenQuery:
         The required date format is 'YYYY-MM-DD' strings, where
         YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
         Currently, a list of specific dates (rather than a range) is not accepted.
-        TODO: accept date-time objects, dicts (with 'start_date' and 'end_date' keys), and DOY inputs.
         TODO: allow searches with a list of dates, rather than a range.
     start_time : HH:mm:ss, default 00:00:00
         Start time in UTC/Zulu (24 hour clock). If None, use default.
-        TODO: check for time in date-range date-time object, if that's used for input.
     end_time : HH:mm:ss, default 23:59:59
         End time in UTC/Zulu (24 hour clock). If None, use default.
-        TODO: check for time in date-range date-time object, if that's used for input.
+
 
     Examples
     --------
@@ -104,15 +101,14 @@ class GenQuery:
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
         # validate & init spatial extent
+        self._sp_extent = spat.Spatial(spatial_extent)
 
-        self._sp_extent = sp.Spatial(spatial_extent)
-
-        # validate and init temporal constraints
+        # valiidate and init temporal constraints
+        # TODO: Update this to use Temporal class when completed
         if date_range:
             self._temporal = tp.Temporal(date_range, start_time, end_time)
 
     def __str__(self):
-
         result = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._temporal.start, self._temporal.end
         )
@@ -305,14 +301,45 @@ class Query(GenQuery):
         '001'
         """
         return self._version
-
-    @property
-    def spatial(self):
-        return self._sp_extent
-
     @property
     def temporal(self):
         return self._temporal
+
+    @property
+    def spatial(self):
+        """
+        Return the Spatial object containing spatial extent information for the query object.
+
+        See Also
+        --------
+        icepyx.core.Spatial
+
+        Examples
+        --------
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> print(reg_a.spatial)
+        Extent type: bounding_box
+        Coordinates: [-55.0, 68.0, -48.0, 71.0]
+
+        >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
+        >>> reg_a_dates = ['2019-02-20','2019-02-28']
+        >>> reg_a = ipx.Query('ATL06', reg_a_poly, reg_a_dates)
+        >>> print(reg_a.spatial)
+        Extent type: polygon
+        Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+
+
+        >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+        >>> reg_a_dates = ['2019-02-22','2019-02-28']
+        >>> reg_a = ipx.Query('ATL06', aoi, reg_a_dates)
+        >>> print(reg_a.spatial) # doctest: +SKIP
+        Extent type: polygon
+        Source file: ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
+        Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+
+
+        """
+        return self._sp_extent
 
     @property
     def spatial_extent(self):
@@ -341,7 +368,7 @@ class Query(GenQuery):
         """
 
         if self._sp_extent.extent_type == "bounding_box":
-            return "bounding box", self._sp_extent.spatial_extent
+            return ("bounding box", self._sp_extent.spatial_extent)
         elif self._sp_extent.extent_type == "polygon":
             # return ['polygon', self._spat_extent]
             # Note: self._sp_extent._spat_extent is a shapely geometry object
@@ -1030,6 +1057,7 @@ class Query(GenQuery):
                     subset,
                     session=self._session,
                     geom_filepath=self._sp_extent.extent_file,
+
                 )
 
         else:
@@ -1124,7 +1152,10 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        gdf = geospatial.geodataframe(self._sp_extent.extent_type, self._sp_extent.spatial_extent)
+        gdf = spat.geodataframe(
+            self._sp_extent.extent_type, self._sp_extent.spatial_extent
+        )
+
 
         try:
             from shapely.geometry import Polygon

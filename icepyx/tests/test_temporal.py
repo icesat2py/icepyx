@@ -4,7 +4,7 @@ import pytest
 from shapely.geometry import Polygon
 import warnings
 
-import icepyx.core.validate_inputs_temporal as tp
+import icepyx.core.temporal as tp
 
 # ####### BEGIN DATE RANGE TESTS ###########
 
@@ -139,7 +139,7 @@ def test_bad_dict_length():
 
 
 def test_range_str_bad_range():
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         result = tp.Temporal({"start_date": "2020-01-01", "end_date": "2016-01-01"})
 
 # NOTE: Not testing bad datetime/time inputs because it is assumed the datetime library

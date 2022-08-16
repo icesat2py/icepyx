@@ -104,5 +104,3 @@ def tracks(track):
             warnings.warn("Listed Reference Ground Track is not available")
 
         return track_list
-
-

@@ -1,6 +1,7 @@
 import geopandas as gpd
 import numpy as np
 import os
+from pathlib import Path
 from shapely.geometry import box, Polygon
 from shapely.geometry.polygon import orient
 import warnings
@@ -46,7 +47,7 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     Examples
     --------
     >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-    >>> gdf = geodataframe(reg_a.spatial.extent_type, reg_a.spatial.spatial_extent)
+    >>> gdf = geodataframe(reg_a.spatial.extent_type, reg_a.spatial.extent)
     >>> gdf.geometry
     0   POLYGON ((-55.00000 68.00000, -55.00000 71.000...
     Name: geometry, dtype: geometry
@@ -151,6 +152,9 @@ def check_dateline(extent_type, spatial_extent):
 
     if extent_type == "bounding_box":
         if spatial_extent[0] > spatial_extent[2]:
+            # if lower left lon is larger then upper right lon, verify the values are crossing the dateline
+            assert spatial_extent[0] - 360 <= spatial_extent[2]
+
             warnings.warn(
                 "Your bounding box was identified as crossing the dateline."
                 "If this is not correct, please add `xdateline=False` to your `ipx.Query`"
@@ -475,7 +479,7 @@ class Spatial:
          >>> reg_a = Spatial(reg_a_poly)
          >>> print(reg_a)
          Extent type: polygon
-         Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+         Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
 
          Initializing Query with a geospatial polygon file.
 
@@ -484,7 +488,7 @@ class Spatial:
          >>> print(reg_a) # doctest: +SKIP
          Extent Type: polygon
          Source file: ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
-         Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+         Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
         """
 
         scalar_types = (int, float, np.int64)
@@ -629,7 +633,7 @@ class Spatial:
 
 
         >>> reg_a = Spatial(str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()))
-        >>> reg_a.extent_file # doctest: +SKIP
+        >>> reg_a.extent_file
         ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
         """
         return self._geom_file

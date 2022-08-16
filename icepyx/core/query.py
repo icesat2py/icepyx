@@ -90,7 +90,7 @@ class GenQuery:
     >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
     >>> print(reg_a)
     Extent type: polygon
-    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Coordinates: [-55 68, -55 71, -48 71, -48 68, -55 68]
     Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
 
     Initializing Query with a geospatial polygon file.
@@ -100,7 +100,7 @@ class GenQuery:
     >>> reg_a = GenQuery(aoi, reg_a_dates)
     >>> print(reg_a)
     Extent type: polygon
-    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Coordinates: [-55 68, -55 71, -48 71, -48 68, -55 68]
     Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
 
     See Also
@@ -131,7 +131,7 @@ class GenQuery:
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._spatial._ext_type,
-            self._spatial._extent,
+            self._spatial._spatial_ext,
             self._start,
             self._end,
         )
@@ -183,7 +183,7 @@ class Query(GenQuery):
     >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v005
-    ('bounding box', [-55.0, 68.0, -48.0, 71.0])
+    ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
     Date range ['2019-02-20', '2019-02-28']
 
     Initializing Query with a list of polygon vertex coordinate pairs.
@@ -192,9 +192,7 @@ class Query(GenQuery):
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_poly, reg_a_dates)
     >>> reg_a.spatial_extent
-    ('polygon',
-    (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]),
-    array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
+    ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
 
     Initializing Query with a geospatial polygon file.
 
@@ -203,7 +201,7 @@ class Query(GenQuery):
     >>> reg_a = Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v005
-    ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
+    ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
     Date range ['2019-02-22', '2019-02-28']
 
     See Also
@@ -337,11 +335,13 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial # doctest: +SKIP
         <icepyx.core.spatial.Spatial at [location]>
 
         >>> print(reg_a.spatial)
+        Extent type: bounding_box
+        Coordinates: [-55.0, 68.0, -48.0, 71.0]
 
         """
         return self._spatial
@@ -353,7 +353,8 @@ class Query(GenQuery):
         Spatial extent is returned as an input type (which depends on how
         you initially entered your spatial data) followed by the geometry data.
         Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon data is [[array of longitudes],[array of corresponding latitudes]].
+        Polygon data is [longitude1, latitude1, longitude2, latitude2,
+                        ... longitude_n,latitude_n, longitude1,latitude1].
 
         Returns
         -------
@@ -367,11 +368,11 @@ class Query(GenQuery):
         # Note: coordinates returned as float, not int
         >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
-        ('bounding box', [-55.0, 68.0, -48.0, 71.0])
+        ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
 
         >>> reg_a = Query('ATL06',[(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
-        ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
+        ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
 
         # NOTE Is this where we wanted to put the file-based test/example?
         # The test file path is: examples/supporting_files/simple_test_poly.gpkg
@@ -380,6 +381,7 @@ class Query(GenQuery):
         --------
         Spatial.extent
         Spatial.extent_type
+        Spatial.extent_as_gdf
 
         """
 

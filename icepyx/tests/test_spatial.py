@@ -27,28 +27,28 @@ def test_intlist_bbox():
     intlist_bbox = spat.Spatial([-64, 66, -55, 72])
     assert intlist_bbox._ext_type == "bounding_box"
     assert intlist_bbox._geom_file is None
-    assert intlist_bbox.spatial_extent == [-64, 66, -55, 72]
+    assert intlist_bbox.extent == [-64, 66, -55, 72]
 
 
 def test_floatlist_bbox():
     floatlist_bbox = spat.Spatial([-64.2, 66.2, -55.5, 72.5])
     assert floatlist_bbox._ext_type == "bounding_box"
     assert floatlist_bbox._geom_file is None
-    assert floatlist_bbox.spatial_extent == [-64.2, 66.2, -55.5, 72.5]
+    assert floatlist_bbox.extent == [-64.2, 66.2, -55.5, 72.5]
 
 
 def test_numpyfloatarray_bbox():
     npfloat_bbox = spat.Spatial(np.array([-64.2, 66.2, -55.5, 72.5]))
     assert npfloat_bbox._ext_type == "bounding_box"
     assert npfloat_bbox._geom_file is None
-    assert npfloat_bbox.spatial_extent == [-64.2, 66.2, -55.5, 72.5]
+    assert npfloat_bbox.extent == [-64.2, 66.2, -55.5, 72.5]
 
 
 def test_numpyfloatlist_bbox():
     npfloatlist_bbox = spat.Spatial(list(np.array([-64.2, 66.2, -55.5, 72.5])))
     assert npfloatlist_bbox._ext_type == "bounding_box"
     assert npfloatlist_bbox._geom_file is None
-    assert npfloatlist_bbox.spatial_extent == [-64.2, 66.2, -55.5, 72.5]
+    assert npfloatlist_bbox.extent == [-64.2, 66.2, -55.5, 72.5]
 
 
 # ########## Bounding Box Assertion Error tests #############################################
@@ -140,7 +140,7 @@ def test_list_pairs_polygon():
 
     assert poly_list_pair._ext_type == "polygon"
     assert poly_list_pair._geom_file is None
-    assert poly_list_pair.spatial_extent == expected_poly_list_pair
+    assert poly_list_pair.extent == expected_poly_list_pair
 
 
 def test_tuple_latlon_pairs():
@@ -153,7 +153,7 @@ def test_tuple_latlon_pairs():
 
     assert poly_tuple_pair._ext_type == "polygon"
     assert poly_tuple_pair._geom_file is None
-    assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
+    assert poly_tuple_pair.extent == expected_poly_tuple_pair
 
 
 def test_intlist_latlon_coords():
@@ -161,11 +161,11 @@ def test_intlist_latlon_coords():
     expected_poly_list = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
-    print(poly_list.spatial_extent)
+    print(poly_list.extent)
     print(expected_poly_list)
     assert poly_list._ext_type == "polygon"
     assert poly_list._geom_file is None
-    assert poly_list.spatial_extent == expected_poly_list
+    assert poly_list.extent == expected_poly_list
 
 
 def test_floatlist_latlon_coords():
@@ -178,7 +178,7 @@ def test_floatlist_latlon_coords():
 
     assert poly_float_list._ext_type == "polygon"
     assert poly_float_list._geom_file is None
-    assert poly_float_list.spatial_extent == expected_poly_float_list
+    assert poly_float_list.extent == expected_poly_float_list
 
 
 # numpy array tests
@@ -194,7 +194,7 @@ def test_numpy_list_pairs_polygon():
 
     assert poly_list_pair._ext_type == "polygon"
     assert poly_list_pair._geom_file is None
-    assert poly_list_pair.spatial_extent == expected_poly_list_pair
+    assert poly_list_pair.extent == expected_poly_list_pair
 
 
 def test_numpy_tuple_latlon_pairs():
@@ -207,7 +207,7 @@ def test_numpy_tuple_latlon_pairs():
 
     assert poly_tuple_pair._ext_type == "polygon"
     assert poly_tuple_pair._geom_file is None
-    assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
+    assert poly_tuple_pair.extent == expected_poly_tuple_pair
 
 
 def test_numpy_intlist_latlon_coords():
@@ -218,7 +218,7 @@ def test_numpy_intlist_latlon_coords():
 
     assert poly_list._ext_type == "polygon"
     assert poly_list._geom_file is None
-    assert poly_list.spatial_extent == expected_poly_list
+    assert poly_list.extent == expected_poly_list
 
 
 # ########## Polygon Assertion Error tests ############################################################
@@ -253,7 +253,7 @@ def test_poly_tuple_latlon_pairs_auto_close():
 
     assert poly_tuple_pair._ext_type == "polygon"
     assert poly_tuple_pair._geom_file is None
-    assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
+    assert poly_tuple_pair.extent == expected_poly_tuple_pair
 
 
 def test_poly_list_auto_close():
@@ -264,7 +264,7 @@ def test_poly_list_auto_close():
 
     assert poly_list._ext_type == "polygon"
     assert poly_list._geom_file is None
-    assert poly_list.spatial_extent == expected_poly_list
+    assert poly_list.extent == expected_poly_list
 
 
 # ###################### END POLYGON NO FILE TESTS ####################################################################
@@ -281,7 +281,7 @@ def test_poly_file_simple_one_poly():
         )
     )
     # print(poly_from_file._geom_file)
-    # print(poly_from_file.spatial_extent)
+    # print(poly_from_file.extent)
     expected_poly = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
 
     assert poly_from_file._ext_type == "polygon"
@@ -291,7 +291,7 @@ def test_poly_file_simple_one_poly():
             "./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg"
         ).resolve()
     )
-    assert poly_from_file.spatial_extent == expected_poly
+    assert poly_from_file.extent == expected_poly
 
 
 """

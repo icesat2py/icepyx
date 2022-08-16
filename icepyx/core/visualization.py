@@ -155,11 +155,11 @@ class Visualize:
 
         self.product = is2ref._validate_OA_product(query_obj.product)
 
-        if query_obj.extent_type == "bounding_box":
-            self.bbox = query_obj._spat_extent
+        if query_obj.spatial.extent_type == "bounding_box":
+            self.bbox = query_obj.spatial.spatial_extent
 
         else:
-            mrc_bound = query_obj._spat_extent.minimum_rotated_rectangle
+            mrc_bound = query_obj.spatial.spatial_extent.minimum_rotated_rectangle
             # generate bounding box
             lonmin = min(mrc_bound.exterior.coords.xy[0])
             lonmax = max(mrc_bound.exterior.coords.xy[0])

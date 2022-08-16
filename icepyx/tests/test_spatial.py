@@ -18,36 +18,36 @@ def test_intlist_bbox():
     """
     Bounding box test w/ a List of valid Int inputs.
     * tests that expected output is correct
-    * tests that extent_type is correct
+    * tests that _ext_type is correct
 
     """
     # initialize Spatial object;
     # it should call validate_spatial function correctly
 
     intlist_bbox = spat.Spatial([-64, 66, -55, 72])
-    assert intlist_bbox.extent_type == "bounding_box"
-    assert intlist_bbox.extent_file is None
+    assert intlist_bbox._ext_type == "bounding_box"
+    assert intlist_bbox._geom_file is None
     assert intlist_bbox.spatial_extent == [-64, 66, -55, 72]
 
 
 def test_floatlist_bbox():
     floatlist_bbox = spat.Spatial([-64.2, 66.2, -55.5, 72.5])
-    assert floatlist_bbox.extent_type == "bounding_box"
-    assert floatlist_bbox.extent_file is None
+    assert floatlist_bbox._ext_type == "bounding_box"
+    assert floatlist_bbox._geom_file is None
     assert floatlist_bbox.spatial_extent == [-64.2, 66.2, -55.5, 72.5]
 
 
 def test_numpyfloatarray_bbox():
     npfloat_bbox = spat.Spatial(np.array([-64.2, 66.2, -55.5, 72.5]))
-    assert npfloat_bbox.extent_type == "bounding_box"
-    assert npfloat_bbox.extent_file is None
+    assert npfloat_bbox._ext_type == "bounding_box"
+    assert npfloat_bbox._geom_file is None
     assert npfloat_bbox.spatial_extent == [-64.2, 66.2, -55.5, 72.5]
 
 
 def test_numpyfloatlist_bbox():
     npfloatlist_bbox = spat.Spatial(list(np.array([-64.2, 66.2, -55.5, 72.5])))
-    assert npfloatlist_bbox.extent_type == "bounding_box"
-    assert npfloatlist_bbox.extent_file is None
+    assert npfloatlist_bbox._ext_type == "bounding_box"
+    assert npfloatlist_bbox._geom_file is None
     assert npfloatlist_bbox.spatial_extent == [-64.2, 66.2, -55.5, 72.5]
 
 
@@ -138,8 +138,8 @@ def test_list_pairs_polygon():
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
 
-    assert poly_list_pair.extent_type == "polygon"
-    assert poly_list_pair.extent_file is None
+    assert poly_list_pair._ext_type == "polygon"
+    assert poly_list_pair._geom_file is None
     assert poly_list_pair.spatial_extent == expected_poly_list_pair
 
 
@@ -151,8 +151,8 @@ def test_tuple_latlon_pairs():
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
 
-    assert poly_tuple_pair.extent_type == "polygon"
-    assert poly_tuple_pair.extent_file is None
+    assert poly_tuple_pair._ext_type == "polygon"
+    assert poly_tuple_pair._geom_file is None
     assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
 
 
@@ -163,8 +163,8 @@ def test_intlist_latlon_coords():
     )
     print(poly_list.spatial_extent)
     print(expected_poly_list)
-    assert poly_list.extent_type == "polygon"
-    assert poly_list.extent_file is None
+    assert poly_list._ext_type == "polygon"
+    assert poly_list._geom_file is None
     assert poly_list.spatial_extent == expected_poly_list
 
 
@@ -176,8 +176,8 @@ def test_floatlist_latlon_coords():
         [[-55.0, 68.7], [-55.0, 71], [-48, 71], [-48, 68.7], [-55.0, 68.7]]
     )
 
-    assert poly_float_list.extent_type == "polygon"
-    assert poly_float_list.extent_file is None
+    assert poly_float_list._ext_type == "polygon"
+    assert poly_float_list._geom_file is None
     assert poly_float_list.spatial_extent == expected_poly_float_list
 
 
@@ -192,8 +192,8 @@ def test_numpy_list_pairs_polygon():
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
 
-    assert poly_list_pair.extent_type == "polygon"
-    assert poly_list_pair.extent_file is None
+    assert poly_list_pair._ext_type == "polygon"
+    assert poly_list_pair._geom_file is None
     assert poly_list_pair.spatial_extent == expected_poly_list_pair
 
 
@@ -205,8 +205,8 @@ def test_numpy_tuple_latlon_pairs():
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
 
-    assert poly_tuple_pair.extent_type == "polygon"
-    assert poly_tuple_pair.extent_file is None
+    assert poly_tuple_pair._ext_type == "polygon"
+    assert poly_tuple_pair._geom_file is None
     assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
 
 
@@ -216,8 +216,8 @@ def test_numpy_intlist_latlon_coords():
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
 
-    assert poly_list.extent_type == "polygon"
-    assert poly_list.extent_file is None
+    assert poly_list._ext_type == "polygon"
+    assert poly_list._geom_file is None
     assert poly_list.spatial_extent == expected_poly_list
 
 
@@ -251,8 +251,8 @@ def test_poly_tuple_latlon_pairs_auto_close():
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
 
-    assert poly_tuple_pair.extent_type == "polygon"
-    assert poly_tuple_pair.extent_file is None
+    assert poly_tuple_pair._ext_type == "polygon"
+    assert poly_tuple_pair._geom_file is None
     assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
 
 
@@ -262,8 +262,8 @@ def test_poly_list_auto_close():
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
 
-    assert poly_list.extent_type == "polygon"
-    assert poly_list.extent_file is None
+    assert poly_list._ext_type == "polygon"
+    assert poly_list._geom_file is None
     assert poly_list.spatial_extent == expected_poly_list
 
 
@@ -280,13 +280,13 @@ def test_poly_file_simple_one_poly():
             ).resolve()
         )
     )
-    # print(poly_from_file.extent_file)
+    # print(poly_from_file._geom_file)
     # print(poly_from_file.spatial_extent)
     expected_poly = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
 
-    assert poly_from_file.extent_type == "polygon"
-    assert poly_from_file.extent_file is not None
-    assert poly_from_file.extent_file == str(
+    assert poly_from_file._ext_type == "polygon"
+    assert poly_from_file._geom_file is not None
+    assert poly_from_file._geom_file == str(
         Path(
             "./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg"
         ).resolve()
@@ -313,8 +313,8 @@ def test_bad_poly_inputfile_type_throws_error():
         bad_input = spat.Spatial(str(Path("./icepyx/tests/test_read.py").resolve()))
 
 
-
 ########## geodataframe ##########
+
 
 def test_gdf_from_one_bbox():
 
@@ -327,8 +327,9 @@ def test_gdf_from_one_bbox():
 
     # print(exp)
     # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
-    
+
     assert obs.geometry[0] == exp.geometry[0]
+
 
 def test_gdf_from_multi_bbox():
     obs = spat.geodataframe("bounding_box", [-55, 68, -48, 71])
@@ -339,7 +340,6 @@ def test_gdf_from_multi_bbox():
     print(exp.geometry[0])
     # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
     assert obs.geometry[0] == exp.geometry[0]
-
 
 
 # TestQuestions: 1) Do these need to be tested?

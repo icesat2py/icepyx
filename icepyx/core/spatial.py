@@ -1,9 +1,7 @@
-from re import X
 import geopandas as gpd
 import numpy as np
 import os
-from shapely.geometry import box
-from shapely.geometry import Polygon
+from shapely.geometry import box, Polygon
 from shapely.geometry.polygon import orient
 import warnings
 
@@ -223,18 +221,18 @@ def validate_bounding_box(spatial_extent):
         -180 <= spatial_extent[2] <= 180
     ), "Invalid longitude value (must be between -180 and 180, inclusive)"
 
-    # If the longitude's signs differ...
-    if np.sign(spatial_extent[0]) != np.sign(spatial_extent[2]):
-        # If the lower left longitude is less than the upper right longitude, throw an error
-        assert spatial_extent[0] >= spatial_extent[2], "Invalid bounding box longitudes"
+    # # If the longitude's signs differ...
+    # if np.sign(spatial_extent[0]) != np.sign(spatial_extent[2]):
+    #     # If the lower left longitude is less than the upper right longitude, throw an error
+    #     assert spatial_extent[0] >= spatial_extent[2], "Invalid bounding box longitudes"
 
-    # Else, if longitude signs are the same...
-    else:
-        # If the lower left longitude is greater than the upper right longitude, throw an error
-        assert spatial_extent[0] <= spatial_extent[2], "Invalid bounding box longitudes"
+    # # Else, if longitude signs are the same...
+    # else:
+    #     # If the lower left longitude is greater than the upper right longitude, throw an error
+    #     assert spatial_extent[0] <= spatial_extent[2], "Invalid bounding box longitudes"
 
-    # If the lower left latitude is greater than the upper right latitude, throw an error
-    assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
+    # # If the lower left latitude is greater than the upper right latitude, throw an error
+    # assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
     spatial_extent = [float(x) for x in spatial_extent]
 
     return "bounding_box", spatial_extent, None
@@ -450,7 +448,7 @@ class Spatial:
 
         Properties
         ----------
-        * _spat_ext: The validated/formatted input from spatial_extent,
+        * extent: The validated/formatted input from spatial_extent,
                     represents coordinates of a polygon or bounding box.
         * _ext_type: The extent type of spatial_extent, one of: polygon, bounding_box
         * _geom_file: If spatial_extent was NOT a filename, this is None.
@@ -546,7 +544,7 @@ class Spatial:
             ], "Your 'xdateline' value is invalid. It must be boolean."
 
     def __str__(self):
-        if self.extent_file is not None:
+        if self._geom_file is not None:
             return "Extent type: {0}\nSource file: {1}\nCoordinates: {2}".format(
                 self._ext_type, self._geom_file, self._spatial_ext
             )
@@ -561,6 +559,13 @@ class Spatial:
         Return the coordinates of the spatial extent of the Spatial object.
 
         The result will be returned as an array.
+        For input geometry files with multiple features, the boundary of the
+        the unary union of all features is returned.
+
+        Returns
+        -------
+        spatial extent : array
+            An array of bounding coordinates.
         """
 
         return self._spatial_ext
@@ -608,6 +613,7 @@ class Spatial:
         >>> reg_a.extent_type
         'polygon'
         """
+
         return self._ext_type
 
     @property
@@ -674,7 +680,7 @@ class Spatial:
 
         return cmr_extent
 
-    def _fmt_for_EGI(self):
+    def fmt_for_EGI(self):
         """
         Format the spatial extent input into a subsetting key value for submission to EGI (the NSIDC DAAC API).
 

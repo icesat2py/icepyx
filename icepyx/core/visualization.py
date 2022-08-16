@@ -155,7 +155,7 @@ class Visualize:
 
         self.product = is2ref._validate_OA_product(query_obj.product)
 
-        if query_obj.spatial.extent_type == "bounding_box":
+        if query_obj._spatial._ext_type == "bounding_box":
             self.bbox = query_obj.spatial.spatial_extent
 
         else:
@@ -411,7 +411,9 @@ class Visualize:
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
 
-        assert OA_para_list, "Your search returned no results; try different search parameters"
+        assert (
+            OA_para_list
+        ), "Your search returned no results; try different search parameters"
 
         url_number = len(OA_para_list)
 

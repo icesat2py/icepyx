@@ -119,9 +119,9 @@ class GenQuery:
     ):
         # validate & init spatial extent
         if "xdateline" in kwargs.keys():
-            self._spatial = sp.Spatial(spatial_extent, xdateline=kwargs["xdateline"])
+            self._spatial = spat.Spatial(spatial_extent, xdateline=kwargs["xdateline"])
         else:
-            self._spatial = sp.Spatial(spatial_extent)
+            self._spatial = spat.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
         # TODO: Update this to use Temporal class when completed
@@ -130,8 +130,8 @@ class GenQuery:
 
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self._spatial.extent_type,
-            self._spatial.extent,
+            self._spatial._ext_type,
+            self._spatial._extent,
             self._start,
             self._end,
         )
@@ -330,9 +330,10 @@ class Query(GenQuery):
 
         See Also
         --------
-        Spatial.spatial_extent
-        Spatial.extent_type
-        Spatial.extent_file
+        spatial.Spatial.spatial_extent
+        spatial.Spatial.extent_type
+        spatial.Spatial.extent_file
+        spatial.Spatial
 
         Examples
         --------
@@ -340,9 +341,7 @@ class Query(GenQuery):
         >>> reg_a.spatial # doctest: +SKIP
         <icepyx.core.spatial.Spatial at [location]>
 
-        >>> reg_a.spatial.extent()
-
-        >>> reg_a.spatial.extent(gdf=False)
+        >>> print(reg_a.spatial)
 
         """
         return self._spatial
@@ -385,8 +384,6 @@ class Query(GenQuery):
         """
 
         return (self._spatial._ext_type, self._spatial._spatial_ext)
-
-        # return self._spatial.extent
 
     @property
     def dates(self):
@@ -525,7 +522,7 @@ class Query(GenQuery):
             self._CMRparams.build_params(
                 product=self.product,
                 version=self._version,
-                extent_type=self._spatial.extent_type,
+                extent_type=self._spatial._ext_type,
                 spatial_extent=self._spatial.fmt_for_CMR(),
                 **kwargs,
             )
@@ -596,17 +593,17 @@ class Query(GenQuery):
         else:
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
-            if self._spatial.extent_file is not None:
+            if self._spatial._geom_file is not None:
                 self._subsetparams.build_params(
-                    geom_filepath=self._spatial.extent_file,
-                    extent_type=self._spatial.extent_type,
-                    spatial_extent=self._spatial._fmt_for_EGI(),
+                    geom_filepath=self._spatial._geom_file,
+                    extent_type=self._spatial._ext_type,
+                    spatial_extent=self._spatial.fmt_for_EGI(),
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
-                    extent_type=self._spatial.extent_type,
-                    spatial_extent=self._spatial._fmt_for_EGI(),
+                    extent_type=self._spatial._ext_type,
+                    spatial_extent=self._spatial.fmt_for_EGI(),
                     **kwargs,
                 )
 
@@ -1152,13 +1149,9 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        # if hasattr(self._spatial, "_geom_file"):
-        #     gdf = sp.geodataframe(self._spatial.extent_type, self._spatial._geom_file, file=True)
-        # else:
-        #     gdf = sp.geodataframe(self._spatial.extent_type, self._spatial.extent)
 
-        getgdf = self._spatial.extent_as_gdf
-        print(getgdf)
+        gdf = self._spatial.extent_as_gdf
+        print(gdf)
         try:
             from shapely.geometry import Polygon
             import geoviews as gv
@@ -1166,7 +1159,7 @@ class Query(GenQuery):
             gv.extension("bokeh")
 
             # line_geoms = Polygon(getgdf["geometry"]).boundary
-            bbox_poly = gv.Path(getgdf["geometry"]).opts(color="red", line_color="red")
+            bbox_poly = gv.Path(gdf["geometry"]).opts(color="red", line_color="red")
             tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
             return tile * bbox_poly
 
@@ -1174,7 +1167,7 @@ class Query(GenQuery):
             world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
             f, ax = plt.subplots(1, figsize=(12, 6))
             world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
-            getgdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
+            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
             plt.show()
 
     def visualize_elevation(self):

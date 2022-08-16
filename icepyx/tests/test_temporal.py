@@ -139,7 +139,7 @@ def test_bad_dict_length():
 
 
 def test_range_str_bad_range():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         result = tp.Temporal({"start_date": "2020-01-01", "end_date": "2016-01-01"})
 
 # NOTE: Not testing bad datetime/time inputs because it is assumed the datetime library

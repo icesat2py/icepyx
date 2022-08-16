@@ -71,13 +71,8 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
         else:
             bbox = box(*spatial_extent)
 
-        # # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
-
-        # boxx, boxy = check_dateline(boxx,boxy)
-
-        # gdf = gpd.GeoDataFrame(geometry=[Polygon(list(zip(boxx, boxy)))])
+        # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
         gdf = gpd.GeoDataFrame(geometry=[bbox], crs="epsg:4326")
-        # TODO: add CRS to above line
 
     # DevGoal: Currently this if/else within this elif are not tested...
     # DevGoal: the crs setting and management needs to be improved
@@ -186,8 +181,6 @@ def check_dateline(extent_type, spatial_extent):
             return True
         else:
             return False
-    # else:
-    #     pass
 
 
 def validate_bounding_box(spatial_extent):
@@ -225,18 +218,6 @@ def validate_bounding_box(spatial_extent):
         -180 <= spatial_extent[2] <= 180
     ), "Invalid longitude value (must be between -180 and 180, inclusive)"
 
-    # # If the longitude's signs differ...
-    # if np.sign(spatial_extent[0]) != np.sign(spatial_extent[2]):
-    #     # If the lower left longitude is less than the upper right longitude, throw an error
-    #     assert spatial_extent[0] >= spatial_extent[2], "Invalid bounding box longitudes"
-
-    # # Else, if longitude signs are the same...
-    # else:
-    #     # If the lower left longitude is greater than the upper right longitude, throw an error
-    #     assert spatial_extent[0] <= spatial_extent[2], "Invalid bounding box longitudes"
-
-    # # If the lower left latitude is greater than the upper right latitude, throw an error
-    # assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
     spatial_extent = [float(x) for x in spatial_extent]
 
     return "bounding_box", spatial_extent, None
@@ -296,16 +277,6 @@ def validate_polygon_pairs(spatial_extent):
     # make all elements of polygon floats
     polygon = [float(i) for i in polygon]
 
-    # create a geodataframe object from polygon
-    # gdf = geodataframe("polygon", polygon, file=False)
-    # spatial_extent = gdf.iloc[0].geometry
-
-    # TODO: Check if this DevGoal is still ongoing
-
-    # #DevGoal: properly format this input type (and any polygon type)
-    # so that it is clockwise (and only contains 1 pole)!!
-    # warnings.warn("this type of input is not yet well handled and you may not be able to find data")
-
     return "polygon", polygon, None
 
 
@@ -359,11 +330,7 @@ def validate_polygon_list(spatial_extent):
                 spatial_extent, len(spatial_extent), spatial_extent[1]
             )
 
-    # extent_type = "polygon"
     polygon = [float(i) for i in spatial_extent]
-
-    # gdf = geodataframe(extent_type, polygon, file=False)
-    # spatial_extent = gdf.iloc[0].geometry
 
     return "polygon", polygon, None
 
@@ -450,13 +417,6 @@ class Spatial:
         xdateline : boolean, default None
             Optional keyword argument to let user specify whether the spatial input crosses the dateline or not.
 
-        Properties
-        ----------
-        * extent: The validated/formatted input from spatial_extent,
-                    represents coordinates of a polygon or bounding box.
-        * _ext_type: The extent type of spatial_extent, one of: polygon, bounding_box
-        * _geom_file: If spatial_extent was NOT a filename, this is None.
-                    Else, it is the name of the file that _spat_ext is retrieved/validated from.
 
          See Also
          --------
@@ -711,32 +671,3 @@ class Spatial:
             egi_extent = egi_extent.replace(" ", "")  # remove spaces for API call
 
         return egi_extent
-
-    def get_input_case(self):
-        """
-        Check the user's spatial input for special cases like multiple polygons, small areas, or prime meridion crossings.
-
-        Note: currently this function detects these special cases.
-        They are not yet handled in all situations.
-
-        Returns
-        -------
-        case_flag : list of strings, default []
-            A list of possible "special cases" that will need to be handled during certain operations.
-            These may include multiple polygons ('multiple_polys'), small areas ('small_spat'),
-            dispersed polygons ('spread_polys'), and prime meridion crossings ('xmeridion').
-
-        Examples
-        --------
-
-        """
-
-        case_flag = []
-
-        # if bbox or polygon input:
-        #     check for prime meridion crossings (note somewhere these aren't checked for file inputs)
-
-        # if len(self._spatial_ext.geometry) > 1:
-        #     case_flag.append("multiple_polys")
-
-        # if

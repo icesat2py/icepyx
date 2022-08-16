@@ -1,12 +1,8 @@
 # Generate and format information for submitting to API (CMR and NSIDC)
 
 import datetime as dt
-import fiona
-import geopandas as gpd
 import pprint
 
-
-fiona.drvsupport.supported_drivers["LIBKML"] = "rw"
 
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display

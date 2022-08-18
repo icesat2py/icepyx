@@ -81,6 +81,19 @@
         "maintenance",
         "test"
       ]
+    },
+    {
+      "login": "RomiP",
+      "name": "Romina Piunno",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17185856?v=4",
+      "profile": "https://github.com/RomiP",
+      "contributions": [
+        "code",
+        "ideas",
+        "mentoring",
+        "review",
+        "tutorial"
+      ]
     }
   ],
   "contributorsPerLine": 7,

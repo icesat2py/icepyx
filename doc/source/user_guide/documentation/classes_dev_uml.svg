@@ -68,7 +68,7 @@
 <text text-anchor="start" x="764.5" y="-932.3" font-family="Times,serif" font-size="14.00">_file_vars</text>
 <text text-anchor="start" x="764.5" y="-917.3" font-family="Times,serif" font-size="14.00">_granules</text>
 <text text-anchor="start" x="764.5" y="-902.3" font-family="Times,serif" font-size="14.00">_order_vars</text>
-<text text-anchor="start" x="764.5" y="-887.3" font-family="Times,serif" font-size="14.00">_prod : NoneType, str</text>
+<text text-anchor="start" x="764.5" y="-887.3" font-family="Times,serif" font-size="14.00">_prod : str, NoneType</text>
 <text text-anchor="start" x="764.5" y="-872.3" font-family="Times,serif" font-size="14.00">_readable_granule_name : list</text>
 <text text-anchor="start" x="764.5" y="-857.3" font-family="Times,serif" font-size="14.00">_reqparams</text>
 <text text-anchor="start" x="764.5" y="-842.3" font-family="Times,serif" font-size="14.00">_s3login_credentials</text>
@@ -272,7 +272,7 @@
 <text text-anchor="start" x="1340" y="-211.3" font-family="Times,serif" font-size="14.00">_version : NoneType</text>
 <text text-anchor="start" x="1340" y="-196.3" font-family="Times,serif" font-size="14.00">path : NoneType</text>
 <text text-anchor="start" x="1340" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType</text>
-<text text-anchor="start" x="1340" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
+<text text-anchor="start" x="1340" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : dict, NoneType</text>
 <polyline fill="none" stroke="black" points="1332,-158.5 1821,-158.5 "/>
 <text text-anchor="start" x="1340" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(vartype, avail, wanted, session, product, version, path)</text>
 <text text-anchor="start" x="1340" y="-128.3" font-family="Times,serif" font-size="14.00">_check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)</text>
@@ -322,7 +322,7 @@
 <text text-anchor="start" x="2394.5" y="-226.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
 <text text-anchor="start" x="2394.5" y="-211.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
 <text text-anchor="start" x="2394.5" y="-196.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
-<text text-anchor="start" x="2394.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType, str</text>
+<text text-anchor="start" x="2394.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : str, NoneType</text>
 <text text-anchor="start" x="2394.5" y="-166.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
 <polyline fill="none" stroke="black" points="2386.5,-158.5 2902.5,-158.5 "/>
 <text text-anchor="start" x="2394.5" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(query_obj, product, spatial_extent, date_range, cycles, tracks)</text>

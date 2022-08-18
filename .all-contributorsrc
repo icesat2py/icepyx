@@ -81,6 +81,16 @@
         "maintenance",
         "test"
       ]
+    },
+    {
+      "login": "trevorskaggs",
+      "name": "trevorskaggs",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1276123?v=4",
+      "profile": "https://github.com/trevorskaggs",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

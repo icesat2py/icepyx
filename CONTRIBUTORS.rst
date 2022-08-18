@@ -16,7 +16,6 @@ Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/d
 * `Ted Maksym <https://github.com/tedmaksym>`_ - Woods Hole Oceanographic Institution
 * `Joachim Meyer <https://github.com/jomey>`_ - University of Utah
 * `Fernando Perez <https://github.com/fperez>`_ - University of California, Berkeley
-* `Romina Piunno <https://github.com/RomiP>`_ - University of Toronto
 * `Facundo Sapienza <https://github.com/facusapienza21>`_ - University of California, Berkeley
 * `David Shean <https://github.com/dshean>`_ - University of Washington
 * `Ben Smith <https://github.com/smithb>`_ - University of Washington

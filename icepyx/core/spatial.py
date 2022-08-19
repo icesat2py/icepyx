@@ -368,19 +368,7 @@ def validate_polygon_file(spatial_extent):
         extent_type = "polygon"
         gdf = geodataframe(extent_type, spatial_extent, file=True)
 
-        # DevGoal: does the below line mandate that only the first polygon will be read?
-        # Perhaps we should require files containing only one polygon?
-
-        # RAPHAEL - It only selects the first polygon if there are multiple.
-        # Unless we can supply the CMR params with muliple polygon inputs
-        # we should probably req a single polygon.
-
-        # TODO: Require a single polygon OR throw a warning that only the first polygon will be selected?
-
-        gdf_result = gdf.iloc[0].geometry
-
-        # _spat_extent = apifmt._fmt_polygon(spatial_extent)
-        return "polygon", gdf_result, spatial_extent
+        return "polygon", gdf, spatial_extent
 
     else:
         raise TypeError("Input spatial extent file must be a kml, shp, or gpkg")
@@ -560,6 +548,9 @@ class Spatial:
                 self._gdf_spat = geodataframe(
                     self._ext_type, self._spatial_ext, xdateline=xdateln
                 )
+
+        # TODO 8/19/22: need to check for multi line strings and handle those (as in UK_borders file).
+        # They don't have a geometry attribute...
         return self._gdf_spat
 
     @property
@@ -624,7 +615,8 @@ class Spatial:
             cmr_extent = ",".join(map(str, self._spatial_ext))
 
         elif self._ext_type == "polygon":
-            poly = self.extent_as_gdf.geometry[0]
+            poly = self.extent_as_gdf.geometry.unary_union.boundary
+
             # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
             poly = poly.simplify(0.05, preserve_topology=False)
             poly = orient(poly, sign=1.0)

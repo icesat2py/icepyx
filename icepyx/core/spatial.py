@@ -550,7 +550,7 @@ class Spatial:
                 )
 
         # TODO 8/19/22: need to check for multi line strings and handle those (as in UK_borders file).
-        # They don't have a geometry attribute...
+        # They don't have an exterior attribute...
         return self._gdf_spat
 
     @property
@@ -615,7 +615,15 @@ class Spatial:
             cmr_extent = ",".join(map(str, self._spatial_ext))
 
         elif self._ext_type == "polygon":
-            poly = self.extent_as_gdf.geometry.unary_union.boundary
+            poly = self.extent_as_gdf.geometry
+
+            if any(
+                geomtype in ["MultiPoint", "MultiLineString", "MultiPolygon"]
+                for geomtype in poly.geom_type
+            ):
+                poly = poly.convex_hull
+
+            poly = poly.unary_union
 
             # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
             poly = poly.simplify(0.05, preserve_topology=False)

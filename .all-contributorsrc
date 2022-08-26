@@ -134,6 +134,17 @@
       "contributions": [
         "example"
       ]
+    },
+    {
+      "login": "alexdibella",
+      "name": "alexdibella",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66279468?v=4",
+      "profile": "https://github.com/alexdibella",
+      "contributions": [
+        "bug",
+        "ideas",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

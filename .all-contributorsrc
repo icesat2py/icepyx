@@ -123,7 +123,8 @@
       "contributions": [
         "bug",
         "business",
-        "eventOrganizing"
+        "eventOrganizing",
+        "fundingFinding"
       ]
     },
     {
@@ -273,6 +274,86 @@
         "maintenance",
         "review",
         "question"
+      ]
+    },
+    {
+      "login": "asteiker",
+      "name": "Amy Steiker",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47193922?v=4",
+      "profile": "https://nsidc.org",
+      "contributions": [
+        "example",
+        "doc",
+        "mentoring"
+      ]
+    },
+    {
+      "login": "tsutterley",
+      "name": "Tyler Sutterley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5384907?v=4",
+      "profile": "https://tsutterley.github.io/",
+      "contributions": [
+        "doc",
+        "code",
+        "ideas",
+        "question",
+        "security",
+        "test"
+      ]
+    },
+    {
+      "login": "icetianli",
+      "name": "Tian Li",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45267156?v=4",
+      "profile": "https://icetianli.github.io/",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "example",
+        "ideas",
+        "review",
+        "test",
+        "tool"
+      ]
+    },
+    {
+      "login": "annavalentine",
+      "name": "Anna Valentine",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65192768?v=4",
+      "profile": "https://github.com/annavalentine",
+      "contributions": [
+        "example"
+      ]
+    },
+    {
+      "login": "wallinb",
+      "name": "Bruce Wallin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35819999?v=4",
+      "profile": "https://github.com/wallinb",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas",
+        "review"
+      ]
+    },
+    {
+      "login": "mollymwieringa",
+      "name": "Molly Wieringa",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40209354?v=4",
+      "profile": "https://github.com/mollymwieringa",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "bidhya",
+      "name": "bidhya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6469101?v=4",
+      "profile": "https://byrd.osu.edu/",
+      "contributions": [
+        "example"
       ]
     }
   ],

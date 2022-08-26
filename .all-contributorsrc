@@ -232,6 +232,16 @@
         "infra",
         "platform"
       ]
+    },
+    {
+      "login": "facusapienza21",
+      "name": "Facundo Sapienza",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39526081?v=4",
+      "profile": "http://facusapienza.com",
+      "contributions": [
+        "example",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,

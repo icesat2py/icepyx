@@ -192,6 +192,17 @@
         "tool",
         "example"
       ]
+    },
+    {
+      "login": "fperez",
+      "name": "Fernando Perez",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57394?v=4",
+      "profile": "http://fperez.org",
+      "contributions": [
+        "design",
+        "business",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -273,6 +273,17 @@
         "maintenance",
         "review"
       ]
+    },
+    {
+      "login": "asteiker",
+      "name": "Amy Steiker",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47193922?v=4",
+      "profile": "https://nsidc.org",
+      "contributions": [
+        "example",
+        "doc",
+        "mentoring"
+      ]
     }
   ],
   "contributorsPerLine": 7,

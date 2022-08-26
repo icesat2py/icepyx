@@ -284,6 +284,20 @@
         "doc",
         "mentoring"
       ]
+    },
+    {
+      "login": "tsutterley",
+      "name": "Tyler Sutterley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5384907?v=4",
+      "profile": "https://tsutterley.github.io/",
+      "contributions": [
+        "doc",
+        "code",
+        "ideas",
+        "question",
+        "security",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -261,6 +261,18 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "trey-stafford",
+      "name": "trey-stafford",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19692879?v=4",
+      "profile": "https://github.com/trey-stafford",
+      "contributions": [
+        "code",
+        "ideas",
+        "maintenance",
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,

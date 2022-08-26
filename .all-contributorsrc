@@ -125,6 +125,15 @@
         "business",
         "eventOrganizing"
       ]
+    },
+    {
+      "login": "ShashankBice",
+      "name": "Shashank Bhushan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29011666?v=4",
+      "profile": "https://github.com/ShashankBice",
+      "contributions": [
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -54,6 +54,7 @@ Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/nitin-ravinder"><img src="https://avatars.githubusercontent.com/u/86551841?v=4?s=100" width="100px;" alt=""/><br /><sub><b>nitin-ravinder</b></sub></a><br /><a href="https://github.com/icesat2py/icepyx/issues?q=author%3Anitin-ravinder" title="Bug reports">🐛</a> <a href="https://github.com/icesat2py/icepyx/pulls?q=is%3Apr+reviewed-by%3Anitin-ravinder" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/tedmaksym"><img src="https://avatars.githubusercontent.com/u/13255911?v=4?s=100" width="100px;" alt=""/><br /><sub><b>tedmaksym</b></sub></a><br /><a href="#ideas-tedmaksym" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/trevorskaggs"><img src="https://avatars.githubusercontent.com/u/1276123?v=4?s=100" width="100px;" alt=""/><br /><sub><b>trevorskaggs</b></sub></a><br /><a href="https://github.com/icesat2py/icepyx/issues?q=author%3Atrevorskaggs" title="Bug reports">🐛</a> <a href="https://github.com/icesat2py/icepyx/commits?author=trevorskaggs" title="Code">💻</a></td>
   </tr>
 </table>

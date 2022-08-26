@@ -203,6 +203,15 @@
         "business",
         "ideas"
       ]
+    },
+    {
+      "login": "tedmaksym",
+      "name": "tedmaksym",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13255911?v=4",
+      "profile": "https://github.com/tedmaksym",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

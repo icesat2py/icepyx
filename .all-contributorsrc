@@ -212,6 +212,16 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "jomey",
+      "name": "Joachim Meyer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/178649?v=4",
+      "profile": "https://github.com/jomey",
+      "contributions": [
+        "mentoring",
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,

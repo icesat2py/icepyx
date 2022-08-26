@@ -63,7 +63,7 @@ Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/trevorskaggs"><img src="https://avatars.githubusercontent.com/u/1276123?v=4?s=100" width="100px;" alt=""/><br /><sub><b>trevorskaggs</b></sub></a><br /><a href="https://github.com/icesat2py/icepyx/issues?q=author%3Atrevorskaggs" title="Bug reports">🐛</a> <a href="https://github.com/icesat2py/icepyx/commits?author=trevorskaggs" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/trey-stafford"><img src="https://avatars.githubusercontent.com/u/19692879?v=4?s=100" width="100px;" alt=""/><br /><sub><b>trey-stafford</b></sub></a><br /><a href="https://github.com/icesat2py/icepyx/commits?author=trey-stafford" title="Code">💻</a> <a href="#ideas-trey-stafford" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-trey-stafford" title="Maintenance">🚧</a> <a href="https://github.com/icesat2py/icepyx/pulls?q=is%3Apr+reviewed-by%3Atrey-stafford" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/trey-stafford"><img src="https://avatars.githubusercontent.com/u/19692879?v=4?s=100" width="100px;" alt=""/><br /><sub><b>trey-stafford</b></sub></a><br /><a href="https://github.com/icesat2py/icepyx/commits?author=trey-stafford" title="Code">💻</a> <a href="#ideas-trey-stafford" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-trey-stafford" title="Maintenance">🚧</a> <a href="https://github.com/icesat2py/icepyx/pulls?q=is%3Apr+reviewed-by%3Atrey-stafford" title="Reviewed Pull Requests">👀</a> <a href="#question-trey-stafford" title="Answering Questions">💬</a></td>
   </tr>
 </table>
 

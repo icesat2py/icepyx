@@ -298,6 +298,22 @@
         "security",
         "test"
       ]
+    },
+    {
+      "login": "icetianli",
+      "name": "Tian Li",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45267156?v=4",
+      "profile": "https://icetianli.github.io/",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "example",
+        "ideas",
+        "review",
+        "test",
+        "tool"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -216,7 +216,7 @@
 <polyline fill="none" stroke="black" points="1168,-159 1543,-159 "/>
 <text text-anchor="start" x="1176" y="-143.8" font-family="Times,serif" font-size="14.00">path : NoneType</text>
 <text text-anchor="start" x="1176" y="-128.8" font-family="Times,serif" font-size="14.00">product : NoneType</text>
-<text text-anchor="start" x="1176" y="-113.8" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
+<text text-anchor="start" x="1176" y="-113.8" font-family="Times,serif" font-size="14.00">wanted : dict, NoneType</text>
 <polyline fill="none" stroke="black" points="1168,-106 1543,-106 "/>
 <text text-anchor="start" x="1176" y="-90.8" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list)</text>
 <text text-anchor="start" x="1176" y="-75.8" font-family="Times,serif" font-size="14.00">avail(options, internal)</text>

@@ -344,6 +344,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "bidhya",
+      "name": "bidhya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6469101?v=4",
+      "profile": "https://byrd.osu.edu/",
+      "contributions": [
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,

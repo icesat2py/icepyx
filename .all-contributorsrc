@@ -222,6 +222,16 @@
         "mentoring",
         "maintenance"
       ]
+    },
+    {
+      "login": "lsetiawan",
+      "name": "Don Setiawan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17802172?v=4",
+      "profile": "https://www.linkedin.com/in/landungsetiawan/",
+      "contributions": [
+        "infra",
+        "platform"
+      ]
     }
   ],
   "contributorsPerLine": 7,

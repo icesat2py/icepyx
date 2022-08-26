@@ -167,6 +167,16 @@
       "contributions": [
         "maintenance"
       ]
+    },
+    {
+      "login": "loudTom",
+      "name": "Tom Johnson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33604148?v=4",
+      "profile": "https://github.com/loudTom",
+      "contributions": [
+        "doc",
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,

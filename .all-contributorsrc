@@ -83,7 +83,6 @@
       ]
     },
     {
-
       "login": "RomiP",
       "name": "Romina Piunno",
       "avatar_url": "https://avatars.githubusercontent.com/u/17185856?v=4",
@@ -94,9 +93,9 @@
         "mentoring",
         "review",
         "tutorial"
-           ]
+      ]
     },
-    { 
+    {
       "login": "trevorskaggs",
       "name": "trevorskaggs",
       "avatar_url": "https://avatars.githubusercontent.com/u/1276123?v=4",
@@ -104,6 +103,16 @@
       "contributions": [
         "bug",
         "code"
+      ]
+    },
+    {
+      "login": "nabib",
+      "name": "Nicole Abib",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16991294?v=4",
+      "profile": "https://github.com/nabib",
+      "contributions": [
+        "code",
+        "ideas"
       ]
     }
   ],

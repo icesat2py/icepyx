@@ -242,6 +242,16 @@
         "example",
         "bug"
       ]
+    },
+    {
+      "login": "dshean",
+      "name": "David Shean",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1103530?v=4",
+      "profile": "http://dshean.github.io",
+      "contributions": [
+        "bug",
+        "mentoring"
+      ]
     }
   ],
   "contributorsPerLine": 7,

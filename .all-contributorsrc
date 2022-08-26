@@ -177,6 +177,21 @@
         "doc",
         "infra"
       ]
+    },
+    {
+      "login": "liuzheng-arctic",
+      "name": "liuzheng-arctic",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51420076?v=4",
+      "profile": "https://github.com/liuzheng-arctic",
+      "contributions": [
+        "doc",
+        "bug",
+        "code",
+        "ideas",
+        "review",
+        "tool",
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,

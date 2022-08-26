@@ -335,6 +335,15 @@
         "ideas",
         "review"
       ]
+    },
+    {
+      "login": "mollymwieringa",
+      "name": "Molly Wieringa",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40209354?v=4",
+      "profile": "https://github.com/mollymwieringa",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

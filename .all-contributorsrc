@@ -252,6 +252,15 @@
         "bug",
         "mentoring"
       ]
+    },
+    {
+      "login": "smithb",
+      "name": "smithb",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2279144?v=4",
+      "profile": "https://github.com/SmithB",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -209,14 +209,15 @@ def validate_bounding_box(spatial_extent):
         -90 <= spatial_extent[3] <= 90
     ), "Invalid latitude value (must be between -90 and 90, inclusive)"
 
-    # tighten these ranges depending on actual allowed inputs
-    # TODO: inquire about this; see if we know the "actual allowed inputs" and if this can be fixed
     assert (
         -180 <= spatial_extent[0] <= 180
     ), "Invalid longitude value (must be between -180 and 180, inclusive)"
     assert (
         -180 <= spatial_extent[2] <= 180
     ), "Invalid longitude value (must be between -180 and 180, inclusive)"
+
+    # If the lower left latitude is greater than the upper right latitude, throw an error
+    assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
 
     spatial_extent = [float(x) for x in spatial_extent]
 
@@ -549,8 +550,6 @@ class Spatial:
                     self._ext_type, self._spatial_ext, xdateline=xdateln
                 )
 
-        # TODO 8/19/22: need to check for multi line strings and handle those (as in UK_borders file).
-        # They don't have an exterior attribute...
         return self._gdf_spat
 
     @property

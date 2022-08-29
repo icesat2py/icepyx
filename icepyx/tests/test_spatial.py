@@ -105,16 +105,6 @@ def test_invalid_high_longitude_2_bbox():
         high_lon_2_bbox = spat.Spatial([-64.2, 66.2, 180.5, 72.5])
 
 
-def test_diff_sign_lowleft_lt_upright_longitude_bbox():
-    with pytest.raises(AssertionError):
-        long_ll_lt_ur_ds_bbox = spat.Spatial([-64.2, 66.2, 55.5, 72.5])
-
-
-def test_same_sign_lowleft_gt_upright_longitude_bbox():
-    with pytest.raises(AssertionError):
-        long_ll_gt_ur_ss_bbox = spat.Spatial([-55.5, 66.2, -64.2, 72.5])
-
-
 def test_same_sign_lowleft_gt_upright_latitude_bbox():
     with pytest.raises(AssertionError):
         lat_ll_gt_ur_ss_bbox = spat.Spatial([-64.2, 72.5, -55.5, 66.2])
@@ -364,3 +354,38 @@ def test_bad_extent_input():
     # ermsg = "Your spatial extent type (polybox) is not an accepted input and a geodataframe cannot be constructed"
     with pytest.raises(TypeError, match=ermsg):
         spat.geodataframe("polybox", [1, 2, 3, 4])
+
+
+# ###################### END GEOM FILE INPUT TESTS ####################################################################
+# ######### Dateline Crossing Tests ######################################################
+
+# TODO: Fill in tests here (all are templated); re-check the first two that currently pass
+def test_bbox_crosses_dateline():
+    obs = spat.check_dateline("bounding_box", [-55.5, 66.2, -64.2, 72.5])
+    exp = True
+    assert exp == obs
+
+
+def test_bbox_not_crosses_dateline():
+    bboxes = [
+        [-64.2, 66.2, 55.5, 72.5],
+        [-55, 68, -48, 71],
+    ]
+    for bbox in bboxes:
+        obs = spat.check_dateline("bounding_box", bbox)
+        exp = False
+        assert exp == obs
+
+
+# def test_poly_crosses_dateline():
+#     obs = spat.check_dateline("polygon", [-55, 68, -48, 71])
+#     exp = True
+
+
+# def test_poly_not_crosses_dateline():
+#     obs = spat.check_dateline("polygon", [-55, 68, -48, 71])
+#     exp = False
+#     assert exp == obs
+
+
+# add some edge cases with floats near 180/90 and also with 0s

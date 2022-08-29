@@ -12,11 +12,20 @@ class BGC_Argo(Argo):
 		super().__init__(boundingbox, timeframe)
 		# self.profiles = None
 
+	def _search_data_BGC_helper(self):
+		'''
+		make request with two params, and identify profiles that contain
+		remaining params
+		i.e. mandates the intersection of all specified params
+		'''
+		pass
 
 	def search_data(self, params, presRange=None, printURL=False):
 		# todo: this currently assumes user specifies exactly two BGC search
 		#  params. Need to iterate should the user provide more than 2, and
 		#  accommodate if user supplies only 1 param
+
+		# todo: validate list of user-entered params
 		# builds URL to be submitted
 		baseURL = 'https://argovis.colorado.edu/selection/bgc_data_selection/'
 		payload = {'startDate': self._start.strftime('%Y-%m-%d'),
@@ -51,6 +60,12 @@ class BGC_Argo(Argo):
 
 		# if profiles are found, save them to self as dataframe
 		self._parse_into_df(selectionProfiles)
+
+	def validate_parameters(self, params):
+		'https://argovis.colorado.edu/api-docs/#/catalog/get_catalog_bgc_platform_data__platform_number_'
+		pass
+
+
 
 	def _parse_into_df(self, profiles):
 		"""

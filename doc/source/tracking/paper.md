@@ -10,7 +10,7 @@ tags:
 authors:
   - name: Jessica Scheick^[Corresponding author] # note this makes a footnote
     orcid: 0000-0000-0000-0000
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
+    affiliation: 1
   - name: Wei Ji Leong
     affiliation: 2
   - name: Kelsey Bisson
@@ -26,35 +26,35 @@ authors:
   - name: Sarah Hall
     affiliation: 1  
   - name: Scott Henderson
-  affiliation: 4
-    - name: Tom Johnson
-  affiliation: 6
-    - name: Friedrich Knuth
-  affiliation: 7
-    - name: Tian Li
-  affiliation: 8
-    - name: Zheng Liu
-  affiliation: 4
-    - name: Luis Lopez
-  affiliation: 9
-    - name: Romina Piunno
-  affiliation: 10
-    - name: Nitin Ravinder
-  affiliation: 11
-    - name: Landung "Don" Setiawan
-  affiliation: 4
-    - name: Trey Stafford
-  affiliation: 9
-    - name: Amy Steiker
-  affiliation: 9
-    - name: Tyler Sutterley
-  affiliation: 4
-    - name: JP Swinski
-  affiliation: 12
-    - name: Bruce Wallin
-  affiliation: 9
-    - name: Learn2Pheonix
-  affiliation: 13
+    affiliation: 4
+  - name: Tom Johnson
+    affiliation: 6
+  - name: Friedrich Knuth
+    affiliation: 7
+  - name: Tian Li
+    affiliation: 8
+  - name: Zheng Liu
+    affiliation: 4
+  - name: Luis Lopez
+    affiliation: 9
+  - name: Romina Piunno
+    affiliation: 10
+  - name: Nitin Ravinder
+    affiliation: 11
+  - name: Landung "Don" Setiawan
+    affiliation: 4
+  - name: Trey Stafford
+    affiliation: 9
+  - name: Amy Steiker
+    affiliation: 9
+  - name: Tyler Sutterley
+    affiliation: 4
+  - name: JP Swinski
+    affiliation: 12
+  - name: Bruce Wallin
+    affiliation: 9
+  - name: Learn2Pheonix
+    affiliation: 13
 
 # Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes to preparing (including reviewing) the JOSS submission will be moved into ABC order after the first three and before the non-publication contributors to icepyx.
   
@@ -103,32 +103,7 @@ We are working together to develop a shared library of resources - including exi
 
 icepyx aims to provide a clearinghouse for code, functionality to improve interoperability, documentation, examples, and educational resources that tackle disciplinary research questions while minimizing the amount of repeated effort across groups utilizing similar datasets. icepyx also hopes to foster collaboration, open-science practices, and reproducible workflows by integrating and sharing resources.
 
-icepyx began during the cryosphere-themed ICESat-2 Hackweek at the University of Washington in June 2019. At the event, a clear need for a collaborative, shared community space that combined and generalized the tooling (including code and examples past, present, and future) written by Hackweek participants, ICESat-2 Science Team members, and the data user community. This project combined and generalized the existing scripts into a unified framework, adding examples, documentation, and testing where necessary and making them accessible for everyone. The library and community continue to grow and evolve, adding new features and building scientific literacy in open-science, cloud computing, and collaborative development practices. icepyx is now a foundational tool for accessing and working with ICESat-2 data and is featured in multiple scientific publications[@Bisson:2021; @li:2020] and Hackweeks [@Scheick:2022].
-
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for @fidgit.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Figures
-
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
-
-Figures to include: icepyx in context of other tools?
+icepyx began during the cryosphere-themed ICESat-2 Hackweek at the University of Washington in June 2019. At the event, a clear need for a collaborative, shared community space that combined and generalized the tooling (including code and examples past, present, and future) written by Hackweek participants, ICESat-2 Science Team members, and the data user community. This project combined and generalized the existing scripts into a unified framework, adding examples, documentation, and testing where necessary and making them accessible for everyone. The library and community continue to grow and evolve, adding new features and building scientific literacy in open-science, cloud computing, and collaborative development practices. icepyx is now a foundational tool for accessing and working with ICESat-2 data and is featured in multiple scientific publications[@https://doi.org/10.1029/2021GL095051; @tc-14-3629-2020] and Hackweeks [@Scheick:2022].
 
 # Acknowledgements
 

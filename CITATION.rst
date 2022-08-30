@@ -1,7 +1,7 @@
 .. _citation:
 
-Citation Information
-====================
+Citing icepyx
+=============
 
 icepyx
 ------

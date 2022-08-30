@@ -9,7 +9,7 @@ tags:
   - cloud
 authors:
   - name: Jessica Scheick^[Corresponding author] # note this makes a footnote
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-3421-4459
     affiliation: 1
   - name: Wei Ji Leong
     orcid: 0000-0003-2354-1988
@@ -58,7 +58,7 @@ authors:
   - name: Learn2Pheonix
     affiliation: 13
 
-# Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes to preparing (including reviewing) the JOSS submission will be moved into ABC order after the first three and before the non-publication contributors to icepyx.
+# Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes substantially to preparing the JOSS submission will be moved into ABC order after the first three and before the non-publication contributors to icepyx. Non-responsive coauthors will be removed from the list since their permission to be included was not granted.
   
 affiliations:
  - name: University of New Hampshire, USA

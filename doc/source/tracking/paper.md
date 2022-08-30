@@ -59,7 +59,7 @@ authors:
     affiliation: 13
 
 # Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes substantially to preparing the JOSS submission will be moved into ABC order after the first three and before the non-publication contributors to icepyx. Non-responsive coauthors will be removed from the list since their permission to be included was not granted.
-  
+
 affiliations:
  - name: University of New Hampshire, USA
    index: 1
@@ -67,33 +67,33 @@ affiliations:
    index: 2
  - name: University of Colorado Boulder, USA
    index: 3
- - name: , USA
+ - name: Institution, USA
    index: 4
  - name: University of Washington, USA
    index: 5
- - name: , USA
+ - name: Institution, USA
    index: 6
- - name: , USA
+ - name: Institution, USA
    index: 7
- - name: , USA
+ - name: Institution, USA
    index: 8
- - name: , USA
+ - name: Institution, USA
    index: 9
  - name: University of Toronto, Canada
    index: 10
- - name: , USA
+ - name: Institution, USA
    index: 11
- - name: , USA
+ - name: Institution, USA
    index: 12
- - name: , USA
+ - name: Institution, USA
    index: 13
 date: 1 September 2022
 bibliography: icepyx_pubs.bib
 
 # Optional fields if submitting to a AAS journal too, see this blog post:
 # https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
-aas-doi: 
-aas-journal: 
+aas-doi:
+aas-journal:
 ---
 
 # Summary

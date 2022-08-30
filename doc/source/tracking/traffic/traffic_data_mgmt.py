@@ -3,8 +3,7 @@ import os
 import pandas as pd
 import subprocess
 
-# cwd = os.getcwd()
-cwd = "../../../../../.."
+cwd = os.getcwd()
 
 trafficpath = f"{cwd}/doc/source/tracking/traffic/"
 defaultpath = f"{cwd}/traffic/"

@@ -79,7 +79,7 @@ affiliations:
    index: 8
  - name: , USA
    index: 9
- - name: , USA
+ - name: University of Toronto, Canada
    index: 10
  - name: , USA
    index: 11

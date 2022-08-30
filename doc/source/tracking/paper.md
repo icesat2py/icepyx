@@ -12,6 +12,7 @@ authors:
     orcid: 0000-0000-0000-0000
     affiliation: 1
   - name: Wei Ji Leong
+    orcid: 0000-0003-2354-1988
     affiliation: 2
   - name: Kelsey Bisson
     affiliation: 3
@@ -48,6 +49,7 @@ authors:
   - name: Amy Steiker
     affiliation: 9
   - name: Tyler Sutterley
+    orcid: 0000-0002-6964-1194
     affiliation: 4
   - name: JP Swinski
     affiliation: 12
@@ -61,13 +63,13 @@ authors:
 affiliations:
  - name: University of New Hampshire, USA
    index: 1
- - name: Ohio State University, USA
+ - name: The Ohio State University, USA
    index: 2
  - name: University of Colorado Boulder, USA
    index: 3
  - name: , USA
    index: 4
- - name: , USA
+ - name: University of Washington, USA
    index: 5
  - name: , USA
    index: 6

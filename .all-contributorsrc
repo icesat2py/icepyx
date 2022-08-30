@@ -384,6 +384,26 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "weiji14",
+      "name": "Wei Ji",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23487320?v=4",
+      "profile": "http://weiji14.github.io",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "example",
+        "ideas",
+        "infra",
+        "maintenance",
+        "mentoring",
+        "question",
+        "review",
+        "test",
+        "talk"
+      ]
     }
   ],
   "contributorsPerLine": 7,

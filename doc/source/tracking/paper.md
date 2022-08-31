@@ -17,6 +17,7 @@ authors:
   - name: Kelsey Bisson
     affiliation: 3
   - name: Anthony Arendt
+    orcid: 0000-0003-0429-6905
     affiliation: 4
   - name: Shashank Bhushan
     affiliation: 4

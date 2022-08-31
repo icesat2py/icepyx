@@ -458,7 +458,7 @@ class Temporal:
 
     def __str__(self):
         return "Start date and time: {0}\nEnd date and time: {1}".format(
-            self._start, self._end
+            self._start.strftime("%Y-%m-%d %H:%M:%S"), self._end.strftime("%Y-%m-%d %H:%M:%S")
         )
 
     @property

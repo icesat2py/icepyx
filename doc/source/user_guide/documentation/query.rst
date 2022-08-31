@@ -33,6 +33,7 @@ Attributes
    Query.spatial_extent
    Query.subsetparams
    Query.start_time
+   Query.temporal
    Query.tracks
 
 Methods

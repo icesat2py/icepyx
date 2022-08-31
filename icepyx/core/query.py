@@ -104,7 +104,6 @@ class GenQuery:
         self._sp_extent = spat.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
-        # TODO: Update this to use Temporal class when completed
         if date_range:
             self._temporal = tp.Temporal(date_range, start_time, end_time)
 
@@ -303,6 +302,21 @@ class Query(GenQuery):
         return self._version
     @property
     def temporal(self):
+        """
+        Return the Temporal object containing date/time range information for the query object.
+
+        See Also
+        --------
+        icepyx.core.Temporal
+
+        Examples
+        --------
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> print(reg_a.temporal)
+        Start date and time: 2019-02-20 00:00:00
+        End date and time: 2019-02-28 23:59:59
+
+        """
         return self._temporal
 
     @property

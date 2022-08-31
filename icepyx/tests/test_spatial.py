@@ -90,7 +90,6 @@ def test_invalid_low_longitude_0_bbox():
         low_lon_0_bbox = spat.Spatial([-180.2, 66.2, -55.5, 72.5])
 
 
-
 def test_invalid_high_longitude_0_bbox():
     with pytest.raises(AssertionError):
         high_lon_0_bbox = spat.Spatial([180.2, 66.2, -55.5, 72.5])
@@ -174,9 +173,11 @@ def test_floatlist_latlon_coords():
     expected_poly_float_list = Polygon(
         [[-55.0, 68.7], [-55.0, 71], [-48, 71], [-48, 68.7], [-55.0, 68.7]]
     )
+
     assert poly_float_list.extent_type == "polygon"
     assert poly_float_list.extent_file is None
     assert poly_float_list.spatial_extent == expected_poly_float_list
+
 
 # numpy array tests
 
@@ -185,10 +186,10 @@ def test_numpy_list_pairs_polygon():
     poly_list_pair = spat.Spatial(
         np.array([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
     )
-
     expected_poly_list_pair = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
+
     assert poly_list_pair.extent_type == "polygon"
     assert poly_list_pair.extent_file is None
     assert poly_list_pair.spatial_extent == expected_poly_list_pair
@@ -201,6 +202,7 @@ def test_numpy_tuple_latlon_pairs():
     expected_poly_tuple_pair = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
+
     assert poly_tuple_pair.extent_type == "polygon"
     assert poly_tuple_pair.extent_file is None
     assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
@@ -211,6 +213,7 @@ def test_numpy_intlist_latlon_coords():
     expected_poly_list = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
+
     assert poly_list.extent_type == "polygon"
     assert poly_list.extent_file is None
     assert poly_list.spatial_extent == expected_poly_list
@@ -265,6 +268,7 @@ def test_poly_list_auto_close():
 
 
 def test_poly_file_simple_one_poly():
+
     poly_from_file = spat.Spatial(
         str(
             Path(
@@ -275,7 +279,7 @@ def test_poly_file_simple_one_poly():
     # print(poly_from_file.extent_file)
     # print(poly_from_file.spatial_extent)
     expected_poly = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
-    
+
     assert poly_from_file.extent_type == "polygon"
     assert poly_from_file.extent_file is not None
     assert poly_from_file.spatial_extent == expected_poly

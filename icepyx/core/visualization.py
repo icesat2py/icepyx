@@ -153,7 +153,6 @@ class Visualize:
                 tracks=tracks,
             )
 
-
         self.product = is2ref._validate_OA_product(query_obj.product)
 
         if query_obj.spatial.extent_type == "bounding_box":

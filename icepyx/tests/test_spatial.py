@@ -13,6 +13,7 @@ import icepyx.core.spatial as spat
 # ######### "Bounding Box" input tests ################################################################################
 # (Note that these ALSO test the @property functions for the class for bounding boxes)
 
+
 def test_intlist_bbox():
     """
     Bounding box test w/ a List of valid Int inputs.
@@ -53,6 +54,7 @@ def test_numpyfloatlist_bbox():
 # ########## Bounding Box Assertion Error tests #############################################
 # (input for all of these tests is bad; ensuring the spatial class catches this)
 
+
 def test_too_few_bbox_points():
     with pytest.raises(AssertionError):
         too_few_bbox_points = spat.Spatial([-64.2, 66.2, -55.5])
@@ -62,10 +64,10 @@ def test_too_many_bbox_points():
     with pytest.raises(AssertionError):
         too_many_bbox_points = spat.Spatial([-64.2, 66.2, -55.5, 72.5, 0])
 
+
 def test_invalid_low_latitude_1_bbox():
     with pytest.raises(AssertionError):
         low_lat_1_bbox = spat.Spatial([-64.2, -90.2, -55.5, 72.5])
-
 
 
 def test_invalid_high_latitude_1_bbox():
@@ -73,17 +75,14 @@ def test_invalid_high_latitude_1_bbox():
         high_lat_1_bbox = spat.Spatial([-64.2, 90.2, -55.5, 72.5])
 
 
-
 def test_invalid_low_latitude_3_bbox():
     with pytest.raises(AssertionError):
         low_lat_3_bbox = spat.Spatial([-64.2, 66.2, -55.5, -90.5])
 
 
-
 def test_invalid_high_latitude_3_bbox():
     with pytest.raises(AssertionError):
         high_lat_3_bbox = spat.Spatial([-64.2, 66.2, -55.5, 90.5])
-
 
 
 def test_invalid_low_longitude_0_bbox():
@@ -95,6 +94,7 @@ def test_invalid_low_longitude_0_bbox():
 def test_invalid_high_longitude_0_bbox():
     with pytest.raises(AssertionError):
         high_lon_0_bbox = spat.Spatial([180.2, 66.2, -55.5, 72.5])
+
 
 def test_invalid_low_longitude_2_bbox():
     with pytest.raises(AssertionError):
@@ -125,19 +125,20 @@ def test_bad_values_bbox():
     with pytest.raises(ValueError):
         bad_input = spat.Spatial(["a", "b", "c", "d"])
 
+
 # ############### END BOUNDING BOX TESTS ################################################################
 
 # ######### "Polygon" input tests (NOT FROM FILE) ######################################################
 
 
 def test_list_pairs_polygon():
-
     poly_list_pair = spat.Spatial(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
     expected_poly_list_pair = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
+
     assert poly_list_pair.extent_type == "polygon"
     assert poly_list_pair.extent_file is None
     assert poly_list_pair.spatial_extent == expected_poly_list_pair
@@ -150,6 +151,7 @@ def test_tuple_latlon_pairs():
     expected_poly_tuple_pair = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
+
     assert poly_tuple_pair.extent_type == "polygon"
     assert poly_tuple_pair.extent_file is None
     assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
@@ -178,10 +180,12 @@ def test_floatlist_latlon_coords():
 
 # numpy array tests
 
+
 def test_numpy_list_pairs_polygon():
     poly_list_pair = spat.Spatial(
         np.array([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
     )
+
     expected_poly_list_pair = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
@@ -239,6 +243,7 @@ def test_poly_tuple_latlon_pairs_auto_close():
     expected_poly_tuple_pair = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
+
     assert poly_tuple_pair.extent_type == "polygon"
     assert poly_tuple_pair.extent_file is None
     assert poly_tuple_pair.spatial_extent == expected_poly_tuple_pair
@@ -249,6 +254,7 @@ def test_poly_list_auto_close():
     expected_poly_list = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
+
     assert poly_list.extent_type == "polygon"
     assert poly_list.extent_file is None
     assert poly_list.spatial_extent == expected_poly_list
@@ -269,6 +275,7 @@ def test_poly_file_simple_one_poly():
     # print(poly_from_file.extent_file)
     # print(poly_from_file.spatial_extent)
     expected_poly = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+    
     assert poly_from_file.extent_type == "polygon"
     assert poly_from_file.extent_file is not None
     assert poly_from_file.spatial_extent == expected_poly

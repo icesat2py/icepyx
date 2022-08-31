@@ -1156,7 +1156,6 @@ class Query(GenQuery):
             self._sp_extent.extent_type, self._sp_extent.spatial_extent
         )
 
-
         try:
             from shapely.geometry import Polygon
             import geoviews as gv

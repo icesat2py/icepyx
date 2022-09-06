@@ -28,6 +28,9 @@ class BGC_Argo(Argo):
 		# todo: validate list of user-entered params
 		# builds URL to be submitted
 		baseURL = 'https://argovis.colorado.edu/selection/bgc_data_selection/'
+
+		# todo: identify which 2 params we specify (ignore physical params)
+		# todo: special case if only 1 BGC measurment is specified
 		payload = {'startDate': self._start.strftime('%Y-%m-%d'),
 				   'endDate': self._end.strftime('%Y-%m-%d'),
 				   'shape': [self._fmt_coordinates()],
@@ -58,12 +61,37 @@ class BGC_Argo(Argo):
 			print(msg)
 			return
 
+		# todo: if additional BGC params (>2 specified), filter results
+
 		# if profiles are found, save them to self as dataframe
 		self._parse_into_df(selectionProfiles)
 
-	def validate_parameters(self, params):
-		'https://argovis.colorado.edu/api-docs/#/catalog/get_catalog_bgc_platform_data__platform_number_'
-		pass
+	def _validate_parameters(self, params):
+		'''
+		Asserts that user-specified parameters are valid as per the Argovis documentation here:
+		https://argovis.colorado.edu/api-docs/#/catalog/get_catalog_bgc_platform_data__platform_number_
+		'''
+
+
+		valid_params = [
+			'pres',
+			'temp',
+			'psal',
+			'cndx',
+			'doxy',
+			'chla',
+			'cdom',
+			'nitrate',
+			'bbp700',
+			'down_irradiance412',
+			'down_irradiance442',
+			'down_irradiance490',
+			'downwelling_par',
+		]
+
+		for i in params:
+			assert i in valid_params, \
+				"Parameter '{0}' is not valid. Valid parameters are {1}".format(i, valid_params)
 
 
 
@@ -73,6 +101,7 @@ class BGC_Argo(Argo):
 		saves profiles back to self.profiles
 		returns None
 		"""
+		# todo: check that this makes appropriate BGC cols in the DF
 		# initialize dict
 		meas_keys = profiles[0]['bgcMeas'][0].keys()
 		df = pd.DataFrame(columns=meas_keys)
@@ -90,6 +119,12 @@ if __name__ == '__main__':
 	# no profiles available
 	# reg_a = BGC_Argo([-154, 30, -143, 37], ['2022-04-12', '2022-04-26'])
 	# 24 profiles available
+
 	reg_a = BGC_Argo([-150, 30, -120, 60], ['2022-06-07', '2022-06-21'])
-	reg_a.search_data(['doxy', 'pres'], printURL=True)
-	print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
+	# reg_a.search_data(['doxy', 'pres'], printURL=True)
+	# print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
+
+	reg_a._validate_parameters(['doxy',
+			'chla',
+			'cdomm',])
+

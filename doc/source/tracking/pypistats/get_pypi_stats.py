@@ -36,7 +36,7 @@ exist_sysdownloads = pd.read_csv(
 exist_sysdownloads["category"] = exist_sysdownloads["category"].fillna("null")
 sysdl_data = sysdownloads.merge(
     exist_sysdownloads, how="outer", on=["category", "date", "downloads"]
-)  # .reindex() removed 8/30/2022 to see if it makes for cleaner PRs
+)  # .reindex() removed 8/30/2022 to see if it makes for cleaner PRs; not as of 9/6/2022
 # except:
 #     dl_data = sysdownloads
 

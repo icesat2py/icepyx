@@ -15,6 +15,7 @@ authors:
     orcid: 0000-0003-2354-1988
     affiliation: 2
   - name: Kelsey Bisson
+    orcid: 0000-0003-4230-3467
     affiliation: 3
   - name: Anthony Arendt
     orcid: 0000-0003-0429-6905
@@ -66,7 +67,7 @@ affiliations:
    index: 1
  - name: The Ohio State University, USA
    index: 2
- - name: University of Colorado Boulder, USA
+ - name: Oregon State University, USA
    index: 3
  - name: Institution, USA
    index: 4

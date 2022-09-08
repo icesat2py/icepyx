@@ -24,7 +24,7 @@ authors:
     affiliation: 4
   - name: Zachary Fair
     orcid: 0000-0002-6047-1723
-    affiliation: 6
+    affiliation: 5
   - name: Raphael Hagen
     affiliation: 4
   - name: Sarah Hall
@@ -38,6 +38,7 @@ authors:
   - name: Tian Li
     affiliation: 8
   - name: Zheng Liu
+    orcid: 0000-0003-4132-813
     affiliation: 4
   - name: Luis Lopez
     affiliation: 9
@@ -70,7 +71,7 @@ affiliations:
    index: 2
  - name: Oregon State University, USA
    index: 3
- - name: Institution, USA
+ - name: University of Washington, USA
    index: 4
  - name: University of Washington, USA
    index: 5

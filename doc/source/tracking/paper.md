@@ -24,7 +24,7 @@ authors:
     affiliation: 4
   - name: Zachary Fair
     orcid: 0000-0002-6047-1723
-    affiliation: 5
+    affiliation: 6
   - name: Raphael Hagen
     affiliation: 4
   - name: Sarah Hall

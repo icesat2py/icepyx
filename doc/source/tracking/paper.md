@@ -22,7 +22,8 @@ authors:
     affiliation: 4
   - name: Shashank Bhushan
     affiliation: 4
-  - name: Zach Fair
+  - name: Zachary Fair
+    orcid: 0000-0002-6047-1723
     affiliation: 5
   - name: Raphael Hagen
     affiliation: 4
@@ -73,7 +74,7 @@ affiliations:
    index: 4
  - name: University of Washington, USA
    index: 5
- - name: Institution, USA
+ - name: NASA Goddard Space Flight Center, USA
    index: 6
  - name: Institution, USA
    index: 7

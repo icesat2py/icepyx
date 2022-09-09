@@ -1042,16 +1042,6 @@ class Query(GenQuery):
         if not hasattr(self, "_granules"):
             self.granules
 
-        self._granules.place_order(
-            self.CMRparams,
-            self.reqparams,
-            self.subsetparams(**kwargs),
-            verbose,
-            subset,
-            session=self._session,
-            geom_filepath=self._sp_extent.extent_file,
-        )
-
         # Place multiple orders, one per granule, if readable_granule_name is used.
         if "readable_granule_name[]" in self.CMRparams.keys():
             gran_name_list = self.CMRparams["readable_granule_name[]"]
@@ -1069,7 +1059,7 @@ class Query(GenQuery):
                     verbose,
                     subset,
                     session=self._session,
-                    geom_filepath=self._sp_extent.extent_file,
+                    geom_filepath=self._spatial._geom_file,
                 )
 
         else:
@@ -1080,7 +1070,7 @@ class Query(GenQuery):
                 verbose,
                 subset,
                 session=self._session,
-                geom_filepath=self._sp_extent.extent_file,
+                geom_filepath=self._spatial._geom_file,
             )
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!

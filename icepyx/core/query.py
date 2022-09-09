@@ -15,6 +15,7 @@ from icepyx.core.Earthdata import Earthdata
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules as Granules
 import icepyx.core.is2ref as is2ref
+
 # QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
 # from icepyx.core.granules import Granules
 from icepyx.core.variables import Variables as Variables
@@ -109,7 +110,10 @@ class GenQuery:
 
     def __str__(self):
         result = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self._sp_extent.extent_type, self._sp_extent.spatial_extent, self._temporal.start, self._temporal.end
+            self._sp_extent.extent_type,
+            self._sp_extent.spatial_extent,
+            self._temporal.start,
+            self._temporal.end,
         )
         return result
 
@@ -202,11 +206,6 @@ class Query(GenQuery):
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
     ):
-        # warnings.filterwarnings("always")
-        # warnings.warn("Please note: as of 2020-05-05,
-        # a major reorganization of the core icepyx.query code
-        # may result in errors produced by now depricated functions.
-        # Please see our documentation pages or example notebooks for updates.")
 
         # Check necessary combination of input has been specified
         if (
@@ -300,6 +299,7 @@ class Query(GenQuery):
         '001'
         """
         return self._version
+
     @property
     def temporal(self):
         """
@@ -389,7 +389,6 @@ class Query(GenQuery):
             return ("polygon", self._sp_extent.spatial_extent.exterior.coords.xy)
         else:
             return ("unknown spatial type", None)
-
 
     @property
     def dates(self):
@@ -1042,7 +1041,7 @@ class Query(GenQuery):
         # and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, "_granules"):
             self.granules
-            
+
         self._granules.place_order(
             self.CMRparams,
             self.reqparams,
@@ -1071,7 +1070,6 @@ class Query(GenQuery):
                     subset,
                     session=self._session,
                     geom_filepath=self._sp_extent.extent_file,
-
                 )
 
         else:

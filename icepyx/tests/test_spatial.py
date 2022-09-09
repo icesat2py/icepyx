@@ -161,6 +161,8 @@ def test_intlist_latlon_coords():
     expected_poly_list = Polygon(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
+    print(poly_list.spatial_extent)
+    print(expected_poly_list)
     assert poly_list.extent_type == "polygon"
     assert poly_list.extent_file is None
     assert poly_list.spatial_extent == expected_poly_list
@@ -222,6 +224,7 @@ def test_numpy_intlist_latlon_coords():
 # ########## Polygon Assertion Error tests ############################################################
 # (input for all of these tests is bad; ensuring the spatial class catches this)
 
+
 def test_odd_num_lat_long_list_poly_throws_error():
     with pytest.raises(AssertionError):
         bad_input = spat.Spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55])
@@ -237,6 +240,7 @@ def test_wrong_num_lat_long_tuple_poly_throws_error():
 def test_bad_value_types_poly():
     with pytest.raises(ValueError):
         bad_input = spat.Spatial(["a", "b", "c", "d", "e"])
+
 
 # ###################### Automatically Closed Polygon Tests ###########################################################
 
@@ -282,12 +286,14 @@ def test_poly_file_simple_one_poly():
 
     assert poly_from_file.extent_type == "polygon"
     assert poly_from_file.extent_file is not None
-    assert poly_from_file.spatial_extent == expected_poly
     assert poly_from_file.extent_file == str(
         Path(
             "./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg"
         ).resolve()
     )
+    assert poly_from_file.spatial_extent == expected_poly
+
+
 """
 TODO: test files with multiple polygons throw a warning and only select the first polygon
 """
@@ -307,8 +313,8 @@ def test_bad_poly_inputfile_type_throws_error():
         bad_input = spat.Spatial(str(Path("./icepyx/tests/test_read.py").resolve()))
 
 
-
 ########## geodataframe ##########
+
 
 def test_gdf_from_one_bbox():
 
@@ -321,8 +327,9 @@ def test_gdf_from_one_bbox():
 
     # print(exp)
     # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
-    
+
     assert obs.geometry[0] == exp.geometry[0]
+
 
 def test_gdf_from_multi_bbox():
     obs = spat.geodataframe("bounding_box", [-55, 68, -48, 71])
@@ -333,7 +340,6 @@ def test_gdf_from_multi_bbox():
     print(exp.geometry[0])
     # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
     assert obs.geometry[0] == exp.geometry[0]
-
 
 
 # TestQuestions: 1) Do these need to be tested?

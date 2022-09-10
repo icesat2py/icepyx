@@ -36,6 +36,7 @@ authors:
   - name: Friedrich Knuth
     affiliation: 7
   - name: Tian Li
+    orcid: 0000-0002-1577-4004
     affiliation: 8
   - name: Zheng Liu
     orcid: 0000-0003-4132-813
@@ -80,7 +81,7 @@ affiliations:
    index: 6
  - name: Institution, USA
    index: 7
- - name: Institution, USA
+ - name: University of Bristol, UK
    index: 8
  - name: Institution, USA
    index: 9

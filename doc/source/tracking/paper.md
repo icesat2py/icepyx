@@ -58,11 +58,11 @@ authors:
     orcid: 0000-0002-6964-1194
     affiliation: 4
   - name: JP Swinski
-    affiliation: 12
+    affiliation: 5
   - name: Bruce Wallin
     affiliation: 9
   - name: Learn2Pheonix
-    affiliation: 13
+    affiliation: 12
 
 # Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes substantially to preparing the JOSS submission will be moved into ABC order after the first three and before the non-publication contributors to icepyx. Non-responsive coauthors will be removed from the list since their permission to be included was not granted.
 
@@ -75,9 +75,9 @@ affiliations:
    index: 3
  - name: University of Washington, USA
    index: 4
- - name: University of Washington, USA
-   index: 5
  - name: NASA Goddard Space Flight Center, USA
+   index: 5
+ - name: Institution, USA
    index: 6
  - name: Institution, USA
    index: 7
@@ -91,8 +91,6 @@ affiliations:
    index: 11
  - name: Institution, USA
    index: 12
- - name: Institution, USA
-   index: 13
 date: 1 September 2022
 bibliography: icepyx_pubs.bib
 

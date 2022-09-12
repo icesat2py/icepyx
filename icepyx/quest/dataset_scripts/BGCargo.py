@@ -70,29 +70,38 @@ class BGC_Argo(Argo):
 		'''
 		Asserts that user-specified parameters are valid as per the Argovis documentation here:
 		https://argovis.colorado.edu/api-docs/#/catalog/get_catalog_bgc_platform_data__platform_number_
+
+		Returns
+		-------
+		the list of params sorted in the order in which they should be queried (least
+		commonly available to most commonly available)
 		'''
 
+		# valid params ordered by how commonly they are measured (approx)
+		valid_params = {
+			'pres':0,
+			'temp':1,
+			'psal':2,
+			'cndx':3,
+			'doxy':4,
+			'chla':5,
+			'cdom':6,
+			'nitrate':7,
+			'bbp700':8,
+			'down_irradiance412':9,
+			'down_irradiance442':10,
+			'down_irradiance490':11,
+			'downwelling_par':12,
+		}
 
-		valid_params = [
-			'pres',
-			'temp',
-			'psal',
-			'cndx',
-			'doxy',
-			'chla',
-			'cdom',
-			'nitrate',
-			'bbp700',
-			'down_irradiance412',
-			'down_irradiance442',
-			'down_irradiance490',
-			'downwelling_par',
-		]
-
+		# checks that params are valid
 		for i in params:
-			assert i in valid_params, \
-				"Parameter '{0}' is not valid. Valid parameters are {1}".format(i, valid_params)
+			assert i in valid_params.keys(), \
+				"Parameter '{0}' is not valid. Valid parameters are {1}".format(i, valid_params.keys())
 
+		# sorts params into order in which they should be queried
+		params = sorted(params, key= lambda i: valid_params[i], reverse=True)
+		return params
 
 
 	def _parse_into_df(self, profiles):
@@ -124,7 +133,10 @@ if __name__ == '__main__':
 	# reg_a.search_data(['doxy', 'pres'], printURL=True)
 	# print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
 
-	reg_a._validate_parameters(['doxy',
-			'chla',
-			'cdomm',])
+	# reg_a._validate_parameters(['doxy',
+	# 		'chla',
+	# 		'cdomm',])
 
+
+	p = reg_a._validate_parameters(['nitrate', 'pres', 'doxy'])
+	print(p)

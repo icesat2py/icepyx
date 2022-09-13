@@ -34,6 +34,7 @@ authors:
   - name: Tom Johnson
     affiliation: 6
   - name: Friedrich Knuth
+    orcid: 0000-0003-1645-1984
     affiliation: 7
   - name: Tian Li
     orcid: 0000-0002-1577-4004

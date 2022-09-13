@@ -63,7 +63,8 @@ authors:
     affiliation: 5
   - name: Bruce Wallin
     affiliation: 9
-  - name: Learn2Pheonix
+  - name: Anubhav
+    orcid: 0000-0003-4017-2862
     affiliation: 12
 
 # Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes substantially to preparing the JOSS submission will be moved into ABC order after the first three and before the non-publication contributors to icepyx. Non-responsive coauthors will be removed from the list since their permission to be included was not granted.
@@ -91,7 +92,7 @@ affiliations:
    index: 10
  - name: Institution, USA
    index: 11
- - name: Institution, USA
+ - name: University of Maryland, College Park, USA
    index: 12
 date: 1 September 2022
 bibliography: icepyx_pubs.bib

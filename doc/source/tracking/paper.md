@@ -32,6 +32,7 @@ authors:
   - name: Sarah Hall
     affiliation: 1  
   - name: Scott Henderson
+    orcid: 0000-0003-0624-4965
     affiliation: 4
   - name: Tom Johnson
     affiliation: 6

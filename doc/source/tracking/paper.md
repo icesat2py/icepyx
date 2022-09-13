@@ -25,8 +25,9 @@ authors:
   - name: Zachary Fair
     orcid: 0000-0002-6047-1723
     affiliation: 5
-  - name: Raphael Hagen
-    affiliation: 4
+  - name: Norland Raphael Hagen
+  - orcid: 0000-0003-1994-1153
+    affiliation: 6
   - name: Sarah Hall
     affiliation: 1  
   - name: Scott Henderson
@@ -78,7 +79,7 @@ affiliations:
    index: 4
  - name: NASA Goddard Space Flight Center, USA
    index: 5
- - name: Institution, USA
+ - name: CarbonPlan, USA
    index: 6
  - name: Institution, USA
    index: 7

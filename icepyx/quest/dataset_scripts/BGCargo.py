@@ -25,7 +25,12 @@ class BGC_Argo(Argo):
 		#  params. Need to iterate should the user provide more than 2, and
 		#  accommodate if user supplies only 1 param
 
-		# todo: validate list of user-entered params
+		assert len(params) != 0, 'One or more BGC measurements must be specified.'
+
+		# validate list of user-entered params, sorts into order to be queried
+		params = self._validate_parameters(params)
+
+
 		# builds URL to be submitted
 		baseURL = 'https://argovis.colorado.edu/selection/bgc_data_selection/'
 
@@ -112,10 +117,11 @@ class BGC_Argo(Argo):
 		"""
 		# todo: check that this makes appropriate BGC cols in the DF
 		# initialize dict
-		meas_keys = profiles[0]['bgcMeas'][0].keys()
-		df = pd.DataFrame(columns=meas_keys)
+		# meas_keys = profiles[0]['bgcMeasKeys']
+		# df = pd.DataFrame(columns=meas_keys)
+		df = pd.DataFrame()
 		for profile in profiles:
-			profileDf = pd.DataFrame(profile['bgcMeas'])
+			profileDf = pd.DataFrame(profile['bgcMeasKeys'])
 			profileDf['cycle_number'] = profile['cycle_number']
 			profileDf['profile_id'] = profile['_id']
 			profileDf['lat'] = profile['lat']
@@ -130,7 +136,7 @@ if __name__ == '__main__':
 	# 24 profiles available
 
 	reg_a = BGC_Argo([-150, 30, -120, 60], ['2022-06-07', '2022-06-21'])
-	# reg_a.search_data(['doxy', 'pres'], printURL=True)
+	reg_a.search_data(['doxy', 'nitrate'], printURL=True)
 	# print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
 
 	# reg_a._validate_parameters(['doxy',
@@ -138,5 +144,5 @@ if __name__ == '__main__':
 	# 		'cdomm',])
 
 
-	p = reg_a._validate_parameters(['nitrate', 'pres', 'doxy'])
-	print(p)
+	# p = reg_a._validate_parameters(['nitrate', 'pres', 'doxy'])
+	# print(p)

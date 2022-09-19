@@ -106,8 +106,7 @@ class Argo(DataSet):
 		returns None
 		"""
 		# initialize dict
-		meas_keys = profiles[0]['measurements'][0].keys()
-		df = pd.DataFrame(columns=meas_keys)
+		df = pd.DataFrame()
 		for profile in profiles:
 			profileDf = pd.DataFrame(profile['measurements'])
 			profileDf['cycle_number'] = profile['cycle_number']

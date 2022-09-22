@@ -7,6 +7,7 @@ tags:
   - elevation
   - community
   - cloud
+
 authors:
   - name: Jessica Scheick^[Corresponding author] # note this makes a footnote
     orcid: 0000-0002-3421-4459
@@ -29,13 +30,9 @@ authors:
   - name: Norland Raphael Hagen
   - orcid: 0000-0003-1994-1153
     affiliation: 6
-  - name: Sarah Hall
-    affiliation: 1  
   - name: Scott Henderson
     orcid: 0000-0003-0624-4965
     affiliation: 4
-  - name: Tom Johnson
-    affiliation: 6
   - name: Friedrich Knuth
     orcid: 0000-0003-1645-1984
     affiliation: 7
@@ -45,31 +42,23 @@ authors:
   - name: Zheng Liu
     orcid: 0000-0003-4132-813
     affiliation: 4
-  - name: Luis Lopez
-    affiliation: 9
   - name: Romina Piunno
-    affiliation: 10
+    affiliation: 9
   - name: Nitin Ravinder
-    affiliation: 11
+    affiliation: 10
   - name: Landung "Don" Setiawan
     orcid: 0000-0002-1624-2667
     affiliation: 4
-  - name: Trey Stafford
-    affiliation: 9
-  - name: Amy Steiker
-    affiliation: 9
   - name: Tyler Sutterley
     orcid: 0000-0002-6964-1194
     affiliation: 4
   - name: JP Swinski
     affiliation: 5
-  - name: Bruce Wallin
-    affiliation: 9
   - name: Anubhav
     orcid: 0000-0003-4017-2862
-    affiliation: 12
+    affiliation: 11
 
-# Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes substantially to preparing the JOSS submission will be moved into ABC order after the first three and before the non-publication contributors to icepyx. Non-responsive coauthors will be removed from the list since their permission to be included was not granted.
+# Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes substantially to preparing the JOSS submission will be moved into ABC order after the first three and before the "non-publication" contributors to icepyx. Non-responsive coauthors will be removed from the list since their permission to be included was not granted.
 
 affiliations:
  - name: University of New Hampshire, USA
@@ -88,15 +77,13 @@ affiliations:
    index: 7
  - name: University of Bristol, UK
    index: 8
- - name: Institution, USA
-   index: 9
  - name: University of Toronto, Canada
-   index: 10
+   index: 9
  - name: University of Leeds, UK
-   index: 11
+   index: 10
  - name: University of Maryland, College Park, USA
-   index: 12
-date: 1 September 2022
+   index: 11
+date: 23 September 2022
 bibliography: icepyx_pubs.bib
 
 # Optional fields if submitting to a AAS journal too, see this blog post:
@@ -131,7 +118,23 @@ icepyx is now a foundational tool for accessing and working with ICESat-2 data a
 We acknowledge funding support from NASA and the University of Washington eScience Institute.
 Anthony Arendt, Fernando Perez, Lindsey Heagey, and the Pangeo team provided invaluable support and guidance in establishing this library and welcoming us to the open-source community.
 Amy Steiker, Mikala Beig, Nick Kotlinski, Luis Lopez, and many others at the National Snow and Ice Data Center (NSIDC) provide technical support and data access guidance.
-The icepyx contributors list also includes many wonderful folks who shared ideas, provided mentoring, and embraced the opportunity to engage in open-science practices while working with ICESat-2 data products.
+The icepyx contributors list also includes many wonderful folks who shared ideas, provided mentoring, embraced the opportunity to engage in open-science practices while working with ICESat-2 data products, and contributed to icepyx.
+
+<!-- Acknowledgments (non-responsive-potential-author contributors)
+  - name: Sarah Hall
+    affiliation: 1
+  - name: Tom Johnson
+    affiliation: 6
+  - name: Luis Lopez
+    affiliation: 9
+
+  - name: Trey Stafford
+    affiliation: 9
+  - name: Amy Steiker
+    affiliation: 9
+  - name: Bruce Wallin
+    affiliation: 9
+-->
 
 <!-- Acknowledgments (non-author contributors)
 Nicole Abib

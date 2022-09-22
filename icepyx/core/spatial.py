@@ -133,9 +133,8 @@ def check_dateline(extent_type, spatial_extent):
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
     spatial_extent : list
-        A list containing the spatial extent, either a
-        list of coordinates in decimal degrees of [lower-left-longitude,
-        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
+        A list containing the spatial extent as
+        coordinates in decimal degrees of
         [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
 
 
@@ -161,12 +160,12 @@ def check_dateline(extent_type, spatial_extent):
 
     # this works properly, but limits the user to at most 270 deg longitude...
     elif extent_type == "polygon":
+        assert (
+            len(spatial_extent[0]) == 1
+        ), "Your polygon list is the wrong format for this function."
         lonlist = spatial_extent[0:-1:2]
-        if (
-            np.any(
-                abs(lonlist[i] - lonlist[i + 1]) > 270 for i in range(len(lonlist) - 1)
-            )
-            == True
+        if np.any(
+            [abs(lonlist[i] - lonlist[i + 1]) > 270 for i in range(len(lonlist) - 1)]
         ):
             print(
                 [
@@ -180,6 +179,12 @@ def check_dateline(extent_type, spatial_extent):
             )
             return True
         else:
+            # print(
+            #     [
+            #         abs(lonlist[i] - lonlist[i + 1]) > 270
+            #         for i in range(len(lonlist) - 1)
+            #     ]
+            # )
             return False
 
 

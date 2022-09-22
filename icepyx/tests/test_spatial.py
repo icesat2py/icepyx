@@ -51,6 +51,13 @@ def test_numpyfloatlist_bbox():
     assert npfloatlist_bbox.extent == [-64.2, 66.2, -55.5, 72.5]
 
 
+def test_intlist_with0_bbox():
+    npfloatlist_bbox = spat.Spatial(list(np.array([0, -80, 90, -60])))
+    assert npfloatlist_bbox._ext_type == "bounding_box"
+    assert npfloatlist_bbox._geom_file is None
+    assert npfloatlist_bbox.extent == [0, -80, 90, -60]
+
+
 # ########## Bounding Box Assertion Error tests #############################################
 # (input for all of these tests is bad; ensuring the spatial class catches this)
 
@@ -359,17 +366,24 @@ def test_bad_extent_input():
 # ###################### END GEOM FILE INPUT TESTS ####################################################################
 # ######### Dateline Crossing Tests ######################################################
 
-# TODO: Fill in tests here (all are templated); re-check the first two that currently pass
+# TODO: Fill in tests here (all are templated)
 def test_bbox_crosses_dateline():
-    obs = spat.check_dateline("bounding_box", [-55.5, 66.2, -64.2, 72.5])
-    exp = True
-    assert exp == obs
+    bboxes = [
+        [-55.5, 66.2, -64.2, 72.5],
+        [1, -71, -1, -70],
+    ]
+
+    for bbox in bboxes:
+        obs = spat.check_dateline("bounding_box", bbox)
+        exp = True
+        assert exp == obs
 
 
 def test_bbox_not_crosses_dateline():
     bboxes = [
         [-64.2, 66.2, 55.5, 72.5],
         [-55, 68, -48, 71],
+        [-1, -71, 1, -70],
     ]
     for bbox in bboxes:
         obs = spat.check_dateline("bounding_box", bbox)
@@ -377,15 +391,26 @@ def test_bbox_not_crosses_dateline():
         assert exp == obs
 
 
-# def test_poly_crosses_dateline():
-#     obs = spat.check_dateline("polygon", [-55, 68, -48, 71])
-#     exp = True
+def test_poly_wrong_input():
+    with pytest.raises(AssertionError):
+        tuplelist = spat.check_dateline(
+            "polygon",
+            [[160, -45], [160, -40], [-170, -39], [-128, -40], [-128, -45], [160, -45]],
+        )
 
 
-# def test_poly_not_crosses_dateline():
-#     obs = spat.check_dateline("polygon", [-55, 68, -48, 71])
-#     exp = False
-#     assert exp == obs
+def test_poly_crosses_dateline():
+    obs = spat.check_dateline(
+        "polygon", [160, -45, 160, -40, -170, -39, -128, -40, -128, -45, 160, -45]
+    )
+    exp = True
+    assert exp == obs
 
 
-# add some edge cases with floats near 180/90 and also with 0s
+# Note: users must manually specify their region crosses the dateline for regions spanning >90 longitude
+def test_poly_not_crosses_dateline():
+    obs = spat.check_dateline(
+        "polygon", [-55, 68, -55, 71, -48, 71, -47, 70, -48, 68, -55, 68]
+    )
+    exp = False
+    assert exp == obs

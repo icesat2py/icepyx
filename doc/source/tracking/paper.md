@@ -1,5 +1,5 @@
 ---
-title: 'icepyx'
+title: 'icepyx: querying, obtaining, analyzing, and manipulating ICESat-2 datasets'
 tags:
   - Python
   - ICESat-2

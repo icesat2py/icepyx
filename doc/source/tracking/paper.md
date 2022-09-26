@@ -103,7 +103,7 @@ icepyx also hopes to foster collaboration, open-science practices, and reproduci
 The Ice, Cloud, and Land Elevation Satellite-2 (ICESat-2) [@is2] was launched by NASA in September 2018.
 The laser altimeter on board the satellite emits green light and measures the time until each pulse is returned to the satellite's sensors.
 This information is used to determine the surface height of the land, ice, snow, trees, water, clouds, etc. that the satellite is passing over.
-The instruments provide close to 500 GB of data per day, allowing scientists to investigate the surface height of earth's features in unprecedented detail.
+The instrument provides close to 500 GB of data per day, allowing scientists to investigate the surface height of earth's features in unprecedented detail.
 
 icepyx began during the cryosphere-themed ICESat-2 Hackweek at the University of Washington in June 2019.
 At the event, a clear need for a collaborative, shared community space that combined and generalized the tooling (including code and examples past, present, and future) written by Hackweek participants, ICESat-2 Science Team members, and the data user community.

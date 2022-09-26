@@ -101,7 +101,7 @@ icepyx aims to provide a clearinghouse for code, functionality to improve intero
 icepyx also hopes to foster collaboration, open-science practices, and reproducible workflows by integrating and sharing resources.
 
 The Ice, Cloud, and Land Elevation Satellite-2 (ICESat-2) [@is2] was launched by NASA in September 2018.
-The laser altimeter on board the satellite emits green light and measures the time until each pulse is returned to the satellite's sensors.
+The laser altimeter on board the satellite emits green light to the Earth's surface and measures the time until each pulse is returned to the satellite's sensors.
 This information is used to determine the surface height of the land, ice, snow, trees, water, clouds, etc. that the satellite is passing over.
 The instrument provides close to 500 GB of data per day, allowing scientists to investigate the surface height of earth's features in unprecedented detail.
 
@@ -109,7 +109,7 @@ icepyx began during the cryosphere-themed ICESat-2 Hackweek at the University of
 At the event, a clear need for a collaborative, shared community space that combined and generalized the tooling (including code and examples past, present, and future) written by Hackweek participants, ICESat-2 Science Team members, and the data user community.
 This project combined and generalized the existing scripts into a unified framework, adding examples, documentation, and testing where necessary and making them accessible for everyone.
 The library and community continue to grow and evolve, adding new features and building scientific literacy in open-science, cloud computing, and collaborative development practices.
-icepyx is now a foundational tool for accessing and working with ICESat-2 data and is featured in multiple scientific publications[@Bisson:2021; @Fernando:2021; @Li:2020], presentations [@js2021agu; @js2020agu; @js2019agu], and educational events/Hackweeks [@2022_IS2-HW-tutorials; @2020_IS2-HW-tutorials].
+icepyx is now a foundational tool for accessing and working with ICESat-2 data and is featured in multiple scientific publications [@Bisson:2021; @Fernando:2021; @Li:2020], presentations [@js2021agu; @js2020agu; @js2019agu], and educational events/Hackweeks [@2022_IS2-HW-tutorials; @2020_IS2-HW-tutorials].
 
 # Acknowledgements
 

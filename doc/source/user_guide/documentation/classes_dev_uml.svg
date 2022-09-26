@@ -18,7 +18,7 @@
 <text text-anchor="start" x="8" y="-196.3" font-family="Times,serif" font-size="14.00">capability_url</text>
 <text text-anchor="start" x="8" y="-181.3" font-family="Times,serif" font-size="14.00">email</text>
 <text text-anchor="start" x="8" y="-166.3" font-family="Times,serif" font-size="14.00">netrc : NoneType</text>
-<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : NoneType, str</text>
+<text text-anchor="start" x="8" y="-151.3" font-family="Times,serif" font-size="14.00">pswd : str, NoneType</text>
 <text text-anchor="start" x="8" y="-136.3" font-family="Times,serif" font-size="14.00">session : Session</text>
 <text text-anchor="start" x="8" y="-121.3" font-family="Times,serif" font-size="14.00">uid</text>
 <polyline fill="none" stroke="black" points="0,-113.5 301,-113.5 "/>
@@ -266,7 +266,7 @@
 <polygon fill="none" stroke="black" points="1332,-0.5 1332,-294.5 1821,-294.5 1821,-0.5 1332,-0.5"/>
 <text text-anchor="middle" x="1576.5" y="-279.3" font-family="Times,serif" font-size="14.00">Variables</text>
 <polyline fill="none" stroke="black" points="1332,-271.5 1821,-271.5 "/>
-<text text-anchor="start" x="1340" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : list, NoneType</text>
+<text text-anchor="start" x="1340" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : NoneType, list</text>
 <text text-anchor="start" x="1340" y="-241.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
 <text text-anchor="start" x="1340" y="-226.3" font-family="Times,serif" font-size="14.00">_vartype</text>
 <text text-anchor="start" x="1340" y="-211.3" font-family="Times,serif" font-size="14.00">_version : NoneType</text>

@@ -106,7 +106,7 @@ This information is used to determine the surface height of the land, ice, snow,
 The instrument provides close to 500 GB of data per day, allowing scientists to investigate the surface height of earth's features in unprecedented detail.
 
 icepyx began during the cryosphere-themed ICESat-2 Hackweek at the University of Washington in June 2019.
-At the event, a clear need for a collaborative, shared community space that combined and generalized the tooling (including code and examples past, present, and future) written by Hackweek participants, ICESat-2 Science Team members, and the data user community.
+At the event, there was a clear need for a collaborative, shared community space that combined and generalized the tools and materials written by past, present, and future Hackweek participants, ICESat-2 Science Team members, and the data user community.
 A unified framework of code and documentated examples for downloading, reading, and visualizing ICESat-2 data that is well tested makes it more accessible for everyone to use.
 The library and community continue to grow and evolve, adding new features and building scientific literacy in open-science, cloud computing, and collaborative development best practices.
 icepyx is now a foundational tool for accessing and working with ICESat-2 data and is featured in multiple scientific publications [@Bisson:2021; @Fernando:2021; @Li:2020], presentations [@js2021agu; @js2020agu; @js2019agu], and educational events/Hackweeks [@2022_IS2-HW-tutorials; @2020_IS2-HW-tutorials].

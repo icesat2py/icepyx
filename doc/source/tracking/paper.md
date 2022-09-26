@@ -35,17 +35,17 @@ authors:
     affiliation: 4
   - name: Friedrich Knuth
     orcid: 0000-0003-1645-1984
-    affiliation: 7
+    affiliation: 4
   - name: Tian Li
     orcid: 0000-0002-1577-4004
-    affiliation: 8
+    affiliation: 7
   - name: Zheng Liu
     orcid: 0000-0003-4132-813
     affiliation: 4
   - name: Romina Piunno
-    affiliation: 9
+    affiliation: 8
   - name: Nitin Ravinder
-    affiliation: 10
+    affiliation: 9
   - name: Landung "Don" Setiawan
     orcid: 0000-0002-1624-2667
     affiliation: 4
@@ -56,7 +56,7 @@ authors:
     affiliation: 5
   - name: Anubhav
     orcid: 0000-0003-4017-2862
-    affiliation: 11
+    affiliation: 10
 
 # Note: first three authors are driving the publication. Additional contributors/authors are listed in alphabetical order by last name. Anyone who also contributes substantially to preparing the JOSS submission will be moved into ABC order after the first three and before the "non-publication" contributors to icepyx. Non-responsive coauthors will be removed from the list since their permission to be included was not granted.
 
@@ -73,16 +73,14 @@ affiliations:
    index: 5
  - name: CarbonPlan, USA
    index: 6
- - name: Institution, USA
-   index: 7
  - name: University of Bristol, UK
-   index: 8
+   index: 7
  - name: University of Toronto, Canada
-   index: 9
+   index: 8
  - name: University of Leeds, UK
-   index: 10
+   index: 9
  - name: University of Maryland, College Park, USA
-   index: 11
+   index: 10
 date: 23 September 2022
 bibliography: icepyx_pubs.bib
 

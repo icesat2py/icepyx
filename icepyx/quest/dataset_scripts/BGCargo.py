@@ -68,6 +68,9 @@ class BGC_Argo(Argo):
 
 		# todo: if additional BGC params (>2 specified), filter results
 
+
+		self._filter_profiles(selectionProfiles, params)
+
 		# if profiles are found, save them to self as dataframe
 		self._parse_into_df(selectionProfiles)
 
@@ -107,6 +110,19 @@ class BGC_Argo(Argo):
 		# sorts params into order in which they should be queried
 		params = sorted(params, key= lambda i: valid_params[i], reverse=True)
 		return params
+
+	def _filter_profiles(self, profiles, params):
+		'''
+		from a dictionary of all profiles returned by first API request, remove the
+		profiles that do not contain ALL BGC measurements specified by user
+		'''
+		# todo: filter out BGC profiles
+
+		for i in profiles:
+			bgc_meas = i['bgcMeasKeys']
+			check = all(item in bgc_meas for item in params)
+			if check:
+				print(i['_id'])
 
 
 	def _parse_into_df(self, profiles):

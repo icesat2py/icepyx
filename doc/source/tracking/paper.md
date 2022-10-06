@@ -28,7 +28,7 @@ authors:
     orcid: 0000-0002-6047-1723
     affiliation: 5
   - name: Norland Raphael Hagen
-  - orcid: 0000-0003-1994-1153
+    orcid: 0000-0003-1994-1153
     affiliation: 6
   - name: Scott Henderson
     orcid: 0000-0003-0624-4965

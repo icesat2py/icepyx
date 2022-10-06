@@ -131,9 +131,18 @@ def test_list_pairs_polygon():
     poly_list_pair = spat.Spatial(
         [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
     )
-    expected_poly_list_pair = Polygon(
-        [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
-    )
+    expected_poly_list_pair = [
+        -55.0,
+        68.0,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.0,
+        -55.0,
+        68.0,
+    ]
 
     assert poly_list_pair._ext_type == "polygon"
     assert poly_list_pair._geom_file is None
@@ -144,9 +153,18 @@ def test_tuple_latlon_pairs():
     poly_tuple_pair = spat.Spatial(
         [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
     )
-    expected_poly_tuple_pair = Polygon(
-        [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
-    )
+    expected_poly_tuple_pair = [
+        -55.0,
+        68.0,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.0,
+        -55.0,
+        68.0,
+    ]
 
     assert poly_tuple_pair._ext_type == "polygon"
     assert poly_tuple_pair._geom_file is None
@@ -155,11 +173,19 @@ def test_tuple_latlon_pairs():
 
 def test_intlist_latlon_coords():
     poly_list = spat.Spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68])
-    expected_poly_list = Polygon(
-        [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
-    )
-    print(poly_list.extent)
-    print(expected_poly_list)
+    expected_poly_list = [
+        -55.0,
+        68.0,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.0,
+        -55.0,
+        68.0,
+    ]
+
     assert poly_list._ext_type == "polygon"
     assert poly_list._geom_file is None
     assert poly_list.extent == expected_poly_list
@@ -169,9 +195,18 @@ def test_floatlist_latlon_coords():
     poly_float_list = spat.Spatial(
         [-55.0, 68.7, -55.0, 71, -48, 71, -48, 68.7, -55.0, 68.7]
     )
-    expected_poly_float_list = Polygon(
-        [[-55.0, 68.7], [-55.0, 71], [-48, 71], [-48, 68.7], [-55.0, 68.7]]
-    )
+    expected_poly_float_list = [
+        -55.0,
+        68.7,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.7,
+        -55.0,
+        68.7,
+    ]
 
     assert poly_float_list._ext_type == "polygon"
     assert poly_float_list._geom_file is None
@@ -185,9 +220,18 @@ def test_numpy_list_pairs_polygon():
     poly_list_pair = spat.Spatial(
         np.array([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
     )
-    expected_poly_list_pair = Polygon(
-        [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
-    )
+    expected_poly_list_pair = [
+        -55.0,
+        68.0,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.0,
+        -55.0,
+        68.0,
+    ]
 
     assert poly_list_pair._ext_type == "polygon"
     assert poly_list_pair._geom_file is None
@@ -198,9 +242,18 @@ def test_numpy_tuple_latlon_pairs():
     poly_tuple_pair = spat.Spatial(
         np.array([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
     )
-    expected_poly_tuple_pair = Polygon(
-        [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
-    )
+    expected_poly_tuple_pair = [
+        -55.0,
+        68.0,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.0,
+        -55.0,
+        68.0,
+    ]
 
     assert poly_tuple_pair._ext_type == "polygon"
     assert poly_tuple_pair._geom_file is None
@@ -209,9 +262,18 @@ def test_numpy_tuple_latlon_pairs():
 
 def test_numpy_intlist_latlon_coords():
     poly_list = spat.Spatial(np.array([-55, 68, -55, 71, -48, 71, -48, 68, -55, 68]))
-    expected_poly_list = Polygon(
-        [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
-    )
+    expected_poly_list = [
+        -55.0,
+        68.0,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.0,
+        -55.0,
+        68.0,
+    ]
 
     assert poly_list._ext_type == "polygon"
     assert poly_list._geom_file is None
@@ -244,9 +306,18 @@ def test_bad_value_types_poly():
 
 def test_poly_tuple_latlon_pairs_auto_close():
     poly_tuple_pair = spat.Spatial([(-55, 68), (-55, 71), (-48, 71), (-48, 68)])
-    expected_poly_tuple_pair = Polygon(
-        [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
-    )
+    expected_poly_tuple_pair = [
+        -55.0,
+        68.0,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.0,
+        -55.0,
+        68.0,
+    ]
 
     assert poly_tuple_pair._ext_type == "polygon"
     assert poly_tuple_pair._geom_file is None
@@ -255,9 +326,18 @@ def test_poly_tuple_latlon_pairs_auto_close():
 
 def test_poly_list_auto_close():
     poly_list = spat.Spatial([-55, 68, -55, 71, -48, 71, -48, 68])
-    expected_poly_list = Polygon(
-        [[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]]
-    )
+    expected_poly_list = [
+        -55.0,
+        68.0,
+        -55.0,
+        71.0,
+        -48.0,
+        71.0,
+        -48.0,
+        68.0,
+        -55.0,
+        68.0,
+    ]
 
     assert poly_list._ext_type == "polygon"
     assert poly_list._geom_file is None
@@ -277,9 +357,9 @@ def test_poly_file_simple_one_poly():
             ).resolve()
         )
     )
-    # print(poly_from_file._geom_file)
-    # print(poly_from_file.extent)
-    expected_poly = Polygon([[-55, 68], [-55, 71], [-48, 71], [-48, 68], [-55, 68]])
+
+    print(poly_from_file.extent)
+    expected_poly = [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
 
     assert poly_from_file._ext_type == "polygon"
     assert poly_from_file._geom_file is not None
@@ -325,7 +405,7 @@ def test_gdf_from_one_bbox():
     # print(exp)
     # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
 
-    assert obs.geometry[0] == exp.geometry[0]
+    assert obs.geometry[0].equals(exp.geometry[0])
 
 
 def test_gdf_from_multi_bbox():
@@ -336,7 +416,7 @@ def test_gdf_from_multi_bbox():
     print(obs.geometry[0])
     print(exp.geometry[0])
     # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
-    assert obs.geometry[0] == exp.geometry[0]
+    assert obs.geometry[0].equals(exp.geometry[0])
 
 
 # TestQuestions: 1) Do these need to be tested?

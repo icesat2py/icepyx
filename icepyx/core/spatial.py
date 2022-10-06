@@ -55,6 +55,8 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
 
     if xdateline is not None:
         xdateline = xdateline
+    elif file:
+        pass
     else:
         xdateline = check_dateline(extent_type, spatial_extent)
     print("this should cross the dateline:" + str(xdateline))
@@ -160,8 +162,8 @@ def check_dateline(extent_type, spatial_extent):
 
     # this works properly, but limits the user to at most 270 deg longitude...
     elif extent_type == "polygon":
-        assert (
-            len(spatial_extent[0]) == 1
+        assert not isinstance(
+            spatial_extent[0], (list, tuple)
         ), "Your polygon list is the wrong format for this function."
         lonlist = spatial_extent[0:-1:2]
         if np.any(
@@ -491,7 +493,13 @@ class Spatial:
             self._ext_type, self._gdf_spat, self._geom_file = validate_polygon_file(
                 spatial_extent
             )
-            self._spatial_ext = self._gdf_spat.geometry.unary_union.boundary
+
+            # TODO: check that adding this to get tests to pass didn't break anything else
+            extpoly = self._gdf_spat.geometry.unary_union.boundary
+            arrpoly = (
+                ",".join([str(c) for xy in zip(*extpoly.coords.xy) for c in xy])
+            ).split(",")
+            self._spatial_ext = [float(i) for i in arrpoly]
 
         # check for cross dateline keyword submission
         if "xdateline" in kwarg.keys():

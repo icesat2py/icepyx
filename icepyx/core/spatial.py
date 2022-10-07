@@ -111,16 +111,15 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
     # DevGoal: Currently this elif isn't tested...
     elif extent_type == "polygon" and file == True:
-        print(spatial_extent)
+        # print(spatial_extent)
         gdf = gpd.read_file(spatial_extent)
 
     else:
         raise TypeError(
-            "Your spatial extent type is not an accepted input and a geodataframe cannot be constructed"
+            r"Your spatial extent type ("
+            + extent_type
+            + r") is not an accepted input and a geodataframe cannot be constructed"
         )
-        # TODO: Get this working again
-        # DevNote: can't get test for this else to pass if print the extent_type in the string...
-        # raise TypeError("Your spatial extent type (" + extent_type + ") is not an accepted input and a geodataframe cannot be constructed")
 
     return gdf
 

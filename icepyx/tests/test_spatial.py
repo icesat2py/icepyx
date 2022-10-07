@@ -4,6 +4,7 @@ import numpy as np
 import os
 from pathlib import Path
 import pytest
+import re
 from shapely.geometry import Polygon
 import warnings
 
@@ -345,6 +346,7 @@ def test_poly_list_auto_close():
 
 
 # ###################### END POLYGON NO FILE TESTS ####################################################################
+
 # ######### Geom File Input Tests ######################################################
 
 
@@ -358,7 +360,6 @@ def test_poly_file_simple_one_poly():
         )
     )
 
-    print(poly_from_file.extent)
     expected_poly = [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
 
     assert poly_from_file._ext_type == "polygon"
@@ -372,7 +373,7 @@ def test_poly_file_simple_one_poly():
 
 
 """
-TODO: test files with multiple polygons throw a warning and only select the first polygon
+TODO: test files with multiple polygons
 """
 
 # ########## Geom File Assertion Error tests ############################################################
@@ -399,12 +400,9 @@ def test_gdf_from_one_bbox():
     geom = [Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))]
     exp = gpd.GeoDataFrame(geometry=geom)
 
-    # print(obs.geometry[0])
-    # print(exp.geometry[0])
-
-    # print(exp)
-    # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
-
+    # make sure there is only one geometry before comparing them
+    assert len(obs.geometry) == 1
+    assert len(exp.geometry) == 1
     assert obs.geometry[0].equals(exp.geometry[0])
 
 
@@ -413,9 +411,9 @@ def test_gdf_from_multi_bbox():
     geom = [Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))]
     exp = gpd.GeoDataFrame(geometry=geom)
 
-    print(obs.geometry[0])
-    print(exp.geometry[0])
-    # DevNote: this feels like a questionable test to me, since it specifies the first entry (though there should only be one)
+    # make sure there is only one geometry before comparing them
+    assert len(obs.geometry) == 1
+    assert len(exp.geometry) == 1
     assert obs.geometry[0].equals(exp.geometry[0])
 
 
@@ -435,18 +433,19 @@ def test_gdf_from_multi_bbox():
 # def test_gdf_from_filepoly_multi_simple():
 
 
-def test_bad_extent_input():
-    ermsg = "Your spatial extent type is not an accepted input and a geodataframe cannot be constructed"
-    # DevNote: can't get the test to pass if the extent_type is included. Not sure why the strings "don't match"
-    # ermsg = "Your spatial extent type (polybox) is not an accepted input and a geodataframe cannot be constructed"
+def test_bad_extent_type_input():
+    ermsg = re.escape(
+        r"Your spatial extent type (polybox) is not an accepted input and a geodataframe cannot be constructed"
+    )
     with pytest.raises(TypeError, match=ermsg):
         spat.geodataframe("polybox", [1, 2, 3, 4])
 
 
 # ###################### END GEOM FILE INPUT TESTS ####################################################################
+
 # ######### Dateline Crossing Tests ######################################################
 
-# TODO: Fill in tests here (all are templated)
+
 def test_bbox_crosses_dateline():
     bboxes = [
         [-55.5, 66.2, -64.2, 72.5],

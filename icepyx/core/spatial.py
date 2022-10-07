@@ -493,11 +493,24 @@ class Spatial:
                 spatial_extent
             )
 
-            # TODO: check that adding this to get tests to pass didn't break anything else
+            # TODO: assess if it's necessary to have a value for _spatial_extent if the input is a file (since it can be plotted from the gdf)
             extpoly = self._gdf_spat.geometry.unary_union.boundary
-            arrpoly = (
-                ",".join([str(c) for xy in zip(*extpoly.coords.xy) for c in xy])
-            ).split(",")
+
+            try:
+                arrpoly = (
+                    ",".join([str(c) for xy in zip(*extpoly.coords.xy) for c in xy])
+                ).split(",")
+            except NotImplementedError:
+                arrpoly = (
+                    ",".join(
+                        [
+                            str(c)
+                            for xy in zip(*extpoly.envelope.boundary.coords.xy)
+                            for c in xy
+                        ]
+                    )
+                ).split(",")
+
             self._spatial_ext = [float(i) for i in arrpoly]
 
         # check for cross dateline keyword submission

@@ -59,7 +59,7 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
         pass
     else:
         xdateline = check_dateline(extent_type, spatial_extent)
-    print("this should cross the dateline:" + str(xdateline))
+    # print("this should cross the dateline:" + str(xdateline))
 
     if extent_type == "bounding_box":
         if xdateline == True:
@@ -111,7 +111,6 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
     # DevGoal: Currently this elif isn't tested...
     elif extent_type == "polygon" and file == True:
-        # print(spatial_extent)
         gdf = gpd.read_file(spatial_extent)
 
     else:
@@ -168,24 +167,12 @@ def check_dateline(extent_type, spatial_extent):
         if np.any(
             [abs(lonlist[i] - lonlist[i + 1]) > 270 for i in range(len(lonlist) - 1)]
         ):
-            print(
-                [
-                    abs(lonlist[i] - lonlist[i + 1]) > 270
-                    for i in range(len(lonlist) - 1)
-                ]
-            )
             warnings.warn(
                 "Your polygon was identified as crossing the dateline."
                 "If this is not correct, please add `xdateline=False` to your `ipx.Query`"
             )
             return True
         else:
-            # print(
-            #     [
-            #         abs(lonlist[i] - lonlist[i + 1]) > 270
-            #         for i in range(len(lonlist) - 1)
-            #     ]
-            # )
             return False
 
 
@@ -608,7 +595,7 @@ class Spatial:
 
 
         >>> reg_a = Spatial(str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()))
-        >>> reg_a.extent_file
+        >>> reg_a.extent_file # doctest: +SKIP
         ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
         """
         return self._geom_file
@@ -623,7 +610,7 @@ class Spatial:
 
         CMR spatial inputs must be formatted a specific way.
         This method formats the given spatial extent to be a valid submission.
-        For large/complex polygons, this includes simplifying the polygon.
+        For large/complex polygons, this includes simplifying the polygon (NOTE: currently not all polygons are simplified enough).
         Coordinates will be properly ordered, and the required string formatting applied.
         For small regions, a buffer may be added.
 

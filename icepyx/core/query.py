@@ -1153,14 +1153,13 @@ class Query(GenQuery):
         """
 
         gdf = self._spatial.extent_as_gdf
-        print(gdf)
+
         try:
             from shapely.geometry import Polygon
             import geoviews as gv
 
             gv.extension("bokeh")
 
-            # line_geoms = Polygon(getgdf["geometry"]).boundary
             bbox_poly = gv.Path(gdf["geometry"]).opts(color="red", line_color="red")
             tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
             return tile * bbox_poly

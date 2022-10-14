@@ -90,7 +90,7 @@ class GenQuery:
     >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
     >>> print(reg_a)
     Extent type: polygon
-    Coordinates: [-55 68, -55 71, -48 71, -48 68, -55 68]
+    Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
     Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
 
     Initializing Query with a geospatial polygon file.
@@ -100,7 +100,7 @@ class GenQuery:
     >>> reg_a = GenQuery(aoi, reg_a_dates)
     >>> print(reg_a)
     Extent type: polygon
-    Coordinates: [-55 68, -55 71, -48 71, -48 68, -55 68]
+    Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
     Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
 
     See Also

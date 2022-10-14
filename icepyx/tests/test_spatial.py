@@ -372,10 +372,6 @@ def test_poly_file_simple_one_poly():
     assert poly_from_file.extent == expected_poly
 
 
-"""
-TODO: test files with multiple polygons
-"""
-
 # ########## Geom File Assertion Error tests ############################################################
 
 # (input for all of these tests is bad; ensuring the spatial class catches this)

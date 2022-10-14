@@ -1,0 +1,51 @@
+.. _whatsnew_064:
+
+What's new in 0.6.4 (17 October 2022)
+-----------------------------------
+
+These are the changes in icepyx 0.6.4 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- create spatial class, automatic polygon closure functionality (#322)
+- add cross-dateline flag and handling (including in function to create geodataframe) (#331)
+
+
+Bug fixes
+~~~~~~~~~
+
+- None
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+^^^^^^^^^^^
+
+- add existing contributors using the AllContributors bot (#332-333, #335-360, #365-368)
+- clean up after adding all contribs via bot (#334)
+- update traffic data and scripts (#363, #369)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- update bib file and contribs formatting (#364)
+
+
+Other
+^^^^^
+
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.6.3..v0.6.4|HEAD

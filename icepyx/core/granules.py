@@ -209,7 +209,7 @@ class Granules:
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
 
-        if cloud == True:
+        if cloud:
             prov_flag = "NSIDC_CPRD"
         else:
             prov_flag = "NSIDC_ECS"

@@ -184,7 +184,7 @@ class Granules:
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
         cloud : boolean, default False
-            Wether or not you want data available in the cloud (versus on premises).
+            Whether or not you want data available in the cloud (versus on premises).
 
         Notes
         -----

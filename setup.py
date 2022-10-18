@@ -26,7 +26,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["*tests"]),
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRE,
-    python_requires=">=3, <3.11",
+    python_requires=">=3, <3.12",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
@@ -37,6 +37,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: GIS",
         "Topic :: Software Development :: Libraries",

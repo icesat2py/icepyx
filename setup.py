@@ -26,7 +26,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["*tests"]),
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRE,
-    python_requires=">=3, <3.12",
+    python_requires=">=3",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",

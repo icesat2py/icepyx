@@ -908,7 +908,7 @@ class Query(GenQuery):
         self._email = email
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self, ids=False, cycles=False, tracks=False, s3urls=False):
+    def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):
         """
         Obtain information about the available granules for the query
         object's parameters. By default, a complete list of available granules is
@@ -926,8 +926,10 @@ class Query(GenQuery):
         tracks : boolean, default False
             Indicates whether the function should return a list of RGTs.
 
-        s3urls : boolean, default False
-            Indicates whether the function should return a list of potential AWS s3 urls.
+        cloud : boolean, default False
+            Indicates whether the function should return data available in the cloud.
+            Note: except in rare cases while data is in the process of being appended to,
+            data available in the cloud and for download via on-premesis will be identical.
 
         Examples
         --------
@@ -952,16 +954,16 @@ class Query(GenQuery):
         try:
             self.granules.avail
         except AttributeError:
-            self.granules.get_avail(self.CMRparams, self.reqparams)
+            self.granules.get_avail(self.CMRparams, self.reqparams, cloud=cloud)
 
-        if ids or cycles or tracks or s3urls:
-            # list of outputs in order of ids, cycles, tracks, s3urls
+        if ids or cycles or tracks or cloud:
+            # list of outputs in order of ids, cycles, tracks, cloud
             return granules.gran_IDs(
                 self.granules.avail,
                 ids=ids,
                 cycles=cycles,
                 tracks=tracks,
-                s3urls=s3urls,
+                cloud=cloud,
             )
         else:
             return granules.info(self.granules.avail)

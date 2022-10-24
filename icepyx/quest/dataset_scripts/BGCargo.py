@@ -27,6 +27,9 @@ class BGC_Argo(Argo):
 
 		assert len(params) != 0, 'One or more BGC measurements must be specified.'
 
+		if not 'pres' in params:
+			params.append('pres')
+
 		# validate list of user-entered params, sorts into order to be queried
 		params = self._validate_parameters(params)
 
@@ -74,6 +77,12 @@ class BGC_Argo(Argo):
 		# if profiles are found, save them to self as dataframe
 		self._parse_into_df(selectionProfiles)
 
+		# todo: download additional params
+		'''
+		make api request by profile to download additional params
+		then append the necessary cols to the df
+		'''
+
 	def _validate_parameters(self, params):
 		'''
 		Asserts that user-specified parameters are valid as per the Argovis documentation here:
@@ -117,12 +126,16 @@ class BGC_Argo(Argo):
 		profiles that do not contain ALL BGC measurements specified by user
 		'''
 		# todo: filter out BGC profiles
-
+		good_profs = []
 		for i in profiles:
 			bgc_meas = i['bgcMeasKeys']
 			check = all(item in bgc_meas for item in params)
 			if check:
+				good_profs.append(i)
 				print(i['_id'])
+
+		profiles = good_profs
+		print()
 
 
 	def _parse_into_df(self, profiles):
@@ -137,7 +150,7 @@ class BGC_Argo(Argo):
 		# df = pd.DataFrame(columns=meas_keys)
 		df = pd.DataFrame()
 		for profile in profiles:
-			profileDf = pd.DataFrame(profile['bgcMeasKeys'])
+			profileDf = pd.DataFrame(profile['bgcMeas'])
 			profileDf['cycle_number'] = profile['cycle_number']
 			profileDf['profile_id'] = profile['_id']
 			profileDf['lat'] = profile['lat']
@@ -152,7 +165,7 @@ if __name__ == '__main__':
 	# 24 profiles available
 
 	reg_a = BGC_Argo([-150, 30, -120, 60], ['2022-06-07', '2022-06-21'])
-	reg_a.search_data(['doxy', 'nitrate'], printURL=True)
+	reg_a.search_data(['doxy', 'nitrate', 'down_irradiance412'], printURL=True)
 	# print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
 
 	# reg_a._validate_parameters(['doxy',

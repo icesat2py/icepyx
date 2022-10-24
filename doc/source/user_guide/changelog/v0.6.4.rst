@@ -17,7 +17,7 @@ New Features
 Bug fixes
 ~~~~~~~~~
 
-- None
+- fixed several geospatial/cross-dateline issues (see New Features)
 
 
 Deprecations
@@ -31,17 +31,15 @@ Maintenance
 
 - add existing contributors using the AllContributors bot (#332-333, #335-360, #365-368)
 - clean up after adding all contribs via bot (#334)
-- update traffic data and scripts (#363, #369)
+- update traffic data and scripts (#363, #369, #383)
 
 
 Documentation
 ^^^^^^^^^^^^^
 
 - update bib file and contribs formatting (#364)
+- update cloud tutorial to work with publicly accessible cloud data (#381)
 
-
-Other
-^^^^^
 
 
 

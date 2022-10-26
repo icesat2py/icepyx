@@ -345,6 +345,9 @@ def test_gdf_from_multi_bbox():
 # TestQuestions: 1) Do these need to be tested?
 # 2) Is the best way to test them with lengthy inputs and seeing if the gdfs are the same?
 
+# It may be best to leave these for testing when betterspat is completed;
+# that way, we know what the expected inputs/formats of outputs are. -sjh1024
+
 # def test_gdf_from_strpoly_one_simple():
 
 # def test_gdf_from_strpoly_multi_simple():

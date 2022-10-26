@@ -442,28 +442,24 @@ def test_bad_extent_type_input():
 # ######### Dateline Crossing Tests ######################################################
 
 
-def test_bbox_crosses_dateline():
-    bboxes = [
-        [-55.5, 66.2, -64.2, 72.5],
-        [1, -71, -1, -70],
-    ]
-
-    for bbox in bboxes:
-        obs = spat.check_dateline("bounding_box", bbox)
-        exp = True
-        assert exp == obs
+@pytest.mark.parametrize(
+    "bbox",
+    [[-55.5, 66.2, -64.2, 72.5], [1, -71, -1, -70]],
+)
+def test_bbox_crosses_dateline(bbox):
+    obs = spat.check_dateline("bounding_box", bbox)
+    exp = True
+    assert exp == obs
 
 
-def test_bbox_not_crosses_dateline():
-    bboxes = [
-        [-64.2, 66.2, 55.5, 72.5],
-        [-55, 68, -48, 71],
-        [-1, -71, 1, -70],
-    ]
-    for bbox in bboxes:
-        obs = spat.check_dateline("bounding_box", bbox)
-        exp = False
-        assert exp == obs
+@pytest.mark.parametrize(
+    "bbox",
+    [[-64.2, 66.2, 55.5, 72.5], [-55, 68, -48, 71], [-1, -71, 1, -70]],
+)
+def test_bbox_not_crosses_dateline(bbox):
+    obs = spat.check_dateline("bounding_box", bbox)
+    exp = False
+    assert exp == obs
 
 
 def test_poly_wrong_input():

@@ -606,7 +606,7 @@ class Spatial:
     # TODO: can use this docstring as a todo list
     def fmt_for_CMR(self):
         """
-        Format the spatial extent for the CMR API.
+        Format the spatial extent for NASA's Common Metadata Repository (CMR) API.
 
         CMR spatial inputs must be formatted a specific way.
         This method formats the given spatial extent to be a valid submission.

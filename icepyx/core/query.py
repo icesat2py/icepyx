@@ -63,8 +63,6 @@ class GenQuery:
         End time in UTC/Zulu (24 hour clock). If None, use default.
         TODO: check for time in date-range date-time object, if that's used for input.
 
-    Arguments
-    ---------
     xdateline : boolean, default None
         Keyword argument to enforce spatial inputs that cross the dateline.
 
@@ -322,7 +320,7 @@ class Query(GenQuery):
     @property
     def spatial(self):
         """
-        Return the spatial object, which provides the underlying funtionality for validating
+        Return the spatial object, which provides the underlying functionality for validating
         and formatting geospatial objects. The spatial object has several properties to enable
         user access to the stored spatial extent in multiple formats.
 

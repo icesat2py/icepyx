@@ -37,6 +37,8 @@ class GenQuery:
     spatial_extent : list of coordinates or string (i.e. file name)
         Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
         geospatial polygon file.
+        NOTE: Longitude values are assumed to be in the range -180 to +180,
+        with 0 being the Prime Meridian (Greenwich). See xdateline for regions crossing the date line.
         You can submit at most one bounding box or list of polygon coordinates.
         Per NSIDC requirements, geospatial polygon files may only contain one feature (polygon).
         Bounding box coordinates should be provided in decimal degrees as
@@ -62,16 +64,17 @@ class GenQuery:
     end_time : HH:mm:ss, default 23:59:59
         End time in UTC/Zulu (24 hour clock). If None, use default.
         TODO: check for time in date-range date-time object, if that's used for input.
-
     xdateline : boolean, default None
-        Keyword argument to enforce spatial inputs that cross the dateline.
+        Keyword argument to enforce spatial inputs that cross the International Date Line.
+        Internally, this will translate your longitudes to 0 to 360 to construct the
+        correct, valid Shapely geometry.
 
         WARNING: This will allow your request to be properly submitted and visualized.
         However, this flag WILL NOT automatically correct for incorrectly ordered spatial inputs.
 
     Examples
     --------
-    Init with bounding box
+    Initializing Query with a bounding box
 
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']

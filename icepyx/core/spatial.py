@@ -115,9 +115,8 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
 
     else:
         raise TypeError(
-            r"Your spatial extent type ("
-            + extent_type
-            + r") is not an accepted input and a geodataframe cannot be constructed"
+            f"Your spatial extent type ({extent_type}) is not an accepted "
+            "input and a geodataframe cannot be constructed"
         )
 
     return gdf

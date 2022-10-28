@@ -23,15 +23,18 @@ Bug fixes
 Deprecations
 ~~~~~~~~~~~~
 
-- None
+- in `ipx.Query.avail_granules` and `ipx.core.granules.gran_IDs`, 
+  the `s3urls` keyword has been changed to `cloud`.
 
 
 Maintenance
 ^^^^^^^^^^^
 
-- add existing contributors using the AllContributors bot (#332-333, #335-360, #365-368)
+- add existing contributors using the AllContributors bot (#332-333, #335-360, #365-368, #370-371)
 - clean up after adding all contribs via bot (#334)
+- add provider flag to CMR request (needed with new cloud availability) (#380)
 - update traffic data and scripts (#363, #369, #383)
+- enable support for Python 3.10 and 3.11 (#372)
 
 
 Documentation

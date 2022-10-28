@@ -19,7 +19,7 @@ def update_csv(string):
     except FileNotFoundError:
         updated = pd.read_csv(defaultpath + string)
 
-    # try to remove duplicate dates; sort default is ascending (30/8/22)
+    # remove duplicate dates; sort default is ascending
     updated = updated.sort_values(f"total_{string}", ignore_index=True).drop_duplicates(
         subset="_date", keep="last"
     )

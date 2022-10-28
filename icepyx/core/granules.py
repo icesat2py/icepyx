@@ -111,9 +111,13 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=Fal
                 str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
             )
 
-            for link in gran["links"]:
-                if link["href"].startswith("s3") and link["href"].endswith(".h5"):
-                    gran_s3urls.append(link["href"])
+            try:
+                for link in gran["links"]:
+                    if link["href"].startswith("s3") and link["href"].endswith(".h5"):
+                        gran_s3urls.append(link["href"])
+            except KeyError:
+                pass
+
     # list of granule parameters
     gran_list = []
     # granule IDs

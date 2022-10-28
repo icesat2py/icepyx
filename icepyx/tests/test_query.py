@@ -33,7 +33,7 @@ def test_icepyx_boundingbox_query():
         "03:30:00",
         "21:30:00",
         "005",
-        ("bounding box", [-64.0, 66.0, -55.0, 72.0]),
+        ("bounding_box", [-64.0, 66.0, -55.0, 72.0]),
     )
 
     assert obs_tuple == exp_tuple

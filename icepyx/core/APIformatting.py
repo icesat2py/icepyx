@@ -1,13 +1,8 @@
 # Generate and format information for submitting to API (CMR and NSIDC)
 
 import datetime as dt
-import geopandas as gpd
 import pprint
-from shapely.geometry import Polygon
-from shapely.geometry.polygon import orient
-import fiona
 
-fiona.drvsupport.supported_drivers["LIBKML"] = "rw"
 
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
@@ -55,59 +50,6 @@ def _fmt_temporal(start, end, key):
         )
 
     return {key: fmt_timerange}
-
-
-def _fmt_spatial(ext_type, extent):
-    """
-    Format the spatial extent input into a spatial CMR search or subsetting key value.
-
-    Parameters
-    ----------
-    ext_type : string
-        Spatial extent type. Must be one of ['bounding_box', 'polygon'] for data searching
-        or one of ['bbox, 'Boundingshape'] for subsetting.
-    extent : list
-        Spatial extent, with input format dependent on the extent type and search.
-        Bounding box (bounding_box, bbox) coordinates should be provided in decimal degrees as
-        [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon (polygon, Boundingshape) coordinates should be provided in decimal degrees as
-        [longitude, latitude, longitude2, latitude2... longituden, latituden].
-
-    Returns
-    -------
-    dictionary with properly formatted spatial parameter for CMR search or subsetting
-
-    """
-
-    # CMR keywords: ['bounding_box', 'polygon']
-    # subsetting keywords: ['bbox','Boundingshape']
-    assert ext_type in ["bounding_box", "polygon"] or ext_type in [
-        "bbox",
-        "Boundingshape",
-    ], "Invalid spatial extent type."
-
-    if ext_type in ["bounding_box", "bbox"]:
-        fmt_extent = ",".join(map(str, extent))
-
-    elif ext_type == "polygon":
-        # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-        poly = extent.simplify(0.05, preserve_topology=False)
-        poly = orient(poly, sign=1.0)
-
-        # Format dictionary to polygon coordinate pairs for API submission
-        polygon = (
-            ",".join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])
-        ).split(",")
-        extent = [float(i) for i in polygon]
-        fmt_extent = ",".join(map(str, extent))
-
-    # DevNote: this elif currently does not have a test (seems like it would just be testing geopandas?)
-    elif ext_type == "Boundingshape":
-        poly = orient(extent, sign=1.0)
-        fmt_extent = gpd.GeoSeries(poly).to_json()
-        fmt_extent = fmt_extent.replace(" ", "")  # remove spaces for API call
-
-    return {ext_type: fmt_extent}
 
 
 def _fmt_readable_granules(dset, **kwds):
@@ -500,4 +442,4 @@ class Parameters:
                         elif kwargs["extent_type"] == "polygon":
                             k = "Boundingshape"
 
-                    self._fmted_keys.update(_fmt_spatial(k, kwargs["spatial_extent"]))
+                    self._fmted_keys.update({k: kwargs["spatial_extent"]})

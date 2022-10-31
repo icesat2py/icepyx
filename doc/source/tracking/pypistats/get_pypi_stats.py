@@ -18,11 +18,13 @@ exist_downloads = pd.read_csv(trackpath + downloadfn)  # .drop(columns=['percent
 # exist_downloads = exist_downloads[exist_downloads.category != "Total"]
 dl_data = downloads.merge(
     exist_downloads, how="outer", on=["category", "date", "downloads"]
-).reindex()
+)
 # except:
 #     dl_data = downloads
 
-dl_data.to_csv(trackpath + downloadfn, index=False)
+dl_data.sort_values(["category", "date"], ignore_index=True).to_csv(
+    trackpath + downloadfn, index=False
+)
 
 sysdownloads = pypistats.system("icepyx", total=True, format="pandas").drop(
     columns=["percent"]
@@ -36,11 +38,13 @@ exist_sysdownloads = pd.read_csv(
 exist_sysdownloads["category"] = exist_sysdownloads["category"].fillna("null")
 sysdl_data = sysdownloads.merge(
     exist_sysdownloads, how="outer", on=["category", "date", "downloads"]
-).reindex()
+)
 # except:
 #     dl_data = sysdownloads
 
-sysdl_data.to_csv(trackpath + sysdownloadfn, index=False)
+sysdl_data.sort_values(["category", "date"], ignore_index=True).to_csv(
+    trackpath + sysdownloadfn, index=False
+)
 
 dl_data = dl_data.groupby("category").get_group("without_mirrors").sort_values("date")
 

@@ -19,8 +19,8 @@ from icepyx.core.granules import Granules as Granules
 # QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
 # from icepyx.core.granules import Granules
 from icepyx.core.variables import Variables as Variables
-import icepyx.core.geospatial as geospatial
 import icepyx.core.validate_inputs as val
+import icepyx.core.spatial as spat
 from icepyx.core.visualization import Visualize
 
 
@@ -37,6 +37,10 @@ class GenQuery:
     spatial_extent : list of coordinates or string (i.e. file name)
         Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
         geospatial polygon file.
+        NOTE: Longitude values are assumed to be in the range -180 to +180,
+        with 0 being the Prime Meridian (Greenwich). See xdateline for regions crossing the date line.
+        You can submit at most one bounding box or list of polygon coordinates.
+        Per NSIDC requirements, geospatial polygon files may only contain one feature (polygon).
         Bounding box coordinates should be provided in decimal degrees as
         [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
         Polygon coordinates should be provided as coordinate pairs in decimal degrees as
@@ -44,7 +48,6 @@ class GenQuery:
         or
         [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
         Your list must contain at least four points, where the first and last are identical.
-        DevGoal: adapt code so the polygon is automatically closed if need be
         Geospatial polygon files are entered as strings with the full file path and
         must contain only one polygon with the area of interest.
         Currently supported formats are: kml, shp, and gpkg
@@ -53,18 +56,25 @@ class GenQuery:
         The required date format is 'YYYY-MM-DD' strings, where
         YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
         Currently, a list of specific dates (rather than a range) is not accepted.
-        DevGoal: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
-        DevGoal: allow searches with a list of dates, rather than a range.
+        TODO: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
+        TODO: allow searches with a list of dates, rather than a range.
     start_time : HH:mm:ss, default 00:00:00
         Start time in UTC/Zulu (24 hour clock). If None, use default.
-        DevGoal: check for time in date-range date-time object, if that's used for input.
+        TODO: check for time in date-range date-time object, if that's used for input.
     end_time : HH:mm:ss, default 23:59:59
         End time in UTC/Zulu (24 hour clock). If None, use default.
-        DevGoal: check for time in date-range date-time object, if that's used for input.
+        TODO: check for time in date-range date-time object, if that's used for input.
+    xdateline : boolean, default None
+        Keyword argument to enforce spatial inputs that cross the International Date Line.
+        Internally, this will translate your longitudes to 0 to 360 to construct the
+        correct, valid Shapely geometry.
+
+        WARNING: This will allow your request to be properly submitted and visualized.
+        However, this flag WILL NOT automatically correct for incorrectly ordered spatial inputs.
 
     Examples
     --------
-    Init with bounding box
+    Initializing Query with a bounding box
 
     >>> reg_a_bbox = [-55, 68, -48, 71]
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
@@ -81,7 +91,7 @@ class GenQuery:
     >>> reg_a = GenQuery(reg_a_poly, reg_a_dates)
     >>> print(reg_a)
     Extent type: polygon
-    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
     Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
 
     Initializing Query with a geospatial polygon file.
@@ -91,7 +101,7 @@ class GenQuery:
     >>> reg_a = GenQuery(aoi, reg_a_dates)
     >>> print(reg_a)
     Extent type: polygon
-    Coordinates: POLYGON ((-55 68, -55 71, -48 71, -48 68, -55 68))
+    Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
     Date range: (2019-02-22 00:00:00, 2019-02-28 23:59:59)
 
     See Also
@@ -101,20 +111,30 @@ class GenQuery:
     """
 
     def __init__(
-        self, spatial_extent=None, date_range=None, start_time=None, end_time=None
+        self,
+        spatial_extent=None,
+        date_range=None,
+        start_time=None,
+        end_time=None,
+        **kwargs,
     ):
         # validate & init spatial extent
-        self.extent_type, self._spat_extent, self._geom_filepath = val.spatial(
-            spatial_extent
-        )
+        if "xdateline" in kwargs.keys():
+            self._spatial = spat.Spatial(spatial_extent, xdateline=kwargs["xdateline"])
+        else:
+            self._spatial = spat.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
+        # TODO: Update this to use Temporal class when completed
         if date_range:
             self._start, self._end = val.temporal(date_range, start_time, end_time)
 
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self.extent_type, self._spat_extent, self._start, self._end
+            self._spatial._ext_type,
+            self._spatial._spatial_ext,
+            self._start,
+            self._end,
         )
         return str
 
@@ -123,7 +143,7 @@ class GenQuery:
 # Note: add files to docstring once implemented
 # DevNote: currently this class is not tested
 class Query(GenQuery):
-    r"""
+    """
     Query and get ICESat-2 data
 
     ICESat-2 Data object to query, obtain, and perform basic operations on
@@ -164,7 +184,7 @@ class Query(GenQuery):
     >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v005
-    ('bounding box', [-55.0, 68.0, -48.0, 71.0])
+    ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
     Date range ['2019-02-20', '2019-02-28']
 
     Initializing Query with a list of polygon vertex coordinate pairs.
@@ -173,9 +193,7 @@ class Query(GenQuery):
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_poly, reg_a_dates)
     >>> reg_a.spatial_extent
-    ('polygon',
-    (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]),
-    array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
+    ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
 
     Initializing Query with a geospatial polygon file.
 
@@ -184,7 +202,7 @@ class Query(GenQuery):
     >>> reg_a = Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v005
-    ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
+    ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
     Date range ['2019-02-22', '2019-02-28']
 
     See Also
@@ -206,9 +224,8 @@ class Query(GenQuery):
         cycles=None,
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
+        **kwargs,
     ):
-        # warnings.filterwarnings("always")
-        # warnings.warn("Please note: as of 2020-05-05, a major reorganization of the core icepyx.query code may result in errors produced by now depricated functions. Please see our documentation pages or example notebooks for updates.")
 
         # Check necessary combination of input has been specified
         if (
@@ -233,7 +250,7 @@ class Query(GenQuery):
 
         self._prod = is2ref._validate_product(product)
 
-        super().__init__(spatial_extent, date_range, start_time, end_time)
+        super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
         self._version = val.prod_version(self.latest_version(), version)
 
@@ -304,13 +321,47 @@ class Query(GenQuery):
         return self._version
 
     @property
+    def spatial(self):
+        """
+        Return the spatial object, which provides the underlying functionality for validating
+        and formatting geospatial objects. The spatial object has several properties to enable
+        user access to the stored spatial extent in multiple formats.
+
+        See Also
+        --------
+        spatial.Spatial.spatial_extent
+        spatial.Spatial.extent_type
+        spatial.Spatial.extent_file
+        spatial.Spatial
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.spatial # doctest: +SKIP
+        <icepyx.core.spatial.Spatial at [location]>
+
+        >>> print(reg_a.spatial)
+        Extent type: bounding_box
+        Coordinates: [-55.0, 68.0, -48.0, 71.0]
+
+        """
+        return self._spatial
+
+    @property
     def spatial_extent(self):
         """
         Return an array showing the spatial extent of the query object.
         Spatial extent is returned as an input type (which depends on how
         you initially entered your spatial data) followed by the geometry data.
         Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon data is [[array of longitudes],[array of corresponding latitudes]].
+        Polygon data is [longitude1, latitude1, longitude2, latitude2,
+                        ... longitude_n,latitude_n, longitude1,latitude1].
+
+        Returns
+        -------
+        tuple of length 2
+        First tuple element is the spatial type ("bounding box" or "polygon").
+        Second tuple element is the spatial extent as a list of coordinates.
 
         Examples
         --------
@@ -318,25 +369,24 @@ class Query(GenQuery):
         # Note: coordinates returned as float, not int
         >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
-        ('bounding box', [-55.0, 68.0, -48.0, 71.0])
+        ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
 
         >>> reg_a = Query('ATL06',[(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
         >>> reg_a.spatial_extent
-        ('polygon', (array('d', [-55.0, -55.0, -48.0, -48.0, -55.0]), array('d', [68.0, 71.0, 71.0, 68.0, 68.0])))
+        ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
 
         # NOTE Is this where we wanted to put the file-based test/example?
         # The test file path is: examples/supporting_files/simple_test_poly.gpkg
 
+        See Also
+        --------
+        Spatial.extent
+        Spatial.extent_type
+        Spatial.extent_as_gdf
+
         """
 
-        if self.extent_type == "bounding_box":
-            return ("bounding box", self._spat_extent)
-        elif self.extent_type == "polygon":
-            # return ['polygon', self._spat_extent]
-            # Note: self._spat_extent is a shapely geometry object
-            return ("polygon", self._spat_extent.exterior.coords.xy)
-        else:
-            return ("unknown spatial type", None)
+        return (self._spatial._ext_type, self._spatial._spatial_ext)
 
     @property
     def dates(self):
@@ -475,8 +525,8 @@ class Query(GenQuery):
             self._CMRparams.build_params(
                 product=self.product,
                 version=self._version,
-                extent_type=self.extent_type,
-                spatial_extent=self._spat_extent,
+                extent_type=self._spatial._ext_type,
+                spatial_extent=self._spatial.fmt_for_CMR(),
                 **kwargs,
             )
 
@@ -546,17 +596,17 @@ class Query(GenQuery):
         else:
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
-            if self._geom_filepath is not None:
+            if self._spatial._geom_file is not None:
                 self._subsetparams.build_params(
-                    geom_filepath=self._geom_filepath,
-                    extent_type=self.extent_type,
-                    spatial_extent=self._spat_extent,
+                    geom_filepath=self._spatial._geom_file,
+                    extent_type=self._spatial._ext_type,
+                    spatial_extent=self._spatial.fmt_for_EGI(),
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
-                    extent_type=self.extent_type,
-                    spatial_extent=self._spat_extent,
+                    extent_type=self._spatial._ext_type,
+                    spatial_extent=self._spatial.fmt_for_EGI(),
                     **kwargs,
                 )
 
@@ -858,7 +908,7 @@ class Query(GenQuery):
         self._email = email
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self, ids=False, cycles=False, tracks=False, s3urls=False):
+    def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):
         """
         Obtain information about the available granules for the query
         object's parameters. By default, a complete list of available granules is
@@ -876,8 +926,10 @@ class Query(GenQuery):
         tracks : boolean, default False
             Indicates whether the function should return a list of RGTs.
 
-        s3urls : boolean, default False
-            Indicates whether the function should return a list of potential AWS s3 urls.
+        cloud : boolean, default False
+            Indicates whether the function should return data available in the cloud.
+            Note: except in rare cases while data is in the process of being appended to,
+            data available in the cloud and for download via on-premesis will be identical.
 
         Examples
         --------
@@ -902,22 +954,23 @@ class Query(GenQuery):
         try:
             self.granules.avail
         except AttributeError:
-            self.granules.get_avail(self.CMRparams, self.reqparams)
+            self.granules.get_avail(self.CMRparams, self.reqparams, cloud=cloud)
 
-        if ids or cycles or tracks or s3urls:
-            # list of outputs in order of ids, cycles, tracks, s3urls
+        if ids or cycles or tracks or cloud:
+            # list of outputs in order of ids, cycles, tracks, cloud
             return granules.gran_IDs(
                 self.granules.avail,
                 ids=ids,
                 cycles=cycles,
                 tracks=tracks,
-                s3urls=s3urls,
+                cloud=cloud,
             )
         else:
             return granules.info(self.granules.avail)
 
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
-    # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
+    # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
+    # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
     def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
         """
         Place an order for the available granules for the query object.
@@ -984,7 +1037,8 @@ class Query(GenQuery):
         ):
             del self._subsetparams
 
-        # REFACTOR: add checks here to see if the granules object has been created, and also if it already has a list of avail granules (if not, need to create one and add session)
+        # REFACTOR: add checks here to see if the granules object has been created,
+        # and also if it already has a list of avail granules (if not, need to create one and add session)
         if not hasattr(self, "_granules"):
             self.granules
 
@@ -1005,7 +1059,7 @@ class Query(GenQuery):
                     verbose,
                     subset,
                     session=self._session,
-                    geom_filepath=self._geom_filepath,
+                    geom_filepath=self._spatial._geom_file,
                 )
 
         else:
@@ -1016,7 +1070,7 @@ class Query(GenQuery):
                 verbose,
                 subset,
                 session=self._session,
-                geom_filepath=self._geom_filepath,
+                geom_filepath=self._spatial._geom_file,
             )
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
@@ -1100,7 +1154,8 @@ class Query(GenQuery):
         >>> reg_a.visualize_spatial_extent # doctest: +SKIP
         [visual map output]
         """
-        gdf = geospatial.geodataframe(self.extent_type, self._spat_extent)
+
+        gdf = self._spatial.extent_as_gdf
 
         try:
             from shapely.geometry import Polygon
@@ -1108,8 +1163,7 @@ class Query(GenQuery):
 
             gv.extension("bokeh")
 
-            line_geoms = Polygon(gdf["geometry"][0]).boundary
-            bbox_poly = gv.Path(line_geoms).opts(color="red", line_color="red")
+            bbox_poly = gv.Path(gdf["geometry"]).opts(color="red", line_color="red")
             tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
             return tile * bbox_poly
 

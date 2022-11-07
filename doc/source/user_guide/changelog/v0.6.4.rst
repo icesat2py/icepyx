@@ -1,0 +1,53 @@
+.. _whatsnew_064:
+
+What's new in 0.6.4 (28 October 2022)
+-----------------------------------
+
+These are the changes in icepyx 0.6.4 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- create spatial class, automatic polygon closure functionality (#322)
+- add cross-date line flag and handling (including in function to create geodataframe) (#331)
+
+
+Bug fixes
+~~~~~~~~~
+
+- fixed several geospatial/cross-date line issues (see New Features)
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- in `ipx.Query.avail_granules` and `ipx.core.granules.gran_IDs`, 
+  the `s3urls` keyword has been changed to `cloud`.
+
+
+Maintenance
+^^^^^^^^^^^
+
+- add existing contributors using the AllContributors bot (#332-333, #335-360, #365-368, #370-371)
+- clean up after adding all contribs via bot (#334)
+- add provider flag to CMR request (needed with new cloud availability) (#380)
+- update traffic data and scripts (#363, #369, #383)
+- enable support for Python 3.10 and 3.11 (#372)
+- update json file with subsetting options to v005 of ATL06 (#387)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- update bib file and contribs formatting (#364)
+- update cloud tutorial to work with publicly accessible cloud data (#381)
+
+
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.6.3..v0.6.4|HEAD

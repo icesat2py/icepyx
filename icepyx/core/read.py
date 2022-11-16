@@ -408,9 +408,18 @@ class Read:
         else:
             import re
 
-            gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-            spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
-            # add a test for the new function (called here)!
+            # TODO: This won't work for profile (e.g. atmos) data --> needs to be generalized!
+            # TODO: put a better test/check here (try/except may not be ideal)
+            try:
+                gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
+                spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
+                spot_dim_name = "spot"
+                # add a test for the new function (called here)!
+            except AttributeError:
+                gt_str = re.match(r"profile_[1-3]", grp_path).group()
+                spot = int(gt_str[-1])
+                spot_dim_name = "profile"
+                # TODO: change "spot" to "spot_dim_name" below
 
             grp_spec_vars = [
                 k
@@ -438,6 +447,7 @@ class Read:
                 )
                 .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
                 .rename_dims({"delta_time": "photon_idx"})
+                # .set_index({"delta_time": "photon_idx"})
                 .rename({"delta_time": "photon_idx"})
                 .assign_coords(delta_time=("photon_idx", hold_delta_times))
             )

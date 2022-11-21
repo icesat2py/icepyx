@@ -20,15 +20,15 @@ class BGC_Argo(Argo):
 		'''
 		pass
 
-	def search_data(self, params, presRange=None, printURL=False):
+	def search_data(self, params, presRange=None, printURL=False, keep_all=True):
 		# todo: this currently assumes user specifies exactly two BGC search
 		#  params. Need to iterate should the user provide more than 2, and
 		#  accommodate if user supplies only 1 param
 
 		assert len(params) != 0, 'One or more BGC measurements must be specified.'
 
-		if not 'pres' in params:
-			params.append('pres')
+		# if not 'pres' in params:
+		# 	params.append('pres')
 
 		# validate list of user-entered params, sorts into order to be queried
 		params = self._validate_parameters(params)
@@ -69,19 +69,43 @@ class BGC_Argo(Argo):
 			print(msg)
 			return
 
-		# todo: if additional BGC params (>2 specified), filter results
 
+		prof_ids = self._filter_profiles(selectionProfiles, params)
 
-		self._filter_profiles(selectionProfiles, params)
+		print('{0} valid profiles have been identified'.format(len(prof_ids)))
+		# iterate and download profiles individually
+		for i in prof_ids:
+			print("processing profile", i)
+			self.download_by_profile(i)
 
-		# if profiles are found, save them to self as dataframe
-		self._parse_into_df(selectionProfiles)
+		self.profiles.reset_index(inplace=True)
 
-		# todo: download additional params
+		if not keep_all:
+			# todo: drop BGC measurement columns not specified by user
+			pass
+
+	def _valid_BGC_params(self):
 		'''
-		make api request by profile to download additional params
-		then append the necessary cols to the df
+		This is a list of valid BGC params, stored here to remove redundancy
+		They are ordered by how commonly they are measured (approx)
 		'''
+		params = valid_params = {
+			'pres':0,
+			'temp':1,
+			'psal':2,
+			'cndx':3,
+			'doxy':4,
+			'ph_in_situ_total':5,
+			'chla':6,
+			'cdom':7,
+			'nitrate':8,
+			'bbp700':9,
+			'down_irradiance412':10,
+			'down_irradiance442':11,
+			'down_irradiance490':12,
+			'downwelling_par':13,
+		}
+		return params
 
 	def _validate_parameters(self, params):
 		'''
@@ -95,21 +119,7 @@ class BGC_Argo(Argo):
 		'''
 
 		# valid params ordered by how commonly they are measured (approx)
-		valid_params = {
-			'pres':0,
-			'temp':1,
-			'psal':2,
-			'cndx':3,
-			'doxy':4,
-			'chla':5,
-			'cdom':6,
-			'nitrate':7,
-			'bbp700':8,
-			'down_irradiance412':9,
-			'down_irradiance442':10,
-			'down_irradiance490':11,
-			'downwelling_par':12,
-		}
+		valid_params = self._valid_BGC_params()
 
 		# checks that params are valid
 		for i in params:
@@ -124,6 +134,7 @@ class BGC_Argo(Argo):
 		'''
 		from a dictionary of all profiles returned by first API request, remove the
 		profiles that do not contain ALL BGC measurements specified by user
+		returns a list of profile ID's that contain all necessary BGC params
 		'''
 		# todo: filter out BGC profiles
 		good_profs = []
@@ -131,12 +142,21 @@ class BGC_Argo(Argo):
 			bgc_meas = i['bgcMeasKeys']
 			check = all(item in bgc_meas for item in params)
 			if check:
-				good_profs.append(i)
-				print(i['_id'])
+				good_profs.append(i['_id'])
+				# print(i['_id'])
 
-		profiles = good_profs
-		print()
+		# profiles = good_profs
+		return good_profs
 
+	def download_by_profile(self, profile_number):
+		url = 'https://argovis.colorado.edu/catalog/profiles/{}'.format(profile_number)
+		resp = requests.get(url)
+		# Consider any status other than 2xx an error
+		if not resp.status_code // 100 == 2:
+			return "Error: Unexpected response {}".format(resp)
+		profile = resp.json()
+		self._parse_into_df(profile)
+		return profile
 
 	def _parse_into_df(self, profiles):
 		"""
@@ -148,7 +168,16 @@ class BGC_Argo(Argo):
 		# initialize dict
 		# meas_keys = profiles[0]['bgcMeasKeys']
 		# df = pd.DataFrame(columns=meas_keys)
-		df = pd.DataFrame()
+
+		if not isinstance(profiles, list):
+			profiles = [profiles]
+
+		# initialise the df (empty or containing previously processed profiles)
+		if not self.profiles is None:
+			df = self.profiles
+		else:
+			df = pd.DataFrame()
+
 		for profile in profiles:
 			profileDf = pd.DataFrame(profile['bgcMeas'])
 			profileDf['cycle_number'] = profile['cycle_number']
@@ -157,6 +186,10 @@ class BGC_Argo(Argo):
 			profileDf['lon'] = profile['lon']
 			profileDf['date'] = profile['date']
 			df = pd.concat([df, profileDf], sort=False)
+			# if self.profiles is None:
+			# 	df = pd.concat([df, profileDf], sort=False)
+			# else:
+			# 	df = df.merge(profileDf, on='profile_id')
 		self.profiles = df
 
 if __name__ == '__main__':
@@ -165,8 +198,10 @@ if __name__ == '__main__':
 	# 24 profiles available
 
 	reg_a = BGC_Argo([-150, 30, -120, 60], ['2022-06-07', '2022-06-21'])
-	reg_a.search_data(['doxy', 'nitrate', 'down_irradiance412'], printURL=True)
+	reg_a.search_data(['doxy', 'nitrate'], printURL=True)
 	# print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
+
+	# reg_a.download_by_profile('4903026_101')
 
 	# reg_a._validate_parameters(['doxy',
 	# 		'chla',

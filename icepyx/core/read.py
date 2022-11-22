@@ -54,6 +54,48 @@ def _make_np_datetime(df, keyword):
     return df
 
 
+# TODO: add tests, round out docs, and test for atl09 and atl06, for this new function!!
+def _get_track_type_str(grp_path):
+    """
+    Determine whether the product contains ground tracks, paths, or profiles and
+    parse the string/label the dimension accordingly.
+
+    Parameters
+    ----------
+    grp_path : str
+        The group path for the ground track, path, or profile.
+
+    Returns
+    -------
+    track_str : str
+       The string for the ground track, path, or profile of this group
+    spot_dim_name : str
+        What the dimension should be named in the dataset
+    """
+
+    import re
+
+    # TODO: This won't work for profile (e.g. atmos) data --> needs to be generalized!
+    if re.match(r"gt[1-3]['r','l']", grp_path):
+        track_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
+        # spot = is2ref.gt2spot(track_str, is2ds.sc_orient.values[0])
+        # FIX THIS (line above)!!
+        spot_dim_name = "spot"
+        # add a test for the gt2spot function (called here)!
+
+    elif re.match(r"profile_[1-3]", grp_path):
+        track_str = re.match(r"profile_[1-3]", grp_path).group()
+        spot = int(track_str[-1])
+        spot_dim_name = "profile"
+
+    elif re.match(r"pt[1-3]", grp_path):
+        track_str = re.match(r"pt[1-3]", grp_path).group()
+        spot = int(track_str[-1])
+        spot_dim_name = "path"
+
+    return track_str, spot_dim_name
+
+
 # Dev note: function fully tested (except else, which don't know how to get to)
 def _check_datasource(filepath):
     """
@@ -406,11 +448,14 @@ class Read:
                 is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
         else:
-            import re
+            track_str, spot_dim_name = _get_track_type_str(grp_path)
 
-            gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-            spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
-            # add a test for the new function (called here)!
+            # import re
+            # gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
+            # spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
+            # # add a test for the new function (called here)!
+
+            # NEXT STEP: change out gt_str and spot in below code
 
             grp_spec_vars = [
                 k
@@ -642,8 +687,10 @@ class Read:
         # with h5py.File(filepath,'r') as h5pt:
         #     prod_id = h5pt.attrs["identifier_product_type"]
 
-        # DEVNOTE: does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
+        # DEVNOTE: if and elif does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
         # if a gridded product
+        # TODO: all products need to be tested, and quicklook products added or explicitly excluded
+        # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
         if self._prod in [
             "ATL14",
             "ATL15",
@@ -656,6 +703,52 @@ class Read:
         ]:
             is2ds = xr.open_dataset(file)
 
+        # TODO I think we'll need to add another option here for another level of data products (or add atl11 to the above list?)
+
+        # Level 3b, hdf5: ATL11
+        elif self._prod in ["ATL11"]:
+            is2ds = self._build_dataset_template(file)
+
+            # returns the wanted groups as a single list of full group path strings
+            wanted_dict, wanted_groups = Variables.parse_var_list(
+                groups_list, tiered=False
+            )
+            wanted_groups_set = set(wanted_groups)
+
+            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            # wanted_groups_set.remove("orbit_info")
+            wanted_groups_set.remove("ancillary_data")
+            # Note: the sorting is critical for datasets with highly nested groups
+            wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
+
+            # returns the wanted groups as a list of lists with group path string elements separated
+            _, wanted_groups_tiered = Variables.parse_var_list(
+                groups_list, tiered=True, tiered_vars=True
+            )
+
+            while wanted_groups_list:
+                print(wanted_groups_list)
+                grp_path = wanted_groups_list[0]
+                wanted_groups_list = wanted_groups_list[1:]
+                ds = self._read_single_grp(file, grp_path)
+                is2ds, ds = Read._add_vars_to_ds(
+                    is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
+                )
+
+                # # if there are any deeper nested variables, get those so they have actual coordinates and add them
+                # if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
+                #     for grp_path2 in wanted_groups_list:
+                #         if grp_path in grp_path2:
+                #             sub_ds = self._read_single_grp(file, grp_path2)
+                #             ds = Read._combine_nested_vars(
+                #                 ds, sub_ds, grp_path2, wanted_dict
+                #             )
+                #             wanted_groups_list.remove(grp_path2)
+                #     is2ds = is2ds.merge(ds, join="outer", combine_attrs="no_conflicts")
+
+            return is2ds
+
+        # Level 2 and 3a Products: ATL03, 06, 07, 08, 09, 10, 12, 13
         else:
             is2ds = self._build_dataset_template(file)
 
@@ -685,6 +778,7 @@ class Read:
                 )
 
                 # if there are any deeper nested variables, get those so they have actual coordinates and add them
+                # this may apply to (at a minimum): ATL08
                 if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
                     for grp_path2 in wanted_groups_list:
                         if grp_path in grp_path2:

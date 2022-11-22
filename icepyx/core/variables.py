@@ -479,6 +479,10 @@ class Variables:
                 "data_end_utc",
             ]
 
+        # Adjust the nec_varlist for individual products
+        if self.product == "ATL11":
+            nec_varlist.remove("sc_orient")
+
         try:
             self._check_valid_lists(vgrp, allpaths, var_list=nec_varlist)
         except ValueError:

@@ -21,14 +21,12 @@ class BGC_Argo(Argo):
 		pass
 
 	def search_data(self, params, presRange=None, printURL=False, keep_all=True):
-		# todo: this currently assumes user specifies exactly two BGC search
-		#  params. Need to iterate should the user provide more than 2, and
-		#  accommodate if user supplies only 1 param
 
 		assert len(params) != 0, 'One or more BGC measurements must be specified.'
 
-		# if not 'pres' in params:
-		# 	params.append('pres')
+		# API request requires exactly 2 measurement params, duplicate single of necessary
+		if len(params) == 1:
+			params.append(params[0])
 
 		# validate list of user-entered params, sorts into order to be queried
 		params = self._validate_parameters(params)
@@ -37,8 +35,6 @@ class BGC_Argo(Argo):
 		# builds URL to be submitted
 		baseURL = 'https://argovis.colorado.edu/selection/bgc_data_selection/'
 
-		# todo: identify which 2 params we specify (ignore physical params)
-		# todo: special case if only 1 BGC measurment is specified
 		payload = {'startDate': self._start.strftime('%Y-%m-%d'),
 				   'endDate': self._end.strftime('%Y-%m-%d'),
 				   'shape': [self._fmt_coordinates()],
@@ -70,6 +66,7 @@ class BGC_Argo(Argo):
 			return
 
 
+		# deterine which profiles contain all specified params
 		prof_ids = self._filter_profiles(selectionProfiles, params)
 
 		print('{0} valid profiles have been identified'.format(len(prof_ids)))
@@ -81,8 +78,13 @@ class BGC_Argo(Argo):
 		self.profiles.reset_index(inplace=True)
 
 		if not keep_all:
-			# todo: drop BGC measurement columns not specified by user
-			pass
+			# drop BGC measurement columns not specified by user
+			drop_params = list(set(list(self._valid_BGC_params())[3:]) - set(params))
+			qc_params = []
+			for i in drop_params:
+				qc_params.append(i + '_qc')
+			drop_params += qc_params
+			self.profiles.drop(columns=drop_params, inplace=True, errors='ignore')
 
 	def _valid_BGC_params(self):
 		'''
@@ -103,7 +105,8 @@ class BGC_Argo(Argo):
 			'down_irradiance412':10,
 			'down_irradiance442':11,
 			'down_irradiance490':12,
-			'downwelling_par':13,
+			'down_irradiance380': 13,
+			'downwelling_par':14,
 		}
 		return params
 
@@ -198,7 +201,8 @@ if __name__ == '__main__':
 	# 24 profiles available
 
 	reg_a = BGC_Argo([-150, 30, -120, 60], ['2022-06-07', '2022-06-21'])
-	reg_a.search_data(['doxy', 'nitrate'], printURL=True)
+	# reg_a.search_data(['doxy', 'nitrate', 'down_irradiance412'], printURL=True, keep_all=False)
+	reg_a.search_data(['down_irradiance412'], printURL=True, keep_all=False)
 	# print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
 
 	# reg_a.download_by_profile('4903026_101')

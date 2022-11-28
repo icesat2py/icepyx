@@ -450,12 +450,19 @@ class Read:
         else:
             track_str, spot_dim_name = _get_track_type_str(grp_path)
 
+            # get the spot number if relevant
+            if spot_dim_name == "spot":
+                spot = is2ref.gt2spot(track_str, is2ds.sc_orient.values[0])
+            else:
+                spot = track_str
+
             # import re
             # gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
             # spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
             # # add a test for the new function (called here)!
 
             # NEXT STEP: change out gt_str and spot in below code
+            # figure out gt_str --> track_str, spot_dim_name --> spot string, need spot value still
 
             grp_spec_vars = [
                 k
@@ -477,15 +484,25 @@ class Read:
             hold_delta_times = ds.delta_time.data
             ds = (
                 ds.reset_coords(drop=False)
-                .expand_dims(dim=["spot", "gran_idx"])
+                .expand_dims(dim=[spot_dim_name, "gran_idx"])
                 .assign_coords(
-                    spot=("spot", [spot]), delta_time=("delta_time", photon_ids)
+                    {
+                        spot_dim_name: (spot_dim_name, [spot]),
+                        "delta_time": ("delta_time", photon_ids),
+                    }
                 )
-                .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
+                .assign(gt=(("gran_idx", spot_dim_name), [[track_str]]))
                 .rename_dims({"delta_time": "photon_idx"})
                 .rename({"delta_time": "photon_idx"})
-                .assign_coords(delta_time=("photon_idx", hold_delta_times))
             )
+
+            # add another condition to this if that delta time is 2d...
+            if spot_dim_name == "path":
+                ds = ds.assign_coords(
+                    {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
+                )
+            else:
+                ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
 
             grp_spec_vars.extend(["gt", "photon_idx"])
 
@@ -495,7 +512,10 @@ class Read:
 
             # re-cast some dtypes to make array smaller
             is2ds["gt"] = is2ds.gt.astype(str)
-            is2ds["spot"] = is2ds.spot.astype(np.uint8)
+            try:
+                is2ds[spot_dim_name] = is2ds[spot_dim_name].astype(np.uint8)
+            except:
+                pass
 
         return is2ds, ds[grp_spec_vars]
 

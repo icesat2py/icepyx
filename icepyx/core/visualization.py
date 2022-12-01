@@ -159,7 +159,9 @@ class Visualize:
             self.bbox = query_obj.spatial.extent
 
         else:
-            mrc_bound = query_obj.spatial.extent.minimum_rotated_rectangle
+            mrc_bound = (
+                query_obj.spatial.extent_as_gdf.geometry.unary_union.minimum_rotated_rectangle.bounds
+            )
             # generate bounding box
             lonmin = min(mrc_bound.exterior.coords.xy[0])
             lonmax = max(mrc_bound.exterior.coords.xy[0])

@@ -493,16 +493,30 @@ class Read:
                 )
                 .assign(gt=(("gran_idx", spot_dim_name), [[track_str]]))
                 .rename_dims({"delta_time": "photon_idx"})
+                # .set_index("delta_time")
                 .rename({"delta_time": "photon_idx"})
             )
 
+            # try turning ref_pt into a non-dimension (and thus non-index?) coordinate
             # add another condition to this if that delta time is 2d...
-            if spot_dim_name == "path":
+            if spot_dim_name == "path" and np.ndim(hold_delta_times) > 1:
                 ds = ds.assign_coords(
                     {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
                 )
             else:
                 ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
+
+            # for ATL11
+            if "ref_pt" in ds.coords:
+                ds = (
+                    ds.drop_indexes(["ref_pt", "photon_idx"])
+                    .drop(["ref_pt", "photon_idx"])
+                    .swap_dims({"ref_pt": "photon_idx"})
+                    .assign_coords(
+                        ref_pt=("photon_idx", ds.ref_pt.data),
+                        photon_idx=ds.photon_idx.data,
+                    )
+                )
 
             grp_spec_vars.extend(["gt", "photon_idx"])
 
@@ -790,6 +804,7 @@ class Read:
             )
 
             while wanted_groups_list:
+                print(wanted_groups_list)
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
                 ds = self._read_single_grp(file, grp_path)
@@ -800,6 +815,7 @@ class Read:
                 # if there are any deeper nested variables, get those so they have actual coordinates and add them
                 # this may apply to (at a minimum): ATL08
                 if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
+                    print("nested var")
                     for grp_path2 in wanted_groups_list:
                         if grp_path in grp_path2:
                             sub_ds = self._read_single_grp(file, grp_path2)

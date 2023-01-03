@@ -3,26 +3,28 @@
 Contact Us
 ==========
 
-The best way to contact us depends on what information you're looking for.
-
-* Need help installing, running, or using `icepyx`? Add a new topic to ask for help on `Discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_ (after reviewing the documentation and existing topics, of course, to see if they answer your question!) or attend one of our regular virtual meetings (details below).
-* Found a bug or have a feature request? Post an issue on `GitHub <https://github.com/icesat2py/icepyx/issues>`_!
-* Have an idea you'd like to discuss? Start a conversation on `Discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_  or attend one of our regular virtual meetings (details below).
+* Need help installing, running, or using `icepyx`? Ask for help on `Discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_ or `GitHub Discussions https://github.com/icesat2py/icepyx/discussions`_.
+* Found a bug? Post an issue on `GitHub <https://github.com/icesat2py/icepyx/issues>`_!
+* Want to request or contribute a feature? Share your idea on `GitHub Discussions https://github.com/icesat2py/icepyx/discussions`_.
+* Have a question or want to know more? Join us for a virtual meeting (see below).
 * Want to get involved? Do one or more of the above, or reach out to one of the dev team members individually. We're excited to hear your thoughts and provide help!
 
+Absolutely NO software development is necessary to join and contribute to our community.
+We look forward to meeting you!
 
-Regular Meeting Schedule
-------------------------
-Our team (developers, users, scientists, educators) meets regularly via Zoom to provide support, troubleshoot issues, and plan development.
-We meet on:
+Virtual Meetings
+----------------
+Our team (developers, users, scientists, educators) consists primarily of volunteers.
+We meet on an as-needed basis via Zoom to provide support, troubleshoot issues, and plan development and collaboration efforts.
 
-* the second Tuesday of the month at 4pm GMT (12pm Eastern, 9am Pacific)
-* the fourth Monday of the month at 8pm GMT (4pm Eastern, 1pm Pacific)
+Our meetings are open to all, with upcoming meeting information available via `Discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_, `GitHub Discussions https://github.com/icesat2py/icepyx/discussions`_, or by request.
+The QUEST team meets weekly on Mondays to co-work on integrating additional sensors into the icepyx workflow. 
+Please contact us if you are interested in joining the QUEST team.
 
-Additional information about logging in to the meetings can be found on `this Discourse post <https://discourse.pangeo.io/t/icepyx-team-meetings/722/2?u=jessicas11>`_.
-
-Absolutely NO previous software development experience is necessary to attend any meeting. Think of them more like coffee hour mixed with office hours than a conference call. We look forward to seeing you there!
 
 Ongoing Efforts
 ----------------
-In addition to the ongoing development of icepyx itself, the ICESat-2 Cryosphere community continues to grow through a number of workshops and events.
+In addition to the ongoing development of icepyx itself, the ICESat-2 community continues to grow through a number of related initiatives, workshops, and events:
+
+* `CryoCloud <https://cryointhecloud.com/>`_
+* `ICESat-2 Hackweeks <https://icesat-2.hackweek.io/>`_

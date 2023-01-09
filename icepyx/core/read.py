@@ -470,6 +470,7 @@ class Read:
                 if any(f"{grp_path}/{k}" in x for x in v)
             ]
 
+            # NEXT TODO: handle the case where it's the second time through a 2d delta_time...
             try:
                 photon_ids = (
                     range(0, len(ds.delta_time.data))
@@ -497,8 +498,9 @@ class Read:
                 .rename({"delta_time": "photon_idx"})
             )
 
-            # try turning ref_pt into a non-dimension (and thus non-index?) coordinate
-            # add another condition to this if that delta time is 2d...
+            # try turning ref_pt into a non-dimension (and thus non-index?) coordinate???
+
+            # handle cases where the delta time is 2d due to multiple cycles in that group
             if spot_dim_name == "path" and np.ndim(hold_delta_times) > 1:
                 ds = ds.assign_coords(
                     {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
@@ -517,6 +519,19 @@ class Read:
                         photon_idx=ds.photon_idx.data,
                     )
                 )
+
+                # for the subgoups where there is 1d delta time data, make sure that the cycle number is still a coordinate for merging
+                try:
+                    ds = ds.assign_coords(
+                        {
+                            "cycle_number": (
+                                "photon_idx",
+                                ds.cycle_number["photon_idx"].data,
+                            )
+                        }
+                    )
+                except KeyError:
+                    pass
 
             grp_spec_vars.extend(["gt", "photon_idx"])
 

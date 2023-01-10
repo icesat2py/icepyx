@@ -18,7 +18,7 @@ Our team (developers, users, scientists, educators) consists primarily of volunt
 We meet on an as-needed basis via Zoom to provide support, troubleshoot issues, and plan development and collaboration efforts.
 
 Our meetings are open to all, with upcoming meeting information available via `Discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_, `GitHub Discussions https://github.com/icesat2py/icepyx/discussions`_, or by request.
-The QUEST team meets weekly on Mondays to co-work on integrating additional sensors into the icepyx workflow. 
+The :ref:`QUEST (Query Unify Explore SpatioTemporal) <api_quest_ref>`  team meets weekly on Mondays to co-work on integrating additional sensors into the icepyx workflow. 
 Please contact us if you are interested in joining the QUEST team.
 
 

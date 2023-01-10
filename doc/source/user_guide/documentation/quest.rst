@@ -1,3 +1,5 @@
+.. _api_quest_ref:
+
 Quest Class
 ===========
 

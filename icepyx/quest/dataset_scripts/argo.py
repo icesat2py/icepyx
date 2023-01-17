@@ -38,6 +38,7 @@ class Argo(DataSet):
 	"""
 	def __init__(self, boundingbox, timeframe):
 		super().__init__(boundingbox, timeframe)
+		assert self.spatial._ext_type == 'bounding_box'
 		self.profiles = None
 
 

@@ -437,11 +437,13 @@ class Read:
                 except NameError:
                     import random
 
-                    is2ds["gran_idx"] = [random.randint(900000, 999999)]
+                    is2ds["gran_idx"] = [random.randint(800000, 899998)]
                     warnings.warn("Your granule index is made up of random values.")
                     # You must include the orbit/cycle_number and orbit/rgt variables to generate
             except KeyError:
-                pass
+                # Added this when dealing with ATL11 - need to see if it breaks with other datasets
+                is2ds["gran_idx"] = [np.nanmax(is2ds["gran_idx"]) - 1]
+                # pass
 
             if hasattr(is2ds, "data_start_utc"):
                 is2ds = _make_np_datetime(is2ds, "data_start_utc")
@@ -456,14 +458,6 @@ class Read:
             else:
                 spot = track_str
 
-            # import re
-            # gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-            # spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
-            # # add a test for the new function (called here)!
-
-            # NEXT STEP: change out gt_str and spot in below code
-            # figure out gt_str --> track_str, spot_dim_name --> spot string, need spot value still
-
             grp_spec_vars = [
                 k
                 for k, v in wanted_dict.items()
@@ -471,12 +465,37 @@ class Read:
             ]
 
             # NEXT TODO: handle the case where it's the second time through a 2d delta_time...
+
+            # handle delta_times with 1 or more dimensions
+            idx_range = range(0, len(ds.delta_time.data))
+            # if hasattr(is2ds, "photon_idx"):
+
+            #     # if is2ds already has a 2d photon idx/delta time AND the current delta time does too
+            #     if np.ndim(ds.delta_time.data) > 1: # and np.ndim(is2ds.photon_idx) > 1:
+            #         # repeat the range the number of times needed, then transpose to match the shape of the existing photon_idx
+            #         photon_ids = (
+            #         np.broadcast_to([*idx_range], (np.shape(ds.delta_time)[1], np.shape(ds.delta_time)[0])).transpose()
+            #         + np.full_like(
+            #             ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
+            #         )
+            #         + 1
+            #     )
+            #     # the original case, where delta_time is 2d but the existing photon_idx is 1d
+            #     else:
+            #         photon_ids = (
+            #             range(0, len(ds.delta_time.data))
+            #             + np.full_like(
+            #                 ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
+            #             )
+            #             + 1
+            #         )
+            # else:
+            #     photon_ids = range(0, len(ds.delta_time.data))
+
             try:
                 photon_ids = (
-                    range(0, len(ds.delta_time.data))
-                    + np.full_like(
-                        ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
-                    )
+                    idx_range
+                    + np.full_like(idx_range, np.max(is2ds.photon_idx), dtype="int64")
                     + 1
                 )
             except AttributeError:
@@ -494,11 +513,9 @@ class Read:
                 )
                 .assign(gt=(("gran_idx", spot_dim_name), [[track_str]]))
                 .rename_dims({"delta_time": "photon_idx"})
-                # .set_index("delta_time")
                 .rename({"delta_time": "photon_idx"})
+                # .set_index("photon_idx")
             )
-
-            # try turning ref_pt into a non-dimension (and thus non-index?) coordinate???
 
             # handle cases where the delta time is 2d due to multiple cycles in that group
             if spot_dim_name == "path" and np.ndim(hold_delta_times) > 1:
@@ -752,8 +769,6 @@ class Read:
         ]:
             is2ds = xr.open_dataset(file)
 
-        # TODO I think we'll need to add another option here for another level of data products (or add atl11 to the above list?)
-
         # Level 3b, hdf5: ATL11
         elif self._prod in ["ATL11"]:
             is2ds = self._build_dataset_template(file)
@@ -776,24 +791,13 @@ class Read:
             )
 
             while wanted_groups_list:
-                print(wanted_groups_list)
+                # print(wanted_groups_list)
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
                 ds = self._read_single_grp(file, grp_path)
                 is2ds, ds = Read._add_vars_to_ds(
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )
-
-                # # if there are any deeper nested variables, get those so they have actual coordinates and add them
-                # if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
-                #     for grp_path2 in wanted_groups_list:
-                #         if grp_path in grp_path2:
-                #             sub_ds = self._read_single_grp(file, grp_path2)
-                #             ds = Read._combine_nested_vars(
-                #                 ds, sub_ds, grp_path2, wanted_dict
-                #             )
-                #             wanted_groups_list.remove(grp_path2)
-                #     is2ds = is2ds.merge(ds, join="outer", combine_attrs="no_conflicts")
 
             return is2ds
 
@@ -819,7 +823,7 @@ class Read:
             )
 
             while wanted_groups_list:
-                print(wanted_groups_list)
+                # print(wanted_groups_list)
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
                 ds = self._read_single_grp(file, grp_path)

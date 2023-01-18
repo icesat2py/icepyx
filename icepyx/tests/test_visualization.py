@@ -104,13 +104,6 @@ def test_visualization_date_range(product, date_range, bbox, expect):
         # ("ATL13", [-75, -51, -74, -50], ["05"], ["0293"], 25),
     ],
 )
-
-# NOTE: in both failed tests, the issue is ATL13. They worked previously, and
-# when I use the search parameters in Earthdata Search I get granules returned (in the
-# test above, a number with those dates and spatial extents; in the latter,
-# none with data for that specific cycle + track + spatial, but it worked before...)
-
-
 def test_visualization_orbits(product, bbox, cycles, tracks, expect):
 
     region_viz = Visualize(

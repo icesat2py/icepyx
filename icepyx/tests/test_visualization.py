@@ -81,13 +81,12 @@ def test_gran_paras(filename, expect):
         ("ATL08", ["2019-6-15", "2019-7-1"], [-18, 63, -17, 64], 852),
         ("ATL10", ["2019-8-1", "2019-9-1"], [-64, -67, -60, -60], 7100),
         ("ATL12", ["2019-7-1", "2019-10-1"], [-65.5, -65.5, -64.5, -65], 95),
-        # ("ATL13", ["2019-6-1", "2019-12-1"], [-75, -51, -74, -50], 25),
+        ("ATL13", ["2019-6-1", "2019-12-1"], [-75, -51, -74, -50], 100),
     ],
 )
 def test_visualization_date_range(product, date_range, bbox, expect):
 
     region_viz = Visualize(product=product, spatial_extent=bbox, date_range=date_range)
-    print(region_viz.parallel_request_OA())
     data_size = region_viz.parallel_request_OA().size
 
     assert data_size == expect

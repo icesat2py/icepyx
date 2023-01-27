@@ -1,6 +1,6 @@
 backoff
 datashader
-earthdata
+earthaccess
 fiona
 geopandas
 h5netcdf

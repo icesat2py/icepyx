@@ -441,7 +441,6 @@ class Visualize:
                 for para in OA_para_list
             }
 
-            # Dev note: for ATL13 vis tests, r is returning None even though I can see OA data there via a browser
             for future in tqdm(
                 iterable=concurrent.futures.as_completed(parallel_OA_data),
                 total=len(parallel_OA_data),

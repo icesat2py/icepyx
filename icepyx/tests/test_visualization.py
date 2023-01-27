@@ -87,8 +87,9 @@ def test_gran_paras(filename, expect):
 def test_visualization_date_range(product, date_range, bbox, expect):
 
     region_viz = Visualize(product=product, spatial_extent=bbox, date_range=date_range)
-    print(region_viz.parallel_request_OA())
+    # print(region_viz.parallel_request_OA())
     data_size = region_viz.parallel_request_OA().size
+    print(data_size)
 
     assert data_size == expect
 

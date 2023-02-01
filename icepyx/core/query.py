@@ -1,4 +1,5 @@
 import datetime as dt
+import earthaccess
 import os
 import requests
 import json
@@ -854,7 +855,9 @@ class Query(GenQuery):
     # ----------------------------------------------------------------------
     # Methods - Login and Granules (NSIDC-API)
 
-    def earthdata_login(self, uid, email, s3token=False):
+    # test cases: uid, email supplied and not
+
+    def earthdata_login(self, uid=None, email=None, s3token=False, persist=False):
         """
         Log in to NSIDC EarthData to access data. Generates the needed session and token for most
         data searches and data ordering/download.
@@ -863,7 +866,7 @@ class Query(GenQuery):
         ----------
         uid : string
             Earthdata login user ID
-        email : string
+        email : string, default None
             Email address. NSIDC will automatically send you emails about the status of your order.
         s3token : boolean, default False
             Generate AWS s3 ICESat-2 data access credentials
@@ -879,33 +882,61 @@ class Query(GenQuery):
         Earthdata Login password:  ········
         """
 
-        if s3token == False:
-            capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
-        elif s3token == True:
+        try:
+            auth = earthaccess.login(strategy="netrc")
+        except:
+            pass
 
-            def is_ec2():
-                import socket
+        if os.environ.get("EDL_PASSWORD") != None:
+            pwd = os.environ.get("EDL_PASSWORD")
 
-                try:
-                    socket.gethostbyname("instance-data")
-                    return True
-                except socket.gaierror:
-                    return False
+            if os.environ.get("EARTHDATA_PASSWORD") != None:
+                pwd = os.environ.get("EARTHDATA_PASSWORD")
+                warnings.warn(
+                    "Please update your environment variable names to 'EDL_PASSWORD'",
+                    DeprecationWarning,
+                )
+                os.environ["EDL_PASSWORD"] = str(pwd)
 
-            # loosely check for AWS login capability without web request
-            assert (
-                is_ec2() == True
-            ), "You must be working from a valid AWS instance to use s3 data access"
-            capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
+            auth = earthaccess.login(strategy="environment")
 
-        self._session = Earthdata(uid, email, capability_url).login()
+        else:
+            auth = earthaccess.login(
+                strategy="interactive"
+            )  # , persist=persist) un-comment this once a new version of earthaccess is built
 
-        # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
+        # if s3token == False:
+        #     capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
+        # elif s3token == True:
+
+        #     def is_ec2():
+        #         import socket
+
+        #         try:
+        #             socket.gethostbyname("instance-data")
+        #             return True
+        #         except socket.gaierror:
+        #             return False
+
+        #     # loosely check for AWS login capability without web request
+        #     assert (
+        #         is_ec2() == True
+        #     ), "You must be working from a valid AWS instance to use s3 data access"
+        #     capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
+
+        self._auth = auth
+        self._session = auth.get_session()
+
+        # self._session = Earthdata(uid, email, capability_url).login()
+
         if s3token == True:
-            self._s3login_credentials = json.loads(
-                self._session.get(self._session.get(capability_url).url).content
-            )
-        self._email = email
+            self._s3login_credentials = auth.get_s3_credentials()
+        # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
+        # if s3token == True:
+        #     self._s3login_credentials = json.loads(
+        #         self._session.get(self._session.get(capability_url).url).content
+        #     )
+        # self._email = email
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):

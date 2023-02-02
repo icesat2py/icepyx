@@ -53,7 +53,7 @@ icepyx aims to provide a clearinghouse for code, functionality to improve intero
 
 Many of the underlying tools from which icepyx was developed began as Jupyter Notebooks developed for and during the cryosphere-themed ICESat-2 Hackweek at the University of Washington in June 2019 or as scripts written and used by the ICESat-2 Science Team members. 
 Originally called icesat2py, the project combined and generalized these scripts into a unified framework, adding examples, documentation, and testing where necessary and making them accessible for everyone. 
-icepyx is now a domain-agnostic, standalone software package and community (under the broader `icesat2py GitHub organization <https://github.com/icesat2py>`_) that continues to build functionality - complete with examples, documentation, and testing - for obtaining and working with ICESat-2 data products locally and in the cloud. 
+icepyx is now a domain-agnostic, standalone software package and community (under the broader `icesat2py GitHub organization <https://github.com/icesat2py>`_) that continues to build functionality for obtaining and working with ICESat-2 data products locally and in the cloud. 
 It also improves interoperability for ICESat-2 datasets with other open-source tools.
 
 .. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip

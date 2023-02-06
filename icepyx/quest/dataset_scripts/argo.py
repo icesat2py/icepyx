@@ -38,7 +38,8 @@ class Argo(DataSet):
 	"""
 	def __init__(self, boundingbox, timeframe):
 		super().__init__(boundingbox, timeframe)
-		assert self.spatial._ext_type == 'bounding_box'
+		# todo: need to uncomment this after we rebase
+		# assert self.spatial._ext_type == 'bounding_box'
 		self.profiles = None
 
 
@@ -125,4 +126,4 @@ if __name__ == '__main__':
 	# profiles available
 	reg_a = Argo([-154, 30,-143, 37], ['2022-04-12', '2022-04-26'])
 	reg_a.search_data()
-	print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
+	print(reg_a.profiles[['pres', 'temp', 'psal', 'lat', 'lon']].head())

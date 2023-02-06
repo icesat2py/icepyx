@@ -96,6 +96,20 @@ def test_check_run_fast_scandir(dir, fn_glob, expect):
     assert (sorted(subfolders), sorted(files)) == expect
 
 
+@pytest.mark.parametrize(
+    "grp_path, exp_track_str, exp_spot_dim_name",
+    [
+        ("gt1l", "gt1l", "spot"),
+        ("gt3r", "gt3r", "spot"),
+        ("profile_2", "profile_2", "profile"),
+        ("pt1", "pt1", "path"),
+    ],
+)
+def test_get_track_type_str(grp_path, exp_track_str, exp_spot_dim_name):
+    obs_track_str, obs_spot_dim_name = read._get_track_type_str(grp_path)
+    assert (obs_track_str, obs_spot_dim_name) == (exp_track_str, exp_spot_dim_name)
+
+
 # Best way to test this may be by including a small sample file with the repo (which can be used for testing some of the catalog/read-in functions as well)
 # def test_invalid_filename_pattern_in_file():
 #     ermesg = "Your input filename does not match the specified pattern."

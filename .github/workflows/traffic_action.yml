@@ -17,7 +17,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         ref: "traffic"
     
@@ -30,15 +30,14 @@ jobs:
     # Custom steps to move files to another dir and format plot
     - name: Move files
       run: |
-        pip install -r requirements.txt
+        pip install matplotlib pandas
         python ./doc/source/tracking/traffic/traffic_data_mgmt.py
     
     # Commits files to repository
     - name: Commit changes
-      uses: EndBug/add-and-commit@v7
+      uses: EndBug/add-and-commit@v9
       with:
         author_name: Jessica Scheick
         message: "GitHub traffic auto-update"
         add: "./doc/source/tracking/traffic/*"
 #         add: "./traffic/*"
-        branch: "traffic"  # commits to branch "traffic"

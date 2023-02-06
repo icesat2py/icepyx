@@ -3,7 +3,7 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|GitHub license| |Conda install| |Pypi install|
+|GitHub license| |Conda install| |Pypi install| |Contributors| |JOSS|
 
 Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
 
@@ -12,11 +12,19 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/version.svg 
     :target: https://anaconda.org/conda-forge/icepyx
 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx
+
+.. |Contributors| image:: https://img.shields.io/badge/all_contributors-34-orange.svg?style=flat-square
+    :alt: All Contributors
+    :target: https://github.com/icesat2py/icepyx/blob/main/CONTRIBUTORS.rst
+
+.. |JOSS| image:: https://joss.theoj.org/papers/a355344b24ffa5fda7a04a5067e8be1f/status.svg
+    :alt: JOSS publication status
+    :target: https://joss.theoj.org/papers/a355344b24ffa5fda7a04a5067e8be1f
 
 .. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
@@ -128,4 +136,3 @@ For more information, please visit `the informational
 page <https://sustainable-open-science-and-software.github.io/>`__ or
 download the `participant information
 sheet <https://sustainable-open-science-and-software.github.io/assets/PIS_sustainable_software.pdf>`__.
-

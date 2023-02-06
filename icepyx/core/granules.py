@@ -35,7 +35,7 @@ def info(grans):
 
 # DevNote: currently this fn is not tested
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
-def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=False):
+def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=False):
     """
     Returns a list of granule information for each granule dictionary in the input list of granule dictionaries.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
@@ -53,7 +53,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
     dates : boolean, default False
         Return a list of the available dates for the granule dictionary.
-    s3urls : boolean, default False
+    cloud : boolean, default False
         Return a a list of AWS s3 urls for the available granules in the granule dictionary.
         Note: currently, NSIDC does not provide metadata on which granules are available on s3.
         Thus, all of the urls may not be valid and may return FileNotFoundErrors.
@@ -76,8 +76,6 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
 
         if int(gran["producer_granule_id"][3:5]) > 13:
             continue
-            # ultimately use this to get the s3urls from the metadata
-            # gran_s3urls.append(gran["links"][])
 
         else:
             # PRD: ICESat-2 product
@@ -112,9 +110,14 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
             gran_dates.append(
                 str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
             )
-            gran_s3urls.append(
-                f"s3://nsidc-cumulus-prod-protected/ATLAS/{PRD}/{RL}/{YY}/{MM}/{DD}/{producer_granule_id}"
-            )
+
+            try:
+                for link in gran["links"]:
+                    if link["href"].startswith("s3") and link["href"].endswith(".h5"):
+                        gran_s3urls.append(link["href"])
+            except KeyError:
+                pass
+
     # list of granule parameters
     gran_list = []
     # granule IDs
@@ -130,12 +133,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
     if dates:
         gran_list.append(gran_dates)
     # AWS s3 url
-    if s3urls:
-        warnings.filterwarnings("always")
-        warnings.warn(
-            "You MUST be pre-authenticated by NSIDC as a beta tester to have cloud access to ICESat-2 data",
-            UserWarning,
-        )
+    if cloud:
         gran_list.append(gran_s3urls)
     # return the list of granule parameters
     return gran_list
@@ -171,7 +169,7 @@ class Granules:
     # ----------------------------------------------------------------------
     # Methods
 
-    def get_avail(self, CMRparams, reqparams):
+    def get_avail(self, CMRparams, reqparams, cloud=False):
         """
         Get a list of available granules for the query object's parameters.
         Generates the `avail` attribute of the granules object.
@@ -183,6 +181,8 @@ class Granules:
         reqparams : dictionary
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
+        cloud : boolean, default False
+            Whether or not you want data available in the cloud (versus on premises).
 
         Notes
         -----
@@ -207,8 +207,13 @@ class Granules:
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
 
+        if cloud:
+            prov_flag = "NSIDC_CPRD"
+        else:
+            prov_flag = "NSIDC_ECS"
+
         params = apifmt.combine_params(
-            CMRparams, {k: reqparams[k] for k in ["page_size"]}
+            CMRparams, {k: reqparams[k] for k in ["page_size"]}, {"provider": prov_flag}
         )
 
         cmr_search_after = None
@@ -459,7 +464,7 @@ class Granules:
             # Save orderIDs to file to avoid resubmitting order in case kernel breaks down.
             # save orderIDs for every 5 orders when more than 10 orders are submitted.
             # DevNote: These numbers are hard coded for now. Consider to allow user to set them in future?
-            if reqparams["page_num"] >= 10 and i % 5 == 0:
+            if reqparams["page_num"] >= 10:
                 with open(order_fn, "w") as fid:
                     json.dump({"orderIDs": self.orderIDs}, fid)
 

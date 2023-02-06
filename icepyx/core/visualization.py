@@ -155,11 +155,11 @@ class Visualize:
 
         self.product = is2ref._validate_OA_product(query_obj.product)
 
-        if query_obj.extent_type == "bounding_box":
-            self.bbox = query_obj._spat_extent
+        if query_obj._spatial._ext_type == "bounding_box":
+            self.bbox = query_obj.spatial.extent
 
         else:
-            mrc_bound = query_obj._spat_extent.minimum_rotated_rectangle
+            mrc_bound = query_obj.spatial.extent.minimum_rotated_rectangle
             # generate bounding box
             lonmin = min(mrc_bound.exterior.coords.xy[0])
             lonmax = max(mrc_bound.exterior.coords.xy[0])
@@ -411,7 +411,9 @@ class Visualize:
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
 
-        assert OA_para_list, "Your search returned no results; try different search parameters"
+        assert (
+            OA_para_list
+        ), "Your search returned no results; try different search parameters"
 
         url_number = len(OA_para_list)
 

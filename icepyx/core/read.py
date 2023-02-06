@@ -54,8 +54,7 @@ def _make_np_datetime(df, keyword):
     return df
 
 
-# TODO: add tests, round out docs, and test for atl09 and atl06, for this new function!!
-def _get_track_type_str(grp_path):
+def _get_track_type_str(grp_path) -> tuple[str, str]:
     """
     Determine whether the product contains ground tracks, paths, or profiles and
     parse the string/label the dimension accordingly.
@@ -75,22 +74,19 @@ def _get_track_type_str(grp_path):
 
     import re
 
-    # TODO: This won't work for profile (e.g. atmos) data --> needs to be generalized!
+    # e.g. for ATL03, ATL06, etc.
     if re.match(r"gt[1-3]['r','l']", grp_path):
         track_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-        # spot = is2ref.gt2spot(track_str, is2ds.sc_orient.values[0])
-        # FIX THIS (line above)!!
         spot_dim_name = "spot"
-        # add a test for the gt2spot function (called here)!
 
+    # e.g. for ATL09
     elif re.match(r"profile_[1-3]", grp_path):
         track_str = re.match(r"profile_[1-3]", grp_path).group()
-        spot = int(track_str[-1])
         spot_dim_name = "profile"
 
+    # e.g. for ATL11
     elif re.match(r"pt[1-3]", grp_path):
         track_str = re.match(r"pt[1-3]", grp_path).group()
-        spot = int(track_str[-1])
         spot_dim_name = "path"
 
     return track_str, spot_dim_name
@@ -464,34 +460,8 @@ class Read:
                 if any(f"{grp_path}/{k}" in x for x in v)
             ]
 
-            # NEXT TODO: handle the case where it's the second time through a 2d delta_time...
-
             # handle delta_times with 1 or more dimensions
             idx_range = range(0, len(ds.delta_time.data))
-            # if hasattr(is2ds, "photon_idx"):
-
-            #     # if is2ds already has a 2d photon idx/delta time AND the current delta time does too
-            #     if np.ndim(ds.delta_time.data) > 1: # and np.ndim(is2ds.photon_idx) > 1:
-            #         # repeat the range the number of times needed, then transpose to match the shape of the existing photon_idx
-            #         photon_ids = (
-            #         np.broadcast_to([*idx_range], (np.shape(ds.delta_time)[1], np.shape(ds.delta_time)[0])).transpose()
-            #         + np.full_like(
-            #             ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
-            #         )
-            #         + 1
-            #     )
-            #     # the original case, where delta_time is 2d but the existing photon_idx is 1d
-            #     else:
-            #         photon_ids = (
-            #             range(0, len(ds.delta_time.data))
-            #             + np.full_like(
-            #                 ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
-            #             )
-            #             + 1
-            #         )
-            # else:
-            #     photon_ids = range(0, len(ds.delta_time.data))
-
             try:
                 photon_ids = (
                     idx_range

@@ -54,20 +54,20 @@ def _make_np_datetime(df, keyword):
     return df
 
 
-def _get_track_type_str(grp_path) -> tuple[str, str]:
+def _get_track_type_str(grp_path) -> (str, str):
     """
-    Determine whether the product contains ground tracks, paths, or profiles and
+    Determine whether the product contains ground tracks, pair tracks, or profiles and
     parse the string/label the dimension accordingly.
 
     Parameters
     ----------
     grp_path : str
-        The group path for the ground track, path, or profile.
+        The group path for the ground track, pair track, or profile.
 
     Returns
     -------
     track_str : str
-       The string for the ground track, path, or profile of this group
+       The string for the ground track, pair track, or profile of this group
     spot_dim_name : str
         What the dimension should be named in the dataset
     """

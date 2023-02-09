@@ -87,7 +87,7 @@ def _get_track_type_str(grp_path) -> (str, str):
     # e.g. for ATL11
     elif re.match(r"pt[1-3]", grp_path):
         track_str = re.match(r"pt[1-3]", grp_path).group()
-        spot_dim_name = "path"
+        spot_dim_name = "pair_track"
 
     return track_str, spot_dim_name
 
@@ -488,7 +488,7 @@ class Read:
             )
 
             # handle cases where the delta time is 2d due to multiple cycles in that group
-            if spot_dim_name == "path" and np.ndim(hold_delta_times) > 1:
+            if spot_dim_name == "pair_track" and np.ndim(hold_delta_times) > 1:
                 ds = ds.assign_coords(
                     {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
                 )

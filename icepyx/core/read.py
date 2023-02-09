@@ -437,7 +437,6 @@ class Read:
                     warnings.warn("Your granule index is made up of random values.")
                     # You must include the orbit/cycle_number and orbit/rgt variables to generate
             except KeyError:
-                # Added this when dealing with ATL11 - need to see if it breaks with other datasets
                 is2ds["gran_idx"] = [np.nanmax(is2ds["gran_idx"]) - 1]
 
             if hasattr(is2ds, "data_start_utc"):

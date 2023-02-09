@@ -102,7 +102,7 @@ def test_check_run_fast_scandir(dir, fn_glob, expect):
         ("gt1l", "gt1l", "spot"),
         ("gt3r", "gt3r", "spot"),
         ("profile_2", "profile_2", "profile"),
-        ("pt1", "pt1", "path"),
+        ("pt1", "pt1", "pair_track"),
     ],
 )
 def test_get_track_type_str(grp_path, exp_track_str, exp_spot_dim_name):

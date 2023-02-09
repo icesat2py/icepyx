@@ -530,7 +530,7 @@ class Read:
             is2ds["gt"] = is2ds.gt.astype(str)
             try:
                 is2ds[spot_dim_name] = is2ds[spot_dim_name].astype(np.uint8)
-            except:
+            except TypeError:
                 pass
 
         return is2ds, ds[grp_spec_vars]

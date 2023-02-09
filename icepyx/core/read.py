@@ -439,7 +439,6 @@ class Read:
             except KeyError:
                 # Added this when dealing with ATL11 - need to see if it breaks with other datasets
                 is2ds["gran_idx"] = [np.nanmax(is2ds["gran_idx"]) - 1]
-                # pass
 
             if hasattr(is2ds, "data_start_utc"):
                 is2ds = _make_np_datetime(is2ds, "data_start_utc")
@@ -530,7 +529,7 @@ class Read:
             is2ds["gt"] = is2ds.gt.astype(str)
             try:
                 is2ds[spot_dim_name] = is2ds[spot_dim_name].astype(np.uint8)
-            except TypeError:
+            except ValueError:
                 pass
 
         return is2ds, ds[grp_spec_vars]
@@ -578,10 +577,14 @@ class Read:
             is2ds = _make_np_datetime(is2ds, "data_start_utc")
             is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
-        except AttributeError:
+        except (AttributeError, KeyError):
             pass
 
-        is2ds = is2ds.assign(ds[grp_spec_vars])
+        try:
+            is2ds = is2ds.assign(ds[grp_spec_vars])
+        except xr.MergeError:
+            ds = ds[grp_spec_vars].reset_coords()
+            is2ds = is2ds.assign(ds)
 
         return is2ds
 
@@ -793,7 +796,6 @@ class Read:
             )
 
             while wanted_groups_list:
-                # print(wanted_groups_list)
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
                 ds = self._read_single_grp(file, grp_path)
@@ -804,7 +806,6 @@ class Read:
                 # if there are any deeper nested variables, get those so they have actual coordinates and add them
                 # this may apply to (at a minimum): ATL08
                 if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
-                    print("nested var")
                     for grp_path2 in wanted_groups_list:
                         if grp_path in grp_path2:
                             sub_ds = self._read_single_grp(file, grp_path2)

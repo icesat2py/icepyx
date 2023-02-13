@@ -107,7 +107,7 @@ class Argo(DataSet):
         return x
 
     # todo: add a try/except to make sure the json files are valid i.e. contains all data we're expecting (no params are missing)
-    def _parse_into_df(self, profiles):
+    def _parse_into_df(self, profiles) -> None:
         """
         Stores profiles returned by query into dataframe
         saves profiles back to self.profiles

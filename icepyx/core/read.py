@@ -54,7 +54,7 @@ def _make_np_datetime(df, keyword):
     return df
 
 
-def _get_track_type_str(grp_path) -> (str, str):
+def _get_track_type_str(grp_path) -> (str, str, str):
     """
     Determine whether the product contains ground tracks, pair tracks, or profiles and
     parse the string/label the dimension accordingly.
@@ -70,6 +70,8 @@ def _get_track_type_str(grp_path) -> (str, str):
        The string for the ground track, pair track, or profile of this group
     spot_dim_name : str
         What the dimension should be named in the dataset
+    spot_var_name : str
+        What the variable should be named in the dataset
     """
 
     import re
@@ -78,18 +80,21 @@ def _get_track_type_str(grp_path) -> (str, str):
     if re.match(r"gt[1-3]['r','l']", grp_path):
         track_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
         spot_dim_name = "spot"
+        spot_var_name = "gt"
 
     # e.g. for ATL09
     elif re.match(r"profile_[1-3]", grp_path):
         track_str = re.match(r"profile_[1-3]", grp_path).group()
         spot_dim_name = "profile"
+        spot_var_name = "prof"
 
     # e.g. for ATL11
     elif re.match(r"pt[1-3]", grp_path):
         track_str = re.match(r"pt[1-3]", grp_path).group()
         spot_dim_name = "pair_track"
+        spot_var_name = "pt"
 
-    return track_str, spot_dim_name
+    return track_str, spot_dim_name, spot_var_name
 
 
 # Dev note: function fully tested (except else, which don't know how to get to)
@@ -221,7 +226,8 @@ class Read:
 
     filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
-        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted).
+        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products.
+        The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
 
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
@@ -444,7 +450,7 @@ class Read:
                 is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
         else:
-            track_str, spot_dim_name = _get_track_type_str(grp_path)
+            track_str, spot_dim_name, spot_var_name = _get_track_type_str(grp_path)
 
             # get the spot number if relevant
             if spot_dim_name == "spot":
@@ -479,7 +485,7 @@ class Read:
                         "delta_time": ("delta_time", photon_ids),
                     }
                 )
-                .assign(gt=(("gran_idx", spot_dim_name), [[track_str]]))
+                .assign({spot_var_name: (("gran_idx", spot_dim_name), [[track_str]])})
                 .rename_dims({"delta_time": "photon_idx"})
                 .rename({"delta_time": "photon_idx"})
                 # .set_index("photon_idx")
@@ -515,17 +521,18 @@ class Read:
                             )
                         }
                     )
+                    ds["cycle_number"] = ds.cycle_number.astype(np.uint8)
                 except KeyError:
                     pass
 
-            grp_spec_vars.extend(["gt", "photon_idx"])
+            grp_spec_vars.extend([spot_var_name, "photon_idx"])
 
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
             )
 
             # re-cast some dtypes to make array smaller
-            is2ds["gt"] = is2ds.gt.astype(str)
+            is2ds[spot_var_name] = is2ds[spot_var_name].astype(str)
             try:
                 is2ds[spot_dim_name] = is2ds[spot_dim_name].astype(np.uint8)
             except ValueError:

@@ -226,7 +226,7 @@ class Read:
 
     filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
-        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products.
+        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
 
     catalog : string, default None

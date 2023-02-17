@@ -99,15 +99,23 @@ def test_check_run_fast_scandir(dir, fn_glob, expect):
 @pytest.mark.parametrize(
     "grp_path, exp_track_str, exp_spot_dim_name",
     [
-        ("gt1l", "gt1l", "spot"),
-        ("gt3r", "gt3r", "spot"),
-        ("profile_2", "profile_2", "profile"),
-        ("pt1", "pt1", "pair_track"),
+        ("gt1l", "gt1l", "spot", "gt"),
+        ("gt3r", "gt3r", "spot", "gt"),
+        ("profile_2", "profile_2", "profile", "prof"),
+        ("pt1", "pt1", "pair_track", "pt"),
     ],
 )
-def test_get_track_type_str(grp_path, exp_track_str, exp_spot_dim_name):
-    obs_track_str, obs_spot_dim_name = read._get_track_type_str(grp_path)
-    assert (obs_track_str, obs_spot_dim_name) == (exp_track_str, exp_spot_dim_name)
+def test_get_track_type_str(
+    grp_path, exp_track_str, exp_spot_dim_name, exp_spot_var_name
+):
+    obs_track_str, obs_spot_dim_name, obs_spot_var_name = read._get_track_type_str(
+        grp_path
+    )
+    assert (obs_track_str, obs_spot_dim_name, obs_spot_var_name) == (
+        exp_track_str,
+        exp_spot_dim_name,
+        exp_spot_var_name,
+    )
 
 
 # Best way to test this may be by including a small sample file with the repo (which can be used for testing some of the catalog/read-in functions as well)

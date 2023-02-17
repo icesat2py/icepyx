@@ -97,7 +97,7 @@ def test_check_run_fast_scandir(dir, fn_glob, expect):
 
 
 @pytest.mark.parametrize(
-    "grp_path, exp_track_str, exp_spot_dim_name",
+    "grp_path, exp_track_str, exp_spot_dim_name, exp_spot_var_name",
     [
         ("gt1l", "gt1l", "spot", "gt"),
         ("gt3r", "gt3r", "spot", "gt"),

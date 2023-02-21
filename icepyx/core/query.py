@@ -882,6 +882,11 @@ class Query(GenQuery):
         Earthdata Login password:  ········
         """
 
+        # next steps: clean this up now that the "try multiple options" is implemented in earthaccess
+        # then, migrate the testing suite for this to earthaccess
+        # will need to heavily update docs to point to the right spots of earthaccess
+        # then can also try the s3 credential step...
+
         try:
             auth = earthaccess.login(strategy="netrc")
         except:

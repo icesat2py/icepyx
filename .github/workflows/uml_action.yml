@@ -16,7 +16,7 @@ jobs:
       - name: set up environment
         run: |
           pip install -U pip
-          pip install -r requirements
+          pip install -r requirements.txt
           pip install icepyx pylint 
           sudo apt-get install graphviz
       - name: run pyreverse

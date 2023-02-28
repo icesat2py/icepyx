@@ -857,34 +857,39 @@ class Query(GenQuery):
 
     # test cases: uid, email supplied and not
 
-    def earthdata_login(self, uid=None, email=None, s3token=False, persist=False):
+    def earthdata_login(
+        self, uid=None, email=None, s3token=False, persist=False
+    ) -> None:
         """
-        Log in to NSIDC EarthData to access data. Generates the needed session and token for most
-        data searches and data ordering/download.
+        Authenticate with NASA EarthData to enable data ordering and download.
+
+        Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
+        Generates the needed authentication sessions and tokens, including for cloud access.
 
         Parameters
         ----------
-        uid : string
+        uid : string, default None
             Earthdata login user ID
         email : string, default None
-            Email address. NSIDC will automatically send you emails about the status of your order.
+            Deprecated keyword for backwards compatibility.
         s3token : boolean, default False
             Generate AWS s3 ICESat-2 data access credentials
-
-        See Also
-        --------
-        Earthdata.Earthdata
+        persist : boolean, default False
+            Whether or not you would like your login credentials saved to a .netrc file.
 
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
+        >>> reg_a.earthdata_login(user_id) # doctest: +SKIP
         Earthdata Login password:  ········
         """
 
-        # next steps: clean this up now that the "try multiple options" is implemented in earthaccess
-        # then, migrate the testing suite for this to earthaccess
-        # will need to heavily update docs to point to the right spots of earthaccess
+        # next steps:
+        # write tests for this updated function (update current mock?)
+        # check email or not usage for order granules
+        # if appropriate, migrate the testing suite for this to earthaccess
+        # will need to heavily update docs and examples to point to the right spots of earthaccess
+        # remove the earthdata module
         # then can also try the s3 credential step...
 
         try:
@@ -892,23 +897,31 @@ class Query(GenQuery):
         except:
             pass
 
-        if os.environ.get("EDL_PASSWORD") != None:
-            pwd = os.environ.get("EDL_PASSWORD")
+        if os.environ.get("EARTHDATA_USERNAME") or os.environ.get("EDL_USERNAME"):
 
-            if os.environ.get("EARTHDATA_PASSWORD") != None:
+            if (
+                os.environ.get("EDL_PASSWORD") != None
+                and os.environ.get("EDL_USERNAME") != None
+            ):
+                pass
+
+            elif (
+                os.environ.get("EARTHDATA_PASSWORD") != None
+                and os.environ.get("EARTHDATA_USERNAME") != None
+            ):
+                uid = os.environ.get("EARTHDATA_USERNAME")
                 pwd = os.environ.get("EARTHDATA_PASSWORD")
                 warnings.warn(
-                    "Please update your environment variable names to 'EDL_PASSWORD'",
+                    "Please update your environment variable names to 'EDL_USERNAME' and 'EDL_PASSWORD'",
                     DeprecationWarning,
                 )
+                os.environ["EDL_PASSWORD"] = str(uid)
                 os.environ["EDL_PASSWORD"] = str(pwd)
 
             auth = earthaccess.login(strategy="environment")
 
         else:
-            auth = earthaccess.login(
-                strategy="interactive"
-            )  # , persist=persist) un-comment this once a new version of earthaccess is built
+            auth = earthaccess.login(strategy="interactive", persist=persist)
 
         # if s3token == False:
         #     capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
@@ -932,8 +945,6 @@ class Query(GenQuery):
         self._auth = auth
         self._session = auth.get_session()
 
-        # self._session = Earthdata(uid, email, capability_url).login()
-
         if s3token == True:
             self._s3login_credentials = auth.get_s3_credentials()
         # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
@@ -942,6 +953,12 @@ class Query(GenQuery):
         #         self._session.get(self._session.get(capability_url).url).content
         #     )
         # self._email = email
+
+        if email != None:
+            warnings.warn(
+                "Please remove the email kwarg. If you would still like to receive email updates, you may supply it to `order_granules()`",
+                DeprecationWarning,
+            )
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):
@@ -1007,7 +1024,7 @@ class Query(GenQuery):
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
     # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
+    def order_granules(self, verbose=False, subset=True, email=None, **kwargs):
         """
         Place an order for the available granules for the query object.
 
@@ -1022,7 +1039,7 @@ class Query(GenQuery):
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email: boolean, default False
+        email: string, default None
             Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
@@ -1057,9 +1074,13 @@ class Query(GenQuery):
         if self._reqparams._reqtype == "search":
             self._reqparams._reqtype = "download"
 
-        if "email" in self._reqparams.fmted_keys.keys() or email == False:
+        if "email" in self._reqparams.fmted_keys.keys() or email == None:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
-        else:
+        elif email != None:
+            assert re.match(
+                r"[^@]+@[^@]+\.[^@]+", email
+            ), "Enter a properly formatted email address"
+
             self._reqparams.build_params(
                 **self._reqparams.fmted_keys, email=self._email
             )

@@ -315,7 +315,7 @@ class Granules:
 
         if session is None:
             raise ValueError(
-                "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
+                "Don't forget to log in to Earthdata using query.earthdata_login(uid)"
             )
 
         base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"

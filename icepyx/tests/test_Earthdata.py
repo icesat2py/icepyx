@@ -25,10 +25,11 @@ def setup_earthdata():
 
 
 @pytest.mark.test_dep
-def test_dep_environment(dep_username, dep_password):
+def test_dep_environment(username, password):
     netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
     assert not os.access(netrc_file, os.F_OK)
-    assert earthdata_login(dep_username, dep_password)
+    assert earthdata_login(username, password)
+    assert not earthdata_login(username, password)
 
 
 def test_environment(username, password):
@@ -78,30 +79,33 @@ def earthdata_login(
     except:
         pass
 
-    if os.environ.get("EARTHDATA_USERNAME") or os.environ.get("EDL_USERNAME"):
+    if (
+        os.environ.get("EDL_PASSWORD") != None
+        and os.environ.get("EDL_USERNAME") != None
+    ):
+        mock_uid = os.environ.get("EDL_USERNAME")
+        mock_pwd = os.environ.get("EDL_PASSWORD")
 
-        if (
-            os.environ.get("EDL_PASSWORD") != None
-            and os.environ.get("EDL_USERNAME") != None
-        ):
-            mock_uid = os.environ.get("EDL_USERNAME")
-            mock_pwd = os.environ.get("EDL_PASSWORD")
+    elif (
+        os.environ.get("EARTHDATA_PASSWORD") != None
+        and os.environ.get("EARTHDATA_USERNAME") != None
+    ):
+        mock_uid = os.environ.get("EARTHDATA_USERNAME")
+        mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
+        warnings.warn(
+            "Please update your environment variable names to 'EDL_USERNAME' and 'EDL_PASSWORD'",
+            DeprecationWarning,
+        )
+        # os.environ["EDL_USERNAME"] = str(uid)
+        # os.environ["EDL_PASSWORD"] = str(pwd)
 
-        elif (
-            os.environ.get("EARTHDATA_PASSWORD") != None
-            and os.environ.get("EARTHDATA_USERNAME") != None
-        ):
-            mock_uid = os.environ.get("EARTHDATA_USERNAME")
-            mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
-            warnings.warn(
-                "Please update your environment variable names to 'EDL_USERNAME' and 'EDL_PASSWORD'",
-                DeprecationWarning,
-            )
-            # os.environ["EDL_USERNAME"] = str(uid)
-            # os.environ["EDL_PASSWORD"] = str(pwd)
+    # mock_uid = os.environ.get("EDL_USERNAME")
+    # mock_pwd = os.environ.get("EDL_PASSWORD")
 
-        # mock_uid = os.environ.get("EDL_USERNAME")
-        # mock_pwd = os.environ.get("EDL_PASSWORD")
+    print(uid)
+    print(mock_uid)
+    print(pwd)
+    print(mock_pwd)
 
     if (uid == mock_uid) & (pwd == mock_pwd):
         return True

@@ -898,28 +898,29 @@ class Query(GenQuery):
         except:
             pass
 
-        if os.environ.get("EARTHDATA_USERNAME") or os.environ.get("EDL_USERNAME"):
-
-            if (
-                os.environ.get("EDL_PASSWORD") != None
-                and os.environ.get("EDL_USERNAME") != None
-            ):
-                pass
-
-            elif (
-                os.environ.get("EARTHDATA_PASSWORD") != None
-                and os.environ.get("EARTHDATA_USERNAME") != None
-            ):
-                uid = os.environ.get("EARTHDATA_USERNAME")
-                pwd = os.environ.get("EARTHDATA_PASSWORD")
-                warnings.warn(
-                    "Please update your environment variable names to 'EDL_USERNAME' and 'EDL_PASSWORD'",
-                    DeprecationWarning,
-                )
-                os.environ["EDL_USERNAME"] = str(uid)
-                os.environ["EDL_PASSWORD"] = str(pwd)
-
+        if (
+            os.environ.get("EDL_PASSWORD") != None
+            and os.environ.get("EDL_USERNAME") != None
+        ):
             auth = earthaccess.login(strategy="environment")
+
+        elif (
+            os.environ.get("EARTHDATA_PASSWORD") != None
+            and os.environ.get("EARTHDATA_USERNAME") != None
+        ):
+            warnings.warn(
+                "Please update your environment variable names to 'EDL_USERNAME' and 'EDL_PASSWORD'",
+                DeprecationWarning,
+            )
+
+            # review question: would the best practice be to have such an attempt, or am I being too nice?
+            # try:
+            #     os.environ["EDL_USERNAME"] = str(os.environ.get("EARTHDATA_USERNAME"))
+            #     os.environ["EDL_PASSWORD"] = str(os.environ.get("EARTHDATA_PASSWORD"))
+
+            #     auth = earthaccess.login(strategy="environment")
+            # except:
+            #     pass
 
         else:
             auth = earthaccess.login(strategy="interactive", persist=persist)

@@ -885,7 +885,8 @@ class Query(GenQuery):
         """
 
         # next steps:
-        # write tests for this updated function (update current mock?)
+        # write tests for this updated function - but first update the fuction to warn the user to update their env variables and give them the manual login instead
+        # update the mock in the tests to match the updated function
         # check email or not usage for order granules
         # if appropriate, migrate the testing suite for this to earthaccess
         # will need to heavily update docs and examples to point to the right spots of earthaccess
@@ -915,7 +916,7 @@ class Query(GenQuery):
                     "Please update your environment variable names to 'EDL_USERNAME' and 'EDL_PASSWORD'",
                     DeprecationWarning,
                 )
-                os.environ["EDL_PASSWORD"] = str(uid)
+                os.environ["EDL_USERNAME"] = str(uid)
                 os.environ["EDL_PASSWORD"] = str(pwd)
 
             auth = earthaccess.login(strategy="environment")

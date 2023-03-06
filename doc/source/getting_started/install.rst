@@ -1,6 +1,6 @@
 .. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
 .. _`Fiona`: https://pypi.org/project/Fiona/
-.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/installer/conda.svg 
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/version.svg 
     :target: https://anaconda.org/conda-forge/icepyx
     
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
@@ -14,9 +14,11 @@ Installation
 Quickstart
 ----------
 
-The simplest way to install icepyx is by using the
+The simplest (and recommended) way to install icepyx is by using the
 `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/index.html>`__
-package manager. The command below takes care of setting up a virtual
+package manager (or the faster `mamba <https://mamba.readthedocs.io/en/latest/index.html>`_, 
+which should be installed in your base environment).
+The command below takes care of setting up a virtual
 environment and installs icepyx along with all the necessary dependencies::
 
     conda create --name icepyx-env --channel conda-forge icepyx
@@ -51,7 +53,7 @@ Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/st
   pip install icepyx
 
 
-Windows users will need to first install `Fiona`_, please look at the instructions there.
+Windows users will need to first install `Fiona`_; please look at the instructions there.
 Windows users may consider installing Fiona using pipwin
 
 .. code-block::
@@ -59,6 +61,9 @@ Windows users may consider installing Fiona using pipwin
   pip install pipwin
   pipwin install Fiona
 
+
+For the latest features
+-----------------------
 
 Currently, conda and pip packages are generated with each tagged release.
 This means it is possible that these methods will not install the latest merged features of icepyx.

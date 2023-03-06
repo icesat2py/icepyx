@@ -8,7 +8,6 @@ with open("requirements.txt") as f:
 
 EXTRAS_REQUIRE = {
     "viz": ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"],
-    "cloud": ["s3fs"],
 }
 EXTRAS_REQUIRE["complete"] = sorted(set(sum(EXTRAS_REQUIRE.values(), [])))
 
@@ -27,6 +26,7 @@ setuptools.setup(
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRE,
     python_requires=">=3",
+    # classifiers are a set of standard descriptions. Possible list: https://pypi.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
@@ -38,6 +38,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: GIS",
         "Topic :: Software Development :: Libraries",

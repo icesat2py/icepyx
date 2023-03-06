@@ -75,11 +75,25 @@ to ensure you have the most up to date version of icepyx in your library.
 
 
 If you are modifying portions of code, you will need to run
+
 .. code-block:: shell
 
     pip install -e.
 
 within your Python environment to use your real-time edited version of the code during runtime.
+
+
+Setting up a Development Work Environment
+-----------------------------------------
+
+icepyx uses a few tools to ensure that files have consistent formatting and run tests.
+You can easily install the ones most frequently used by creating a new conda environment (from the home level of your local copy of the icepyx repo) with
+
+.. code-block:: shell
+
+    conda create --name icepyx-env --channel conda-forge -f requirements-dev.txt -f requirements.txt
+
+and then pip installing icepyx as described above and below.
 
 
 Considerations with Jupyter Notebook

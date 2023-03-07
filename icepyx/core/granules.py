@@ -74,7 +74,8 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=Fal
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
 
-        if int(gran["producer_granule_id"][3:5]) > 13:
+        prod = int(gran["producer_granule_id"][3:5])
+        if prod == 11 or prod > 13:
             continue
 
         else:

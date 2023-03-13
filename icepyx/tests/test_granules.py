@@ -22,6 +22,15 @@ from icepyx.core.exceptions import NsidcQueryError
 # check that agent key is added in event of no subsetting
 
 
+# add test for granules info for ATL11 and ATL13 (and all datasets? or at least ones that don't have the same filename structure)
+# this example failed in version 0.6.4,  leading to a fix in 0.6.5
+# short_name = 'ATL11'
+# spatial_extent = [-38.65,72.5,-38.40,72.7]
+# date_range = ['2018-06-20','2023-01-21']
+# region_a = ipx.Query(short_name, spatial_extent, date_range)
+# region_a.avail_granules(ids=True)
+
+
 # DevNote: clearly there's a better way that doesn't make the function so long... what is it?
 def test_granules_info():
     # reg_a = ipx.Query('ATL06', [-55, 68, -48, 71], ['2019-02-20','2019-02-24'], version='3')

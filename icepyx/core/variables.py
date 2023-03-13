@@ -289,6 +289,8 @@ class Variables:
         # check if the list of beams, if specified, are available in the product
         if self.product == "ATL09":
             beam_avail = ["profile_" + str(i + 1) for i in range(3)]
+        elif self.product == "ATL11":
+            beam_avail = ["pt" + str(i + 1) for i in range(3)]
         else:
             beam_avail = ["gt" + str(i + 1) + "l" for i in range(3)]
             beam_avail = beam_avail + ["gt" + str(i + 1) + "r" for i in range(3)]
@@ -403,6 +405,7 @@ class Variables:
         beam_list : list of strings, default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
+            For ATL11, acceptable values are ['pt1','pt2','pt3'].
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
@@ -479,6 +482,10 @@ class Variables:
                 "data_end_utc",
             ]
 
+        # Adjust the nec_varlist for individual products
+        if self.product == "ATL11":
+            nec_varlist.remove("sc_orient")
+
         try:
             self._check_valid_lists(vgrp, allpaths, var_list=nec_varlist)
         except ValueError:
@@ -533,6 +540,7 @@ class Variables:
         beam_list : list of strings, default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
+            For ATL11, acceptable values are ['pt1','pt2','pt3'].
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None

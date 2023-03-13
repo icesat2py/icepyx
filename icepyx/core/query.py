@@ -893,62 +893,55 @@ class Query(GenQuery):
         # remove the earthdata module
         # then can also try the s3 credential step...
 
-        try:
-            auth = earthaccess.login(strategy="netrc")
-        except:
-            pass
+        # try:
+        #     auth = earthaccess.login(strategy="netrc")
+        # except:
+        #     pass
 
-        if (
-            os.environ.get("EDL_PASSWORD") != None
-            and os.environ.get("EDL_USERNAME") != None
-        ):
+        if os.environ.get("EDL_PASSWORD") != None:
+            pwd = os.environ.get("EDL_PASSWORD")
+
+            if os.environ.get("EARTHDATA_PASSWORD") != None:
+                pwd = os.environ.get("EARTHDATA_PASSWORD")
+                warnings.warn(
+                    "Please update your environment variable names to 'EDL_PASSWORD'",
+                    DeprecationWarning,
+                )
+                os.environ["EDL_PASSWORD"] = str(pwd)
+
             auth = earthaccess.login(strategy="environment")
 
-        elif (
-            os.environ.get("EARTHDATA_PASSWORD") != None
-            and os.environ.get("EARTHDATA_USERNAME") != None
-        ):
-            warnings.warn(
-                "Please update your environment variable names to 'EDL_USERNAME' and 'EDL_PASSWORD'",
-                DeprecationWarning,
-            )
-
-            # review question: would the best practice be to have such an attempt, or am I being too nice?
-            # try:
-            #     os.environ["EDL_USERNAME"] = str(os.environ.get("EARTHDATA_USERNAME"))
-            #     os.environ["EDL_PASSWORD"] = str(os.environ.get("EARTHDATA_PASSWORD"))
-
-            #     auth = earthaccess.login(strategy="environment")
-            # except:
-            #     pass
-
         else:
-            auth = earthaccess.login(strategy="interactive", persist=persist)
+            auth = earthaccess.login(
+                strategy="interactive"
+            )  # , persist=persist) un-comment this once a new version of earthaccess is built
 
-        # if s3token == False:
-        #     capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
-        # elif s3token == True:
+        if s3token == False:
+            capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
+        # # elif s3token == True:
 
-        #     def is_ec2():
-        #         import socket
+        # #     def is_ec2():
+        # #         import socket
 
-        #         try:
-        #             socket.gethostbyname("instance-data")
-        #             return True
-        #         except socket.gaierror:
-        #             return False
+        # #         try:
+        # #             socket.gethostbyname("instance-data")
+        # #             return True
+        # #         except socket.gaierror:
+        # #             return False
 
-        #     # loosely check for AWS login capability without web request
-        #     assert (
-        #         is_ec2() == True
-        #     ), "You must be working from a valid AWS instance to use s3 data access"
-        #     capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
+        # #     # loosely check for AWS login capability without web request
+        # #     assert (
+        # #         is_ec2() == True
+        # #     ), "You must be working from a valid AWS instance to use s3 data access"
+        # #     capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
 
-        self._auth = auth
-        self._session = auth.get_session()
+        # self._auth = auth
+        # self._session = auth.get_session()
 
-        if s3token == True:
-            self._s3login_credentials = auth.get_s3_credentials()
+        self._session = Earthdata(uid, email, capability_url).login()
+
+        # if s3token == True:
+        #     self._s3login_credentials = auth.get_s3_credentials()
         # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
         # if s3token == True:
         #     self._s3login_credentials = json.loads(

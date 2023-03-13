@@ -1,3 +1,4 @@
+import earthaccess
 import requests
 import getpass
 import socket
@@ -5,6 +6,7 @@ import netrc
 import re
 import os
 import json
+
 
 # DevNote: currently this class is not tested
 class Earthdata:
@@ -16,7 +18,7 @@ class Earthdata:
     ----------
     uid : string
         Earthdata Login user name (user ID).
-    email : string
+    email : string, default None
         Complete email address, provided as a string.
     password : string (encrypted)
         Password for Earthdata registration associated with the uid.
@@ -28,18 +30,21 @@ class Earthdata:
     Earthdata session object after a successful login
     """
 
+    # ToDo: make the email optional throughout all steps in query
     def __init__(
         self,
         uid,
-        email,
+        email,  # might be able to make this not required but can still accept it as an input from query...
         capability_url,
         pswd=os.environ.get("EARTHDATA_PASSWORD"),
     ):
 
         assert isinstance(uid, str), "Enter your login user id as a string"
-        assert re.match(
-            r"[^@]+@[^@]+\.[^@]+", email
-        ), "Enter a properly formatted email address"
+
+        if email:
+            assert re.match(
+                r"[^@]+@[^@]+\.[^@]+", email
+            ), "Enter a properly formatted email address"
 
         self.netrc = None
         self.uid = uid
@@ -73,6 +78,8 @@ class Earthdata:
             headers={"Accept": "application/json", "Client-Id": "icepyx"},
         )
 
+        print("response content")
+        print(response.content)
         # check for a valid login
         try:
             json.loads(response.content)["token"]
@@ -127,11 +134,16 @@ class Earthdata:
         """
 
         try:
-            url = "urs.earthdata.nasa.gov"
-            self.uid, _, self.pswd = netrc.netrc(self.netrc).authenticators(url)
-            self._start_session()
+            # url = "urs.earthdata.nasa.gov"
+            # self.uid, _, self.pswd = netrc.netrc(self.netrc).authenticators(url)
+            # self._start_session()
+            auth = earthaccess.login(strategy="netrc")
+            self.session = auth.get_session(bearer_token=True)
 
         except:
+            # if there's the appropriate environmental variable set
+            if self.pswd:
+                pass
             # if not using an environmental variable for password
             if not self.pswd:
                 self.pswd = getpass.getpass("Earthdata Login password: ")

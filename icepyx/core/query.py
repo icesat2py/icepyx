@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 
-from icepyx.core.Earthdata import Earthdata
 import icepyx.core.APIformatting as apifmt
 import icepyx.core.is2ref as is2ref
 import icepyx.core.granules as granules
@@ -863,17 +862,24 @@ class Query(GenQuery):
         """
         Authenticate with NASA EarthData to enable data ordering and download.
 
-        Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
         Generates the needed authentication sessions and tokens, including for cloud access.
+        Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
+        Methods for authenticating are:
+            1. Storing credentials as environment variables ($EARTHDATA_LOGIN and $EARTHDATA_PASSWORD)
+            2. Entering credentials interactively
+            3. Storing credentials in a .netrc file (not recommended for security reasons)
+        More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
+        The input parameters listed here are provided for backwards compatibility;
+        before earthaccess existed, icepyx handled authentication and required these inputs.
 
         Parameters
         ----------
         uid : string, default None
-            Earthdata login user ID
+            Deprecated keyword for Earthdata login user ID.
         email : string, default None
             Deprecated keyword for backwards compatibility.
         s3token : boolean, default False
-            Generate AWS s3 ICESat-2 data access credentials
+            Deprecated keyword to generate AWS s3 ICESat-2 data access credentials
         persist : boolean, default False
             Whether or not you would like your login credentials saved to a .netrc file.
 
@@ -885,15 +891,13 @@ class Query(GenQuery):
         """
 
         # next steps:
-        # write tests for this updated function - but first update the fuction to warn the user to update their env variables and give them the manual login instead
-        # update the mock in the tests to match the updated function
         # check email or not usage for order granules
-        # if appropriate, migrate the testing suite for this to earthaccess
+        # migrate the existing earthdata testing suite to earthaccess
         # will need to heavily update docs and examples to point to the right spots of earthaccess
-        # remove the earthdata module
         # then can also try the s3 credential step...
+        # open issue to add auto-login to order step (and update docs/ex accordingly)
 
-        auth = earthaccess.login()
+        auth = earthaccess.login(persist=persist)
         if auth.authenticated:
             self._auth = auth
             self._session = auth.get_session()
@@ -980,7 +984,7 @@ class Query(GenQuery):
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
     # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(self, verbose=False, subset=True, email=None, **kwargs):
+    def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
         """
         Place an order for the available granules for the query object.
 
@@ -995,8 +999,9 @@ class Query(GenQuery):
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email: string, default None
+        email: boolean, default False
             Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
+            The emails are sent to the account associated with your EarthData account.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
@@ -1030,15 +1035,12 @@ class Query(GenQuery):
         if self._reqparams._reqtype == "search":
             self._reqparams._reqtype = "download"
 
-        if "email" in self._reqparams.fmted_keys.keys() or email == None:
+        if "email" in self._reqparams.fmted_keys.keys() or email == False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
-        elif email != None:
-            assert re.match(
-                r"[^@]+@[^@]+\.[^@]+", email
-            ), "Enter a properly formatted email address"
-
+        elif email == True:
+            user_profile = self._auth.get_user_profile()
             self._reqparams.build_params(
-                **self._reqparams.fmted_keys, email=self._email
+                **self._reqparams.fmted_keys, email=user_profile["email_address"]
             )
 
         if subset is False:

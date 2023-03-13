@@ -880,7 +880,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id) # doctest: +SKIP
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         Earthdata Login password:  ········
         """
 
@@ -893,52 +893,12 @@ class Query(GenQuery):
         # remove the earthdata module
         # then can also try the s3 credential step...
 
-        # try:
-        #     auth = earthaccess.login(strategy="netrc")
-        # except:
-        #     pass
+        auth = earthaccess.login()
+        if auth.authenticated:
+            self._auth = auth
+            self._session = auth.get_session()
 
-        if os.environ.get("EDL_PASSWORD") != None:
-            pwd = os.environ.get("EDL_PASSWORD")
-
-            if os.environ.get("EARTHDATA_PASSWORD") != None:
-                pwd = os.environ.get("EARTHDATA_PASSWORD")
-                warnings.warn(
-                    "Please update your environment variable names to 'EDL_PASSWORD'",
-                    DeprecationWarning,
-                )
-                os.environ["EDL_PASSWORD"] = str(pwd)
-
-            auth = earthaccess.login(strategy="environment")
-
-        else:
-            auth = earthaccess.login(
-                strategy="interactive"
-            )  # , persist=persist) un-comment this once a new version of earthaccess is built
-
-        if s3token == False:
-            capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
-        # # elif s3token == True:
-
-        # #     def is_ec2():
-        # #         import socket
-
-        # #         try:
-        # #             socket.gethostbyname("instance-data")
-        # #             return True
-        # #         except socket.gaierror:
-        # #             return False
-
-        # #     # loosely check for AWS login capability without web request
-        # #     assert (
-        # #         is_ec2() == True
-        # #     ), "You must be working from a valid AWS instance to use s3 data access"
-        # #     capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
-
-        # self._auth = auth
-        # self._session = auth.get_session()
-
-        self._session = Earthdata(uid, email, capability_url).login()
+        """
 
         # if s3token == True:
         #     self._s3login_credentials = auth.get_s3_credentials()
@@ -954,6 +914,7 @@ class Query(GenQuery):
                 "Please remove the email kwarg. If you would still like to receive email updates, you may supply it to `order_granules()`",
                 DeprecationWarning,
             )
+        """
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):

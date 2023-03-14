@@ -896,6 +896,8 @@ class Query(GenQuery):
         # will need to heavily update docs and examples to point to the right spots of earthaccess
         # then can also try the s3 credential step...
         # open issue to add auto-login to order step (and update docs/ex accordingly)
+        # also update other tests that use authentication
+        # consider removing persist kwarg since a .netrc is discouraged
 
         auth = earthaccess.login(persist=persist)
         if auth.authenticated:

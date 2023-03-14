@@ -544,8 +544,7 @@ class Query(GenQuery):
         {'page_size': 2000}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         >>> reg_a.reqparams # doctest: +SKIP
         {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
@@ -627,8 +626,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
@@ -672,8 +670,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.file_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
@@ -791,8 +788,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.show_custom_options(dictview=True) # doctest: +SKIP
         Subsetting options
         [{'id': 'ICESAT2',
@@ -860,7 +856,7 @@ class Query(GenQuery):
         self, uid=None, email=None, s3token=False, persist=False
     ) -> None:
         """
-        Authenticate with NASA EarthData to enable data ordering and download.
+        Authenticate with NASA Earthdata to enable data ordering and download.
 
         Generates the needed authentication sessions and tokens, including for cloud access.
         Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
@@ -898,6 +894,7 @@ class Query(GenQuery):
         # open issue to add auto-login to order step (and update docs/ex accordingly)
         # also update other tests that use authentication
         # consider removing persist kwarg since a .netrc is discouraged
+        # generalize (from persist) to any earthaccess kwargs so login style can be specified if desired (e.g. "interactive")
 
         auth = earthaccess.login(persist=persist)
         if auth.authenticated:
@@ -1003,7 +1000,7 @@ class Query(GenQuery):
             granules. This eliminates false-positive granules returned by the metadata-level search)
         email: boolean, default False
             Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
-            The emails are sent to the account associated with your EarthData account.
+            The emails are sent to the account associated with your Earthdata account.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
@@ -1018,8 +1015,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         order ID: [###############]
         [order status output]
@@ -1130,8 +1126,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.download_granules('/path/to/download/folder') # doctest: +SKIP
         Beginning download of zipped output...
         Data request [##########] of x order(s) is complete.

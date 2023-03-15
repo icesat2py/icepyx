@@ -1,7 +1,6 @@
 import datetime as dt
 import earthaccess
 import os
-import requests
 import json
 import warnings
 import pprint
@@ -850,8 +849,6 @@ class Query(GenQuery):
     # ----------------------------------------------------------------------
     # Methods - Login and Granules (NSIDC-API)
 
-    # test cases: uid, email supplied and not
-
     def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:
         """
         Authenticate with NASA Earthdata to enable data ordering and download.
@@ -889,12 +886,10 @@ class Query(GenQuery):
         """
 
         # next steps:
-        # check email or not usage for order granules
-        # migrate the existing earthdata testing suite to earthaccess
-        # will need to heavily update docs and examples to point to the right spots of earthaccess
+        # X migrate the existing earthdata testing suite to earthaccess
         # then can also try the s3 credential step...
-        # open issue to add auto-login to order step (and update docs/ex accordingly)
-        # also update other tests that use authentication
+        # X also update other tests that use authentication
+        # delete earthaccess_working.ipynb
 
         auth = earthaccess.login(**kwargs)
         if auth.authenticated:

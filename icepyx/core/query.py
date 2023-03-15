@@ -885,12 +885,6 @@ class Query(GenQuery):
 
         """
 
-        # next steps:
-        # X migrate the existing earthdata testing suite to earthaccess
-        # then can also try the s3 credential step...
-        # X also update other tests that use authentication
-        # delete earthaccess_working.ipynb
-
         auth = earthaccess.login(**kwargs)
         if auth.authenticated:
             self._auth = auth
@@ -898,7 +892,6 @@ class Query(GenQuery):
 
         if s3token == True:
             self._s3login_credentials = auth.get_s3_credentials(daac="NSIDC")
-
 
         if uid != None or email != None:
             warnings.warn(

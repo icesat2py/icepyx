@@ -12,7 +12,7 @@ before_install:
   - conda info -a
 
 install:
-  - conda create --name icepyx-env --channel conda-forge python<3.11 proj geos earthaccess
+  - conda create --name icepyx-env --channel conda-forge python=3.10 proj geos earthaccess
   - source activate icepyx-env
   - pip install -r requirements.txt -r requirements-dev.txt
   - pip install -e .[complete]

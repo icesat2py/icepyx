@@ -896,10 +896,10 @@ class Query(GenQuery):
             self._auth = auth
             self._session = auth.get_session()
 
-        """
+        if s3token == True:
+            self._s3login_credentials = auth.get_s3_credentials()
 
-        # if s3token == True:
-        #     self._s3login_credentials = auth.get_s3_credentials()
+        """
         # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
         # if s3token == True:
         #     self._s3login_credentials = json.loads(

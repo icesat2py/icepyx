@@ -852,9 +852,7 @@ class Query(GenQuery):
 
     # test cases: uid, email supplied and not
 
-    def earthdata_login(
-        self, uid=None, email=None, s3token=False, persist=False
-    ) -> None:
+    def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:
         """
         Authenticate with NASA Earthdata to enable data ordering and download.
 
@@ -876,14 +874,18 @@ class Query(GenQuery):
             Deprecated keyword for backwards compatibility.
         s3token : boolean, default False
             Deprecated keyword to generate AWS s3 ICESat-2 data access credentials
-        persist : boolean, default False
-            Whether or not you would like your login credentials saved to a .netrc file.
+        kwargs : key:value pairs
+            Keyword arguments to be passed into earthaccess.login().
 
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
         >>> reg_a.earthdata_login() # doctest: +SKIP
-        Earthdata Login password:  ········
+        Enter your Earthdata Login username: ___________________
+
+        EARTHDATA_USERNAME and EARTHDATA_PASSWORD are not set in the current environment, try setting them or use a different strategy (netrc, interactive)
+        No .netrc found in /Users/username
+
         """
 
         # next steps:
@@ -893,10 +895,8 @@ class Query(GenQuery):
         # then can also try the s3 credential step...
         # open issue to add auto-login to order step (and update docs/ex accordingly)
         # also update other tests that use authentication
-        # consider removing persist kwarg since a .netrc is discouraged
-        # generalize (from persist) to any earthaccess kwargs so login style can be specified if desired (e.g. "interactive")
 
-        auth = earthaccess.login(persist=persist)
+        auth = earthaccess.login(**kwargs)
         if auth.authenticated:
             self._auth = auth
             self._session = auth.get_session()

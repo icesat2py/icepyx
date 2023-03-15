@@ -24,14 +24,6 @@ def setup_earthdata():
         os.remove(netrc_file)
 
 
-@pytest.mark.test_dep
-def test_dep_environment(username, password):
-    netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
-    assert not os.access(netrc_file, os.F_OK)
-    assert earthdata_login(username, password)
-    assert not earthdata_login(username, password)
-
-
 def test_environment(username, password):
     netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
     assert not os.access(netrc_file, os.F_OK)
@@ -48,9 +40,7 @@ def test_netrc(username, password):
     assert earthdata_login(username, password)
 
 
-def earthdata_login(
-    uid=None, pwd=None, email=None, s3token=False, persist=False
-) -> bool:
+def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
     """
     Mocks the icepyx.core.query.Query.earthdata_login function
 
@@ -64,8 +54,6 @@ def earthdata_login(
             Deprecated keyword for backwards compatibility.
         s3token : boolean, default False
             Generate AWS s3 ICESat-2 data access credentials
-        persist : boolean, default False
-            Whether or not you would like your login credentials saved to a .netrc file.
 
     Returns
     -------
@@ -77,30 +65,10 @@ def earthdata_login(
         url = "urs.earthdata.nasa.gov"
         mock_uid, _, mock_pwd = netrc.netrc(netrc).authenticators(url)
     except:
-        pass
+        # pass
 
-    if (
-        os.environ.get("EDL_PASSWORD") != None
-        and os.environ.get("EDL_USERNAME") != None
-    ):
-        mock_uid = os.environ.get("EDL_USERNAME")
-        mock_pwd = os.environ.get("EDL_PASSWORD")
-
-    elif (
-        os.environ.get("EARTHDATA_PASSWORD") != None
-        and os.environ.get("EARTHDATA_USERNAME") != None
-    ):
         mock_uid = os.environ.get("EARTHDATA_USERNAME")
         mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
-        warnings.warn(
-            "Please update your environment variable names to 'EDL_USERNAME' and 'EDL_PASSWORD'",
-            DeprecationWarning,
-        )
-        # os.environ["EDL_USERNAME"] = str(uid)
-        # os.environ["EDL_PASSWORD"] = str(pwd)
-
-    # mock_uid = os.environ.get("EDL_USERNAME")
-    # mock_pwd = os.environ.get("EDL_PASSWORD")
 
     print(uid)
     print(mock_uid)

@@ -65,15 +65,9 @@ def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
         url = "urs.earthdata.nasa.gov"
         mock_uid, _, mock_pwd = netrc.netrc(netrc).authenticators(url)
     except:
-        # pass
 
         mock_uid = os.environ.get("EARTHDATA_USERNAME")
         mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
-
-    print(uid)
-    print(mock_uid)
-    print(pwd)
-    print(mock_pwd)
 
     if (uid == mock_uid) & (pwd == mock_pwd):
         return True

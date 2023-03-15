@@ -897,7 +897,7 @@ class Query(GenQuery):
             self._session = auth.get_session()
 
         if s3token == True:
-            self._s3login_credentials = auth.get_s3_credentials()
+            self._s3login_credentials = auth.get_s3_credentials(daac="NSIDC")
 
         """
         # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now

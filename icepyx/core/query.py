@@ -899,20 +899,12 @@ class Query(GenQuery):
         if s3token == True:
             self._s3login_credentials = auth.get_s3_credentials(daac="NSIDC")
 
-        """
-        # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
-        # if s3token == True:
-        #     self._s3login_credentials = json.loads(
-        #         self._session.get(self._session.get(capability_url).url).content
-        #     )
-        # self._email = email
 
-        if email != None:
+        if uid != None or email != None:
             warnings.warn(
-                "Please remove the email kwarg. If you would still like to receive email updates, you may supply it to `order_granules()`",
+                "The user id (uid) and/or email keyword arguments are no longer required.",
                 DeprecationWarning,
             )
-        """
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):

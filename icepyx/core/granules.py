@@ -83,6 +83,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=Fal
             gran_s3urls.append(url)
         
         elif prod == 11 or prod > 13:
+            warnings.warn("We are still working in implementing ID generation for this data product.", UserWarning)
             continue
 
         else:

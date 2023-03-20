@@ -1,6 +1,6 @@
 import datetime as dt
+import earthaccess
 import os
-import requests
 import json
 import warnings
 import pprint
@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 
-from icepyx.core.Earthdata import Earthdata
 import icepyx.core.APIformatting as apifmt
 import icepyx.core.is2ref as is2ref
 import icepyx.core.granules as granules
@@ -544,8 +543,7 @@ class Query(GenQuery):
         {'page_size': 2000}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         >>> reg_a.reqparams # doctest: +SKIP
         {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
@@ -627,8 +625,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
@@ -672,8 +669,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.file_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
@@ -791,8 +787,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.show_custom_options(dictview=True) # doctest: +SKIP
         Subsetting options
         [{'id': 'ICESAT2',
@@ -854,58 +849,55 @@ class Query(GenQuery):
     # ----------------------------------------------------------------------
     # Methods - Login and Granules (NSIDC-API)
 
-    def earthdata_login(self, uid, email, s3token=False):
+    def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:
         """
-        Log in to NSIDC EarthData to access data. Generates the needed session and token for most
-        data searches and data ordering/download.
+        Authenticate with NASA Earthdata to enable data ordering and download.
+
+        Generates the needed authentication sessions and tokens, including for cloud access.
+        Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
+        Methods for authenticating are:
+            1. Storing credentials as environment variables ($EARTHDATA_LOGIN and $EARTHDATA_PASSWORD)
+            2. Entering credentials interactively
+            3. Storing credentials in a .netrc file (not recommended for security reasons)
+        More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
+        The input parameters listed here are provided for backwards compatibility;
+        before earthaccess existed, icepyx handled authentication and required these inputs.
 
         Parameters
         ----------
-        uid : string
-            Earthdata login user ID
-        email : string
-            Email address. NSIDC will automatically send you emails about the status of your order.
+        uid : string, default None
+            Deprecated keyword for Earthdata login user ID.
+        email : string, default None
+            Deprecated keyword for backwards compatibility.
         s3token : boolean, default False
-            Generate AWS s3 ICESat-2 data access credentials
-
-        See Also
-        --------
-        Earthdata.Earthdata
+            Deprecated keyword to generate AWS s3 ICESat-2 data access credentials
+        kwargs : key:value pairs
+            Keyword arguments to be passed into earthaccess.login().
 
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
+        Enter your Earthdata Login username: ___________________
+
+        EARTHDATA_USERNAME and EARTHDATA_PASSWORD are not set in the current environment, try setting them or use a different strategy (netrc, interactive)
+        No .netrc found in /Users/username
+
         """
 
-        if s3token == False:
-            capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{self.product}.{self._version}.xml"
-        elif s3token == True:
+        auth = earthaccess.login(**kwargs)
+        if auth.authenticated:
+            self._auth = auth
+            self._session = auth.get_session()
 
-            def is_ec2():
-                import socket
-
-                try:
-                    socket.gethostbyname("instance-data")
-                    return True
-                except socket.gaierror:
-                    return False
-
-            # loosely check for AWS login capability without web request
-            assert (
-                is_ec2() == True
-            ), "You must be working from a valid AWS instance to use s3 data access"
-            capability_url = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
-
-        self._session = Earthdata(uid, email, capability_url).login()
-
-        # DevNote: might make sense to do this part elsewhere in the future, but wanted to get it implemented for now
         if s3token == True:
-            self._s3login_credentials = json.loads(
-                self._session.get(self._session.get(capability_url).url).content
+            self._s3login_credentials = auth.get_s3_credentials(daac="NSIDC")
+
+        if uid != None or email != None:
+            warnings.warn(
+                "The user id (uid) and/or email keyword arguments are no longer required.",
+                DeprecationWarning,
             )
-        self._email = email
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):
@@ -988,6 +980,7 @@ class Query(GenQuery):
             granules. This eliminates false-positive granules returned by the metadata-level search)
         email: boolean, default False
             Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
+            The emails are sent to the account associated with your Earthdata account.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
@@ -1002,8 +995,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         order ID: [###############]
         [order status output]
@@ -1023,9 +1015,10 @@ class Query(GenQuery):
 
         if "email" in self._reqparams.fmted_keys.keys() or email == False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
-        else:
+        elif email == True:
+            user_profile = self._auth.get_user_profile()
             self._reqparams.build_params(
-                **self._reqparams.fmted_keys, email=self._email
+                **self._reqparams.fmted_keys, email=user_profile["email_address"]
             )
 
         if subset is False:
@@ -1113,8 +1106,7 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.download_granules('/path/to/download/folder') # doctest: +SKIP
         Beginning download of zipped output...
         Data request [##########] of x order(s) is complete.

@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 """
-test_Earthdata.py (12/2021)
+test icepyx.core.query.Query.earthdata_login function
 """
-import getpass
 import netrc
 import os
-import posixpath
 import pytest
-import re
 import shutil
 import warnings
-# from icepyx.core.Earthdata import Earthdata
 
 # PURPOSE: test different authentication methods
 @pytest.fixture(scope="module", autouse=True)
@@ -28,47 +24,36 @@ def setup_earthdata():
         os.remove(netrc_file)
 
 
-def capability_url(product, version):
-    return posixpath.join(
-        "https://n5eil02u.ecs.nsidc.org",
-        "egi",
-        "capabilities",
-        f"{product}.{version}.xml",
-    )
-
-
-def test_environment(username, password, email):
-    url = capability_url("ATL06", "005")
+def test_environment(username, password):
     netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
     assert not os.access(netrc_file, os.F_OK)
-    assert Earthdata(username, email, url, password).login(attempts=1)
+    assert earthdata_login(username, password)
 
 
-def test_netrc(username, password, email):
+def test_netrc(username, password):
     # append to netrc file and set permissions level
     args = (username, "urs.earthdata.nasa.gov", password)
     netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
     with open(netrc_file, "a+") as f:
         f.write("machine {1} login {0} password {2}\n".format(*args))
         os.chmod(netrc_file, 0o600)
-    url = capability_url("ATL06", "005")
-    assert Earthdata(username, email, url, password).login(attempts=0)
+    assert earthdata_login(username, password)
 
 
-class Earthdata:
+def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
     """
-    Mocks the icepyx Earthdata login
+    Mocks the icepyx.core.query.Query.earthdata_login function
 
     Parameters
-    ----------
-    uid : str
-        Earthdata Login user name (user ID).
-    email : str
-        Complete email address, provided as a string.
-    password : str
-        Password for Earthdata registration associated with the uid.
-    capability_url : str
-        URL required to access Earthdata
+        ----------
+        uid : string, default None
+            Earthdata login user ID
+        pwd : string, default None
+            Earthdata login password
+        email : string, default None
+            Deprecated keyword for backwards compatibility.
+        s3token : boolean, default False
+            Generate AWS s3 ICESat-2 data access credentials
 
     Returns
     -------
@@ -76,61 +61,15 @@ class Earthdata:
         True if completed a successful "login", else False.
     """
 
-    def __init__(
-        self,
-        uid,
-        email,
-        capability_url,
-        pswd=os.environ.get("EARTHDATA_PASSWORD"),
-    ):
+    try:
+        url = "urs.earthdata.nasa.gov"
+        mock_uid, _, mock_pwd = netrc.netrc(netrc).authenticators(url)
+    except:
 
-        assert isinstance(uid, str), "Enter your login user id as a string"
-        assert re.match(
-            r"[^@]+@[^@]+\.[^@]+", email
-        ), "Enter a properly formatted email address"
+        mock_uid = os.environ.get("EARTHDATA_USERNAME")
+        mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
 
-        self.netrc = None
-        self.uid = uid
-        self.email = email
-        self.capability_url = capability_url
-        self.pswd = pswd
-
-    def _start_session(self):
-        """
-        Checks supplied credentials versus environmental variables
-        """
-        EARTHDATA_USERNAME = os.environ.get("EARTHDATA_USERNAME")
-        EARTHDATA_PASSWORD = os.environ.get("EARTHDATA_PASSWORD")
-        EARTHDATA_EMAIL = os.environ.get("EARTHDATA_EMAIL")
-        if (
-            (self.uid == EARTHDATA_USERNAME)
-            & (self.email == EARTHDATA_EMAIL)
-            & (self.pswd == EARTHDATA_PASSWORD)
-        ):
-            return True
-        else:
-            return False
-
-    def login(self, attempts=5):
-        """
-        Mocks attempting to "login" using supplied credentials
-        """
-        try:
-            url = "urs.earthdata.nasa.gov"
-            self.uid, _, self.pswd = netrc.netrc(self.netrc).authenticators(url)
-            self.session = self._start_session()
-
-        except:
-            for i in range(attempts):
-                try:
-                    self.session = self._start_session()
-                    break
-                except KeyError:
-                    pass
-                if (i + 1) < attempts:
-                    self.uid = input("Please re-enter your Earthdata user ID: ")
-                    self.pswd = getpass.getpass("Earthdata Login password: ")
-            else:
-                raise RuntimeError("You could not successfully log in to Earthdata")
-
-        return self.session
+    if (uid == mock_uid) & (pwd == mock_pwd):
+        return True
+    else:
+        return False

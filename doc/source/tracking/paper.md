@@ -63,7 +63,7 @@ authors:
 affiliations:
  - name: University of New Hampshire, USA
    index: 1
- - name: The Ohio State University, USA
+ - name: Development Seed, USA
    index: 2
  - name: Oregon State University, USA
    index: 3

@@ -75,7 +75,15 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=Fal
         gran_ids.append(producer_granule_id)
 
         prod = int(gran["producer_granule_id"][3:5])
-        if prod == 11 or prod > 13:
+
+        # manual creation of s3 urls for ATL15 for FOGSS March 2023 workshop
+        # note that s3 urls were not available in the CMR metadata retrieved by icepyx at the time of implementation
+        if prod==15 and cloud==True:     
+            url = r"s3://nsidc-cumulus-prod-protected/ATLAS/ATL15/002/2019/{}".format(producer_granule_id)
+            gran_s3urls.append(url)
+        
+        elif prod == 11 or prod > 13:
+            warnings.warn("We are still working in implementing ID generation for this data product.", UserWarning)
             continue
 
         else:
@@ -316,7 +324,7 @@ class Granules:
 
         if session is None:
             raise ValueError(
-                "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
+                "Don't forget to log in to Earthdata using query.earthdata_login()"
             )
 
         base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
@@ -513,7 +521,7 @@ class Granules:
         # Note: need to test these checks still
         if session is None:
             raise ValueError(
-                "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
+                "Don't forget to log in to Earthdata using query.earthdata_login()"
             )
             # DevGoal: make this a more robust check for an active session
 

@@ -1,7 +1,7 @@
 .. _whatsnew_064:
 
 What's new in 0.6.4 (28 October 2022)
------------------------------------
+-------------------------------------
 
 These are the changes in icepyx 0.6.4 See :ref:`release` for a full changelog
 including other versions of icepyx.

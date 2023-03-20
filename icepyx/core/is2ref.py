@@ -92,7 +92,7 @@ def _get_custom_options(session, product, version):
 
     if session is None:
         raise ValueError(
-            "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
+            "Don't forget to log in to Earthdata using query.earthdata_login()"
         )
 
     capability_url = (

@@ -148,7 +148,7 @@
 <polyline fill="none" stroke="black" points="703.5,-234 956.5,-234 "/>
 <text text-anchor="start" x="725" y="-218.8" font-family="Times,serif" font-size="14.00">_fmted_keys : dict, NoneType</text>
 <text text-anchor="start" x="725" y="-203.8" font-family="Times,serif" font-size="14.00">_poss_keys : dict</text>
-<text text-anchor="start" x="725" y="-188.8" font-family="Times,serif" font-size="14.00">_reqtype : NoneType, str</text>
+<text text-anchor="start" x="725" y="-188.8" font-family="Times,serif" font-size="14.00">_reqtype : str, NoneType</text>
 <text text-anchor="start" x="725" y="-173.8" font-family="Times,serif" font-size="14.00">fmted_keys</text>
 <text text-anchor="start" x="725" y="-158.8" font-family="Times,serif" font-size="14.00">partype</text>
 <text text-anchor="start" x="725" y="-143.8" font-family="Times,serif" font-size="14.00">poss_keys</text>

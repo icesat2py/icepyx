@@ -79,7 +79,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=Fal
         # manual creation of s3 urls for ATL15 for FOGSS March 2023 workshop
         # note that s3 urls were not available in the CMR metadata retrieved by icepyx at the time of implementation
         if prod==15 and cloud==True:     
-            url = r"s3://nsidc-cumulus-prod-public/ATLAS/ATL15/002/2019/{}".format(producer_granule_id)
+            url = r"s3://nsidc-cumulus-prod-protected/ATLAS/ATL15/002/2019/{}".format(producer_granule_id)
             gran_s3urls.append(url)
         
         elif prod == 11 or prod > 13:

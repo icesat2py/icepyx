@@ -52,7 +52,7 @@
 <text text-anchor="start" x="678.5" y="-932.3" font-family="Times,serif" font-size="14.00">_file_vars</text>
 <text text-anchor="start" x="678.5" y="-917.3" font-family="Times,serif" font-size="14.00">_granules</text>
 <text text-anchor="start" x="678.5" y="-902.3" font-family="Times,serif" font-size="14.00">_order_vars</text>
-<text text-anchor="start" x="678.5" y="-887.3" font-family="Times,serif" font-size="14.00">_prod : str, NoneType</text>
+<text text-anchor="start" x="678.5" y="-887.3" font-family="Times,serif" font-size="14.00">_prod : NoneType, str</text>
 <text text-anchor="start" x="678.5" y="-872.3" font-family="Times,serif" font-size="14.00">_readable_granule_name : list</text>
 <text text-anchor="start" x="678.5" y="-857.3" font-family="Times,serif" font-size="14.00">_reqparams</text>
 <text text-anchor="start" x="678.5" y="-842.3" font-family="Times,serif" font-size="14.00">_s3login_credentials : dict</text>
@@ -228,7 +228,7 @@
 <text text-anchor="start" x="1830.5" y="-805.3" font-family="Times,serif" font-size="14.00">Spatial</text>
 <polyline fill="none" stroke="black" points="1708.5,-797.5 2003.5,-797.5 "/>
 <text text-anchor="start" x="1716.5" y="-782.3" font-family="Times,serif" font-size="14.00">_ext_type : str</text>
-<text text-anchor="start" x="1716.5" y="-767.3" font-family="Times,serif" font-size="14.00">_gdf_spat : DataFrame, GeoDataFrame</text>
+<text text-anchor="start" x="1716.5" y="-767.3" font-family="Times,serif" font-size="14.00">_gdf_spat : GeoDataFrame, DataFrame</text>
 <text text-anchor="start" x="1716.5" y="-752.3" font-family="Times,serif" font-size="14.00">_geom_file : NoneType</text>
 <text text-anchor="start" x="1716.5" y="-737.3" font-family="Times,serif" font-size="14.00">_spatial_ext</text>
 <text text-anchor="start" x="1716.5" y="-722.3" font-family="Times,serif" font-size="14.00">_xdateln</text>
@@ -262,13 +262,13 @@
 <polygon fill="none" stroke="black" points="1026.5,-0.5 1026.5,-294.5 1515.5,-294.5 1515.5,-0.5 1026.5,-0.5"/>
 <text text-anchor="start" x="1237.5" y="-279.3" font-family="Times,serif" font-size="14.00">Variables</text>
 <polyline fill="none" stroke="black" points="1026.5,-271.5 1515.5,-271.5 "/>
-<text text-anchor="start" x="1183.5" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : NoneType, list</text>
+<text text-anchor="start" x="1183.5" y="-256.3" font-family="Times,serif" font-size="14.00">_avail : list, NoneType</text>
 <text text-anchor="start" x="1183.5" y="-241.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
 <text text-anchor="start" x="1183.5" y="-226.3" font-family="Times,serif" font-size="14.00">_vartype</text>
 <text text-anchor="start" x="1183.5" y="-211.3" font-family="Times,serif" font-size="14.00">_version : NoneType</text>
 <text text-anchor="start" x="1183.5" y="-196.3" font-family="Times,serif" font-size="14.00">path : NoneType</text>
 <text text-anchor="start" x="1183.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType</text>
-<text text-anchor="start" x="1183.5" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
+<text text-anchor="start" x="1183.5" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : dict, NoneType</text>
 <polyline fill="none" stroke="black" points="1026.5,-158.5 1515.5,-158.5 "/>
 <text text-anchor="start" x="1034.5" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(vartype, avail, wanted, session, product, version, path)</text>
 <text text-anchor="start" x="1034.5" y="-128.3" font-family="Times,serif" font-size="14.00">_check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)</text>

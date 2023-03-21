@@ -28,7 +28,7 @@ def session(reg):
         f.write("machine {1} login {0} password {2}\n".format(*args))
         os.chmod(netrc_file, 0o600)
 
-    ed_obj = reg.earthaccess.login()
+    ed_obj = reg.earthdata_login()
     yield ed_obj._session
     ed_obj._session.close()
 

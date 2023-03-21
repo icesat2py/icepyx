@@ -38,8 +38,9 @@ Bug fixes
     - reactivate atl10 and atl12 viz tests and update sizes
     - disable ATL13 viz tests
 
--  manual solution for getting ATL15 s3 urls via icepyx (#413) 
+- manual solution for getting ATL15 s3 urls via icepyx (#413) 
 
+- fix NSIDC login tests (#418)
 
 Deprecations
 ~~~~~~~~~~~~

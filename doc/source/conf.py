@@ -24,7 +24,7 @@ import icepyx
 
 project = "icepyx"
 year = datetime.date.today().year
-copyright = "2019-{}, The icepyx Developers".format(year)
+copyright = "2019-{}, The icepyx Development Team".format(year)
 
 # -- General configuration ---------------------------------------------------
 

@@ -8,7 +8,7 @@ def mock_settings_env_vars():
     with mock.patch.dict(
         "os.environ",
         {
-            "EARTHDATA_USERNAME": "icepyx_devteam2",
+            "EARTHDATA_USERNAME": "icepyx_devteam",
             "EARTHDATA_PASSWORD": "fake_earthdata_password",
             "EARTHDATA_EMAIL": "icepyx.dev@gmail.com",
         },

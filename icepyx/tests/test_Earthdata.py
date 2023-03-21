@@ -45,15 +45,15 @@ def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
     Mocks the icepyx.core.query.Query.earthdata_login function
 
     Parameters
-        ----------
-        uid : string, default None
-            Earthdata login user ID
-        pwd : string, default None
-            Earthdata login password
-        email : string, default None
-            Deprecated keyword for backwards compatibility.
-        s3token : boolean, default False
-            Generate AWS s3 ICESat-2 data access credentials
+    ----------
+    uid : string, default None
+        Earthdata login user ID
+    pwd : string, default None
+        Earthdata login password
+    email : string, default None
+        Deprecated keyword for backwards compatibility.
+    s3token : boolean, default False
+        Generate AWS s3 ICESat-2 data access credentials
 
     Returns
     -------

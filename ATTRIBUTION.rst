@@ -73,5 +73,6 @@ and contributions to the preparation of the manuscript.
     best practices, and feedback.
 
 Copyright notice: Preparation of this document was inspired by the `authorship guidelines <https://github.com/fatiando/contributing/blob/master/AUTHORSHIP.md>`_ provided by `Fatiando a Terra <https://github.com/fatiando>`_ 
-and encourages potential co-authors to consider the resources provided by the `NASA High Mountain Asia Team (HiMAT) <https://highmountainasia.github.io/team-collaboration/authorship/>`_
+and `The Turing Way <https://the-turing-way.netlify.app/community-handbook/acknowledgement/acknowledgement-members.html>`_.
+We encourage potential co-authors to consider the resources provided by the `NASA High Mountain Asia Team (HiMAT) <https://highmountainasia.github.io/team-collaboration/authorship/>`_
 and established or emerging best practices in their community.

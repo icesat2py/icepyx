@@ -31,8 +31,8 @@ A bibtex version for users working in Latex::
   url = "https://github.com/icesat2py/icepyx",
   }
     
-for more information on the "icepyx Developers", please see our `Attribution Guidelines <https://icepyx.readthedocs.io/en/latest/contributing/attribution_link.html>`_.
-
+For more information on the "icepyx Developers", please see our `Attribution Guidelines <https://icepyx.readthedocs.io/en/latest/contributing/attribution_link.html>`_.
+See our docs for a `full list of contributors <https://icepyx.readthedocs.io/en/latest/contributing/contributors_link.html>`_ and their contribution types.
 
 icepyx Dependencies
 -------------------

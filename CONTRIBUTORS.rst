@@ -2,7 +2,7 @@ Project Contributors
 ====================
 
 The following people have made contributions to the project (in alphabetical
-order by last name) and are considered "The icepyx Developers".
+order) and are considered the "icepyx Developers".
 Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/docs/en/emoji-key>`_):
 
 .. raw:: html

@@ -43,6 +43,7 @@ authors:
     orcid: 0000-0003-4132-8136
     affiliation: 4
   - name: Romina Piunno
+    orcid: 0009-0000-1144-0915
     affiliation: 8
   - name: Nitin Ravinder
     affiliation: 9

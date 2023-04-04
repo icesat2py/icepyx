@@ -20,6 +20,7 @@ We recognize contributions in the following ways.
 
 Contributors List
 -----------------
+
 This project follows the `all-contributors <https://github.com/all-contributors/all-contributors>`_ specification. 
 When you contribute to icepyx for the first time or in a new way, you or a maintainer can use the `All Contributors bot
 to open a PR <https://allcontributors.org/docs/en/bot/usage>`_` to recognize your contribution.
@@ -39,30 +40,28 @@ If the user's full name is not available on GitHub, their GitHub handle is used.
 
 Example Workflows
 -----------------
+
 Many of the example workflows included within icepyx were developed by individuals or small teams for educational or research purposes. 
 We encourage example developers to provide proper recognition for these efforts both within the notebook itself and 
 by adding contributors to the `Contributors List`_ for attribution as describered herein.
 
 
-Version Release on Zenodo
--------------------------
+Version Releases on Zenodo
+--------------------------
+
 Each new release of icepyx is `archived on Zenodo <https://zenodo.org/record/7754482>`_.
 
 Following the collaborative approach of `The Turing Way <https://the-turing-way.netlify.app/community-handbook/acknowledgement/acknowledgement-members.html>_`,
 we aim to encourage community leadership and shared ownership of icepyx.
-To this end, beginning with version 0.7.1 we collectively represent the icepyx authors in citations 
-(including Zenodo releases) as "The icepyx Developers".
+To this end, beginning with version 0.6.4 (the full adoption of the all-contributors specification)
+we collectively represent the icepyx authors in citations (including Zenodo releases) as "The icepyx Developers".
 
 As described above, a complete list of contributors and their contribution types is available via the `Contributors List`_.
 
-One way to identify significant, frequent contributions could be through the number of commits made to the repository (``git shortlog -sne``)
-and active engagement on GitHub (e.g. through issues, discussions, and pull requests) and Discourse.
-However, the use of squash merges into the development branch can mask the relative complexity of various contributions
-and does not necessarily capture significant conceptual contributions.
-
-Prior to the adoption of this updated authorship policy, version releases <=0.7.0 followed authoriship guidelines 
-listing individual contributors who had manually added their names to `CONTRIBUTORS.rst`.
-Thus, the Zenodo author lists for icepyx releases changed through time and included individual names.
+  ** A note about releases <v0.6.4: Prior version releases have been set up to adhere to authorship guidelines in place at the time, 
+  listing individual contributors who had manually added their names to `CONTRIBUTORS.rst`.
+  Authorship order was alphebetical by last name, regardless of contribution type or frequency, except in cases where
+  a substantial contribution was made by one or more contributors to a given release. **
 
 
 Peer-Reviewed Publications (Papers)
@@ -94,14 +93,23 @@ Motivation and References
 
 Concepts and models of attribution, credit, contribution, and authorship can vary across time, application, and communities.
 `FORCE11 <https://force11.org/>_` has an entire `Attribution Working Group <https://force11.org/groups/attribution-working-group/>_` dedicated to working on attribution for research products.
-`URSSI <https://urssi.us/>_` hosted a workshop in 2019 (`report <https://urssi.us/blog/2019/03/24/report-from-urssi-workshop-on-software-credit-citation-and-metrics/>_`) to identify core issues and propose solutions to challenges around software credit.
+`URSSI <https://urssi.us/>_` hosted a workshop in 2019 (`report <https://urssi.us/blog/2019/03/24/report-from-urssi-workshop-on-software-credit-citation-and-metrics/>_`) 
+to identify core issues and propose solutions to challenges around software credit.
 For software, current best practices (`e.g. <https://arxiv.org/pdf/2012.13117.pdf>_`) emphasize the importance of having a document
-such as this one to describe an individual community's policies for authorship and attribution.
+such as this one to describe an individual community's policies for credit, authorship, and attribution.
 This document is an effort to describe icepyx's policies, with an awareness that they may change 
 to accomodate community growth, best practices, and feedback.
 
+We do not attempt to identify contribution levels through the number of commits made to the repository (e.g. ``git shortlog -sne``)
+or active engagement on GitHub (e.g. through issues, discussions, and pull requests) and Discourse.
+The latter is difficult to quantify, and the use of squash merges into the development branch can mask the relative complexity 
+of various contributions and does not necessarily capture significant conceptual contributions.
 
-Copyright notice: Preparation of this document and our authorship policies was inspired in part by the `authorship guidelines <https://github.com/fatiando/contributing/blob/master/AUTHORSHIP.md>`_ provided by `Fatiando a Terra <https://github.com/fatiando>`_ 
+
+Copyright notice: Preparation of this document and our credit policies was inspired in part by the `authorship guidelines <https://github.com/fatiando/contributing/blob/master/AUTHORSHIP.md>`_ provided by `Fatiando a Terra <https://github.com/fatiando>`_ 
 and `The Turing Way <https://the-turing-way.netlify.app/community-handbook/acknowledgement/acknowledgement-members.html>`_.
-We encourage potential co-authors to consider the resources provided by the `NASA High Mountain Asia Team (HiMAT) <https://highmountainasia.github.io/team-collaboration/authorship/>`_
+We encourage potential contributors to consider the resources provided by the `NASA High Mountain Asia Team (HiMAT) <https://highmountainasia.github.io/team-collaboration/authorship/>`_
 and established or emerging best practices in their community.
+
+
+

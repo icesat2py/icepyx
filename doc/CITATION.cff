@@ -5,10 +5,11 @@ cff-version: 1.2.0
 title: icepyx
 message: >-
   If you use this software, please cite the software version
-  you used by its version-specific doi.
+  you used by its version-specific DOI.
+  The DOI for each version is available on Zenodo (link below).
 type: software
 authors:
-  - family-names: icepyx Developers
+  - family-names: The icepyx Developers
 repository-code: 'https://github.com/icesat2py/icepyx'
 url: 'https://icepyx.readthedocs.io/en/latest/'
 repository: 'https://zenodo.org/record/7754482'

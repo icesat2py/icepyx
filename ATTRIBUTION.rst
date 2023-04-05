@@ -58,9 +58,9 @@ we collectively represent the icepyx authors in citations (including Zenodo rele
 
 As described above, a complete list of contributors and their contribution types is available via the `Contributors List`_.
 
-  ** A note about releases <v0.6.4: Prior version releases have been set up to adhere to authorship guidelines in place at the time, 
+  ** A note about releases <v0.6.4: Prior version releases adhere to authorship guidelines in place at the time, 
   listing individual contributors who had manually added their names to `CONTRIBUTORS.rst`.
-  Authorship order was alphebetical by last name, regardless of contribution type or frequency, except in cases where
+  Authorship order was alphebetical by last name, except in cases where
   a substantial contribution was made by one or more contributors to a given release. **
 
 
@@ -106,10 +106,8 @@ The latter is difficult to quantify, and the use of squash merges into the devel
 of various contributions and does not necessarily capture significant conceptual contributions.
 
 
-Copyright notice: Preparation of this document and our credit policies was inspired in part by the `authorship guidelines <https://github.com/fatiando/contributing/blob/master/AUTHORSHIP.md>`_ provided by `Fatiando a Terra <https://github.com/fatiando>`_ 
+Copyright notice: Preparation of this document and our credit policies was inspired in part by these `authorship guidelines <https://github.com/fatiando/contributing/blob/master/AUTHORSHIP.md>`_ provided by `Fatiando a Terra <https://github.com/fatiando>`_ 
 and `The Turing Way <https://the-turing-way.netlify.app/community-handbook/acknowledgement/acknowledgement-members.html>`_.
 We encourage potential contributors to consider the resources provided by the `NASA High Mountain Asia Team (HiMAT) <https://highmountainasia.github.io/team-collaboration/authorship/>`_
 and established or emerging best practices in their community.
-
-
-
+Please get in touch if you would like to discuss updates to this contribution recognition policy.

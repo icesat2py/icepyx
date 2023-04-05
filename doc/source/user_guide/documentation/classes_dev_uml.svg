@@ -228,7 +228,7 @@
 <text text-anchor="start" x="1830.5" y="-805.3" font-family="Times,serif" font-size="14.00">Spatial</text>
 <polyline fill="none" stroke="black" points="1708.5,-797.5 2003.5,-797.5 "/>
 <text text-anchor="start" x="1716.5" y="-782.3" font-family="Times,serif" font-size="14.00">_ext_type : str</text>
-<text text-anchor="start" x="1716.5" y="-767.3" font-family="Times,serif" font-size="14.00">_gdf_spat : GeoDataFrame, DataFrame</text>
+<text text-anchor="start" x="1716.5" y="-767.3" font-family="Times,serif" font-size="14.00">_gdf_spat : DataFrame, GeoDataFrame</text>
 <text text-anchor="start" x="1716.5" y="-752.3" font-family="Times,serif" font-size="14.00">_geom_file : NoneType</text>
 <text text-anchor="start" x="1716.5" y="-737.3" font-family="Times,serif" font-size="14.00">_spatial_ext</text>
 <text text-anchor="start" x="1716.5" y="-722.3" font-family="Times,serif" font-size="14.00">_xdateln</text>
@@ -268,7 +268,7 @@
 <text text-anchor="start" x="1183.5" y="-211.3" font-family="Times,serif" font-size="14.00">_version : NoneType</text>
 <text text-anchor="start" x="1183.5" y="-196.3" font-family="Times,serif" font-size="14.00">path : NoneType</text>
 <text text-anchor="start" x="1183.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType</text>
-<text text-anchor="start" x="1183.5" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : dict, NoneType</text>
+<text text-anchor="start" x="1183.5" y="-166.3" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
 <polyline fill="none" stroke="black" points="1026.5,-158.5 1515.5,-158.5 "/>
 <text text-anchor="start" x="1034.5" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(vartype, avail, wanted, session, product, version, path)</text>
 <text text-anchor="start" x="1034.5" y="-128.3" font-family="Times,serif" font-size="14.00">_check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)</text>
@@ -315,11 +315,11 @@
 <polygon fill="none" stroke="black" points="2184,-30.5 2184,-264.5 2700,-264.5 2700,-30.5 2184,-30.5"/>
 <text text-anchor="start" x="2410" y="-249.3" font-family="Times,serif" font-size="14.00">Visualize</text>
 <polyline fill="none" stroke="black" points="2184,-241.5 2700,-241.5 "/>
-<text text-anchor="start" x="2356.5" y="-226.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
-<text text-anchor="start" x="2356.5" y="-211.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
-<text text-anchor="start" x="2356.5" y="-196.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
-<text text-anchor="start" x="2356.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : NoneType, str</text>
-<text text-anchor="start" x="2356.5" y="-166.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
+<text text-anchor="start" x="2357.5" y="-226.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
+<text text-anchor="start" x="2357.5" y="-211.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
+<text text-anchor="start" x="2357.5" y="-196.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
+<text text-anchor="start" x="2357.5" y="-181.3" font-family="Times,serif" font-size="14.00">product : str, NoneType</text>
+<text text-anchor="start" x="2357.5" y="-166.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
 <polyline fill="none" stroke="black" points="2184,-158.5 2700,-158.5 "/>
 <text text-anchor="start" x="2192" y="-143.3" font-family="Times,serif" font-size="14.00">__init__(query_obj, product, spatial_extent, date_range, cycles, tracks)</text>
 <text text-anchor="start" x="2192" y="-128.3" font-family="Times,serif" font-size="14.00">generate_OA_parameters(): list</text>

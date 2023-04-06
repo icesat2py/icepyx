@@ -17,7 +17,7 @@ from icepyx.core.exceptions import NsidcQueryError
 
 # @pytest.fixture
 # def session(reg_a):
-#     return reg_a._start_earthdata_session('icepyx_devteam', 'icepyx.dev@gmail.com', os.getenv('NSIDC_LOGIN'))
+#     return reg_a.earthdata_login(os.getenv('NSIDC_LOGIN'))
 
 # check that agent key is added in event of no subsetting
 

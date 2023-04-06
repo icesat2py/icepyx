@@ -53,9 +53,11 @@ Documentation
     - added development panel on landing page
     - Edited contribution guidelines
     - created how to develop file
+
     This file focuses on the basic introductory GitHub steps as well as best practices with code and working with icepyx locally
     
     - added contribution links, and QUEST idea
+    
     Added in text links for the contribution page, as well as a placeholder for 'adding an ancillary dataset' to the contribution page. Will need to add a link for a tutorial on 'how to add a dataset' in an upcoming release.
     
     - add other hackweek repos

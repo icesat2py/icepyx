@@ -84,8 +84,7 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='5') # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_vars.avail() # doctest: +SKIP
         ['ancillary_data/atlas_sdp_gps_epoch',
         'ancillary_data/control',
@@ -157,8 +156,7 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1') # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail()) # doctest: +SKIP
         >>> var_dict # doctest: +SKIP
         {'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],
@@ -422,8 +420,7 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
 
         To add all variables related to a specific ICESat-2 beam
 
@@ -556,8 +553,7 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
 
         To clear the list of wanted variables
 

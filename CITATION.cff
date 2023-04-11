@@ -12,7 +12,7 @@ authors:
   - name: The icepyx Developers
 repository-code: 'https://github.com/icesat2py/icepyx'
 url: 'https://icepyx.readthedocs.io/en/latest/'
-repository: 'https://zenodo.org/record/7754482'
+repository: 'https://zenodo.org/record/7729175'
 repository-artifact: 'https://anaconda.org/conda-forge/icepyx'
 abstract: >-
   icepyx is both a software library and a community composed

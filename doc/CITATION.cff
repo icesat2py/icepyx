@@ -9,7 +9,7 @@ message: >-
   The DOI for each version is available on Zenodo (link below).
 type: software
 authors:
-  - family-names: The icepyx Developers
+  - name: The icepyx Developers
 repository-code: 'https://github.com/icesat2py/icepyx'
 url: 'https://icepyx.readthedocs.io/en/latest/'
 repository: 'https://zenodo.org/record/7754482'

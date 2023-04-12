@@ -49,9 +49,9 @@ by adding contributors to the `Contributors List`_ for attribution as describere
 Version Releases on Zenodo
 --------------------------
 
-Each new release of icepyx is `archived on Zenodo <https://zenodo.org/record/7754482>`_.
+Each new release of icepyx is `archived on Zenodo <https://zenodo.org/record/7729175>`_.
 
-Following the collaborative approach of `The Turing Way <https://the-turing-way.netlify.app/community-handbook/acknowledgement/acknowledgement-members.html>_`,
+Following the collaborative approach of `The Turing Way <https://the-turing-way.netlify.app/community-handbook/acknowledgement/acknowledgement-members.html>`_,
 we aim to encourage community leadership and shared ownership of icepyx.
 To this end, beginning with version 0.6.4 (the full adoption of the all-contributors specification)
 we collectively represent the icepyx authors in citations (including Zenodo releases) as "The icepyx Developers".
@@ -92,10 +92,10 @@ Motivation and References
 -------------------------
 
 Concepts and models of attribution, credit, contribution, and authorship can vary across time, application, and communities.
-`FORCE11 <https://force11.org/>_` has an entire `Attribution Working Group <https://force11.org/groups/attribution-working-group/>_` dedicated to working on attribution for research products.
-`URSSI <https://urssi.us/>_` hosted a workshop in 2019 (`report <https://urssi.us/blog/2019/03/24/report-from-urssi-workshop-on-software-credit-citation-and-metrics/>_`) 
+`FORCE11 <https://force11.org/>`_ has an entire `Attribution Working Group <https://force11.org/groups/attribution-working-group/>`_ dedicated to working on attribution for research products.
+`URSSI <https://urssi.us/>`_ hosted a workshop in 2019 (`report <https://urssi.us/blog/2019/03/24/report-from-urssi-workshop-on-software-credit-citation-and-metrics/>`_) 
 to identify core issues and propose solutions to challenges around software credit.
-For software, current best practices (`e.g. <https://arxiv.org/pdf/2012.13117.pdf>_`) emphasize the importance of having a document
+For software, current best practices (`e.g. <https://arxiv.org/pdf/2012.13117.pdf>`_) emphasize the importance of having a document
 such as this one to describe an individual community's policies for credit, authorship, and attribution.
 This document is an effort to describe icepyx's policies, with an awareness that they may change 
 to accomodate community growth, best practices, and feedback.

@@ -12,9 +12,10 @@ You'll create and update the release documents on this branch.
 
 In doc/source/user_guide/changelog is a file called `template.rst`.
 Make a *copy* of this file and update the copy's filename to your version release number.
-We follow standard `semantic versioning <>`_ practices.
+We follow standard `semantic versioning <https://semver.org/>`_ practices.
 
 Create an entry for the current "Latest Release":
+
 ```
 Version 0.x.y
 -------------
@@ -25,14 +26,15 @@ Version 0.x.y
 ```
 
 Add your new version to the `doc/source/user_guide/changelog/index.rst` as the "Latest Release".
+
 ```
-Latest Release (Version 0.5.0)
+Latest Release (Version 0.8.0)
 ------------------------------
 
 .. toctree::
    :maxdepth: 2
 
-   v0.5.0
+   v0.8.0
 ```
 
 Now, populate your new release file by filling in the template.
@@ -50,7 +52,7 @@ Add your new changelog file, commit and push your changes, and head to GitHub to
 Create a Release Pull Request to the Development Branch
 -------------------------------------------------------
 
-Head over to GitHub and create a PR from your release branch into the development branch.
+On GitHub, create a PR from your release branch into the development branch.
 Once the PR is reviewed and all the tests pass, you or your reviewer can squash and merge the PR into the development branch.
 
 Now you're ready to update main and actually package your new release!
@@ -79,6 +81,7 @@ Update the Development Branch Head
 
 We want to make sure at this point that the `development` and `main` branches are even.
 You can probably do this with a git API, but the way to do it using git in terminal is:
+
 ```shell
 git pull
 git checkout development
@@ -94,17 +97,21 @@ Tag the Release
 
 Last, but potentially most importantly, we need to tag and create the release.
 This step will trigger the package to be built and update the distribution available from conda and PyPI.
-GitHub makes this easy - on the repo's home page, simply select "Releases" from the right hand side, and then the "Draft a New Release" button.
-Add a new tag with the version number of your release, making sure it points to the `main` branch (by default, GitHub will suggest the `development` branch!)
+It will also publish the new release on Zenodo.
+GitHub makes releases easy - on the repo's home page, simply select "Releases" from the right hand side, 
+and then the "Draft a New Release" button.
+Add a new tag with the version number of your release, making sure it points to the `main` branch 
+(by default, GitHub will suggest the `development` branch!)
 Fill out the form and create the release.
 
 If you tag the release too soon (and there end up being more commits), or point it to the wrong branch/commit, never fear.
 You can delete the release from GitHub with the click of a button.
 If you want to reuse the version tag though (you most likely do), you'll first have to remove the tag locally and push the updated (deleted) tag to GitHub:
+
 ```shell
 git push --delete origin tagname
-
 ```
+
 See `this guide <https://devconnected.com/how-to-delete-local-and-remote-tags-on-git/>`_ on how to delete local and remote git tags.
 
 Then you can go back to the beginning of this step to create a new tag and release.

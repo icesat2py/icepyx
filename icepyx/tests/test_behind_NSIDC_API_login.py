@@ -1,5 +1,4 @@
 import icepyx as ipx
-from icepyx.core.Earthdata import Earthdata as Earthdata
 import os
 import pytest
 import warnings
@@ -13,7 +12,7 @@ import warnings
 @pytest.fixture(scope="module")
 def reg():
     live_reg = ipx.Query(
-        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="004"
+        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="005"
     )
     yield live_reg
     del live_reg
@@ -21,16 +20,18 @@ def reg():
 
 @pytest.fixture(scope="module")
 def session(reg):
-    capability_url = f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
-    ed_obj = Earthdata(
-        "icepyx_devteam",
-        "icepyx.dev@gmail.com",
-        capability_url=capability_url,
-        pswd=os.getenv("NSIDC_LOGIN"),
-    )
-    ed_obj._start_session()
-    yield ed_obj.session
-    ed_obj.session.close()
+
+    # append to netrc file and set permissions level
+    args = ("icepyx_devteam", "urs.earthdata.nasa.gov", os.getenv("NSIDC_LOGIN"))
+    netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
+    with open(netrc_file, "a+") as f:
+        f.write("machine {1} login {0} password {2}\n".format(*args))
+        os.chmod(netrc_file, 0o600)
+
+    reg.earthdata_login()
+    ed_obj = reg._session
+    yield ed_obj
+    ed_obj.close()
 
 
 ########## is2ref module ##########
@@ -39,8 +40,8 @@ import json
 
 
 def test_get_custom_options_output(session):
-    obs = is2ref._get_custom_options(session, "ATL06", "004")
-    with open("./icepyx/tests/ATL06v04_options.json") as exp_json:
+    obs = is2ref._get_custom_options(session, "ATL06", "005")
+    with open("./icepyx/tests/ATL06v05_options.json") as exp_json:
         exp = json.load(exp_json)
         assert all(keys in obs.keys() for keys in exp.keys())
         assert all(obs[key] == exp[key] for key in exp.keys())

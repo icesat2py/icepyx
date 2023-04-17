@@ -1,0 +1,70 @@
+.. _whatsnew_0x0:
+
+What's new in 0.6.3 (28 July 2022)
+-----------------------------------
+
+These are the changes in icepyx 0.6.3 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- create merge index during data read-in (#305)
+    
+    - implement photon_id index (commented) and linear photon_idx
+
+- add all contributors bot
+- start adding other contributors with bot and debug allcontributors setup (#314)
+
+Bug fixes
+~~~~~~~~~
+
+- address readable_granule_name implementation error (#292)
+    
+    - place one order per granule_id rather than submitting a list
+
+Maintenance
+^^^^^^^^^^^
+
+- functionize numpy datetime conversion (#305)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- Tracking docs updates (#307)
+    
+    - change citation heading to 'citing icepyx' for clarity
+    - separate downloads and citations in tracking section
+    - add no-tracking note
+
+- simplify and update development plan (#306)
+    
+    - simplify and update development plan
+    - note we've not activated discussions
+    - fix IceFlow link in citations file
+
+- add how-to guide and clarify contributions in icepyx docs (#319)
+    
+    - added text to include ancillary data within icepyx
+    - added Jupyer notebook considerations
+    - added GitHub instructions for new users
+    - added development panel on landing page
+    - Edited contribution guidelines
+    - created how to develop file
+
+    This file focuses on the basic introductory GitHub steps as well as best practices with code and working with icepyx locally
+    
+    - added contribution links, and QUEST idea
+    
+    Added in text links for the contribution page, as well as a placeholder for 'adding an ancillary dataset' to the contribution page. Will need to add a link for a tutorial on 'how to add a dataset' in an upcoming release.
+    
+    - add other hackweek repos
+    - allcontrib bot and simplify instructions
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.6.2..v0.6.3|HEAD

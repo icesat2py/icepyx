@@ -1,5 +1,6 @@
 backoff
 datashader
+earthaccess>=0.5.1
 fiona
 geopandas
 h5netcdf
@@ -11,5 +12,6 @@ intake-xarray
 matplotlib
 numpy
 requests
+s3fs
 shapely
 xarray

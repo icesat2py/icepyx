@@ -11,18 +11,10 @@ APIformatting
    :undoc-members:
    :show-inheritance:
 
-Earthdata
----------
-
-.. automodule:: icepyx.core.Earthdata
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-geospatial
+spatial
 ----------
 
-.. automodule:: icepyx.core.geospatial
+.. automodule:: icepyx.core.spatial
    :members:
    :undoc-members:
    :show-inheritance:

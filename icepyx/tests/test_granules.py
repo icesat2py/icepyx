@@ -17,9 +17,18 @@ from icepyx.core.exceptions import NsidcQueryError
 
 # @pytest.fixture
 # def session(reg_a):
-#     return reg_a._start_earthdata_session('icepyx_devteam', 'icepyx.dev@gmail.com', os.getenv('NSIDC_LOGIN'))
+#     return reg_a.earthdata_login(os.getenv('NSIDC_LOGIN'))
 
 # check that agent key is added in event of no subsetting
+
+
+# add test for granules info for ATL11 and ATL13 (and all datasets? or at least ones that don't have the same filename structure)
+# this example failed in version 0.6.4,  leading to a fix in 0.6.5
+# short_name = 'ATL11'
+# spatial_extent = [-38.65,72.5,-38.40,72.7]
+# date_range = ['2018-06-20','2023-01-21']
+# region_a = ipx.Query(short_name, spatial_extent, date_range)
+# region_a.avail_granules(ids=True)
 
 
 # DevNote: clearly there's a better way that doesn't make the function so long... what is it?

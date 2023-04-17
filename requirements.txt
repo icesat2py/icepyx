@@ -12,5 +12,6 @@ intake-xarray
 matplotlib
 numpy
 requests
+s3fs
 shapely
 xarray

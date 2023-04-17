@@ -87,11 +87,12 @@ Setting up a Development Work Environment
 -----------------------------------------
 
 icepyx uses a few tools to ensure that files have consistent formatting and run tests.
-You can easily install the ones most frequently used by creating a new conda environment (from the home level of your local copy of the icepyx repo) with
+You can easily install the ones most frequently used by creating a new mamba (or conda) 
+environment (from the home level of your local copy of the icepyx repo) with
 
 .. code-block:: shell
 
-    conda create --name icepyx-env --channel conda-forge -f requirements-dev.txt -f requirements.txt
+    mamba env create --name icepyx-env --channel conda-forge -f requirements-dev.txt -f requirements.txt
 
 and then pip installing icepyx as described above and below.
 

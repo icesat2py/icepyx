@@ -44,7 +44,7 @@ You will probably need to make the release date a few days out to allow time for
 
 There are no strict rules for how you generate the content for the file.
 One method is to use a ``git log`` command to display the commit history of the development branch since the last release.
-If you're using git in terminal, ``checkout development`` and make sure your local development branch is up-to-date (`git pull`).
+If you're using git in terminal, ``checkout development`` and make sure your local development branch is up-to-date (``git pull``).
 Then run ``git log 'v0.x.y'...HEAD`` where 'v0.x.y' is the current/latest release.
 You can sort and edit the commit messages as needed to populate the changelog.
 
@@ -82,7 +82,7 @@ Update the Development Branch Head
 ----------------------------------
 
 We want to make sure at this point that the ``development`` and ``main`` branches are even.
-You can probably do this with a git API, but the way to do it using git in terminal is:
+You can do this with a git API, but the way to do it using git in terminal is:
 
 .. code-block:: shell
 
@@ -92,7 +92,9 @@ You can probably do this with a git API, but the way to do it using git in termi
    git push origin development:development
 
 
-If you have to create a merge commit message, you've done something wrong and need to go back to the previous step.
+**If you have to create a merge commit message, STOP!**
+You've done something wrong and need to go back to the previous step.
+Creating the merge commit will make ``main`` and ``development`` diverge and the repo maintainers sad.
 
 
 Tag the Release
@@ -101,7 +103,7 @@ Tag the Release
 Last, but potentially most importantly, we need to tag and create the release.
 This step will trigger the package to be built and update the distribution available from conda and PyPI.
 It will also publish the new release on Zenodo.
-GitHub makes releases easy - on the repo's home page, simply select "Releases" from the right hand side, 
+GitHub makes releases easy - on the repo's home page, simply select "Releases" from the right hand side 
 and then the "Draft a New Release" button.
 Add a new tag with the version number of your release, making sure it points to the ``main`` branch 
 (by default, GitHub will suggest the ``development`` branch!)

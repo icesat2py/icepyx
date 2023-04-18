@@ -44,11 +44,15 @@ Presentations that feature or explain icepyx
 
 Publications Utilizing icepyx
 ------------------------------
-Peer-reviewed research that utilizes icepyx for ICESat-2 data
+Research that utilizes icepyx for ICESat-2 data
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
     
+    Shean2023
+    Eidam2022
+    Leeuwen:2022
+    Musthafa2022
     Sothe:2022
     Bisson:2021
     Fernando:2021

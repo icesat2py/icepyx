@@ -16,18 +16,20 @@ We follow standard `semantic versioning <https://semver.org/>`_ practices.
 
 Create an entry for the current "Latest Release":
 
-```
-Version 0.x.y
--------------
-.. toctree::
-   :maxdepth: 2
+.. code-block:: rst
 
-   v0.x.y
-```
+   Version 0.x.y
+   -------------
+   .. toctree::
+      :maxdepth: 2
+
+      v0.x.y
+
 
 Add your new version to the `doc/source/user_guide/changelog/index.rst` as the "Latest Release".
 
-```
+.. raw:: rst
+
 Latest Release (Version 0.8.0)
 ------------------------------
 
@@ -35,7 +37,7 @@ Latest Release (Version 0.8.0)
    :maxdepth: 2
 
    v0.8.0
-```
+
 
 Now, populate your new release file by filling in the template.
 You will probably need to make the release date a few days out to allow time for review and merging.

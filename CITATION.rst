@@ -11,22 +11,22 @@ Thus, our contributors (including those who have developed the packages used wit
 and maintainers justify their efforts and demonstrate the impact of their work through citations.
 
 If you have used icepyx in your work, please consider citing our library.
-We encourage you to use a version-specific citation and DOI (available from `Zenodo <https://zenodo.org/record/7754482>`_)
+We encourage you to use a version-specific citation and DOI (available from `Zenodo <https://zenodo.org/record/7729175>`_)
 to improve reproducibility and let users know the state of the software at the time of your analysis.
 
 A non-versioned citation of icepyx:
-    icepyx Developers, (2023). icepyx: Python tools for obtaining and working with ICESat-2 data.
-    Zenodo. https://doi.org/10.5281/zenodo.7754482
+    The icepyx Developers, (2023). icepyx: Python tools for obtaining and working with ICESat-2 data.
+    Zenodo. https://doi.org/10.5281/zenodo.7729175
 
 
 A bibtex version for users working in Latex::
 
   @Misc{icepyx,
-  author =    {Scheick, Jessica and others},
+  author =    {{The icepyx Developers}},
   organization = {icesat2py},
   title =     {{icepyx: Python} tools for obtaining and working with {ICESat-2} data},
   year =      {2023},
-  doi = "https://doi.org/10.5281/zenodo.7754482",
+  doi = "https://doi.org/10.5281/zenodo.7729175",
   publisher = {Zenodo},
   url = "https://github.com/icesat2py/icepyx",
   }

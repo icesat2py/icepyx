@@ -19,10 +19,41 @@ Projects and organizations that use icepyx.
 - `Colorado School of Mines Glaciology Laboratory <https://github.com/MinesGlaciology>`_
 
 
-Publications and Presentations
-------------------------------
-Peer-reviewed research that utilizes icepyx for ICESat-2 data and presentations that feature or explain icepyx
+Publications About icepyx
+-------------------------
+Peer-reviewed publications about icepyx software
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
-    :all:
+    
+    joss2023
+
+Presentations and Materials Featuring icepyx
+--------------------------------------------
+Presentations that feature or explain icepyx
+
+.. bibliography:: icepyx_pubs.bib
+    :style: mystyle
+    
+    js2022agu
+    2022_IS2-HW-tutorials
+    js2021agu
+    js2020agu
+    2020_IS2-HW-tutorials
+    js2019agu
+
+Publications Utilizing icepyx
+------------------------------
+Research that utilizes icepyx for ICESat-2 data
+
+.. bibliography:: icepyx_pubs.bib
+    :style: mystyle
+    
+    Shean2023
+    Eidam2022
+    Leeuwen:2022
+    Musthafa2022
+    Sothe:2022
+    Bisson:2021
+    Fernando:2021
+    Li:2020

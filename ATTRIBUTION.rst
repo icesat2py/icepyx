@@ -74,6 +74,7 @@ To be eligible for authorship on a peer-reviewed publication, contributors must:
 
   1. Contribute to the development (including code, documentation, and examples) of icepyx. 
   Substantial non-code contributions may constitute eligibility for authorship.
+ 
   2. Contribute ideas, participate in authorship discussions (see next paragraph), write, read, and review the manuscript 
   in a timely manner, and provide feedback (acknowledgement of review is sufficient, but we'd prefer more).
 

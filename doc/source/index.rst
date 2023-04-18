@@ -143,6 +143,7 @@ ICESat-2 datasets to enable scientific discovery.
    contributing/how_to_contribute
    contributing/attribution_link
    contributing/development_plan
+   contributing/release_guide
    contributing/code_of_conduct_link
 
 .. toctree::

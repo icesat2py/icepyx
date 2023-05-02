@@ -35,7 +35,7 @@ def info(grans):
 
 # DevNote: currently this fn is not tested
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
-def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=False):
+def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=False):
     """
     Returns a list of granule information for each granule dictionary in the input list of granule dictionaries.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
@@ -53,7 +53,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
     dates : boolean, default False
         Return a list of the available dates for the granule dictionary.
-    s3urls : boolean, default False
+    cloud : boolean, default False
         Return a a list of AWS s3 urls for the available granules in the granule dictionary.
         Note: currently, NSIDC does not provide metadata on which granules are available on s3.
         Thus, all of the urls may not be valid and may return FileNotFoundErrors.
@@ -74,10 +74,17 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
 
-        if int(gran["producer_granule_id"][3:5]) > 13:
+        prod = int(gran["producer_granule_id"][3:5])
+
+        # manual creation of s3 urls for ATL15 for FOGSS March 2023 workshop
+        # note that s3 urls were not available in the CMR metadata retrieved by icepyx at the time of implementation
+        if prod==15 and cloud==True:     
+            url = r"s3://nsidc-cumulus-prod-protected/ATLAS/ATL15/002/2019/{}".format(producer_granule_id)
+            gran_s3urls.append(url)
+        
+        elif prod == 11 or prod > 13:
+            warnings.warn("We are still working in implementing ID generation for this data product.", UserWarning)
             continue
-            # ultimately use this to get the s3urls from the metadata
-            # gran_s3urls.append(gran["links"][])
 
         else:
             # PRD: ICESat-2 product
@@ -112,9 +119,14 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
             gran_dates.append(
                 str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
             )
-            gran_s3urls.append(
-                f"s3://nsidc-cumulus-prod-protected/ATLAS/{PRD}/{RL}/{YY}/{MM}/{DD}/{producer_granule_id}"
-            )
+
+            try:
+                for link in gran["links"]:
+                    if link["href"].startswith("s3") and link["href"].endswith(".h5"):
+                        gran_s3urls.append(link["href"])
+            except KeyError:
+                pass
+
     # list of granule parameters
     gran_list = []
     # granule IDs
@@ -130,12 +142,7 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, s3urls=Fa
     if dates:
         gran_list.append(gran_dates)
     # AWS s3 url
-    if s3urls:
-        warnings.filterwarnings("always")
-        warnings.warn(
-            "You MUST be pre-authenticated by NSIDC as a beta tester to have cloud access to ICESat-2 data",
-            UserWarning,
-        )
+    if cloud:
         gran_list.append(gran_s3urls)
     # return the list of granule parameters
     return gran_list
@@ -171,7 +178,7 @@ class Granules:
     # ----------------------------------------------------------------------
     # Methods
 
-    def get_avail(self, CMRparams, reqparams):
+    def get_avail(self, CMRparams, reqparams, cloud=False):
         """
         Get a list of available granules for the query object's parameters.
         Generates the `avail` attribute of the granules object.
@@ -183,6 +190,8 @@ class Granules:
         reqparams : dictionary
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
+        cloud : boolean, default False
+            Whether or not you want data available in the cloud (versus on premises).
 
         Notes
         -----
@@ -207,8 +216,13 @@ class Granules:
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
 
+        if cloud:
+            prov_flag = "NSIDC_CPRD"
+        else:
+            prov_flag = "NSIDC_ECS"
+
         params = apifmt.combine_params(
-            CMRparams, {k: reqparams[k] for k in ["page_size"]}
+            CMRparams, {k: reqparams[k] for k in ["page_size"]}, {"provider": prov_flag}
         )
 
         cmr_search_after = None
@@ -310,7 +324,7 @@ class Granules:
 
         if session is None:
             raise ValueError(
-                "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
+                "Don't forget to log in to Earthdata using query.earthdata_login()"
             )
 
         base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
@@ -507,7 +521,7 @@ class Granules:
         # Note: need to test these checks still
         if session is None:
             raise ValueError(
-                "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
+                "Don't forget to log in to Earthdata using query.earthdata_login()"
             )
             # DevGoal: make this a more robust check for an active session
 

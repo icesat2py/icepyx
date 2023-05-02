@@ -11,15 +11,6 @@ APIformatting
    :undoc-members:
    :show-inheritance:
 
-Earthdata
----------
-
-.. automodule:: icepyx.core.Earthdata
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 granules
 --------
 

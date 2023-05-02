@@ -155,21 +155,24 @@ class Visualize:
 
         self.product = is2ref._validate_OA_product(query_obj.product)
 
-        if query_obj.spatial.extent_type == "bounding_box":
-            self.bbox = query_obj.spatial.spatial_extent
+        if query_obj._spatial._ext_type == "bounding_box":
+            self.bbox = query_obj.spatial.extent
 
         else:
-            mrc_bound = query_obj.spatial.spatial_extent.minimum_rotated_rectangle
-            # generate bounding box
-            lonmin = min(mrc_bound.exterior.coords.xy[0])
-            lonmax = max(mrc_bound.exterior.coords.xy[0])
-            latmin = min(mrc_bound.exterior.coords.xy[1])
-            latmax = max(mrc_bound.exterior.coords.xy[1])
+            (
+                lonmin,
+                latmin,
+                lonmax,
+                latmax,
+            ) = query_obj.spatial.extent_as_gdf.geometry.unary_union.bounds
 
             self.bbox = [lonmin, latmin, lonmax, latmax]
 
         self.date_range = (
-            [query_obj.temporal.start.strftime("%Y-%m-%d"), query_obj.temporal.end.strftime("%Y-%m-%d")]
+            [
+                query_obj.temporal.start.strftime("%Y-%m-%d"),
+                query_obj.temporal.end.strftime("%Y-%m-%d"),
+            ]
             if hasattr(query_obj, "_temporal")
             else None
         )
@@ -411,7 +414,9 @@ class Visualize:
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
 
-        assert OA_para_list, "Your search returned no results; try different search parameters"
+        assert (
+            OA_para_list
+        ), "Your search returned no results; try different search parameters"
 
         url_number = len(OA_para_list)
 

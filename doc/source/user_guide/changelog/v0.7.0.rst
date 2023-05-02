@@ -1,0 +1,78 @@
+
+.. _whatsnew_070:
+
+What's new in 0.7.0 (20 March 2023)
+-----------------------------------
+
+These are the changes in icepyx 0.7.0 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+-  transition icepyx to using earthaccess library for authentication (#410)
+
+    - add earthaccess (formerly earthdata) as dependency
+    - remove Earthdata module
+    - update earthdata_login function to use earthaccess 
+    - update data access and other example notebooks
+    - update earthdata  and NSIDC login tests
+    - simplify cloud access example auth handling using earthaccess
+
+Bug fixes
+~~~~~~~~~
+
+- update read-in module for ATL11 (#398)
+
+    - remove sc_orient from atl11 required vars list
+    - introduce new function to determine if data product uses ground tracks, paths, or profiles and generalize code accordingly
+    - add some custom treatments for 2d delta_times and cases when there is a gt and spot
+    - add atl11 path parsing and docs
+    - handle merging given non-unique ref_pt coordinates
+
+- change simplify to preserve topology (#404)
+
+- update oa viz for polygons after spatial module change (#390)
+
+    - reactivate atl10 and atl12 viz tests and update sizes
+    - disable ATL13 viz tests
+
+- manual solution for getting ATL15 s3 urls via icepyx (#413) 
+
+- fix NSIDC login tests (#418)
+
+Deprecations
+~~~~~~~~~~~~
+
+- icepyx.core.earthdata module
+
+
+Maintenance
+^^^^^^^^^^^
+
+- update license and copyright info (#408)
+- update uml action to not install requirements (#406)
+- update traffic data and action (#401)
+
+    - add updating pip and upgrading pypistats to gh action
+
+- update tracking data and actions (#393)
+
+    - update action versions in github workflows
+    - only pip install needed packages instead of all requirements
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- add ravindraK08 as a contributor for review (#405)
+- add icesat2py clarification note (#395)
+- update contact page - discontinue regular meetings (#396)
+- add JOSS and update conda badges (#388)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.6.4..v0.7.0|HEAD

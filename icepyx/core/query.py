@@ -130,8 +130,8 @@ class GenQuery:
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._spatial._ext_type,
             self._spatial._spatial_ext,
-            self._temporal._start,
-            self._temporal._end,
+            self._temporal.start,
+            self._temporal.end,
         )
         return str
 

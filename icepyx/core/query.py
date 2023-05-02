@@ -1,10 +1,5 @@
 import datetime as dt
 import earthaccess
-import os
-import json
-import warnings
-import pprint
-import time
 import geopandas as gpd
 import json
 import matplotlib.pyplot as plt
@@ -12,7 +7,6 @@ import numpy as np
 import os
 from pathlib import Path
 import pprint
-import requests
 import time
 import warnings
 

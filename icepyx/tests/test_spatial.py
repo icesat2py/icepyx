@@ -415,9 +415,6 @@ def test_gdf_from_multi_bbox():
 
 # Potential tests to include once multipolygon and complex polygons are handled
 
-# It may be best to leave these for testing when betterspat is completed;
-# that way, we know what the expected inputs/formats of outputs are. -sjh1024
-
 # def test_gdf_from_strpoly_one_simple():
 
 # def test_gdf_from_strpoly_multi_simple():

@@ -6,9 +6,11 @@ import warnings
 # 		Generic Query tests
 # ------------------------------------
 
+# seem to be adequately covered in docstrings;
+# may want to focus on testing specific queries
 
 # ------------------------------------
-# 		Icepyx-specific tests
+# 		icepyx-specific tests
 # ------------------------------------
 def test_icepyx_boundingbox_query():
     reg_a = ipx.Query(

@@ -61,7 +61,6 @@ class GenQuery:
         Start time in UTC/Zulu (24 hour clock). If None, use default.
     end_time : HH:mm:ss, default 23:59:59
         End time in UTC/Zulu (24 hour clock). If None, use default.
-        TODO: check for time in date-range date-time object, if that's used for input.
     xdateline : boolean, default None
         Keyword argument to enforce spatial inputs that cross the International Date Line.
         Internally, this will translate your longitudes to 0 to 360 to construct the
@@ -422,6 +421,10 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.dates
         ['2019-02-20', '2019-02-28']
+
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> reg_a.dates
+        ["No temporal parameters set"]
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
@@ -445,6 +448,10 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], start_time='12:30:30')
         >>> reg_a.start_time
         '12:30:30'
+
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> reg_a.start_time
+        ["No temporal parameters set"]
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
@@ -465,6 +472,10 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], end_time='10:20:20')
         >>> reg_a.end_time
         '10:20:20'
+
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> reg_a.end_time
+        ["No temporal parameters set"]
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]

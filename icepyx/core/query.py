@@ -130,8 +130,8 @@ class GenQuery:
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._spatial._ext_type,
             self._spatial._spatial_ext,
-            self._temporal.start,
-            self._temporal.end,
+            self._temporal._start,
+            self._temporal._end,
         )
         return str
 
@@ -333,8 +333,15 @@ class Query(GenQuery):
         Start date and time: 2019-02-20 00:00:00
         End date and time: 2019-02-28 23:59:59
 
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> print(reg_a.temporal)
+        ["No temporal parameters set"]
         """
-        return self._temporal
+
+        if hasattr(self, "_temporal"):
+            return self._temporal
+        else:
+            return ["No temporal parameters set"]
 
     @property
     def spatial(self):
@@ -420,8 +427,8 @@ class Query(GenQuery):
             return ["No temporal parameters set"]
         else:
             return [
-                self._temporal.start.strftime("%Y-%m-%d"),
-                self._temporal.end.strftime("%Y-%m-%d"),
+                self._temporal._start.strftime("%Y-%m-%d"),
+                self._temporal._end.strftime("%Y-%m-%d"),
             ]  # could also use self._start.date()
 
     @property
@@ -442,7 +449,7 @@ class Query(GenQuery):
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
         else:
-            return self._temporal.start.strftime("%H:%M:%S")
+            return self._temporal._start.strftime("%H:%M:%S")
 
     @property
     def end_time(self):
@@ -462,7 +469,7 @@ class Query(GenQuery):
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
         else:
-            return self._temporal.end.strftime("%H:%M:%S")
+            return self._temporal._end.strftime("%H:%M:%S")
 
     @property
     def cycles(self):
@@ -528,8 +535,8 @@ class Query(GenQuery):
         kwargs = {}
         # temporal CMR parameters
         if hasattr(self, "_temporal"):
-            kwargs["start"] = self._temporal.start
-            kwargs["end"] = self._temporal.end
+            kwargs["start"] = self._temporal._start
+            kwargs["end"] = self._temporal._end
         # granule name CMR parameters (orbital or file name)
         # DevGoal: add to file name search to optional queries
         if hasattr(self, "_readable_granule_name"):
@@ -603,8 +610,8 @@ class Query(GenQuery):
 
         # temporal subsetting parameters
         if hasattr(self, "temporal"):
-            kwargs["start"] = self._temporal.start
-            kwargs["end"] = self._temporal.end
+            kwargs["start"] = self._temporal._start
+            kwargs["end"] = self._temporal._end
 
         if self._subsetparams == None and not kwargs:
             return {}

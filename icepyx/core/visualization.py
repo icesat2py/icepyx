@@ -170,8 +170,8 @@ class Visualize:
 
         self.date_range = (
             [
-                query_obj.temporal.start.strftime("%Y-%m-%d"),
-                query_obj.temporal.end.strftime("%Y-%m-%d"),
+                query_obj._temporal._start.strftime("%Y-%m-%d"),
+                query_obj._temporal._end.strftime("%Y-%m-%d"),
             ]
             if hasattr(query_obj, "_temporal")
             else None

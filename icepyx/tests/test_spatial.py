@@ -413,8 +413,7 @@ def test_gdf_from_multi_bbox():
     assert obs.geometry[0].equals(exp.geometry[0])
 
 
-# TestQuestions: 1) Do these need to be tested?
-# 2) Is the best way to test them with lengthy inputs and seeing if the gdfs are the same?
+# Potential tests to include once multipolygon and complex polygons are handled
 
 # It may be best to leave these for testing when betterspat is completed;
 # that way, we know what the expected inputs/formats of outputs are. -sjh1024

@@ -334,7 +334,7 @@ class Query(GenQuery):
 
         >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
         >>> print(reg_a.temporal)
-        ["No temporal parameters set"]
+        ['No temporal parameters set']
         """
 
         if hasattr(self, "_temporal"):
@@ -424,7 +424,7 @@ class Query(GenQuery):
 
         >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
         >>> reg_a.dates
-        ["No temporal parameters set"]
+        ['No temporal parameters set']
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
@@ -451,7 +451,7 @@ class Query(GenQuery):
 
         >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
         >>> reg_a.start_time
-        ["No temporal parameters set"]
+        ['No temporal parameters set']
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
@@ -475,7 +475,7 @@ class Query(GenQuery):
 
         >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
         >>> reg_a.end_time
-        ["No temporal parameters set"]
+        ['No temporal parameters set']
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]

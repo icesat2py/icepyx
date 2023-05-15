@@ -7,7 +7,7 @@ import warnings
 import icepyx.core.temporal as tp
 
 
-# DevNote: this test suite needs to be parameterized to include ALL acceptable input types
+# DevNote: this test suite needs to be parameterized (and fixtured) to include ALL acceptable input types
 # Currently it tests most cases for lists and dicts where the input type is str
 # A couple of tests were added for datetime.datetime type inputs, but they are incomplete
 # dt.date type inputs remain untested
@@ -15,11 +15,10 @@ import icepyx.core.temporal as tp
 
 # ####### INCOMPLETE DT.DATETIME tests ###########
 
-start_dt = dt.datetime(2019, 2, 20, 0, 10, 0)
-end_dt = dt.datetime(2019, 2, 28, 14, 45, 30)
-
 
 def test_range_dt_dt_list():
+    start_dt = dt.datetime(2019, 2, 20, 0, 10, 0)
+    end_dt = dt.datetime(2019, 2, 28, 14, 45, 30)
     result = tp.Temporal([start_dt, end_dt])
     expected_range = [
         dt.datetime(2019, 2, 20, 0, 10, 0),
@@ -30,6 +29,8 @@ def test_range_dt_dt_list():
 
 
 def test_range_dt_dt_dict():
+    start_dt = dt.datetime(2019, 2, 20, 0, 10, 0)
+    end_dt = dt.datetime(2019, 2, 28, 14, 45, 30)
     result = tp.Temporal({"start_date": start_dt, "end_date": end_dt})
     expected_range = [
         dt.datetime(2019, 2, 20, 0, 10, 0),
@@ -39,11 +40,9 @@ def test_range_dt_dt_dict():
     assert result.end == expected_range[1]
 
 
-start_dt = dt.date(2019, 2, 20)
-end_dt = dt.date(2019, 2, 28)
-
-
 def test_range_dt_date_list():
+    start_dt = dt.date(2019, 2, 20)
+    end_dt = dt.date(2019, 2, 28)
     result = tp.Temporal([start_dt, end_dt])
     expected_range = [
         dt.datetime(2019, 2, 20, 0, 0, 0),
@@ -53,7 +52,9 @@ def test_range_dt_date_list():
     assert result.end == expected_range[1]
 
 
-def test_range_dtdt_yyyymmdd_dict():
+def test_range_dt_date_dict():
+    start_dt = dt.date(2019, 2, 20)
+    end_dt = dt.date(2019, 2, 28)
     result = tp.Temporal({"start_date": start_dt, "end_date": end_dt})
     expected_range = [
         dt.datetime(2019, 2, 20, 0, 0, 0),
@@ -63,11 +64,9 @@ def test_range_dtdt_yyyymmdd_dict():
     assert result.end == expected_range[1]
 
 
-start_dt = dt.datetime(2019, 2, 20)
-end_dt = dt.datetime(2019, 2, 28)
-
-
 def test_range_dt_notime_list():
+    start_dt = dt.datetime(2019, 2, 20)
+    end_dt = dt.datetime(2019, 2, 28)
     result = tp.Temporal([start_dt, end_dt])
     expected_range = [
         dt.datetime(2019, 2, 20, 0, 0, 0),
@@ -78,6 +77,8 @@ def test_range_dt_notime_list():
 
 
 def test_range_dt_notime_dict():
+    start_dt = dt.datetime(2019, 2, 20)
+    end_dt = dt.datetime(2019, 2, 28)
     result = tp.Temporal({"start_date": start_dt, "end_date": end_dt})
     expected_range = [
         dt.datetime(2019, 2, 20, 0, 0, 0),
@@ -246,7 +247,7 @@ def test_bad_end_time_type():
 
 
 def test_range_bad_list_len():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         result = tp.Temporal(["2016-01-01", "2020-01-01", "2022-02-15"])
 
 

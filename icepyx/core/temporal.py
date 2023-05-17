@@ -6,7 +6,7 @@ import warnings
 Helper functions for validation of dates
 """
 
-
+# NOTE: should this just return a datetime.date object?
 def convert_string_to_date(date):
     """
     Converts a string to a datetime object.
@@ -148,6 +148,9 @@ def validate_date_range_datestr(date_range, start_time=None, end_time=None):
     """
     Validates a date range provided in the form of a list of strings.
 
+    Combines the start and end dates with their respective start and end times
+    to create complete start and end datetime.datetime objects.
+
     Parameters
     ----------
     date_range: list(str)
@@ -158,12 +161,9 @@ def validate_date_range_datestr(date_range, start_time=None, end_time=None):
     start_time: string, datetime.time, None
     end_time:  string, datetime.time, None
 
-
-
     Returns
     -------
-    Start and end datetimes as datetime.datetime objects
-    (by combining the start/end dates with their respective start/end times.)
+    Start and end dates and times as datetime.datetime objects
 
     Examples
     --------
@@ -215,7 +215,7 @@ def validate_date_range_datetime(date_range, start_time=None, end_time=None):
 
     Returns
     -------
-    Start and end datetimes as datetime.datetime objects
+    Start and end dates and times as datetime.datetime objects
 
     Examples
     --------
@@ -255,28 +255,27 @@ def validate_date_range_date(date_range, start_time=None, end_time=None):
     """
     Validates a date range provided in the form of a list of datetime.date objects.
 
+    Combines the start and end dates with their respective start and end times
+    to create complete start and end datetime.datetime objects.
+
     Parameters
     ----------
     date_range: list(str)
         A date range provided in the form of a list of datetime.dates.
         * List must be of length 2.
-
     start_time: string or datetime.time
     end_time:  string or datetime.time
 
     Returns
     -------
     Start and end datetimes as datetime.datetime objects
-    (by combining the start/end dates with their respective start/end times.)
 
     Examples
     --------
-
     >>> drange = [dt.date(2016, 1, 1), dt.date(2020, 1, 1)]
-    >>> valid_drange = validate_date_range_date(drange, "00:00:00", "23:59:59")
+    >>> valid_drange = validate_date_range_date(drange, "00:10:00", "21:00:59")
     >>> valid_drange
-    (datetime.datetime(2016, 1, 1, 0, 0), datetime.datetime(2020, 1, 1, 23, 59, 59))
-
+    (datetime.datetime(2016, 1, 1, 0, 10), datetime.datetime(2020, 1, 1, 21, 00, 59))
 
     """
 
@@ -425,21 +424,34 @@ class Temporal:
 
         Parameters
         ----------
-        date_range: expects one of the following:
-            * list of strs with one of the following formats:
-                * YYYY-MM-DD
-                * YYYY-DOY
-            * list of datetime.date or datetime.datetime objects
-            * dict with the following keys:
-                * start_date: start date, type can be datetime.datetime, datetime.date, or str
-                * end_date: end date, type can be datetime.datetime, datetime.date, or str
-        start_time: string, datetime.time, or None
-            Start time for the start of the date range.
-            If "None" type is provided, the default start time is 00:00:00.
-        end_time: string, datetime.time, or None
-            End time for the end of the date range.
-            If "None" type is provided, the default end time is 23:59:59.
+        date_range : list or dict, as follows
+            Date range of interest, provided as start and end dates, inclusive.
+            Accepted input date formats are:
+                * YYYY-MM-DD string
+                * YYYY-DOY string
+                * datetime.date object (if times are included)
+                * datetime.datetime objects (if no times are included)
+            where YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day, DOY = 3 digit day of year.
+            Date inputs are accepted as a list or dictionary with `start_date` and `end_date` keys.
+            Currently, a list of specific dates (rather than a range) is not accepted.
+            TODO: allow searches with a list of dates, rather than a range.
+        start_time : str, datetime.time, default None
+            Start time in UTC/Zulu (24 hour clock).
+            Input types are  an HH:mm:ss string or datetime.time object
+            where HH = hours, mm = minutes, ss = seconds.
+            If None is given (and a datetime.datetime object is not supplied for `date_range`),
+            a default of 00:00:00 is applied.
+        end_time : str, datetime.time, default None
+            End time in UTC/Zulu (24 hour clock).
+            Input types are  an HH:mm:ss string or datetime.time object
+            where HH = hours, mm = minutes, ss = seconds.
+            If None is given (and a datetime.datetime object is not supplied for `date_range`),
+            a default of 23:59:59 is applied.
+            If a datetime.datetime object was created without times, the datetime package defaults will apply over those of icepyx
         """
+
+        # NEXT STEP: port this docstring over to query...
+        # re-run other example
 
         # start_time, end_time = validate_times(start_time, end_time)
 

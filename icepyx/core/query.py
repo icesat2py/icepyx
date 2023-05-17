@@ -51,16 +51,30 @@ class GenQuery:
         Geospatial polygon files are entered as strings with the full file path and
         must contain only one polygon with the area of interest.
         Currently supported formats are: kml, shp, and gpkg
-    date_range : list of 'YYYY-MM-DD' strings
+    date_range : list or dict, as follows
         Date range of interest, provided as start and end dates, inclusive.
-        The required date format is 'YYYY-MM-DD' strings, where
-        YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
+        Accepted input date formats are:
+            * YYYY-MM-DD string
+            * YYYY-DOY string
+            * datetime.date object (if times are included)
+            * datetime.datetime objects (if no times are included)
+        where YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day, DOY = 3 digit day of year.
+        Date inputs are accepted as a list or dictionary with `start_date` and `end_date` keys.
         Currently, a list of specific dates (rather than a range) is not accepted.
         TODO: allow searches with a list of dates, rather than a range.
-    start_time : HH:mm:ss, default 00:00:00
-        Start time in UTC/Zulu (24 hour clock). If None, use default.
-    end_time : HH:mm:ss, default 23:59:59
-        End time in UTC/Zulu (24 hour clock). If None, use default.
+    start_time : str, datetime.time, default None
+        Start time in UTC/Zulu (24 hour clock).
+        Input types are  an HH:mm:ss string or datetime.time object
+        where HH = hours, mm = minutes, ss = seconds.
+        If None is given (and a datetime.datetime object is not supplied for `date_range`),
+        a default of 00:00:00 is applied.
+    end_time : str, datetime.time, default None
+        End time in UTC/Zulu (24 hour clock).
+        Input types are  an HH:mm:ss string or datetime.time object
+        where HH = hours, mm = minutes, ss = seconds.
+        If None is given (and a datetime.datetime object is not supplied for `date_range`),
+        a default of 23:59:59 is applied.
+        If a datetime.datetime object was created without times, the datetime package defaults will apply over those of icepyx
     xdateline : boolean, default None
         Keyword argument to enforce spatial inputs that cross the International Date Line.
         Internally, this will translate your longitudes to 0 to 360 to construct the

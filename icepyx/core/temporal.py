@@ -156,8 +156,8 @@ def validate_date_range_datestr(date_range, start_time=None, end_time=None):
     ----------
     date_range: list(str)
         A date range provided in the form of a list of strings
-        * Strings must be of formats accepted by validate_inputs_temporal.convert_string_to_date().
-        * List must be of length 2.
+            * Strings must be of formats accepted by validate_inputs_temporal.convert_string_to_date().
+            * List must be of length 2.
     start_time: string, datetime.time, None
     end_time:  string, datetime.time, None
 
@@ -197,8 +197,8 @@ def validate_date_range_datetime(date_range, start_time=None, end_time=None):
     Parameters
     ----------
     date_range: list(datetime.datetime)
-        A date range provided in the form of a list of datetimes
-        * List must be of length 2.
+        A date range provided in the form of a list of datetimes.
+        List must be of length 2.
     start_time: None, string, datetime.time
     end_time:  None, string, datetime.time
 
@@ -241,7 +241,7 @@ def validate_date_range_date(date_range, start_time=None, end_time=None):
     ----------
     date_range: list(str)
         A date range provided in the form of a list of datetime.dates.
-        * List must be of length 2.
+        List must be of length 2.
     start_time: string or datetime.time
     end_time:  string or datetime.time
 

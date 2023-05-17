@@ -337,7 +337,9 @@ class Query(GenQuery):
 
         See Also
         --------
-        icepyx.core.Temporal
+        temporal.Temporal.start
+        temporal.Temporal.end
+        temporal.Temporal
 
         Examples
         --------

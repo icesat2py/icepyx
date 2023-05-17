@@ -6,7 +6,7 @@ import warnings
 Helper functions for validation of dates
 """
 
-# NOTE: should this just return a datetime.date object?
+
 def convert_string_to_date(date):
     """
     Converts a string to a datetime object.
@@ -182,15 +182,8 @@ def validate_date_range_datestr(date_range, start_time=None, end_time=None):
     check_valid_date_range(_start, _end)
 
     start_time, end_time = validate_times(start_time, end_time)
-    # if start_time is None:
-    #     # if user did not specify a start time, default to start time of 00:00:00
-    #     start_time = dt.datetime.strptime("00:00:00", "%H:%M:%S").time()
-
-    # if end_time is None:
-    #     end_time = dt.datetime.strptime("23:59:59", "%H:%M:%S").time()
 
     _start = dt.datetime.combine(_start, start_time)
-
     _end = dt.datetime.combine(_end, end_time)
 
     return _start, _end
@@ -233,19 +226,6 @@ def validate_date_range_datetime(date_range, start_time=None, end_time=None):
         "your time values will use the datetime package defaults of all 0s rather than \n"
         "the icepyx defaults or times entered using the `start_time` or `end_time` arguments."
     )
-
-    # if end_time is not None:
-    #     warnings.warn(
-    #         'Warning: "start_date" given as datetime, but start_time argument was provided. \n'
-    #         "This argument will be ignored and the time from the start_date datetime object"
-    #         " will be used as start times."
-    #     )
-    # if start_time is not None:
-    #     warnings.warn(
-    #         'Warning: "end_date" given as datetime, but end_time argument was provided. \n'
-    #         "This argument will be ignored and the time from the end_date datetime object"
-    #         " will be used as end times."
-    #     )
 
     return date_range[0], date_range[1]
 
@@ -345,25 +325,18 @@ def validate_date_range_dict(date_range, start_time=None, end_time=None):
 
     #  if is datetime
     if isinstance(_start_date, dt.datetime):
-        # # Ignore start/end times, return raw start date
-        # if start_time is not None:
-        #     warnings.warn(
-        #         'Warning: "start_date" given as datetime, but start_time argument was provided. \n'
-        #         "This argument will be ignored and the time from the start_date datetime object"
-        #         " will be used as start times."
-        #     )
         pass
+
     # if is only date
     elif isinstance(_start_date, dt.date):
-
         _start_date = dt.datetime.combine(_start_date, start_time)
 
     # if is string date
     elif isinstance(_start_date, str):
 
         _start_date = convert_string_to_date(_start_date)
-
         _start_date = dt.datetime.combine(_start_date, start_time)
+
     #   else; raise valueerror, some invalid type
     else:
         raise ValueError(
@@ -377,27 +350,18 @@ def validate_date_range_dict(date_range, start_time=None, end_time=None):
     # if is datetime
 
     if isinstance(_end_date, dt.datetime):
-        # Ignore start/end times, return raw start date
-        # if end_time is not None:
-        # warnings.warn(
-        #     'Warning: "end_date" given as datetime, but end_time argument was provided. \n'
-        #     "This argument will be ignored and the time from the end_date datetime object"
-        #     " will be used as end times."
-        # )
         pass
-        # if is only date
+
+    # if is only date
     elif isinstance(_end_date, dt.date):
-
         _end_date = dt.datetime.combine(_end_date, end_time)
 
-        # if is string date
+    # if is string date
     elif isinstance(_end_date, str):
-
         _end_date = convert_string_to_date(_end_date)
-
         _end_date = dt.datetime.combine(_end_date, end_time)
 
-        #   else; raise valueerror, some invalid type
+    # else; raise valueerror, some invalid type
     else:
         raise ValueError(
             "Invalid type for key 'end_date'.\n"
@@ -407,7 +371,6 @@ def validate_date_range_dict(date_range, start_time=None, end_time=None):
         )
 
     # Ensure the date range is valid
-
     check_valid_date_range(_start_date, _end_date)
 
     return _start_date, _end_date
@@ -450,35 +413,32 @@ class Temporal:
             If a datetime.datetime object was created without times, the datetime package defaults will apply over those of icepyx
         """
 
-        # NEXT STEP: port this docstring over to query...
-        # re-run other example
-
-        # start_time, end_time = validate_times(start_time, end_time)
-
         if len(date_range) == 2:
-
-            # can be date objects, dicts, datetime objects, DOY input (YYYY-DOY)
 
             # date range is provided as dict of strings, dates, or datetimes
             if isinstance(date_range, dict):
                 self._start, self._end = validate_date_range_dict(
                     date_range, start_time, end_time
                 )
+
             # date range is provided as list of strings
             elif all(isinstance(i, str) for i in date_range):
                 self._start, self._end = validate_date_range_datestr(
                     date_range, start_time, end_time
                 )
+
             # date range is provided as list of datetimes
             elif all(isinstance(i, dt.datetime) for i in date_range):
                 self._start, self._end = validate_date_range_datetime(
                     date_range, start_time, end_time
                 )
+
             # date range is provided as list of dates
             elif all(isinstance(i, dt.date) for i in date_range):
                 self._start, self._end = validate_date_range_date(
                     date_range, start_time, end_time
                 )
+
             else:
                 # input type is invalid
                 raise TypeError(

@@ -38,7 +38,7 @@ def convert_string_to_date(date):
 
     for fmt in ("%Y-%m-%d", "%Y-%-j", "%Y-%j"):
         try:
-            return dt.date.strptime(date, fmt)
+            return dt.datetime.strptime(date, fmt).date()
         except ValueError:
             pass
     raise ValueError(

@@ -255,7 +255,7 @@ def validate_date_range_date(date_range, start_time=None, end_time=None):
     >>> drange = [dt.date(2016, 1, 1), dt.date(2020, 1, 1)]
     >>> valid_drange = validate_date_range_date(drange, "00:10:00", "21:00:59")
     >>> valid_drange
-    (datetime.datetime(2016, 1, 1, 0, 10), datetime.datetime(2020, 1, 1, 21, 00, 59))
+    (datetime.datetime(2016, 1, 1, 0, 10), datetime.datetime(2020, 1, 1, 21, 0, 59))
 
     """
 
@@ -263,7 +263,6 @@ def validate_date_range_date(date_range, start_time=None, end_time=None):
     start_time, end_time = validate_times(start_time, end_time)
 
     _start = dt.datetime.combine(date_range[0], start_time)
-
     _end = dt.datetime.combine(date_range[1], end_time)
 
     return _start, _end

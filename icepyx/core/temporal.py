@@ -20,31 +20,31 @@ def convert_string_to_date(date):
             * "YYYY-DOY"
     Returns
     -------
-    datetime object, representing the date from the string parameter.
+    datetime.date object, representing the date from the string parameter.
 
     Examples
     --------
     >>> mmdd = "2016-01-01"
     >>> converted = convert_string_to_date(mmdd)
     >>> converted
-    datetime.datetime(2016, 1, 1, 0, 0)
+    datetime.date(2016, 1, 1)
 
     >>> doy = "2020-40"
     >>> converted = convert_string_to_date(doy)
     >>> converted
-    datetime.datetime(2020, 2, 9, 0, 0)
+    datetime.date(2020, 2, 9)
 
     """
 
     for fmt in ("%Y-%m-%d", "%Y-%-j", "%Y-%j"):
         try:
-            return dt.datetime.strptime(date, fmt)
+            return dt.date.strptime(date, fmt)
         except ValueError:
             pass
     raise ValueError(
         "No valid date format found. The following formats are accepted:\n"
         "%Y-%m-%d\n"
-        "%Y-%-j\n"
+        "%Y-%-j\n"  # skips leading zeros
         "%Y-%j\n"
     )
 

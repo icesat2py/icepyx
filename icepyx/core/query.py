@@ -1,25 +1,26 @@
 import datetime as dt
 import earthaccess
-import os
-import json
-import warnings
-import pprint
-import time
 import geopandas as gpd
+import json
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 from pathlib import Path
+import pprint
+import time
+import warnings
 
 import icepyx.core.APIformatting as apifmt
-import icepyx.core.is2ref as is2ref
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules as Granules
+import icepyx.core.is2ref as is2ref
 
 # QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
 # from icepyx.core.granules import Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.validate_inputs as val
 import icepyx.core.spatial as spat
+import icepyx.core.temporal as tp
 from icepyx.core.visualization import Visualize
 
 
@@ -50,19 +51,30 @@ class GenQuery:
         Geospatial polygon files are entered as strings with the full file path and
         must contain only one polygon with the area of interest.
         Currently supported formats are: kml, shp, and gpkg
-    date_range : list of 'YYYY-MM-DD' strings
+    date_range : list or dict, as follows
         Date range of interest, provided as start and end dates, inclusive.
-        The required date format is 'YYYY-MM-DD' strings, where
-        YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day.
+        Accepted input date formats are:
+            * YYYY-MM-DD string
+            * YYYY-DOY string
+            * datetime.date object (if times are included)
+            * datetime.datetime objects (if no times are included)
+        where YYYY = 4 digit year, MM = 2 digit month, DD = 2 digit day, DOY = 3 digit day of year.
+        Date inputs are accepted as a list or dictionary with `start_date` and `end_date` keys.
         Currently, a list of specific dates (rather than a range) is not accepted.
-        TODO: accept date-time objects, dicts (with 'start_date' and 'end_date' keys, and DOY inputs).
         TODO: allow searches with a list of dates, rather than a range.
-    start_time : HH:mm:ss, default 00:00:00
-        Start time in UTC/Zulu (24 hour clock). If None, use default.
-        TODO: check for time in date-range date-time object, if that's used for input.
-    end_time : HH:mm:ss, default 23:59:59
-        End time in UTC/Zulu (24 hour clock). If None, use default.
-        TODO: check for time in date-range date-time object, if that's used for input.
+    start_time : str, datetime.time, default None
+        Start time in UTC/Zulu (24 hour clock).
+        Input types are  an HH:mm:ss string or datetime.time object
+        where HH = hours, mm = minutes, ss = seconds.
+        If None is given (and a datetime.datetime object is not supplied for `date_range`),
+        a default of 00:00:00 is applied.
+    end_time : str, datetime.time, default None
+        End time in UTC/Zulu (24 hour clock).
+        Input types are  an HH:mm:ss string or datetime.time object
+        where HH = hours, mm = minutes, ss = seconds.
+        If None is given (and a datetime.datetime object is not supplied for `date_range`),
+        a default of 23:59:59 is applied.
+        If a datetime.datetime object was created without times, the datetime package defaults will apply over those of icepyx
     xdateline : boolean, default None
         Keyword argument to enforce spatial inputs that cross the International Date Line.
         Internally, this will translate your longitudes to 0 to 360 to construct the
@@ -124,16 +136,15 @@ class GenQuery:
             self._spatial = spat.Spatial(spatial_extent)
 
         # valiidate and init temporal constraints
-        # TODO: Update this to use Temporal class when completed
         if date_range:
-            self._start, self._end = val.temporal(date_range, start_time, end_time)
+            self._temporal = tp.Temporal(date_range, start_time, end_time)
 
     def __str__(self):
         str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._spatial._ext_type,
             self._spatial._spatial_ext,
-            self._start,
-            self._end,
+            self._temporal._start,
+            self._temporal._end,
         )
         return str
 
@@ -320,6 +331,34 @@ class Query(GenQuery):
         return self._version
 
     @property
+    def temporal(self):
+        """
+        Return the Temporal object containing date/time range information for the query object.
+
+        See Also
+        --------
+        temporal.Temporal.start
+        temporal.Temporal.end
+        temporal.Temporal
+
+        Examples
+        --------
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> print(reg_a.temporal)
+        Start date and time: 2019-02-20 00:00:00
+        End date and time: 2019-02-28 23:59:59
+
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> print(reg_a.temporal)
+        ['No temporal parameters set']
+        """
+
+        if hasattr(self, "_temporal"):
+            return self._temporal
+        else:
+            return ["No temporal parameters set"]
+
+    @property
     def spatial(self):
         """
         Return the spatial object, which provides the underlying functionality for validating
@@ -398,13 +437,17 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.dates
         ['2019-02-20', '2019-02-28']
+
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> reg_a.dates
+        ['No temporal parameters set']
         """
-        if not hasattr(self, "_start"):
+        if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
         else:
             return [
-                self._start.strftime("%Y-%m-%d"),
-                self._end.strftime("%Y-%m-%d"),
+                self._temporal._start.strftime("%Y-%m-%d"),
+                self._temporal._end.strftime("%Y-%m-%d"),
             ]  # could also use self._start.date()
 
     @property
@@ -421,11 +464,15 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], start_time='12:30:30')
         >>> reg_a.start_time
         '12:30:30'
+
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> reg_a.start_time
+        ['No temporal parameters set']
         """
-        if not hasattr(self, "_start"):
+        if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
         else:
-            return self._start.strftime("%H:%M:%S")
+            return self._temporal._start.strftime("%H:%M:%S")
 
     @property
     def end_time(self):
@@ -441,11 +488,15 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], end_time='10:20:20')
         >>> reg_a.end_time
         '10:20:20'
+
+        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> reg_a.end_time
+        ['No temporal parameters set']
         """
-        if not hasattr(self, "_end"):
+        if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
         else:
-            return self._end.strftime("%H:%M:%S")
+            return self._temporal._end.strftime("%H:%M:%S")
 
     @property
     def cycles(self):
@@ -510,9 +561,9 @@ class Query(GenQuery):
         # dictionary of optional CMR parameters
         kwargs = {}
         # temporal CMR parameters
-        if hasattr(self, "_start") and hasattr(self, "_end"):
-            kwargs["start"] = self._start
-            kwargs["end"] = self._end
+        if hasattr(self, "_temporal"):
+            kwargs["start"] = self._temporal._start
+            kwargs["end"] = self._temporal._end
         # granule name CMR parameters (orbital or file name)
         # DevGoal: add to file name search to optional queries
         if hasattr(self, "_readable_granule_name"):
@@ -585,9 +636,9 @@ class Query(GenQuery):
             self._subsetparams = apifmt.Parameters("subset")
 
         # temporal subsetting parameters
-        if hasattr(self, "_start") and hasattr(self, "_end"):
-            kwargs["start"] = self._start
-            kwargs["end"] = self._end
+        if hasattr(self, "temporal"):
+            kwargs["start"] = self._temporal._start
+            kwargs["end"] = self._temporal._end
 
         if self._subsetparams == None and not kwargs:
             return {}

@@ -11,14 +11,6 @@ APIformatting
    :undoc-members:
    :show-inheritance:
 
-spatial
-----------
-
-.. automodule:: icepyx.core.spatial
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 granules
 --------
 
@@ -39,6 +31,22 @@ is2ref
 ------
 
 .. automodule:: icepyx.core.is2ref
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+spatial
+----------
+
+.. automodule:: icepyx.core.spatial
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+temporal
+----------
+
+.. automodule:: icepyx.core.temporal
    :members:
    :undoc-members:
    :show-inheritance:

@@ -35,7 +35,7 @@ def info(grans):
 
 # DevNote: currently this fn is not tested
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
-def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=False):
+def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=False):
     """
     Returns a list of granule information for each granule dictionary in the input list of granule dictionaries.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
@@ -55,9 +55,6 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=Fal
         Return a list of the available dates for the granule dictionary.
     cloud : boolean, default False
         Return a a list of AWS s3 urls for the available granules in the granule dictionary.
-        Note: currently, NSIDC does not provide metadata on which granules are available on s3.
-        Thus, all of the urls may not be valid and may return FileNotFoundErrors.
-        s3 data access is currently limited access to beta testers.
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
     # regular expression for extracting parameters from file names
@@ -74,19 +71,15 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=Fal
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
 
-        prod = int(gran["producer_granule_id"][3:5])
+        if cloud == True:
+            try:
+                for link in gran["links"]:
+                    if link["href"].startswith("s3") and link["href"].endswith(".h5"):
+                        gran_s3urls.append(link["href"])
+            except KeyError:
+                pass
 
-        # manual creation of s3 urls for ATL15 for FOGSS March 2023 workshop
-        # note that s3 urls were not available in the CMR metadata retrieved by icepyx at the time of implementation
-        if prod==15 and cloud==True:     
-            url = r"s3://nsidc-cumulus-prod-protected/ATLAS/ATL15/002/2019/{}".format(producer_granule_id)
-            gran_s3urls.append(url)
-        
-        elif prod == 11 or prod > 13:
-            warnings.warn("We are still working in implementing ID generation for this data product.", UserWarning)
-            continue
-
-        else:
+        if any([param == True for param in [cycles, tracks, dates]]):
             # PRD: ICESat-2 product
             # HEM: Sea Ice Hemisphere flag
             # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
@@ -119,13 +112,6 @@ def gran_IDs(grans, ids=True, cycles=False, tracks=False, dates=False, cloud=Fal
             gran_dates.append(
                 str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
             )
-
-            try:
-                for link in gran["links"]:
-                    if link["href"].startswith("s3") and link["href"].endswith(".h5"):
-                        gran_s3urls.append(link["href"])
-            except KeyError:
-                pass
 
     # list of granule parameters
     gran_list = []
@@ -190,8 +176,8 @@ class Granules:
         reqparams : dictionary
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
-        cloud : boolean, default False
-            Whether or not you want data available in the cloud (versus on premises).
+        cloud : deprecated, boolean, default False
+            CMR metadata is always collected for the cloud system.
 
         Notes
         -----
@@ -216,13 +202,10 @@ class Granules:
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
 
-        if cloud:
-            prov_flag = "NSIDC_CPRD"
-        else:
-            prov_flag = "NSIDC_ECS"
-
         params = apifmt.combine_params(
-            CMRparams, {k: reqparams[k] for k in ["page_size"]}, {"provider": prov_flag}
+            CMRparams,
+            {k: reqparams[k] for k in ["page_size"]},
+            {"provider": "NSIDC_CPRD"},
         )
 
         cmr_search_after = None

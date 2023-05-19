@@ -769,7 +769,7 @@ class Query(GenQuery):
 
         Examples
         --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='005')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='006')
         >>> reg_a.product_summary_info()
         title :  ATLAS/ICESat-2 L3A Land Ice Height V005
         short_name :  ATL06
@@ -816,7 +816,7 @@ class Query(GenQuery):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.latest_version()
-        '005'
+        '006'
         """
         if not hasattr(self, "_about_product"):
             self._about_product = is2ref.about_product(self._prod)
@@ -984,7 +984,7 @@ class Query(GenQuery):
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-23'])
         >>> reg_a.avail_granules(ids=True)
-        [['ATL06_20190221121851_08410203_005_01.h5', 'ATL06_20190222010344_08490205_005_01.h5']]
+        [['ATL06_20190221121851_08410203_006_01.h5', 'ATL06_20190222010344_08490205_006_01.h5']]
         >>> reg_a.avail_granules(cycles=True)
         [['02', '02']]
         >>> reg_a.avail_granules(tracks=True)

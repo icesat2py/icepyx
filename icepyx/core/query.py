@@ -193,7 +193,7 @@ class Query(GenQuery):
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
     >>> print(reg_a)
-    Product ATL06 v005
+    Product ATL06 v006
     ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
     Date range ['2019-02-20', '2019-02-28']
 
@@ -211,7 +211,7 @@ class Query(GenQuery):
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = Query('ATL06', aoi, reg_a_dates)
     >>> print(reg_a)
-    Product ATL06 v005
+    Product ATL06 v006
     ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
     Date range ['2019-02-22', '2019-02-28']
 
@@ -322,11 +322,11 @@ class Query(GenQuery):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_version
-        '005'
+        '006'
 
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='4')
         >>> reg_a.product_version
-        '001'
+        '004'
         """
         return self._version
 
@@ -548,7 +548,7 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.CMRparams
         {'short_name': 'ATL06',
-        'version': '005',
+        'version': '006',
         'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
         'bounding_box': '-55.0,68.0,-48.0,71.0'}
         """
@@ -773,7 +773,7 @@ class Query(GenQuery):
         >>> reg_a.product_summary_info()
         title :  ATLAS/ICESat-2 L3A Land Ice Height V005
         short_name :  ATL06
-        version_id :  005
+        version_id :  006
         time_start :  2018-10-14T00:00:00.000Z
         coordinate_system :  CARTESIAN
         summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
@@ -979,8 +979,8 @@ class Query(GenQuery):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.avail_granules()
         {'Number of available granules': 4,
-        'Average size of granules (MB)': 53.948360681525,
-        'Total size of all granules (MB)': 215.7934427261}
+        'Average size of granules (MB)': 55.166646003723145,
+        'Total size of all granules (MB)': 220.66658401489258}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-23'])
         >>> reg_a.avail_granules(ids=True)

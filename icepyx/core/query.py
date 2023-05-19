@@ -771,7 +771,7 @@ class Query(GenQuery):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='006')
         >>> reg_a.product_summary_info()
-        title :  ATLAS/ICESat-2 L3A Land Ice Height V005
+        title :  ATLAS/ICESat-2 L3A Land Ice Height V006
         short_name :  ATL06
         version_id :  006
         time_start :  2018-10-14T00:00:00.000Z

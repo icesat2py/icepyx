@@ -55,9 +55,6 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
         Return a list of the available dates for the granule dictionary.
     cloud : boolean, default False
         Return a a list of AWS s3 urls for the available granules in the granule dictionary.
-        Note: currently, NSIDC does not provide metadata on which granules are available on s3.
-        Thus, all of the urls may not be valid and may return FileNotFoundErrors.
-        s3 data access is currently limited access to beta testers.
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
     # regular expression for extracting parameters from file names

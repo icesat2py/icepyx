@@ -167,7 +167,7 @@ class Granules:
     # ----------------------------------------------------------------------
     # Methods
 
-    def get_avail(self, CMRparams, reqparams, cloud=True):
+    def get_avail(self, CMRparams, reqparams, cloud=False):
         """
         Get a list of available granules for the query object's parameters.
         Generates the `avail` attribute of the granules object.
@@ -179,8 +179,8 @@ class Granules:
         reqparams : dictionary
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
-        cloud : boolean, default False
-            Whether or not you want data available in the cloud (versus on premises).
+        cloud : deprecated, boolean, default False
+            CMR metadata is always collected for the cloud system.
 
         Notes
         -----
@@ -205,13 +205,10 @@ class Granules:
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
 
-        if cloud:
-            prov_flag = "NSIDC_CPRD"
-        else:
-            prov_flag = "NSIDC_ECS"
-
         params = apifmt.combine_params(
-            CMRparams, {k: reqparams[k] for k in ["page_size"]}, {"provider": prov_flag}
+            CMRparams,
+            {k: reqparams[k] for k in ["page_size"]},
+            {"provider": "NSIDC_CPRD"},
         )
 
         cmr_search_after = None

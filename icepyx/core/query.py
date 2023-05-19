@@ -997,7 +997,7 @@ class Query(GenQuery):
         try:
             self.granules.avail
         except AttributeError:
-            self.granules.get_avail(self.CMRparams, self.reqparams, cloud=cloud)
+            self.granules.get_avail(self.CMRparams, self.reqparams, cloud=True)
 
         if ids or cycles or tracks or cloud:
             # list of outputs in order of ids, cycles, tracks, cloud

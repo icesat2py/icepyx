@@ -205,7 +205,6 @@ class Granules:
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
 
-        # do we still need this? actually, this may be where the issue comes in, because if the cloud ones aren't gotten when avail is created...
         if cloud:
             prov_flag = "NSIDC_CPRD"
         else:

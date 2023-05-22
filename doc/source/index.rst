@@ -1,8 +1,12 @@
 .. |version badge| image:: https://badge.fury.io/gh/icesat2py%2Ficepyx.svg
     :target: https://badge.fury.io/gh/icesat2py%2Ficepyx
 
+.. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.04912/status.svg
+    :alt: JOSS publication link and DOI
+    :target: https://doi.org/10.21105/joss.04912
 
-icepyx     |version badge|
+
+icepyx     |version badge|  |JOSS|  
 ==========================
 
 **Python tools for obtaining and working with ICESat-2 data**
@@ -143,6 +147,7 @@ ICESat-2 datasets to enable scientific discovery.
    contributing/how_to_contribute
    contributing/attribution_link
    contributing/development_plan
+   contributing/release_guide
    contributing/code_of_conduct_link
 
 .. toctree::

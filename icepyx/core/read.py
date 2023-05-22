@@ -54,6 +54,49 @@ def _make_np_datetime(df, keyword):
     return df
 
 
+def _get_track_type_str(grp_path) -> (str, str, str):
+    """
+    Determine whether the product contains ground tracks, pair tracks, or profiles and
+    parse the string/label the dimension accordingly.
+
+    Parameters
+    ----------
+    grp_path : str
+        The group path for the ground track, pair track, or profile.
+
+    Returns
+    -------
+    track_str : str
+       The string for the ground track, pair track, or profile of this group
+    spot_dim_name : str
+        What the dimension should be named in the dataset
+    spot_var_name : str
+        What the variable should be named in the dataset
+    """
+
+    import re
+
+    # e.g. for ATL03, ATL06, etc.
+    if re.match(r"gt[1-3]['r','l']", grp_path):
+        track_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
+        spot_dim_name = "spot"
+        spot_var_name = "gt"
+
+    # e.g. for ATL09
+    elif re.match(r"profile_[1-3]", grp_path):
+        track_str = re.match(r"profile_[1-3]", grp_path).group()
+        spot_dim_name = "profile"
+        spot_var_name = "prof"
+
+    # e.g. for ATL11
+    elif re.match(r"pt[1-3]", grp_path):
+        track_str = re.match(r"pt[1-3]", grp_path).group()
+        spot_dim_name = "pair_track"
+        spot_var_name = "pt"
+
+    return track_str, spot_dim_name, spot_var_name
+
+
 # Dev note: function fully tested (except else, which don't know how to get to)
 def _check_datasource(filepath):
     """
@@ -183,7 +226,8 @@ class Read:
 
     filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
-        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted).
+        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
+        The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
 
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
@@ -395,22 +439,24 @@ class Read:
                 except NameError:
                     import random
 
-                    is2ds["gran_idx"] = [random.randint(900000, 999999)]
+                    is2ds["gran_idx"] = [random.randint(800000, 899998)]
                     warnings.warn("Your granule index is made up of random values.")
                     # You must include the orbit/cycle_number and orbit/rgt variables to generate
             except KeyError:
-                pass
+                is2ds["gran_idx"] = [np.nanmax(is2ds["gran_idx"]) - 1]
 
             if hasattr(is2ds, "data_start_utc"):
                 is2ds = _make_np_datetime(is2ds, "data_start_utc")
                 is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
         else:
-            import re
+            track_str, spot_dim_name, spot_var_name = _get_track_type_str(grp_path)
 
-            gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-            spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
-            # add a test for the new function (called here)!
+            # get the spot number if relevant
+            if spot_dim_name == "spot":
+                spot = is2ref.gt2spot(track_str, is2ds.sc_orient.values[0])
+            else:
+                spot = track_str
 
             grp_spec_vars = [
                 k
@@ -418,12 +464,12 @@ class Read:
                 if any(f"{grp_path}/{k}" in x for x in v)
             ]
 
+            # handle delta_times with 1 or more dimensions
+            idx_range = range(0, len(ds.delta_time.data))
             try:
                 photon_ids = (
-                    range(0, len(ds.delta_time.data))
-                    + np.full_like(
-                        ds.delta_time, np.max(is2ds.photon_idx), dtype="int64"
-                    )
+                    idx_range
+                    + np.full_like(idx_range, np.max(is2ds.photon_idx), dtype="int64")
                     + 1
                 )
             except AttributeError:
@@ -432,25 +478,65 @@ class Read:
             hold_delta_times = ds.delta_time.data
             ds = (
                 ds.reset_coords(drop=False)
-                .expand_dims(dim=["spot", "gran_idx"])
+                .expand_dims(dim=[spot_dim_name, "gran_idx"])
                 .assign_coords(
-                    spot=("spot", [spot]), delta_time=("delta_time", photon_ids)
+                    {
+                        spot_dim_name: (spot_dim_name, [spot]),
+                        "delta_time": ("delta_time", photon_ids),
+                    }
                 )
-                .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
+                .assign({spot_var_name: (("gran_idx", spot_dim_name), [[track_str]])})
                 .rename_dims({"delta_time": "photon_idx"})
                 .rename({"delta_time": "photon_idx"})
-                .assign_coords(delta_time=("photon_idx", hold_delta_times))
+                # .set_index("photon_idx")
             )
 
-            grp_spec_vars.extend(["gt", "photon_idx"])
+            # handle cases where the delta time is 2d due to multiple cycles in that group
+            if spot_dim_name == "pair_track" and np.ndim(hold_delta_times) > 1:
+                ds = ds.assign_coords(
+                    {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
+                )
+            else:
+                ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
+
+            # for ATL11
+            if "ref_pt" in ds.coords:
+                ds = (
+                    ds.drop_indexes(["ref_pt", "photon_idx"])
+                    .drop(["ref_pt", "photon_idx"])
+                    .swap_dims({"ref_pt": "photon_idx"})
+                    .assign_coords(
+                        ref_pt=("photon_idx", ds.ref_pt.data),
+                        photon_idx=ds.photon_idx.data,
+                    )
+                )
+
+                # for the subgoups where there is 1d delta time data, make sure that the cycle number is still a coordinate for merging
+                try:
+                    ds = ds.assign_coords(
+                        {
+                            "cycle_number": (
+                                "photon_idx",
+                                ds.cycle_number["photon_idx"].data,
+                            )
+                        }
+                    )
+                    ds["cycle_number"] = ds.cycle_number.astype(np.uint8)
+                except KeyError:
+                    pass
+
+            grp_spec_vars.extend([spot_var_name, "photon_idx"])
 
             is2ds = is2ds.merge(
                 ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
             )
 
             # re-cast some dtypes to make array smaller
-            is2ds["gt"] = is2ds.gt.astype(str)
-            is2ds["spot"] = is2ds.spot.astype(np.uint8)
+            is2ds[spot_var_name] = is2ds[spot_var_name].astype(str)
+            try:
+                is2ds[spot_dim_name] = is2ds[spot_dim_name].astype(np.uint8)
+            except ValueError:
+                pass
 
         return is2ds, ds[grp_spec_vars]
 
@@ -497,10 +583,14 @@ class Read:
             is2ds = _make_np_datetime(is2ds, "data_start_utc")
             is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
-        except AttributeError:
+        except (AttributeError, KeyError):
             pass
 
-        is2ds = is2ds.assign(ds[grp_spec_vars])
+        try:
+            is2ds = is2ds.assign(ds[grp_spec_vars])
+        except xr.MergeError:
+            ds = ds[grp_spec_vars].reset_coords()
+            is2ds = is2ds.assign(ds)
 
         return is2ds
 
@@ -642,8 +732,10 @@ class Read:
         # with h5py.File(filepath,'r') as h5pt:
         #     prod_id = h5pt.attrs["identifier_product_type"]
 
-        # DEVNOTE: does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
+        # DEVNOTE: if and elif does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
         # if a gridded product
+        # TODO: all products need to be tested, and quicklook products added or explicitly excluded
+        # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
         if self._prod in [
             "ATL14",
             "ATL15",
@@ -656,6 +748,39 @@ class Read:
         ]:
             is2ds = xr.open_dataset(file)
 
+        # Level 3b, hdf5: ATL11
+        elif self._prod in ["ATL11"]:
+            is2ds = self._build_dataset_template(file)
+
+            # returns the wanted groups as a single list of full group path strings
+            wanted_dict, wanted_groups = Variables.parse_var_list(
+                groups_list, tiered=False
+            )
+            wanted_groups_set = set(wanted_groups)
+
+            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            # wanted_groups_set.remove("orbit_info")
+            wanted_groups_set.remove("ancillary_data")
+            # Note: the sorting is critical for datasets with highly nested groups
+            wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
+
+            # returns the wanted groups as a list of lists with group path string elements separated
+            _, wanted_groups_tiered = Variables.parse_var_list(
+                groups_list, tiered=True, tiered_vars=True
+            )
+
+            while wanted_groups_list:
+                # print(wanted_groups_list)
+                grp_path = wanted_groups_list[0]
+                wanted_groups_list = wanted_groups_list[1:]
+                ds = self._read_single_grp(file, grp_path)
+                is2ds, ds = Read._add_vars_to_ds(
+                    is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
+                )
+
+            return is2ds
+
+        # Level 2 and 3a Products: ATL03, 06, 07, 08, 09, 10, 12, 13
         else:
             is2ds = self._build_dataset_template(file)
 
@@ -685,6 +810,7 @@ class Read:
                 )
 
                 # if there are any deeper nested variables, get those so they have actual coordinates and add them
+                # this may apply to (at a minimum): ATL08
                 if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
                     for grp_path2 in wanted_groups_list:
                         if grp_path in grp_path2:

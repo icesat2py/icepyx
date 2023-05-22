@@ -8,36 +8,37 @@ import numpy as np
 
 class Argo(DataSet):
     """
-        Initialises an Argo Dataset object
-        Used to query physical Argo profiles
-        -> biogeochemical Argo (BGC) not included
+    Initialises an Argo Dataset object
+    Used to query physical Argo profiles
+    -> biogeochemical Argo (BGC) not included
 
-        Examples
+    Examples
     --------
     # example with profiles available
     >>> reg_a = Argo([-154, 30,-143, 37], ['2022-04-12', '2022-04-26'])
-        >>> reg_a.search_data()
-        >>> print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
-           pres    temp     lat      lon
-        0   3.9  18.608  33.401 -153.913
-        1   5.7  18.598  33.401 -153.913
-        2   7.7  18.588  33.401 -153.913
-        3   9.7  18.462  33.401 -153.913
-        4  11.7  18.378  33.401 -153.913
+    >>> reg_a.search_data()
+    >>> print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
+        pres    temp     lat      lon
+    0   3.9  18.608  33.401 -153.913
+    1   5.7  18.598  33.401 -153.913
+    2   7.7  18.588  33.401 -153.913
+    3   9.7  18.462  33.401 -153.913
+    4  11.7  18.378  33.401 -153.913
 
-        # example with no profiles
-        >>> reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
-        >>> reg_a.search_data()
-        Warning: Query returned no profiles
-        Please try different search parameters
+    # example with no profiles
+    >>> reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
+    >>> reg_a.search_data()
+    Warning: Query returned no profiles
+    Please try different search parameters
 
 
-        See Also
-        --------
-        DataSet
-        GenQuery
+    See Also
+    --------
+    DataSet
+    GenQuery
     """
 
+    # DevNote: it looks like ArgoVis now accepts polygons, not just bounding boxes
     def __init__(self, boundingbox, timeframe):
         super().__init__(boundingbox, timeframe)
         assert self._spatial._ext_type == "bounding_box"
@@ -50,17 +51,18 @@ class Argo(DataSet):
         """
 
         # builds URL to be submitted
-        baseURL = "https://argovis.colorado.edu/selection/profiles/"
+        baseURL = "https://argovis-api.colorado.edu/argo"
         payload = {
-            "startDate": self._start.strftime("%Y-%m-%d"),
-            "endDate": self._end.strftime("%Y-%m-%d"),
-            "shape": [self._fmt_coordinates()],
+            "startDate": self._temporal._start.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "endDate": self._temporal._end.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "polygon": [self._fmt_coordinates()],
         }
         if presRange:
             payload["presRange"] = presRange
 
         # submit request
-        resp = requests.get(baseURL, params=payload)
+        apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
+        resp = requests.get(baseURL, headers={"x-argokey": apikey}, params=payload)
 
         if printURL:
             print(resp.url)
@@ -103,7 +105,7 @@ class Argo(DataSet):
             else:
                 x += "," + coord
 
-        x = "[[" + x + "]]"
+        x = "[" + x + "]"
         return x
 
     # todo: add a try/except to make sure the json files are valid i.e. contains all data we're expecting (no params are missing)
@@ -111,17 +113,23 @@ class Argo(DataSet):
         """
         Stores profiles returned by query into dataframe
         saves profiles back to self.profiles
-        returns None
+
+        Returns
+        -------
+        None
         """
         # initialize dict
         df = pd.DataFrame()
         for profile in profiles:
-            profileDf = pd.DataFrame(profile["measurements"])
-            profileDf["cycle_number"] = profile["cycle_number"]
+            # this line "works", but data is no longer included in the response so the resulting df is useless
+            profileDf = pd.DataFrame(profile["data_info"])
+            # Note: the cycle_number is returned as part of the id: <profile id>_<cycle number>
+            # profileDf["cycle_number"] = profile["cycle_number"]
             profileDf["profile_id"] = profile["_id"]
-            profileDf["lat"] = profile["lat"]
-            profileDf["lon"] = profile["lon"]
-            profileDf["date"] = profile["date"]
+            # there's also a geolocation field that provides the geospatial info as shapely points
+            profileDf["lat"] = profile["geolocation"]["coordinates"][1]
+            profileDf["lon"] = profile["geolocation"]["coordinates"][0]
+            profileDf["date"] = profile["timestamp"]
             df = pd.concat([df, profileDf], sort=False)
         self.profiles = df
 
@@ -132,5 +140,5 @@ if __name__ == "__main__":
     # reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
     # profiles available
     reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
-    reg_a.search_data()
+    reg_a.search_data(printURL=True)
     print(reg_a.profiles[["pres", "temp", "lat", "lon"]].head())

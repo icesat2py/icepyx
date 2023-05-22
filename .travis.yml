@@ -12,9 +12,8 @@ before_install:
   - conda info -a
 
 install:
-  - conda create --name icepyx-env --channel conda-forge python=$TRAVIS_PYTHON_VERSION proj=7.2.0 geos
+  - conda create --name icepyx-env --channel conda-forge python=3.10 proj geos
   - source activate icepyx-env
-
   - pip install -r requirements.txt -r requirements-dev.txt
   - pip install -e .[complete]
 
@@ -28,10 +27,10 @@ stages:
 jobs:
   include:
     - stage: basic tests
-      script: pytest icepyx/ --ignore icepyx/tests/behind_NSIDC_API_login.py
-      after_success: codecov
+      script: pytest icepyx/ --verbose --cov app --ignore icepyx/tests/test_behind_NSIDC_API_login.py
+      after_success: codecov/codecov-action@v3
 
-    # - stage: behind Earthdata
-    #   script:
-    #     - export NSIDC_LOGIN=$NSIDC_LOGIN
-    #     - pytest icepyx/tests/behind_NSIDC_API_login.py
+    - stage: behind Earthdata
+      script:
+        - export NSIDC_LOGIN=$NSIDC_LOGIN
+        - pytest icepyx/tests/test_behind_NSIDC_API_login.py

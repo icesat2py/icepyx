@@ -117,7 +117,7 @@ class Visualize:
     query_obj : ipx.Query object, default None
         icepy Query class object.
     product : string
-        ICESat-2 product ID; equivalent to the Query object dataset
+        ICESat-2 product ID
     spatial_extent: list or string, default None
         as in the ipx.Query object
     date_range : list of 'YYYY-MM-DD' strings, default None
@@ -146,31 +146,34 @@ class Visualize:
             pass
         else:
             query_obj = ipx.Query(
-                dataset=product,
+                product=product,
                 spatial_extent=spatial_extent,
                 date_range=date_range,
                 cycles=cycles,
                 tracks=tracks,
             )
 
-        self.product = is2ref._validate_OA_product(query_obj.dataset)
+        self.product = is2ref._validate_OA_product(query_obj.product)
 
-        if query_obj.extent_type == "bounding_box":
-            self.bbox = query_obj._spat_extent
+        if query_obj._spatial._ext_type == "bounding_box":
+            self.bbox = query_obj.spatial.extent
 
         else:
-            mrc_bound = query_obj._spat_extent.minimum_rotated_rectangle
-            # generate bounding box
-            lonmin = min(mrc_bound.exterior.coords.xy[0])
-            lonmax = max(mrc_bound.exterior.coords.xy[0])
-            latmin = min(mrc_bound.exterior.coords.xy[1])
-            latmax = max(mrc_bound.exterior.coords.xy[1])
+            (
+                lonmin,
+                latmin,
+                lonmax,
+                latmax,
+            ) = query_obj.spatial.extent_as_gdf.geometry.unary_union.bounds
 
             self.bbox = [lonmin, latmin, lonmax, latmax]
 
         self.date_range = (
-            [query_obj._start.strftime("%Y-%m-%d"), query_obj._end.strftime("%Y-%m-%d")]
-            if hasattr(query_obj, "_start")
+            [
+                query_obj._temporal._start.strftime("%Y-%m-%d"),
+                query_obj._temporal._end.strftime("%Y-%m-%d"),
+            ]
+            if hasattr(query_obj, "_temporal")
             else None
         )
         self.cycles = query_obj._cycles if hasattr(query_obj, "_cycles") else None
@@ -238,14 +241,17 @@ class Visualize:
 
         for bbox_i in bbox_list:
 
-            region = ipx.Query(
-                self.product,
-                bbox_i,
-                self.date_range,
-                cycles=self.cycles,
-                tracks=self.tracks,
-            )
-            icesat2_files = region.avail_granules(ids=True)[0]
+            try:
+                region = ipx.Query(
+                    self.product,
+                    bbox_i,
+                    self.date_range,
+                    cycles=self.cycles,
+                    tracks=self.tracks,
+                )
+                icesat2_files = region.avail_granules(ids=True)[0]
+            except (AttributeError, AssertionError):
+                continue
 
             if not icesat2_files:
                 continue
@@ -408,6 +414,10 @@ class Visualize:
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
 
+        assert (
+            OA_para_list
+        ), "Your search returned no results; try different search parameters"
+
         url_number = len(OA_para_list)
 
         if url_number > 200:
@@ -489,7 +499,11 @@ class Visualize:
             dset = hv.Dataset(ddf_new)
 
             raster_cycle = dset.to(
-                hv.Points, ["x", "y"], ["elevation"], groupby=["cycle"], dynamic=True,
+                hv.Points,
+                ["x", "y"],
+                ["elevation"],
+                groupby=["cycle"],
+                dynamic=True,
             )
             raster_rgt = dset.to(
                 hv.Points, ["x", "y"], ["elevation"], groupby=["rgt"], dynamic=True

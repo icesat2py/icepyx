@@ -44,11 +44,20 @@ class Argo(DataSet):
         assert self._spatial._ext_type == "bounding_box"
         self.profiles = None
 
-    def search_data(self, presRange=None, printURL=False) -> str:
+    def search_data(self, params=["all"], presRange=None, printURL=False) -> str:
         """
-        query dataset given the spatio temporal criteria
-        and other params specific to the dataset
+        query argo profiles given the spatio temporal criteria
+        and other params specific to the dataset.
+
+        Returns
+        ------
+        str: message on the success status of the search
         """
+
+        assert len(params) != 0, "One or more measurements must be specified."
+        # NOTE: check to see if must have exactly 2 params for download; there's also an "all" option now
+        params = self._validate_parameters(params)
+        print(params)
 
         # builds URL to be submitted
         baseURL = "https://argovis-api.colorado.edu/argo"
@@ -84,10 +93,25 @@ class Argo(DataSet):
             print(msg)
             return msg
 
-        # if profiles are found, save them to self as dataframe
-        msg = "Found profiles - converting to a dataframe"
-        self._parse_into_df(selectionProfiles)
+        # deterine which profiles contain all specified params
+        if "all" in params:
+            prof_ids = []
+            for i in selectionProfiles:
+                prof_ids.append(i["_id"])
+                # print(i['_id'])
+        else:
+            prof_ids = self._filter_profiles(selectionProfiles, params)
+
+        self.prof_ids = prof_ids
+
+        msg = "{0} valid profiles have been identified".format(len(prof_ids))
+        print(msg)
         return msg
+
+        # # if profiles are found, save them to self as dataframe
+        # msg = "Found profiles - converting to a dataframe"
+        # self._parse_into_df(selectionProfiles)
+        # return msg
 
     def _fmt_coordinates(self) -> str:
         """
@@ -108,8 +132,95 @@ class Argo(DataSet):
         x = "[" + x + "]"
         return x
 
+    def _valid_params(self) -> dict:
+        """
+        This is a list of valid Argo params, stored here to remove redundancy
+        They are ordered by how commonly they are measured (approx)
+        """
+        valid_params = {
+            "doxy": 0,
+            "doxy_argoqc": 1,
+            "pressure": 2,
+            "pressure_argoqc": 3,
+            "salinity": 4,
+            "salinity_argoqc": 5,
+            "salinity_sfile": 6,
+            "salinity_sfile_argoqc": 7,
+            "temperature": 8,
+            "temperature_argoqc": 9,
+            "temperature_sfile": 10,
+            "temperature_sfile_argoqc": 11,
+            "all": 12,
+        }
+        return valid_params
+
+    def _validate_parameters(self, params) -> list:
+        """
+        Asserts that user-specified parameters are valid as per the Argovis documentation here:
+        https://argovis.colorado.edu/api-docs/#/catalog/get_catalog_bgc_platform_data__platform_number_
+
+        Returns
+        -------
+        the list of params sorted in the order in which they should be queried (least
+        commonly available to most commonly available)
+        """
+
+        # valid params ordered by how commonly they are measured (approx)
+        valid_params = self._valid_params()
+
+        # checks that params are valid
+        for i in params:
+            assert (
+                i in valid_params.keys()
+            ), "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+                i, valid_params.keys()
+            )
+
+        # sorts params into order in which they should be queried
+        params = sorted(params, key=lambda i: valid_params[i], reverse=True)
+
+        if "all" in params:
+            params = ["all"]
+
+        return params
+
+    def _filter_profiles(self, profiles, params):
+        """
+        from a dictionary of all profiles returned by first API request, remove the
+        profiles that do not contain ALL measurements specified by user
+        returns a list of profile ID's that contain all necessary BGC params
+        """
+        # todo: filter out BGC profiles
+        good_profs = []
+        for i in profiles:
+            avail_meas = i["data_info"][0]
+            check = all(item in avail_meas for item in params)
+            if check:
+                good_profs.append(i["_id"])
+                print(i["_id"])
+
+        return good_profs
+
+    def download_by_profile(self, keep_all=True):
+        for i in self.prof_ids:
+            print("processing profile", i)
+            profile_data = self._download_profile(i)
+
+        self._parse_into_df(profile_data)
+        self.profiles.reset_index(inplace=True)
+
+    # NEXT STEP: actually construct a properly formatted download (see example)
+    def _download_profile(self, profile_number):
+        url = "https://argovis.colorado.edu/catalog/profiles/{}".format(profile_number)
+        resp = requests.get(url)
+        # Consider any status other than 2xx an error
+        if not resp.status_code // 100 == 2:
+            return "Error: Unexpected response {}".format(resp)
+        profile = resp.json()
+        return profile
+
     # todo: add a try/except to make sure the json files are valid i.e. contains all data we're expecting (no params are missing)
-    def _parse_into_df(self, profiles) -> None:
+    def _parse_into_df(self, profile_data) -> None:
         """
         Stores profiles returned by query into dataframe
         saves profiles back to self.profiles
@@ -118,20 +229,52 @@ class Argo(DataSet):
         -------
         None
         """
-        # initialize dict
-        df = pd.DataFrame()
-        for profile in profiles:
-            # this line "works", but data is no longer included in the response so the resulting df is useless
-            profileDf = pd.DataFrame(profile["data_info"])
-            # Note: the cycle_number is returned as part of the id: <profile id>_<cycle number>
-            # profileDf["cycle_number"] = profile["cycle_number"]
-            profileDf["profile_id"] = profile["_id"]
-            # there's also a geolocation field that provides the geospatial info as shapely points
-            profileDf["lat"] = profile["geolocation"]["coordinates"][1]
-            profileDf["lon"] = profile["geolocation"]["coordinates"][0]
-            profileDf["date"] = profile["timestamp"]
-            df = pd.concat([df, profileDf], sort=False)
+
+        # NEXT STEPS:
+        # decide where on the object to store the dataframe (self.profiles? self.argodata?)
+
+        if not self.profiles is None:
+            df = self.profiles
+        else:
+            df = pd.DataFrame()
+
+        # parse the profile data into a dataframe
+        # this line "works", but data is no longer included in the response so the resulting df is useless
+        profileDf = pd.DataFrame(profile_data["data_info"])
+        # Note: the cycle_number is returned as part of the id: <profile id>_<cycle number>
+        # profileDf["cycle_number"] = profile["cycle_number"]
+        profileDf["profile_id"] = profile_data["_id"]
+        # there's also a geolocation field that provides the geospatial info as shapely points
+        profileDf["lat"] = profile_data["geolocation"]["coordinates"][1]
+        profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
+        profileDf["date"] = profile_data["timestamp"]
+
+        # may need to use the concat or merge if statement in argobgc
+        df = pd.concat([df, profileDf], sort=False)
         self.profiles = df
+
+    def get_dataframe(self, params, keep_all=True) -> pd.DataFrame:
+        """
+        Downloads the requested data and returns it in a DataFrame
+
+        Returns
+        -------
+        pd.DataFrame: DataFrame of requested data
+        """
+
+        self.search_data(params)
+        self.download_by_profile()
+
+        if not keep_all:
+            # drop measurement columns not specified by user
+            drop_params = list(set(list(self._valid_params())[3:]) - set(params))
+            qc_params = []
+            for i in drop_params:
+                qc_params.append(i + "_qc")
+            drop_params += qc_params
+            self.profiles.drop(columns=drop_params, inplace=True, errors="ignore")
+
+        return self.profiles
 
 
 # this is just for the purpose of debugging and should be removed later
@@ -140,5 +283,14 @@ if __name__ == "__main__":
     # reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
     # profiles available
     reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+
+    # Note: this works; will need to see if it carries through
+    # Note: run this if you just want valid profile ids (stored as reg_a.prof_ids)
+    # it's the first step completed in get_dataframe
     reg_a.search_data(printURL=True)
+
+    reg_a.get_dataframe(params=["pressure", "temperature"])
+    # if it works with list of len 2, try with a longer list...
+    reg_a.get_dataframe()
+
     print(reg_a.profiles[["pres", "temp", "lat", "lon"]].head())

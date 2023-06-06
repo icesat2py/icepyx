@@ -55,8 +55,6 @@ class Argo(DataSet):
         str: message on the success status of the search
         """
 
-        assert len(params) != 0, "One or more measurements must be specified."
-        # NOTE: check to see if must have exactly 2 params for download; there's also an "all" option now
         params = self._validate_parameters(params)
         print(params)
 
@@ -71,7 +69,6 @@ class Argo(DataSet):
             payload["presRange"] = presRange
 
         # submit request
-
         resp = requests.get(
             baseURL, headers={"x-argokey": self._apikey}, params=payload
         )
@@ -96,12 +93,12 @@ class Argo(DataSet):
             print(msg)
             return msg
 
-        # deterine which profiles contain all specified params
+        # determine which profiles contain all specified params
+        # Note: this will be done automatically by Argovis during data download
         if "all" in params:
             prof_ids = []
             for i in selectionProfiles:
                 prof_ids.append(i["_id"])
-                # print(i['_id'])
         else:
             prof_ids = self._filter_profiles(selectionProfiles, params)
 
@@ -110,11 +107,6 @@ class Argo(DataSet):
         msg = "{0} valid profiles have been identified".format(len(prof_ids))
         print(msg)
         return msg
-
-        # # if profiles are found, save them to self as dataframe
-        # msg = "Found profiles - converting to a dataframe"
-        # self._parse_into_df(selectionProfiles)
-        # return msg
 
     def _fmt_coordinates(self) -> str:
         """
@@ -135,55 +127,48 @@ class Argo(DataSet):
         x = "[" + x + "]"
         return x
 
-    def _valid_params(self) -> dict:
+    # TODO: contact argovis for a list of valid params (swagger api docs are a blank page)
+    def _valid_params(self) -> list:
         """
-        This is a list of valid Argo params, stored here to remove redundancy
-        They are ordered by how commonly they are measured (approx)
+        A list of valid Argo measurement parameters.
         """
-        valid_params = {
-            "doxy": 0,
-            "doxy_argoqc": 1,
-            "pressure": 2,
-            "pressure_argoqc": 3,
-            "salinity": 4,
-            "salinity_argoqc": 5,
-            "salinity_sfile": 6,
-            "salinity_sfile_argoqc": 7,
-            "temperature": 8,
-            "temperature_argoqc": 9,
-            "temperature_sfile": 10,
-            "temperature_sfile_argoqc": 11,
-            "all": 12,
-        }
+        valid_params = [
+            "doxy",
+            "doxy_argoqc",
+            "pressure",
+            "pressure_argoqc",
+            "salinity",
+            "salinity_argoqc",
+            "salinity_sfile",
+            "salinity_sfile_argoqc",
+            "temperature",
+            "temperature_argoqc",
+            "temperature_sfile",
+            "temperature_sfile_argoqc",
+            "all",
+        ]
         return valid_params
 
     def _validate_parameters(self, params) -> list:
         """
-        Asserts that user-specified parameters are valid as per the Argovis documentation here:
-        https://argovis.colorado.edu/api-docs/#/catalog/get_catalog_bgc_platform_data__platform_number_
+        Checks that the list of user requested parameters are valid.
 
         Returns
         -------
-        the list of params sorted in the order in which they should be queried (least
-        commonly available to most commonly available)
+        The list of valid parameters
         """
-
-        # valid params ordered by how commonly they are measured (approx)
-        valid_params = self._valid_params()
-
-        # checks that params are valid
-        for i in params:
-            assert (
-                i in valid_params.keys()
-            ), "Parameter '{0}' is not valid. Valid parameters are {1}".format(
-                i, valid_params.keys()
-            )
-
-        # sorts params into order in which they should be queried
-        params = sorted(params, key=lambda i: valid_params[i], reverse=True)
 
         if "all" in params:
             params = ["all"]
+        else:
+            valid_params = self._valid_params()
+            # checks that params are valid
+            for i in params:
+                assert (
+                    i in valid_params
+                ), "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+                    i, valid_params
+                )
 
         return params
 
@@ -305,7 +290,7 @@ if __name__ == "__main__":
     # Note: this works; will need to see if it carries through
     # Note: run this if you just want valid profile ids (stored as reg_a.prof_ids)
     # it's the first step completed in get_dataframe
-    reg_a.search_data(printURL=True)
+    reg_a.search_data(presRange=[], printURL=True)
 
     reg_a.get_dataframe(params=["pressure", "temperature", "salinity_argoqc"])
     # if it works with list of len 2, try with a longer list...

@@ -45,10 +45,16 @@ class Argo(DataSet):
         self.argodata = None
         self._apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
 
-    def search_data(self, params=["all"], presRange=None, printURL=False) -> str:
+    def search_data(
+        self, params=["temperature", "pressure"], presRange=None, printURL=False
+    ) -> str:
         """
         query argo profiles given the spatio temporal criteria
         and other params specific to the dataset.
+
+        Parameters
+        ---------
+
 
         Returns
         ------
@@ -190,7 +196,7 @@ class Argo(DataSet):
 
         return good_profs
 
-    def download_by_profile(self, params, keep_all=True):
+    def download_by_profile(self, params):
         for i in self.prof_ids:
             print("processing profile", i)
             profile_data = self._download_profile(i, params=params, printURL=True)
@@ -246,8 +252,13 @@ class Argo(DataSet):
         profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
         profileDf["date"] = profile_data["timestamp"]
 
-        # NOTE: may need to use the concat or merge if statement in argobgc
+        # TODO: debug this. Currently this just keeps the last profile!!
         df = pd.concat([df, profileDf], sort=False)
+        # if self.argodata is None:
+        #     df = pd.concat([df, profileDf], sort=False)
+        # else:
+        #     df = df.merge(profileDf, on='profile_id')
+
         self.argodata = df
 
     def get_dataframe(self, params, keep_existing=True) -> pd.DataFrame:
@@ -287,7 +298,10 @@ class Argo(DataSet):
             pass
         else:
             for p in params:
-                params.append(p + "_qc")
+                if p.endswith("_argoqc"):
+                    pass
+                else:
+                    params.append(p + "_argoqc")
 
         self.search_data(params)
         self.download_by_profile(params)

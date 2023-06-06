@@ -43,6 +43,7 @@ class Argo(DataSet):
         super().__init__(boundingbox, timeframe)
         assert self._spatial._ext_type == "bounding_box"
         self.profiles = None
+        self._apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
 
     def search_data(self, params=["all"], presRange=None, printURL=False) -> str:
         """
@@ -70,8 +71,10 @@ class Argo(DataSet):
             payload["presRange"] = presRange
 
         # submit request
-        apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
-        resp = requests.get(baseURL, headers={"x-argokey": apikey}, params=payload)
+
+        resp = requests.get(
+            baseURL, headers={"x-argokey": self._apikey}, params=payload
+        )
 
         if printURL:
             print(resp.url)
@@ -201,18 +204,31 @@ class Argo(DataSet):
 
         return good_profs
 
-    def download_by_profile(self, keep_all=True):
+    def download_by_profile(self, params, keep_all=True):
         for i in self.prof_ids:
             print("processing profile", i)
-            profile_data = self._download_profile(i)
+            profile_data = self._download_profile(i, params=params, printURL=True)
 
-        self._parse_into_df(profile_data)
+        self._parse_into_df(profile_data[0])
         self.profiles.reset_index(inplace=True)
 
     # NEXT STEP: actually construct a properly formatted download (see example)
-    def _download_profile(self, profile_number):
-        url = "https://argovis.colorado.edu/catalog/profiles/{}".format(profile_number)
-        resp = requests.get(url)
+    def _download_profile(self, profile_number, params=None, printURL=False):
+        # builds URL to be submitted
+        baseURL = "https://argovis-api.colorado.edu/argo"
+        payload = {
+            "id": profile_number,
+            "data": params,
+        }
+
+        # submit request
+        resp = requests.get(
+            baseURL, headers={"x-argokey": self._apikey}, params=payload
+        )
+
+        if printURL:
+            print(resp.url)
+
         # Consider any status other than 2xx an error
         if not resp.status_code // 100 == 2:
             return "Error: Unexpected response {}".format(resp)
@@ -240,7 +256,9 @@ class Argo(DataSet):
 
         # parse the profile data into a dataframe
         # this line "works", but data is no longer included in the response so the resulting df is useless
-        profileDf = pd.DataFrame(profile_data["data_info"])
+        profileDf = pd.DataFrame(
+            np.transpose(profile_data["data"]), columns=profile_data["data_info"][0]
+        )
         # Note: the cycle_number is returned as part of the id: <profile id>_<cycle number>
         # profileDf["cycle_number"] = profile["cycle_number"]
         profileDf["profile_id"] = profile_data["_id"]
@@ -263,7 +281,7 @@ class Argo(DataSet):
         """
 
         self.search_data(params)
-        self.download_by_profile()
+        self.download_by_profile(params)
 
         if not keep_all:
             # drop measurement columns not specified by user
@@ -282,14 +300,14 @@ if __name__ == "__main__":
     # no search results
     # reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
     # profiles available
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])  # "2022-04-26"])
 
     # Note: this works; will need to see if it carries through
     # Note: run this if you just want valid profile ids (stored as reg_a.prof_ids)
     # it's the first step completed in get_dataframe
     reg_a.search_data(printURL=True)
 
-    reg_a.get_dataframe(params=["pressure", "temperature"])
+    reg_a.get_dataframe(params=["pressure", "temperature", "salinity_argoqc"])
     # if it works with list of len 2, try with a longer list...
     reg_a.get_dataframe()
 

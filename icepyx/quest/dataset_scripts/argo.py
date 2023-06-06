@@ -42,7 +42,7 @@ class Argo(DataSet):
     def __init__(self, boundingbox, timeframe):
         super().__init__(boundingbox, timeframe)
         assert self._spatial._ext_type == "bounding_box"
-        self.profiles = None
+        self.argodata = None
         self._apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
 
     def search_data(self, params=["all"], presRange=None, printURL=False) -> str:
@@ -172,9 +172,10 @@ class Argo(DataSet):
 
         return params
 
+    # Note: this function may still be useful for users only looking to search for data, but otherwise this filtering is done during download now
     def _filter_profiles(self, profiles, params):
         """
-        from a dictionary of all profiles returned by first API request, remove the
+        from a dictionary of all profiles returned by search API request, remove the
         profiles that do not contain ALL measurements specified by user
         returns a list of profile ID's that contain all necessary BGC params
         """
@@ -195,9 +196,8 @@ class Argo(DataSet):
             profile_data = self._download_profile(i, params=params, printURL=True)
 
         self._parse_into_df(profile_data[0])
-        self.profiles.reset_index(inplace=True)
+        self.argodata.reset_index(inplace=True)
 
-    # NEXT STEP: actually construct a properly formatted download (see example)
     def _download_profile(self, profile_number, params=None, printURL=False):
         # builds URL to be submitted
         baseURL = "https://argovis-api.colorado.edu/argo"
@@ -223,61 +223,76 @@ class Argo(DataSet):
     # todo: add a try/except to make sure the json files are valid i.e. contains all data we're expecting (no params are missing)
     def _parse_into_df(self, profile_data) -> None:
         """
-        Stores profiles returned by query into dataframe
-        saves profiles back to self.profiles
+        Stores downloaded data from a single profile into dataframe.
+        Appends data to any existing profile data stored in self.argodata.
 
         Returns
         -------
         None
         """
 
-        # NEXT STEPS:
-        # decide where on the object to store the dataframe (self.profiles? self.argodata?)
-
-        if not self.profiles is None:
-            df = self.profiles
+        if not self.argodata is None:
+            df = self.argodata
         else:
             df = pd.DataFrame()
 
         # parse the profile data into a dataframe
-        # this line "works", but data is no longer included in the response so the resulting df is useless
         profileDf = pd.DataFrame(
             np.transpose(profile_data["data"]), columns=profile_data["data_info"][0]
         )
-        # Note: the cycle_number is returned as part of the id: <profile id>_<cycle number>
-        # profileDf["cycle_number"] = profile["cycle_number"]
         profileDf["profile_id"] = profile_data["_id"]
         # there's also a geolocation field that provides the geospatial info as shapely points
         profileDf["lat"] = profile_data["geolocation"]["coordinates"][1]
         profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
         profileDf["date"] = profile_data["timestamp"]
 
-        # may need to use the concat or merge if statement in argobgc
+        # NOTE: may need to use the concat or merge if statement in argobgc
         df = pd.concat([df, profileDf], sort=False)
-        self.profiles = df
+        self.argodata = df
 
-    def get_dataframe(self, params, keep_all=True) -> pd.DataFrame:
+    def get_dataframe(self, params, keep_existing=True) -> pd.DataFrame:
         """
-        Downloads the requested data and returns it in a DataFrame
+        Downloads the requested data and returns it in a DataFrame.
+
+        Data is also stored in self.argodata.
+
+        Parameters
+        ----------
+        params: list of str
+            A list of all the measurement parameters requested by the user.
+
+        keep_existing: Boolean, default True
+            Provides the option to clear any existing downloaded data before downloading more.
 
         Returns
         -------
         pd.DataFrame: DataFrame of requested data
         """
 
+        # TODO: do some basic testing of this block and how the dataframe merging actually behaves
+        if keep_existing == False:
+            print(
+                "Your previously stored data in reg.argodata",
+                "will be deleted before new data is downloaded.",
+            )
+            self.argodata = None
+        elif keep_existing == True and hasattr(self, "argodata"):
+            print(
+                "The data requested by running this line of code\n",
+                "will be added to previously downloaded data.",
+            )
+
+        # Add qc data for each of the parameters requested
+        if params == ["all"]:
+            pass
+        else:
+            for p in params:
+                params.append(p + "_qc")
+
         self.search_data(params)
         self.download_by_profile(params)
 
-        if not keep_all:
-            # drop measurement columns not specified by user
-            drop_params = list(set(list(self._valid_params())[3:]) - set(params))
-            qc_params = []
-            for i in drop_params:
-                qc_params.append(i + "_qc")
-            drop_params += qc_params
-            self.profiles.drop(columns=drop_params, inplace=True, errors="ignore")
-
-        return self.profiles
+        return self.argodata
 
 
 # this is just for the purpose of debugging and should be removed later

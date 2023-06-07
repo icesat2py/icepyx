@@ -200,9 +200,8 @@ class Argo(DataSet):
         for i in self.prof_ids:
             print("processing profile", i)
             profile_data = self._download_profile(i, params=params, printURL=True)
-
-        self._parse_into_df(profile_data[0])
-        self.argodata.reset_index(inplace=True)
+            self._parse_into_df(profile_data[0])
+            self.argodata.reset_index(inplace=True, drop=True)
 
     def _download_profile(self, profile_number, params=None, printURL=False):
         # builds URL to be submitted
@@ -252,13 +251,7 @@ class Argo(DataSet):
         profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
         profileDf["date"] = profile_data["timestamp"]
 
-        # TODO: debug this. Currently this just keeps the last profile!!
         df = pd.concat([df, profileDf], sort=False)
-        # if self.argodata is None:
-        #     df = pd.concat([df, profileDf], sort=False)
-        # else:
-        #     df = df.merge(profileDf, on='profile_id')
-
         self.argodata = df
 
     def get_dataframe(self, params, keep_existing=True) -> pd.DataFrame:

@@ -1,9 +1,9 @@
-from icepyx.quest.dataset_scripts.dataset import DataSet
-from icepyx.core.spatial import geodataframe
-import requests
-import pandas as pd
-import os
 import numpy as np
+import pandas as pd
+import requests
+
+from icepyx.core.spatial import geodataframe
+from icepyx.quest.dataset_scripts.dataset import DataSet
 
 
 class Argo(DataSet):
@@ -31,14 +31,13 @@ class Argo(DataSet):
     Warning: Query returned no profiles
     Please try different search parameters
 
-
     See Also
     --------
     DataSet
     GenQuery
     """
 
-    # DevNote: it looks like ArgoVis now accepts polygons, not just bounding boxes
+    # Note: it looks like ArgoVis now accepts polygons, not just bounding boxes
     def __init__(self, boundingbox, timeframe):
         super().__init__(boundingbox, timeframe)
         assert self._spatial._ext_type == "bounding_box"
@@ -49,12 +48,18 @@ class Argo(DataSet):
         self, params=["temperature", "pressure"], presRange=None, printURL=False
     ) -> str:
         """
-        query argo profiles given the spatio temporal criteria
+        Query argo profiles given the spatio temporal criteria
         and other params specific to the dataset.
 
         Parameters
         ---------
-
+        params: list of str, default ["temperature", "pressure]
+            A list of strings, where each string is a requested parameter.
+            Only metadata for profiles with the requested parameters are returned.
+            To search for all parameters, use `params=["all"]`.
+        presRange: str, default None
+            The pressure range (which correllates with depth) to search for data within.
+            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
 
         Returns
         ------
@@ -70,6 +75,7 @@ class Argo(DataSet):
             "startDate": self._temporal._start.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "endDate": self._temporal._end.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "polygon": [self._fmt_coordinates()],
+            "data": params,
         }
         if presRange:
             payload["presRange"] = presRange
@@ -99,15 +105,10 @@ class Argo(DataSet):
             print(msg)
             return msg
 
-        # determine which profiles contain all specified params
-        # Note: this will be done automatically by Argovis during data download
-        if "all" in params:
-            prof_ids = []
-            for i in selectionProfiles:
-                prof_ids.append(i["_id"])
-        else:
-            prof_ids = self._filter_profiles(selectionProfiles, params)
-
+        # record the profile ids for the profiles that contain the requested parameters
+        prof_ids = []
+        for i in selectionProfiles:
+            prof_ids.append(i["_id"])
         self.prof_ids = prof_ids
 
         msg = "{0} valid profiles have been identified".format(len(prof_ids))
@@ -178,38 +179,27 @@ class Argo(DataSet):
 
         return params
 
-    # Note: this function may still be useful for users only looking to search for data, but otherwise this filtering is done during download now
-    def _filter_profiles(self, profiles, params):
-        """
-        from a dictionary of all profiles returned by search API request, remove the
-        profiles that do not contain ALL measurements specified by user
-        returns a list of profile ID's that contain all necessary BGC params
-        """
-        # todo: filter out BGC profiles
-        good_profs = []
-        for i in profiles:
-            avail_meas = i["data_info"][0]
-            check = all(item in avail_meas for item in params)
-            if check:
-                good_profs.append(i["_id"])
-                print(i["_id"])
-
-        return good_profs
-
-    def download_by_profile(self, params):
+    def download_by_profile(self, params, presRange=None):
         for i in self.prof_ids:
             print("processing profile", i)
-            profile_data = self._download_profile(i, params=params, printURL=True)
+            profile_data = self._download_profile(
+                i, params=params, presRange=presRange, printURL=True
+            )
             self._parse_into_df(profile_data[0])
             self.argodata.reset_index(inplace=True, drop=True)
 
-    def _download_profile(self, profile_number, params=None, printURL=False):
+    def _download_profile(
+        self, profile_number, params=None, presRange=None, printURL=False
+    ):
         # builds URL to be submitted
         baseURL = "https://argovis-api.colorado.edu/argo"
         payload = {
             "id": profile_number,
             "data": params,
         }
+
+        if presRange:
+            payload["presRange"] = presRange
 
         # submit request
         resp = requests.get(
@@ -254,7 +244,7 @@ class Argo(DataSet):
         df = pd.concat([df, profileDf], sort=False)
         self.argodata = df
 
-    def get_dataframe(self, params, keep_existing=True) -> pd.DataFrame:
+    def get_dataframe(self, params, presRange=None, keep_existing=True) -> pd.DataFrame:
         """
         Downloads the requested data and returns it in a DataFrame.
 
@@ -296,8 +286,8 @@ class Argo(DataSet):
                 else:
                     params.append(p + "_argoqc")
 
-        self.search_data(params)
-        self.download_by_profile(params)
+        self.search_data(params, presRange=presRange)
+        self.download_by_profile(params, presRange=presRange)
 
         return self.argodata
 
@@ -307,15 +297,13 @@ if __name__ == "__main__":
     # no search results
     # reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
     # profiles available
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])  # "2022-04-26"])
+    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2023-04-13"])  # "2022-04-26"])
 
-    # Note: this works; will need to see if it carries through
-    # Note: run this if you just want valid profile ids (stored as reg_a.prof_ids)
-    # it's the first step completed in get_dataframe
-    reg_a.search_data(presRange=[], printURL=True)
+    reg_a.search_data(printURL=True)
 
-    reg_a.get_dataframe(params=["pressure", "temperature", "salinity_argoqc"])
+    reg_a.search_data(params=["doxy"])
+
+    reg_a.get_dataframe(
+        params=["pressure", "temperature", "salinity_argoqc"], presRange="0.2,100"
+    )
     # if it works with list of len 2, try with a longer list...
-    reg_a.get_dataframe()
-
-    print(reg_a.profiles[["pres", "temp", "lat", "lon"]].head())

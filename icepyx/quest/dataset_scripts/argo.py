@@ -48,7 +48,7 @@ class Argo(DataSet):
         self, params=["temperature", "pressure"], presRange=None, printURL=False
     ) -> str:
         """
-        Query argo profiles given the spatio temporal criteria
+        Query for available argo profiles given the spatio temporal criteria
         and other params specific to the dataset.
 
         Parameters
@@ -57,9 +57,12 @@ class Argo(DataSet):
             A list of strings, where each string is a requested parameter.
             Only metadata for profiles with the requested parameters are returned.
             To search for all parameters, use `params=["all"]`.
+            For a list of available parameters, see:
         presRange: str, default None
             The pressure range (which correllates with depth) to search for data within.
             Input as a "shallow-limit,deep-limit" string. Note the lack of space.
+        printURL: boolean, default False
+            Print the URL of the data request. Useful for debugging and when no data is returned.
 
         Returns
         ------
@@ -117,7 +120,7 @@ class Argo(DataSet):
 
     def _fmt_coordinates(self) -> str:
         """
-        Convert spatial extent into string format needed by argovis
+        Convert spatial extent into string format needed by argovis API
         i.e. list of polygon coords [[[lat1,lon1],[lat2,lon2],...]]
         """
 
@@ -179,7 +182,29 @@ class Argo(DataSet):
 
         return params
 
-    def download_by_profile(self, params, presRange=None):
+    def download_by_profile(self, params, presRange=None) -> None:
+        """
+        For a list of profiles IDs (stored under .prof_ids), download the data requested for each one.
+
+        Parameters
+        ----------
+        params: list of str, default ["temperature", "pressure]
+            A list of strings, where each string is a requested parameter.
+            Only metadata for profiles with the requested parameters are returned.
+            To search for all parameters, use `params=["all"]`.
+            For a list of available parameters, see:
+        presRange: str, default None
+            The pressure range (which correllates with depth) to search for data within.
+            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
+
+        Returns
+        -------
+        None; outputs are stored in the .argodata property.
+        """
+        # TODO: Need additional checks here?
+        if not hasattr(self, "prof_ids"):
+            self.search_data(params, presRange=presRange)
+
         for i in self.prof_ids:
             print("processing profile", i)
             profile_data = self._download_profile(
@@ -244,6 +269,7 @@ class Argo(DataSet):
         df = pd.concat([df, profileDf], sort=False)
         self.argodata = df
 
+    # next steps: reconcile download by profile and get_dataframe. They need to have clearer division of labor
     def get_dataframe(self, params, presRange=None, keep_existing=True) -> pd.DataFrame:
         """
         Downloads the requested data and returns it in a DataFrame.

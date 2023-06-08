@@ -188,7 +188,30 @@ class Argo(DataSet):
         params=None,
         presRange=None,
         printURL=False,
-    ):
+    ) -> dict:
+        """
+        Download available argo data for a particular profile_ID.
+
+        Parameters
+        ---------
+        profile_number: str
+            String containing the argo profile ID of the data being downloaded.
+        params: list of str, default ["temperature", "pressure]
+            A list of strings, where each string is a requested parameter.
+            Only data for the requested parameters are returned.
+            To download all parameters, use `params=["all"]`.
+            For a list of available parameters, see:
+        presRange: str, default None
+            The pressure range (which correllates with depth) to download data within.
+            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
+        printURL: boolean, default False
+            Print the URL of the data request. Useful for debugging and when no data is returned.
+
+        Returns
+        ------
+        dict: json formatted dictionary of the profile data
+        """
+
         # builds URL to be submitted
         baseURL = "https://argovis-api.colorado.edu/argo"
         payload = {
@@ -217,7 +240,15 @@ class Argo(DataSet):
     def _parse_into_df(self, profile_data) -> None:
         """
         Stores downloaded data from a single profile into dataframe.
-        Appends data to any existing profile data stored in self.argodata.
+        Appends data to any existing profile data stored in the `argodata` property.
+
+        Parameters
+        ----------
+        profile_data: dict
+            The downloaded profile data.
+            The data is contained in the requests response and converted into a json formatted dictionary
+            by `_download_profile` before being passed into this function.
+
 
         Returns
         -------

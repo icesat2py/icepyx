@@ -182,39 +182,12 @@ class Argo(DataSet):
 
         return params
 
-    def download_by_profile(self, params, presRange=None) -> None:
-        """
-        For a list of profiles IDs (stored under .prof_ids), download the data requested for each one.
-
-        Parameters
-        ----------
-        params: list of str, default ["temperature", "pressure]
-            A list of strings, where each string is a requested parameter.
-            Only metadata for profiles with the requested parameters are returned.
-            To search for all parameters, use `params=["all"]`.
-            For a list of available parameters, see:
-        presRange: str, default None
-            The pressure range (which correllates with depth) to search for data within.
-            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
-
-        Returns
-        -------
-        None; outputs are stored in the .argodata property.
-        """
-        # TODO: Need additional checks here?
-        if not hasattr(self, "prof_ids"):
-            self.search_data(params, presRange=presRange)
-
-        for i in self.prof_ids:
-            print("processing profile", i)
-            profile_data = self._download_profile(
-                i, params=params, presRange=presRange, printURL=True
-            )
-            self._parse_into_df(profile_data[0])
-            self.argodata.reset_index(inplace=True, drop=True)
-
     def _download_profile(
-        self, profile_number, params=None, presRange=None, printURL=False
+        self,
+        profile_number,
+        params=None,
+        presRange=None,
+        printURL=False,
     ):
         # builds URL to be submitted
         baseURL = "https://argovis-api.colorado.edu/argo"
@@ -269,18 +242,22 @@ class Argo(DataSet):
         df = pd.concat([df, profileDf], sort=False)
         self.argodata = df
 
-    # next steps: reconcile download by profile and get_dataframe. They need to have clearer division of labor
     def get_dataframe(self, params, presRange=None, keep_existing=True) -> pd.DataFrame:
         """
-        Downloads the requested data and returns it in a DataFrame.
+        Downloads the requested data for a list of profile IDs (stored under .prof_ids) and returns it in a DataFrame.
 
         Data is also stored in self.argodata.
 
         Parameters
         ----------
-        params: list of str
-            A list of all the measurement parameters requested by the user.
-
+        params: list of str, default ["temperature", "pressure]
+            A list of strings, where each string is a requested parameter.
+            Only metadata for profiles with the requested parameters are returned.
+            To search for all parameters, use `params=["all"]`.
+            For a list of available parameters, see:
+        presRange: str, default None
+            The pressure range (which correllates with depth) to search for data within.
+            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
         keep_existing: Boolean, default True
             Provides the option to clear any existing downloaded data before downloading more.
 
@@ -312,8 +289,17 @@ class Argo(DataSet):
                 else:
                     params.append(p + "_argoqc")
 
-        self.search_data(params, presRange=presRange)
-        self.download_by_profile(params, presRange=presRange)
+        # TODO: Need additional checks here?
+        if not hasattr(self, "prof_ids"):
+            self.search_data(params, presRange=presRange)
+
+        for i in self.prof_ids:
+            print("processing profile", i)
+            profile_data = self._download_profile(
+                i, params=params, presRange=presRange, printURL=True
+            )
+            self._parse_into_df(profile_data[0])
+            self.argodata.reset_index(inplace=True, drop=True)
 
         return self.argodata
 
@@ -323,7 +309,7 @@ if __name__ == "__main__":
     # no search results
     # reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
     # profiles available
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2023-04-13"])  # "2022-04-26"])
+    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])  # "2022-04-26"])
 
     reg_a.search_data(printURL=True)
 
@@ -332,4 +318,3 @@ if __name__ == "__main__":
     reg_a.get_dataframe(
         params=["pressure", "temperature", "salinity_argoqc"], presRange="0.2,100"
     )
-    # if it works with list of len 2, try with a longer list...

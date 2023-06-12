@@ -45,7 +45,7 @@ class Argo(DataSet):
         self._apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
 
     def search_data(
-        self, params=["temperature", "pressure"], presRange=None, printURL=False
+        self, params=["temperature"], presRange=None, printURL=False
     ) -> str:
         """
         Query for available argo profiles given the spatio temporal criteria
@@ -91,22 +91,23 @@ class Argo(DataSet):
         if printURL:
             print(resp.url)
 
-        # Consider any status other than 2xx an error
-        if not resp.status_code // 100 == 2:
-            msg = "Error: Unexpected response {}".format(resp)
-            print(msg)
-            return msg
-
         selectionProfiles = resp.json()
 
-        # check for the existence of profiles from query
-        if selectionProfiles == []:
-            msg = (
-                "Warning: Query returned no profiles\n"
-                "Please try different search parameters"
-            )
-            print(msg)
-            return msg
+        # Consider any status other than 2xx an error
+        if not resp.status_code // 100 == 2:
+            # check for the existence of profiles from query
+            if selectionProfiles == []:
+                msg = (
+                    "Warning: Query returned no profiles\n"
+                    "Please try different search parameters"
+                )
+                print(msg)
+                return msg
+
+            else:
+                msg = "Error: Unexpected response {}".format(resp)
+                print(msg)
+                return msg
 
         # record the profile ids for the profiles that contain the requested parameters
         prof_ids = []
@@ -338,14 +339,15 @@ class Argo(DataSet):
 # this is just for the purpose of debugging and should be removed later
 if __name__ == "__main__":
     # no search results
-    # reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
+    reg_a = Argo([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
     # profiles available
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])  # "2022-04-26"])
+    # reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])  # "2022-04-26"])
 
     reg_a.search_data(printURL=True)
 
-    reg_a.search_data(params=["doxy"])
+    # reg_a.search_data(params=["doxy"])
 
-    reg_a.get_dataframe(
-        params=["pressure", "temperature", "salinity_argoqc"], presRange="0.2,100"
-    )
+    reg_a.get_dataframe(params=["salinity"])  # , presRange="0.2,100"
+    # )
+
+    print(reg_a)

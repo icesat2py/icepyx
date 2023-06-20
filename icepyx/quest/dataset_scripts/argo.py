@@ -138,14 +138,15 @@ class Argo(DataSet):
         x = "[" + x + "]"
         return x
 
-    # TODO: contact argovis for a list of valid params (swagger api docs are a blank page)
     def _valid_params(self) -> list:
         """
-        A list of valid Argo measurement parameters.
+        A list of valid Argo measurement parameters (including BGC).
+
+        To get a list of valid parameters, comment out the validation line in `search_data` herein,
+        submit a search with an invalid parameter, and get the list from the response.
         """
         valid_params = [
-            "doxy",
-            "doxy_argoqc",
+            # all argo
             "pressure",
             "pressure_argoqc",
             "salinity",
@@ -156,6 +157,66 @@ class Argo(DataSet):
             "temperature_argoqc",
             "temperature_sfile",
             "temperature_sfile_argoqc",
+            # BGC params
+            "bbp470",
+            "bbp470_argoqc",
+            "bbp532",
+            "bbp532_argoqc",
+            "bbp700",
+            "bbp700_argoqc",
+            "bbp700_2",
+            "bbp700_2_argoqc",
+            "bisulfide",
+            "bisulfide_argoqc",
+            "cdom",
+            "cdom_argoqc",
+            "chla",
+            "chla_argoqc",
+            "cndc",
+            "cndc_argoqc",
+            "cndx",
+            "cndx_argoqc",
+            "cp660",
+            "cp660_argoqc",
+            "down_irradiance380",
+            "down_irradiance380_argoqc",
+            "down_irradiance412",
+            "down_irradiance412_argoqc",
+            "down_irradiance442",
+            "down_irradiance442_argoqc",
+            "down_irradiance443",
+            "down_irradiance443_argoqc",
+            "down_irradiance490",
+            "down_irradiance490_argoqc",
+            "down_irradiance555",
+            "down_irradiance555_argoqc",
+            "down_irradiance670",
+            "down_irradiance670_argoqc",
+            "downwelling_par",
+            "downwelling_par_argoqc",
+            "doxy",
+            "doxy_argoqc",
+            "doxy2",
+            "doxy2_argoqc",
+            "doxy3",
+            "doxy3_argoqc",
+            "molar_doxy",
+            "molar_doxy_argoqc",
+            "nitrate",
+            "nitrate_argoqc",
+            "ph_in_situ_total",
+            "ph_in_situ_total_argoqc",
+            "turbidity",
+            "turbidity_argoqc",
+            "up_radiance412",
+            "up_radiance412_argoqc",
+            "up_radiance443",
+            "up_radiance443_argoqc",
+            "up_radiance490",
+            "up_radiance490_argoqc",
+            "up_radiance555",
+            "up_radiance555_argoqc",
+            # all params
             "all",
         ]
         return valid_params
@@ -259,7 +320,7 @@ class Argo(DataSet):
         if not self.argodata is None:
             df = self.argodata
         else:
-            df = pd.DataFrame()
+            df = pd.DataFrame(columns=["profile_id"])
 
         # parse the profile data into a dataframe
         profileDf = pd.DataFrame(
@@ -271,7 +332,13 @@ class Argo(DataSet):
         profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
         profileDf["date"] = profile_data["timestamp"]
 
-        df = pd.concat([df, profileDf], sort=False)
+        if profile_data["_id"] in df["profile_id"].unique():
+            print("merging")
+            df = df.merge(profileDf, how="outer")
+        else:
+            print("concatting")
+            df = pd.concat([df, profileDf], sort=False)
+
         self.argodata = df
 
     def get_dataframe(self, params, presRange=None, keep_existing=True) -> pd.DataFrame:
@@ -286,7 +353,7 @@ class Argo(DataSet):
             A list of strings, where each string is a requested parameter.
             Only metadata for profiles with the requested parameters are returned.
             To search for all parameters, use `params=["all"]`.
-            For a list of available parameters, see:
+            For a list of available parameters, see: `reg._valid_params`
         presRange: str, default None
             The pressure range (which correllates with depth) to search for data within.
             Input as a "shallow-limit,deep-limit" string. Note the lack of space.
@@ -316,14 +383,13 @@ class Argo(DataSet):
             pass
         else:
             for p in params:
-                if p.endswith("_argoqc"):
+                if p.endswith("_argoqc") or (p + "_argoqc" in params):
                     pass
                 else:
                     params.append(p + "_argoqc")
 
-        # TODO: Need additional checks here?
-        if not hasattr(self, "prof_ids"):
-            self.search_data(params, presRange=presRange)
+        # intentionally resubmit search to reset prof_ids, in case the user requested different parameters
+        self.search_data(params, presRange=presRange)
 
         for i in self.prof_ids:
             print("processing profile", i)
@@ -339,15 +405,27 @@ class Argo(DataSet):
 # this is just for the purpose of debugging and should be removed later
 if __name__ == "__main__":
     # no search results
-    reg_a = Argo([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
+    # reg_a = Argo([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
     # profiles available
     # reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])  # "2022-04-26"])
 
-    reg_a.search_data(printURL=True)
+    # bgc profiles available
+    reg_a = Argo([-150, 30, -120, 60], ["2022-06-07", "2022-06-14"])
 
-    # reg_a.search_data(params=["doxy"])
+    param_list = ["down_irradiance412"]
+    bad_param = ["up_irradiance412"]
+    # param_list = ["doxy"]
 
-    reg_a.get_dataframe(params=["salinity"])  # , presRange="0.2,100"
+    # reg_a.search_data(params=bad_param, printURL=True)
+
+    reg_a.get_dataframe(params=param_list)
+
+    # next steps:
+    # the merging results in changing column types from float64 to object (to introduce nans),
+    # which then means a future merge can't be completed on those columns
+    # so will need to figure out how to handle this (and can't just convert pressure, so will need to
+    # handle it for an unknown list of params)
+    reg_a.get_dataframe(params=["doxy"], keep_existing=True)  # , presRange="0.2,100"
     # )
 
     print(reg_a)

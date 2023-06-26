@@ -4,11 +4,6 @@ import warnings
 import icepyx.core.is2ref as is2ref
 
 ########## _validate_product ##########
-def test_lowercase_product():
-    lcds = "atl03"
-    obs = is2ref._validate_product(lcds)
-    expected = "ATL03"
-    assert obs == expected
 
 
 def test_num_product():
@@ -23,6 +18,259 @@ def test_bad_product():
     ermsg = "Please enter a valid product"
     with pytest.raises(AssertionError, match=ermsg):
         is2ref._validate_product(wrngds)
+
+
+# test all possible product types
+def test_atl01_product():
+    lcds = "atl01"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL01"
+    assert obs == expected
+
+    ucds = "ATL01"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL01"
+    assert obs == expected
+
+
+def test_atl02product():
+    lcds = "atl02"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL02"
+    assert obs == expected
+
+    ucds = "ATL02"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL02"
+    assert obs == expected
+
+
+def test_atl03_product():
+    lcds = "atl03"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL03"
+    assert obs == expected
+
+    ucds = "ATL03"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL03"
+    assert obs == expected
+
+
+def test_atl04_product():
+    lcds = "atl04"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL04"
+    assert obs == expected
+
+    ucds = "ATL04"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL04"
+    assert obs == expected
+
+
+def test_atl06_product():
+    lcds = "atl06"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL06"
+    assert obs == expected
+
+    ucds = "ATL06"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL06"
+    assert obs == expected
+
+
+def test_atl07_product():
+    lcds = "atl07"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL07"
+    assert obs == expected
+
+    ucds = "ATL07"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL07"
+    assert obs == expected
+
+
+def test_atl07ql_product():
+    lcds = "atl07ql"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL07QL"
+    assert obs == expected
+
+    ucds = "ATL07QL"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL07QL"
+    assert obs == expected
+
+
+def test_atl08_product():
+    lcds = "atl08"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL08"
+    assert obs == expected
+
+    ucds = "ATL08"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL08"
+    assert obs == expected
+
+
+def test_atl09_product():
+    lcds = "atl09"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL09"
+    assert obs == expected
+
+    ucds = "ATL09"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL09"
+    assert obs == expected
+
+
+def test_atl09ql_product():
+    lcds = "atl09ql"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL09QL"
+    assert obs == expected
+
+    ucds = "ATL09QL"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL09QL"
+    assert obs == expected
+
+
+def test_atl10_product():
+    lcds = "atl10"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL10"
+    assert obs == expected
+
+    ucds = "ATL10"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL10"
+    assert obs == expected
+
+
+def test_atl11_product():
+    lcds = "atl11"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL11"
+    assert obs == expected
+
+    ucds = "ATL11"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL11"
+    assert obs == expected
+
+
+def test_atl12_product():
+    lcds = "atl12"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL12"
+    assert obs == expected
+
+    ucds = "ATL12"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL12"
+    assert obs == expected
+
+
+def test_atl13_product():
+    lcds = "atl13"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL13"
+    assert obs == expected
+
+    ucds = "ATL13"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL13"
+    assert obs == expected
+
+
+def test_atl14_product():
+    lcds = "atl14"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL14"
+    assert obs == expected
+
+    ucds = "ATL14"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL14"
+    assert obs == expected
+
+
+def test_atl15_product():
+    lcds = "atl15"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL15"
+    assert obs == expected
+
+    ucds = "ATL15"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL15"
+    assert obs == expected
+
+
+def test_atl16_product():
+    lcds = "atl16"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL16"
+    assert obs == expected
+
+    ucds = "ATL16"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL16"
+    assert obs == expected
+
+
+def test_atl17_product():
+    lcds = "atl17"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL17"
+    assert obs == expected
+
+    ucds = "ATL17"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL17"
+    assert obs == expected
+
+
+def test_atl19_product():
+    lcds = "atl19"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL19"
+    assert obs == expected
+
+    ucds = "ATL19"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL19"
+    assert obs == expected
+
+
+def test_atl20_product():
+    lcds = "atl20"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL20"
+    assert obs == expected
+
+    ucds = "ATL20"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL20"
+    assert obs == expected
+
+
+def test_atl21_product():
+    lcds = "atl21"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL21"
+    assert obs == expected
+
+    ucds = "ATL21"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL21"
+    assert obs == expected
 
 
 ########## about_product ##########
@@ -159,6 +407,61 @@ def test_bad_product():
 
 
 ########## _default_varlists ##########
+
+
+def test_ATL06_default_varlist():
+    obs = is2ref._default_varlists("ATL06")
+    expected = [
+        "delta_time",
+        "latitude",
+        "longitude",
+        "h_li",
+        "h_li_sigma",
+        "atl06_quality_summary",
+        "segment_id",
+        "sigma_geo_h",
+        "x_atc",
+        "y_atc",
+        "seg_azimuth",
+        "sigma_geo_at",
+        "sigma_geo_xt",
+        "dh_fit_dx",
+        "dh_fit_dx_sigma",
+        "h_mean",
+        "dh_fit_dy",
+        "h_rms_misfit",
+        "h_robust_sprd",
+        "n_fit_photons",
+        "signal_selection_source",
+        "snr_significance",
+        "w_surface_window_final",
+        "bsnow_conf",
+        "bsnow_h",
+        "cloud_flg_asr",
+        "cloud_flg_atm",
+        "r_eff",
+        "tide_ocean",
+    ]
+    assert obs == expected
+
+
+def test_ATL07_default_varlist():
+    obs = is2ref._default_varlists("ATL07")
+    expected = [
+        "delta_time",
+        "latitude",
+        "longitude",
+        "seg_dist_x",
+        "height_segment_height",
+        "height_segment_length_seg",
+        "height_segment_ssh_flag",
+        "height_segment_type",
+        "height_segment_quality",
+        "height_segment_confidence",
+    ]
+    assert obs == expected
+
+
 def test_ATL09_default_varlist():
     obs = is2ref._default_varlists("ATL09")
     expected = [
@@ -189,6 +492,28 @@ def test_ATL09_default_varlist():
     assert obs == expected
 
 
+def test_ATL10_default_varlist():
+    obs = is2ref._default_varlists("ATL10")
+    expected = [
+        "delta_time",
+        "latitude",
+        "longitude",
+        "seg_dist_x",
+        "lead_height",
+        "lead_length",
+        "beam_fb_height",
+        "beam_fb_length",
+        "beam_fb_confidence",
+        "beam_fb_quality_flag",
+        "height_segment_height",
+        "height_segment_length_seg",
+        "height_segment_ssh_flag",
+        "height_segment_type",
+        "height_segment_confidence",
+    ]
+    assert obs == expected
+
+
 def test_ATL11_default_varlist():
     obs = is2ref._default_varlists("ATL11")
     expected = [
@@ -200,4 +525,81 @@ def test_ATL11_default_varlist():
         "h_corr_sigma_systematic",
         "quality_summary",
     ]
+    assert obs == expected
+
+
+def test_unsupported_default_varlist():
+    obs = is2ref._default_varlists("ATL999")
+    expected = [
+        "delta_time",
+        "latitude",
+        "longitude",
+    ]
+    assert obs == expected
+
+
+# #################### gt2spot tests #################################
+
+
+def test_gt2spot_sc_orient_1():
+    # gt1l
+    obs = is2ref.gt2spot("gt1l", 1)
+    expected = 2
+    assert obs == expected
+
+    # gt1r
+    obs = is2ref.gt2spot("gt1r", 1)
+    expected = 1
+    assert obs == expected
+
+    # gt2l
+    obs = is2ref.gt2spot("gt2l", 1)
+    expected = 4
+    assert obs == expected
+
+    # gt2r
+    obs = is2ref.gt2spot("gt2r", 1)
+    expected = 3
+    assert obs == expected
+
+    # gt3l
+    obs = is2ref.gt2spot("gt3l", 1)
+    expected = 6
+    assert obs == expected
+
+    # gt3r
+    obs = is2ref.gt2spot("gt3r", 1)
+    expected = 5
+    assert obs == expected
+
+
+def test_gt2spot_sc_orient_0():
+    # gt1l
+    obs = is2ref.gt2spot("gt1l", 0)
+    expected = 5
+    assert obs == expected
+
+    # gt1r
+    obs = is2ref.gt2spot("gt1r", 0)
+    expected = 6
+    assert obs == expected
+
+    # gt2l
+    obs = is2ref.gt2spot("gt2l", 0)
+    expected = 3
+    assert obs == expected
+
+    # gt2r
+    obs = is2ref.gt2spot("gt2r", 0)
+    expected = 4
+    assert obs == expected
+
+    # gt3l
+    obs = is2ref.gt2spot("gt3l", 0)
+    expected = 1
+    assert obs == expected
+
+    # gt3r
+    obs = is2ref.gt2spot("gt3r", 0)
+    expected = 2
     assert obs == expected

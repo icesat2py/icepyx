@@ -1,5 +1,4 @@
 import icepyx as ipx
-from icepyx.core.Earthdata import Earthdata as Earthdata
 import os
 import pytest
 import warnings
@@ -21,16 +20,18 @@ def reg():
 
 @pytest.fixture(scope="module")
 def session(reg):
-    capability_url = "https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
-    ed_obj = Earthdata(
-        "icepyx_devteam",
-        "icepyx.dev@gmail.com",
-        capability_url=capability_url,
-        pswd=os.getenv("NSIDC_LOGIN"),
-    )
-    ed_obj._start_session()
-    yield ed_obj.session
-    ed_obj.session.close()
+
+    # append to netrc file and set permissions level
+    args = ("icepyx_devteam", "urs.earthdata.nasa.gov", os.getenv("NSIDC_LOGIN"))
+    netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
+    with open(netrc_file, "a+") as f:
+        f.write("machine {1} login {0} password {2}\n".format(*args))
+        os.chmod(netrc_file, 0o600)
+
+    reg.earthdata_login()
+    ed_obj = reg._session
+    yield ed_obj
+    ed_obj.close()
 
 
 ########## is2ref module ##########

@@ -159,18 +159,21 @@ class Visualize:
             self.bbox = query_obj.spatial.extent
 
         else:
-            mrc_bound = query_obj.spatial.extent.minimum_rotated_rectangle
-            # generate bounding box
-            lonmin = min(mrc_bound.exterior.coords.xy[0])
-            lonmax = max(mrc_bound.exterior.coords.xy[0])
-            latmin = min(mrc_bound.exterior.coords.xy[1])
-            latmax = max(mrc_bound.exterior.coords.xy[1])
+            (
+                lonmin,
+                latmin,
+                lonmax,
+                latmax,
+            ) = query_obj.spatial.extent_as_gdf.geometry.unary_union.bounds
 
             self.bbox = [lonmin, latmin, lonmax, latmax]
 
         self.date_range = (
-            [query_obj._start.strftime("%Y-%m-%d"), query_obj._end.strftime("%Y-%m-%d")]
-            if hasattr(query_obj, "_start")
+            [
+                query_obj._temporal._start.strftime("%Y-%m-%d"),
+                query_obj._temporal._end.strftime("%Y-%m-%d"),
+            ]
+            if hasattr(query_obj, "_temporal")
             else None
         )
         self.cycles = query_obj._cycles if hasattr(query_obj, "_cycles") else None

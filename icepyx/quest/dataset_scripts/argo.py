@@ -41,6 +41,7 @@ class Argo(DataSet):
     def __init__(self, boundingbox, timeframe):
         super().__init__(boundingbox, timeframe)
         assert self._spatial._ext_type == "bounding_box"
+        self.argovis_api_key = ''
         self.profiles = None
 
     def search_data(self, presRange=None, printURL=False) -> str:
@@ -50,12 +51,14 @@ class Argo(DataSet):
         """
 
         # builds URL to be submitted
-        baseURL = "https://argovis.colorado.edu/selection/profiles/"
+        baseURL = "https://argovis-api.colorado.edu/"
         payload = {
             "startDate": self._start.strftime("%Y-%m-%d"),
             "endDate": self._end.strftime("%Y-%m-%d"),
             "shape": [self._fmt_coordinates()],
         }
+
+        # dl = requests.get(apiroot + route, params=options, headers={'x-argokey': apikey})
         if presRange:
             payload["presRange"] = presRange
 

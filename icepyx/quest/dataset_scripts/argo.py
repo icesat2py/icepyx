@@ -332,9 +332,12 @@ class Argo(DataSet):
         profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
         profileDf["date"] = profile_data["timestamp"]
 
+        profileDf.replace("None", np.nan, inplace=True, regex=True)
+
         if profile_data["_id"] in df["profile_id"].unique():
             print("merging")
             df = df.merge(profileDf, how="outer")
+
         else:
             print("concatting")
             df = pd.concat([df, profileDf], sort=False)
@@ -425,6 +428,8 @@ if __name__ == "__main__":
     # which then means a future merge can't be completed on those columns
     # so will need to figure out how to handle this (and can't just convert pressure, so will need to
     # handle it for an unknown list of params)
+    # try fillna with a fill value and downcasting (use inplace flag)... in reality float64 should be able to hold NaNs!
+    # so maybe it's something else causing the problem?
     reg_a.get_dataframe(params=["doxy"], keep_existing=True)  # , presRange="0.2,100"
     # )
 

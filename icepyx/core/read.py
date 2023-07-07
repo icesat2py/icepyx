@@ -1,5 +1,6 @@
 import fnmatch
 import os
+import s3fs
 import warnings
 
 import numpy as np
@@ -98,6 +99,7 @@ def _get_track_type_str(grp_path) -> (str, str, str):
 
 
 # Dev note: function fully tested (except else, which don't know how to get to)
+# Dev note: function needs testing updated
 def _check_datasource(filepath):
     """
     Determine if the input is from a local system or is an s3 bucket.
@@ -111,19 +113,40 @@ def _check_datasource(filepath):
 
     source_types = ["is2_local", "is2_s3"]
 
-    if not isinstance(filepath, Path) and not isinstance(filepath, str):
-        raise TypeError("filepath must be a string or Path")
+    if any([isinstance(filepath, option) for option in [Path, str]]):
+        print([isinstance(filepath, option) for option in [Path, str]])
+        print("getting into this if")
+        fsmap = fsspec.get_mapper(str(filepath))
+        output_fs = fsmap.fs
 
-    fsmap = fsspec.get_mapper(str(filepath))
-    output_fs = fsmap.fs
+        if isinstance(output_fs, LocalFileSystem):
+            assert _validate_source(filepath)
+            return source_types[0]
+        else:
+            assert _validate_cloud_source(filepath)
+            raise ValueError("Could not confirm the datasource type.")
 
-    if "s3" in output_fs.protocol:
+    elif isinstance(filepath, s3fs.core.S3File):
+        # TODO: validate the data source (if this doesn't happen by turning them into s3fs file-like objects?)
         return source_types[1]
-    elif isinstance(output_fs, LocalFileSystem):
-        assert _validate_source(filepath)
-        return source_types[0]
+
     else:
-        raise ValueError("Could not confirm the datasource type.")
+        raise TypeError("filepath must be a string, Path, or S3File")
+
+    #     source_obj_types = [Path, str, s3fs.core.S3File]
+    #     if not [isinstance(filepath, option) for option in source_obj_types]:
+    #         raise TypeError("filepath must be a string, Path, or S3File")
+
+    #     fsmap = fsspec.get_mapper(str(filepath))
+    #     output_fs = fsmap.fs
+
+    #     if "s3" in output_fs.protocol:
+    #         return source_types[1]
+    #     elif isinstance(output_fs, LocalFileSystem):
+    #         assert _validate_source(filepath)
+    #         return source_types[0]
+    #     else:
+    #         raise ValueError("Could not confirm the datasource type.")
 
     """
     Could also use: os.path.splitext(f.name)[1].lower() to get file extension
@@ -161,6 +184,25 @@ def _validate_source(source):
     assert (
         os.path.isdir(source) == True or os.path.isfile(source) == True
     ), "Your data source string is not a valid data source."
+    return True
+
+
+# Dev note: NOT TESTED
+def _validate_cloud_source(source):
+    """
+    Check that the entered data source paths on the local file system are valid
+
+    Currently, s3 data source paths are not validated.
+    """
+
+    print("YOU NEED TO WRITE THE VALIDATE CLOUD SOURCE FUNCTION")
+    # # acceptable inputs (for now) are a single file or directory
+    # # would ultimately like to make a Path (from pathlib import Path; isinstance(source, Path)) an option
+    # # see https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py#L82
+    # assert type(source) == str, "You must enter your input as a string."
+    # assert (
+    #     os.path.isdir(source) == True or os.path.isfile(source) == True
+    # ), "Your data source string is not a valid data source."
     return True
 
 
@@ -272,30 +314,35 @@ class Read:
         else:
             self._prod = is2ref._validate_product(product)
 
-        pattern_ck, filelist = Read._check_source_for_pattern(
-            data_source, filename_pattern
+        print(
+            "DO NOT LEAVE THESE LINES COMMENTED - figure out how to manage pattern checking for s3 files, if at all, and create a 'filtered' list of s3urls, if needed"
         )
-        assert pattern_ck
-        # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
+        #         pattern_ck, filelist = Read._check_source_for_pattern(
+        #             data_source, filename_pattern
+        #         )
+        #         assert pattern_ck
+        #         # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
         self._pattern = filename_pattern
 
-        # this is a first pass at getting rid of mixed product types and warning the user.
-        # it takes an approach assuming the product name is in the filename, but needs reworking if we let multiple products be loaded
-        # one way to handle this would be bring in the product info during the loading step and fill in product there instead of requiring it from the user
-        filtered_filelist = [file for file in filelist if self._prod in file]
-        if len(filtered_filelist) == 0:
-            warnings.warn(
-                "Your filenames do not contain a product identifier (e.g. ATL06). "
-                "You will likely need to manually merge your dataframes."
-            )
-            self._filelist = filelist
-        elif len(filtered_filelist) < len(filelist):
-            warnings.warn(
-                "Some files matching your filename pattern were removed as they were not the specified product."
-            )
-            self._filelist = filtered_filelist
-        else:
-            self._filelist = filelist
+        #         # this is a first pass at getting rid of mixed product types and warning the user.
+        #         # it takes an approach assuming the product name is in the filename, but needs reworking if we let multiple products be loaded
+        #         # one way to handle this would be bring in the product info during the loading step and fill in product there instead of requiring it from the user
+        #         filtered_filelist = [file for file in filelist if self._prod in file]
+        #         if len(filtered_filelist) == 0:
+        #             warnings.warn(
+        #                 "Your filenames do not contain a product identifier (e.g. ATL06). "
+        #                 "You will likely need to manually merge your dataframes."
+        #             )
+        #             self._filelist = filelist
+        #         elif len(filtered_filelist) < len(filelist):
+        #             warnings.warn(
+        #                 "Some files matching your filename pattern were removed as they were not the specified product."
+        #             )
+        #             self._filelist = filtered_filelist
+        #         else:
+        #             self._filelist = filelist
+
+        self._filelist = [data_source]
 
         # after validation, use the notebook code and code outline to start implementing the rest of the class
         if catalog is not None:
@@ -685,6 +732,7 @@ class Read:
 
         """
 
+        print("force reload due to code change")
         try:
             grpcat = is2cat.build_catalog(
                 file, self._pattern, self._source_type, grp_paths=grp_path

@@ -338,6 +338,12 @@ class Argo(DataSet):
             print("merging")
             df = df.merge(profileDf, how="outer")
 
+        # pandas isn't excelling because of trying to concat or merge for each profile added.
+        # if the columns have already been concatted for another profile, we'd need to update to replace nans, not merge
+        # if the columns haven't been concatted, we'd need to merge.
+        # options: check for columns and have merge and update and concat pathways OR constructe a df for each request and just merge them after the fact (which might make more sense conceptually and be easier to debug)
+
+        # plan: update this fn to return a df. Do the df merging/concat/updating elsewhere
         else:
             print("concatting")
             df = pd.concat([df, profileDf], sort=False)
@@ -423,13 +429,6 @@ if __name__ == "__main__":
 
     reg_a.get_dataframe(params=param_list)
 
-    # next steps:
-    # the merging results in changing column types from float64 to object (to introduce nans),
-    # which then means a future merge can't be completed on those columns
-    # so will need to figure out how to handle this (and can't just convert pressure, so will need to
-    # handle it for an unknown list of params)
-    # try fillna with a fill value and downcasting (use inplace flag)... in reality float64 should be able to hold NaNs!
-    # so maybe it's something else causing the problem?
     reg_a.get_dataframe(params=["doxy"], keep_existing=True)  # , presRange="0.2,100"
     # )
 

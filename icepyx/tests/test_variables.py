@@ -15,6 +15,13 @@ def variables_obj_atl06():
         product='ATL06'
     )
 
+@pytest.fixture()
+def avail_vars_atl06():
+    expected_path = './expected_outputs/vars_avail_processed_ATL06_20191130112041_09860505_006_01.h5.txt'
+    with open(expected_path, 'r') as f:
+        expected = f.read().splitlines()
+    return expected
+
 def test_list_of_dict_vals():
     testdict = {
         "sc_orient": ["orbit_info/sc_orient"],
@@ -37,16 +44,11 @@ def test_list_of_dict_vals():
 
     assert obs == exp
 
-def test_avail_from_file(variables_obj_atl06):
-    # TODO what pytest structure would let me not do this twice?
-    expected_path = './expected_outputs/vars_avail_processed_ATL06_20191130112041_09860505_006_01.h5.txt'
-    with open(expected_path, 'r') as f:
-        expected = f.read().splitlines()
-
-    assert variables_obj_atl06.avail() == expected
+def test_avail_from_file(variables_obj_atl06, avail_vars_atl06):
+    assert variables_obj_atl06.avail() == avail_vars_atl06
 
 
-def test_avail_from_order():
+def test_avail_from_order(avail_vars_atl06):
     region = Query('ATL06',[-45, 74, -44,75],['2019-11-30','2019-11-30'], \
                        start_time='00:00:00', end_time='23:59:59')
     # This login method assumes you have a .netrc with your EDL credentials
@@ -56,12 +58,8 @@ def test_avail_from_order():
     # raise an error
     if region.avail_granules()['Number of available granules'] != 1:
         raise TypeError('More or less than one matching granule found.')
-    
-    expected_path = './expected_outputs/vars_avail_processed_ATL06_20191130112041_09860505_006_01.h5.txt'
-    with open(expected_path, 'r') as f:
-        expected = f.read().splitlines()
         
-    assert region.order_vars.avail().sort() == expected.sort()
+    assert region.order_vars.avail().sort() == avail_vars_atl06.sort()
     
 def test_append_default_vars(variables_obj_atl06):
     variables_obj_atl06.append(defaults=True)

@@ -299,9 +299,9 @@ class Argo(DataSet):
         return profile
 
     # todo: add a try/except to make sure the json files are valid i.e. contains all data we're expecting (no params are missing)
-    def _parse_into_df(self, profile_data) -> None:
+    def _parse_into_df(self, profile_data) -> pd.DataFrame:
         """
-        Stores downloaded data from a single profile into dataframe.
+        Parses downloaded data from a single profile into dataframe.
         Appends data to any existing profile data stored in the `argodata` property.
 
         Parameters
@@ -314,15 +314,9 @@ class Argo(DataSet):
 
         Returns
         -------
-        None
+        pandas DataFrame of the profile data
         """
 
-        if not self.argodata is None:
-            df = self.argodata
-        else:
-            df = pd.DataFrame(columns=["profile_id"])
-
-        # parse the profile data into a dataframe
         profileDf = pd.DataFrame(
             np.transpose(profile_data["data"]), columns=profile_data["data_info"][0]
         )
@@ -334,15 +328,7 @@ class Argo(DataSet):
 
         profileDf.replace("None", np.nan, inplace=True, regex=True)
 
-        if profile_data["_id"] in df["profile_id"].unique():
-            print("merging")
-            df = df.merge(profileDf, how="outer")
-
-        else:
-            print("concatting")
-            df = pd.concat([df, profileDf], sort=False)
-
-        self.argodata = df
+        return profileDf
 
     def get_dataframe(self, params, presRange=None, keep_existing=True) -> pd.DataFrame:
         """
@@ -394,15 +380,38 @@ class Argo(DataSet):
         # intentionally resubmit search to reset prof_ids, in case the user requested different parameters
         self.search_data(params, presRange=presRange)
 
+        # create a list for each profile's dataframe
+        if not self.argodata is None:
+            profile_dfs = [self.argodata]
+        else:
+            profile_dfs = []
+
         for i in self.prof_ids:
             print("processing profile", i)
             profile_data = self._download_profile(
                 i, params=params, presRange=presRange, printURL=True
             )
-            self._parse_into_df(profile_data[0])
-            self.argodata.reset_index(inplace=True, drop=True)
+            profile_dfs.append(self._parse_into_df(profile_data[0]))
+
+        self.argodata = pd.merge(profile_dfs, how="outer")
+        self.argodata.reset_index(inplace=True, drop=True)
 
         return self.argodata
+
+
+"""
+        # pandas isn't excelling because of trying to concat or merge for each profile added.
+        # if the columns have already been concatted for another profile, we'd need to update to replace nans, not merge
+        # if the columns haven't been concatted, we'd need to merge.
+        # options: check for columns and have merge and update and concat pathways OR constructe a df for each request and just merge them after the fact 
+        # (which might make more sense conceptually and be easier to debug)
+        if profile_data["_id"] in df["profile_id"].unique():
+            print("merging")
+            df = df.merge(profileDf, how="outer")
+        else:
+            print("concatting")
+            df = pd.concat([df, profileDf], sort=False)
+"""
 
 
 # this is just for the purpose of debugging and should be removed later
@@ -423,13 +432,6 @@ if __name__ == "__main__":
 
     reg_a.get_dataframe(params=param_list)
 
-    # next steps:
-    # the merging results in changing column types from float64 to object (to introduce nans),
-    # which then means a future merge can't be completed on those columns
-    # so will need to figure out how to handle this (and can't just convert pressure, so will need to
-    # handle it for an unknown list of params)
-    # try fillna with a fill value and downcasting (use inplace flag)... in reality float64 should be able to hold NaNs!
-    # so maybe it's something else causing the problem?
     reg_a.get_dataframe(params=["doxy"], keep_existing=True)  # , presRange="0.2,100"
     # )
 

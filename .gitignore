@@ -120,6 +120,9 @@ venv.bak/
 *.zarr
 *.tif
 
+# data file expection for test folder
+!icepyx/tests/test_data/*
+
 # data file exception for tracking info
 !clones.csv
 !views.csv

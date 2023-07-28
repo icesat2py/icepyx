@@ -1,0 +1,282 @@
+{
+    "sc_orient": [
+        "orbit_info/sc_orient"
+    ],
+    "atlas_sdp_gps_epoch": [
+        "ancillary_data/atlas_sdp_gps_epoch"
+    ],
+    "cycle_number": [
+        "orbit_info/cycle_number"
+    ],
+    "rgt": [
+        "orbit_info/rgt"
+    ],
+    "data_start_utc": [
+        "ancillary_data/data_start_utc"
+    ],
+    "data_end_utc": [
+        "ancillary_data/data_end_utc"
+    ],
+    "delta_time": [
+        "gt1l/land_ice_segments/delta_time",
+        "gt1l/residual_histogram/delta_time",
+        "gt1l/segment_quality/delta_time",
+        "gt1r/land_ice_segments/delta_time",
+        "gt1r/residual_histogram/delta_time",
+        "gt1r/segment_quality/delta_time",
+        "gt2l/land_ice_segments/delta_time",
+        "gt2l/residual_histogram/delta_time",
+        "gt2l/segment_quality/delta_time",
+        "gt2r/land_ice_segments/delta_time",
+        "gt2r/residual_histogram/delta_time",
+        "gt2r/segment_quality/delta_time",
+        "gt3l/land_ice_segments/delta_time",
+        "gt3l/residual_histogram/delta_time",
+        "gt3l/segment_quality/delta_time",
+        "gt3r/land_ice_segments/delta_time",
+        "gt3r/residual_histogram/delta_time",
+        "gt3r/segment_quality/delta_time",
+        "quality_assessment/gt1l/delta_time",
+        "quality_assessment/gt1r/delta_time",
+        "quality_assessment/gt2l/delta_time",
+        "quality_assessment/gt2r/delta_time",
+        "quality_assessment/gt3l/delta_time",
+        "quality_assessment/gt3r/delta_time"
+    ],
+    "latitude": [
+        "gt1l/land_ice_segments/latitude",
+        "gt1r/land_ice_segments/latitude",
+        "gt2l/land_ice_segments/latitude",
+        "gt2r/land_ice_segments/latitude",
+        "gt3l/land_ice_segments/latitude",
+        "gt3r/land_ice_segments/latitude"
+    ],
+    "longitude": [
+        "gt1l/land_ice_segments/longitude",
+        "gt1r/land_ice_segments/longitude",
+        "gt2l/land_ice_segments/longitude",
+        "gt2r/land_ice_segments/longitude",
+        "gt3l/land_ice_segments/longitude",
+        "gt3r/land_ice_segments/longitude"
+    ],
+    "h_li": [
+        "gt1l/land_ice_segments/h_li",
+        "gt1r/land_ice_segments/h_li",
+        "gt2l/land_ice_segments/h_li",
+        "gt2r/land_ice_segments/h_li",
+        "gt3l/land_ice_segments/h_li",
+        "gt3r/land_ice_segments/h_li"
+    ],
+    "h_li_sigma": [
+        "gt1l/land_ice_segments/h_li_sigma",
+        "gt1r/land_ice_segments/h_li_sigma",
+        "gt2l/land_ice_segments/h_li_sigma",
+        "gt2r/land_ice_segments/h_li_sigma",
+        "gt3l/land_ice_segments/h_li_sigma",
+        "gt3r/land_ice_segments/h_li_sigma"
+    ],
+    "atl06_quality_summary": [
+        "gt1l/land_ice_segments/atl06_quality_summary",
+        "gt1r/land_ice_segments/atl06_quality_summary",
+        "gt2l/land_ice_segments/atl06_quality_summary",
+        "gt2r/land_ice_segments/atl06_quality_summary",
+        "gt3l/land_ice_segments/atl06_quality_summary",
+        "gt3r/land_ice_segments/atl06_quality_summary"
+    ],
+    "segment_id": [
+        "gt1l/land_ice_segments/segment_id",
+        "gt1l/segment_quality/segment_id",
+        "gt1r/land_ice_segments/segment_id",
+        "gt1r/segment_quality/segment_id",
+        "gt2l/land_ice_segments/segment_id",
+        "gt2l/segment_quality/segment_id",
+        "gt2r/land_ice_segments/segment_id",
+        "gt2r/segment_quality/segment_id",
+        "gt3l/land_ice_segments/segment_id",
+        "gt3l/segment_quality/segment_id",
+        "gt3r/land_ice_segments/segment_id",
+        "gt3r/segment_quality/segment_id"
+    ],
+    "sigma_geo_h": [
+        "gt1l/land_ice_segments/sigma_geo_h",
+        "gt1r/land_ice_segments/sigma_geo_h",
+        "gt2l/land_ice_segments/sigma_geo_h",
+        "gt2r/land_ice_segments/sigma_geo_h",
+        "gt3l/land_ice_segments/sigma_geo_h",
+        "gt3r/land_ice_segments/sigma_geo_h"
+    ],
+    "x_atc": [
+        "gt1l/land_ice_segments/ground_track/x_atc",
+        "gt1r/land_ice_segments/ground_track/x_atc",
+        "gt2l/land_ice_segments/ground_track/x_atc",
+        "gt2r/land_ice_segments/ground_track/x_atc",
+        "gt3l/land_ice_segments/ground_track/x_atc",
+        "gt3r/land_ice_segments/ground_track/x_atc"
+    ],
+    "y_atc": [
+        "gt1l/land_ice_segments/ground_track/y_atc",
+        "gt1r/land_ice_segments/ground_track/y_atc",
+        "gt2l/land_ice_segments/ground_track/y_atc",
+        "gt2r/land_ice_segments/ground_track/y_atc",
+        "gt3l/land_ice_segments/ground_track/y_atc",
+        "gt3r/land_ice_segments/ground_track/y_atc"
+    ],
+    "seg_azimuth": [
+        "gt1l/land_ice_segments/ground_track/seg_azimuth",
+        "gt1r/land_ice_segments/ground_track/seg_azimuth",
+        "gt2l/land_ice_segments/ground_track/seg_azimuth",
+        "gt2r/land_ice_segments/ground_track/seg_azimuth",
+        "gt3l/land_ice_segments/ground_track/seg_azimuth",
+        "gt3r/land_ice_segments/ground_track/seg_azimuth"
+    ],
+    "sigma_geo_at": [
+        "gt1l/land_ice_segments/ground_track/sigma_geo_at",
+        "gt1r/land_ice_segments/ground_track/sigma_geo_at",
+        "gt2l/land_ice_segments/ground_track/sigma_geo_at",
+        "gt2r/land_ice_segments/ground_track/sigma_geo_at",
+        "gt3l/land_ice_segments/ground_track/sigma_geo_at",
+        "gt3r/land_ice_segments/ground_track/sigma_geo_at"
+    ],
+    "sigma_geo_xt": [
+        "gt1l/land_ice_segments/ground_track/sigma_geo_xt",
+        "gt1r/land_ice_segments/ground_track/sigma_geo_xt",
+        "gt2l/land_ice_segments/ground_track/sigma_geo_xt",
+        "gt2r/land_ice_segments/ground_track/sigma_geo_xt",
+        "gt3l/land_ice_segments/ground_track/sigma_geo_xt",
+        "gt3r/land_ice_segments/ground_track/sigma_geo_xt"
+    ],
+    "dh_fit_dx": [
+        "gt1l/land_ice_segments/fit_statistics/dh_fit_dx",
+        "gt1r/land_ice_segments/fit_statistics/dh_fit_dx",
+        "gt2l/land_ice_segments/fit_statistics/dh_fit_dx",
+        "gt2r/land_ice_segments/fit_statistics/dh_fit_dx",
+        "gt3l/land_ice_segments/fit_statistics/dh_fit_dx",
+        "gt3r/land_ice_segments/fit_statistics/dh_fit_dx"
+    ],
+    "dh_fit_dx_sigma": [
+        "gt1l/land_ice_segments/fit_statistics/dh_fit_dx_sigma",
+        "gt1r/land_ice_segments/fit_statistics/dh_fit_dx_sigma",
+        "gt2l/land_ice_segments/fit_statistics/dh_fit_dx_sigma",
+        "gt2r/land_ice_segments/fit_statistics/dh_fit_dx_sigma",
+        "gt3l/land_ice_segments/fit_statistics/dh_fit_dx_sigma",
+        "gt3r/land_ice_segments/fit_statistics/dh_fit_dx_sigma"
+    ],
+    "h_mean": [
+        "gt1l/land_ice_segments/fit_statistics/h_mean",
+        "gt1r/land_ice_segments/fit_statistics/h_mean",
+        "gt2l/land_ice_segments/fit_statistics/h_mean",
+        "gt2r/land_ice_segments/fit_statistics/h_mean",
+        "gt3l/land_ice_segments/fit_statistics/h_mean",
+        "gt3r/land_ice_segments/fit_statistics/h_mean"
+    ],
+    "dh_fit_dy": [
+        "gt1l/land_ice_segments/fit_statistics/dh_fit_dy",
+        "gt1r/land_ice_segments/fit_statistics/dh_fit_dy",
+        "gt2l/land_ice_segments/fit_statistics/dh_fit_dy",
+        "gt2r/land_ice_segments/fit_statistics/dh_fit_dy",
+        "gt3l/land_ice_segments/fit_statistics/dh_fit_dy",
+        "gt3r/land_ice_segments/fit_statistics/dh_fit_dy"
+    ],
+    "h_rms_misfit": [
+        "gt1l/land_ice_segments/fit_statistics/h_rms_misfit",
+        "gt1r/land_ice_segments/fit_statistics/h_rms_misfit",
+        "gt2l/land_ice_segments/fit_statistics/h_rms_misfit",
+        "gt2r/land_ice_segments/fit_statistics/h_rms_misfit",
+        "gt3l/land_ice_segments/fit_statistics/h_rms_misfit",
+        "gt3r/land_ice_segments/fit_statistics/h_rms_misfit"
+    ],
+    "h_robust_sprd": [
+        "gt1l/land_ice_segments/fit_statistics/h_robust_sprd",
+        "gt1r/land_ice_segments/fit_statistics/h_robust_sprd",
+        "gt2l/land_ice_segments/fit_statistics/h_robust_sprd",
+        "gt2r/land_ice_segments/fit_statistics/h_robust_sprd",
+        "gt3l/land_ice_segments/fit_statistics/h_robust_sprd",
+        "gt3r/land_ice_segments/fit_statistics/h_robust_sprd"
+    ],
+    "n_fit_photons": [
+        "gt1l/land_ice_segments/fit_statistics/n_fit_photons",
+        "gt1r/land_ice_segments/fit_statistics/n_fit_photons",
+        "gt2l/land_ice_segments/fit_statistics/n_fit_photons",
+        "gt2r/land_ice_segments/fit_statistics/n_fit_photons",
+        "gt3l/land_ice_segments/fit_statistics/n_fit_photons",
+        "gt3r/land_ice_segments/fit_statistics/n_fit_photons"
+    ],
+    "signal_selection_source": [
+        "gt1l/land_ice_segments/fit_statistics/signal_selection_source",
+        "gt1l/segment_quality/signal_selection_source",
+        "gt1r/land_ice_segments/fit_statistics/signal_selection_source",
+        "gt1r/segment_quality/signal_selection_source",
+        "gt2l/land_ice_segments/fit_statistics/signal_selection_source",
+        "gt2l/segment_quality/signal_selection_source",
+        "gt2r/land_ice_segments/fit_statistics/signal_selection_source",
+        "gt2r/segment_quality/signal_selection_source",
+        "gt3l/land_ice_segments/fit_statistics/signal_selection_source",
+        "gt3l/segment_quality/signal_selection_source",
+        "gt3r/land_ice_segments/fit_statistics/signal_selection_source",
+        "gt3r/segment_quality/signal_selection_source"
+    ],
+    "snr_significance": [
+        "gt1l/land_ice_segments/fit_statistics/snr_significance",
+        "gt1r/land_ice_segments/fit_statistics/snr_significance",
+        "gt2l/land_ice_segments/fit_statistics/snr_significance",
+        "gt2r/land_ice_segments/fit_statistics/snr_significance",
+        "gt3l/land_ice_segments/fit_statistics/snr_significance",
+        "gt3r/land_ice_segments/fit_statistics/snr_significance"
+    ],
+    "w_surface_window_final": [
+        "gt1l/land_ice_segments/fit_statistics/w_surface_window_final",
+        "gt1r/land_ice_segments/fit_statistics/w_surface_window_final",
+        "gt2l/land_ice_segments/fit_statistics/w_surface_window_final",
+        "gt2r/land_ice_segments/fit_statistics/w_surface_window_final",
+        "gt3l/land_ice_segments/fit_statistics/w_surface_window_final",
+        "gt3r/land_ice_segments/fit_statistics/w_surface_window_final"
+    ],
+    "bsnow_conf": [
+        "gt1l/land_ice_segments/geophysical/bsnow_conf",
+        "gt1r/land_ice_segments/geophysical/bsnow_conf",
+        "gt2l/land_ice_segments/geophysical/bsnow_conf",
+        "gt2r/land_ice_segments/geophysical/bsnow_conf",
+        "gt3l/land_ice_segments/geophysical/bsnow_conf",
+        "gt3r/land_ice_segments/geophysical/bsnow_conf"
+    ],
+    "bsnow_h": [
+        "gt1l/land_ice_segments/geophysical/bsnow_h",
+        "gt1r/land_ice_segments/geophysical/bsnow_h",
+        "gt2l/land_ice_segments/geophysical/bsnow_h",
+        "gt2r/land_ice_segments/geophysical/bsnow_h",
+        "gt3l/land_ice_segments/geophysical/bsnow_h",
+        "gt3r/land_ice_segments/geophysical/bsnow_h"
+    ],
+    "cloud_flg_asr": [
+        "gt1l/land_ice_segments/geophysical/cloud_flg_asr",
+        "gt1r/land_ice_segments/geophysical/cloud_flg_asr",
+        "gt2l/land_ice_segments/geophysical/cloud_flg_asr",
+        "gt2r/land_ice_segments/geophysical/cloud_flg_asr",
+        "gt3l/land_ice_segments/geophysical/cloud_flg_asr",
+        "gt3r/land_ice_segments/geophysical/cloud_flg_asr"
+    ],
+    "cloud_flg_atm": [
+        "gt1l/land_ice_segments/geophysical/cloud_flg_atm",
+        "gt1r/land_ice_segments/geophysical/cloud_flg_atm",
+        "gt2l/land_ice_segments/geophysical/cloud_flg_atm",
+        "gt2r/land_ice_segments/geophysical/cloud_flg_atm",
+        "gt3l/land_ice_segments/geophysical/cloud_flg_atm",
+        "gt3r/land_ice_segments/geophysical/cloud_flg_atm"
+    ],
+    "r_eff": [
+        "gt1l/land_ice_segments/geophysical/r_eff",
+        "gt1r/land_ice_segments/geophysical/r_eff",
+        "gt2l/land_ice_segments/geophysical/r_eff",
+        "gt2r/land_ice_segments/geophysical/r_eff",
+        "gt3l/land_ice_segments/geophysical/r_eff",
+        "gt3r/land_ice_segments/geophysical/r_eff"
+    ],
+    "tide_ocean": [
+        "gt1l/land_ice_segments/geophysical/tide_ocean",
+        "gt1r/land_ice_segments/geophysical/tide_ocean",
+        "gt2l/land_ice_segments/geophysical/tide_ocean",
+        "gt2r/land_ice_segments/geophysical/tide_ocean",
+        "gt3l/land_ice_segments/geophysical/tide_ocean",
+        "gt3r/land_ice_segments/geophysical/tide_ocean"
+    ]
+}

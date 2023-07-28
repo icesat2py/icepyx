@@ -17,7 +17,7 @@ def list_of_dict_vals(input_dict):
 
 
 # REFACTOR: class needs better docstrings
-# DevNote: currently this class is not tested
+# DevNote: currently this class is partially tested
 class Variables:
     """
     Get, create, interact, and manipulate lists of variables and variable paths

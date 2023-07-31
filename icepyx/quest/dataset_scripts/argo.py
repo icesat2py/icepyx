@@ -380,20 +380,23 @@ class Argo(DataSet):
         # intentionally resubmit search to reset prof_ids, in case the user requested different parameters
         self.search_data(params, presRange=presRange)
 
-        # create a list for each profile's dataframe
-        if not self.argodata is None:
-            profile_dfs = [self.argodata]
-        else:
-            profile_dfs = []
-
+        # create a dataframe for each profile and merge it with the rest of the profiles from this set of parameters being downloaded
+        merged_df = pd.DataFrame(columns=["profile_id"])
         for i in self.prof_ids:
             print("processing profile", i)
             profile_data = self._download_profile(
                 i, params=params, presRange=presRange, printURL=True
             )
-            profile_dfs.append(self._parse_into_df(profile_data[0]))
+            profile_df = self._parse_into_df(profile_data[0])
+            merged_df = pd.concat([merged_df, profile_df], sort=False)
 
-        self.argodata = pd.merge(profile_dfs, how="outer")
+        # now that we have a df from this round of downloads, we can add it to any existing dataframe
+        # note that if a given column has previously been added, update needs to be used to replace nans (merge will not replace the nan values)
+        if not self.argodata is None:
+            self.argodata = self.argodata.merge(merged_df, how="outer")
+        else:
+            self.argodata = merged_df
+
         self.argodata.reset_index(inplace=True, drop=True)
 
         return self.argodata

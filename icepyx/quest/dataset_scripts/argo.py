@@ -9,8 +9,7 @@ from icepyx.quest.dataset_scripts.dataset import DataSet
 class Argo(DataSet):
     """
     Initialises an Argo Dataset object
-    Used to query physical Argo profiles
-    -> biogeochemical Argo (BGC) not included
+    Used to query physical and BGC Argo profiles
 
     Examples
     --------
@@ -53,11 +52,11 @@ class Argo(DataSet):
 
         Parameters
         ---------
-        params: list of str, default ["temperature", "pressure]
+        params: list of str, default ["temperature"]
             A list of strings, where each string is a requested parameter.
             Only metadata for profiles with the requested parameters are returned.
-            To search for all parameters, use `params=["all"]`.
-            For a list of available parameters, see:
+            To search for all parameters, use `params=["all"]`;
+            be careful using all for floats with BGC data, as this may be result in a large download.
         presRange: str, default None
             The pressure range (which correllates with depth) to search for data within.
             Input as a "shallow-limit,deep-limit" string. Note the lack of space.
@@ -258,11 +257,10 @@ class Argo(DataSet):
         ---------
         profile_number: str
             String containing the argo profile ID of the data being downloaded.
-        params: list of str, default ["temperature", "pressure]
+        params: list of str, default None
             A list of strings, where each string is a requested parameter.
             Only data for the requested parameters are returned.
             To download all parameters, use `params=["all"]`.
-            For a list of available parameters, see:
         presRange: str, default None
             The pressure range (which correllates with depth) to download data within.
             Input as a "shallow-limit,deep-limit" string. Note the lack of space.
@@ -298,7 +296,6 @@ class Argo(DataSet):
         profile = resp.json()
         return profile
 
-    # todo: add a try/except to make sure the json files are valid i.e. contains all data we're expecting (no params are missing)
     def _parse_into_df(self, profile_data) -> pd.DataFrame:
         """
         Parses downloaded data from a single profile into dataframe.
@@ -311,7 +308,6 @@ class Argo(DataSet):
             The data is contained in the requests response and converted into a json formatted dictionary
             by `_download_profile` before being passed into this function.
 
-
         Returns
         -------
         pandas DataFrame of the profile data
@@ -320,11 +316,20 @@ class Argo(DataSet):
         profileDf = pd.DataFrame(
             np.transpose(profile_data["data"]), columns=profile_data["data_info"][0]
         )
-        profileDf["profile_id"] = profile_data["_id"]
-        # there's also a geolocation field that provides the geospatial info as shapely points
-        profileDf["lat"] = profile_data["geolocation"]["coordinates"][1]
-        profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
-        profileDf["date"] = profile_data["timestamp"]
+
+        # this block tries to catch changes to the ArgoVis API that will break the dataframe creation
+        try:
+            profileDf["profile_id"] = profile_data["_id"]
+            # there's also a geolocation field that provides the geospatial info as shapely points
+            profileDf["lat"] = profile_data["geolocation"]["coordinates"][1]
+            profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
+            profileDf["date"] = profile_data["timestamp"]
+        except KeyError as err:
+            msg = "We cannot automatically parse your profile into a dataframe due to {0}".format(
+                err
+            )
+            print(msg)
+            return msg
 
         profileDf.replace("None", np.nan, inplace=True, regex=True)
 
@@ -402,22 +407,7 @@ class Argo(DataSet):
         return self.argodata
 
 
-"""
-        # pandas isn't excelling because of trying to concat or merge for each profile added.
-        # if the columns have already been concatted for another profile, we'd need to update to replace nans, not merge
-        # if the columns haven't been concatted, we'd need to merge.
-        # options: check for columns and have merge and update and concat pathways OR constructe a df for each request and just merge them after the fact 
-        # (which might make more sense conceptually and be easier to debug)
-        if profile_data["_id"] in df["profile_id"].unique():
-            print("merging")
-            df = df.merge(profileDf, how="outer")
-        else:
-            print("concatting")
-            df = pd.concat([df, profileDf], sort=False)
-"""
-
-
-# this is just for the purpose of debugging and should be removed later
+# this is just for the purpose of debugging and should be removed later (after being turned into tests)
 if __name__ == "__main__":
     # no search results
     # reg_a = Argo([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])

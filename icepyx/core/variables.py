@@ -3,6 +3,7 @@ import os
 import pprint
 
 import icepyx.core.is2ref as is2ref
+from icepyx.core.auth import EarthdataAuth
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 
@@ -18,7 +19,7 @@ def list_of_dict_vals(input_dict):
 
 # REFACTOR: class needs better docstrings
 # DevNote: currently this class is not tested
-class Variables:
+class Variables(EarthdataAuth):
     """
     Get, create, interact, and manipulate lists of variables and variable paths
     contained in ICESat-2 products.
@@ -50,7 +51,6 @@ class Variables:
         vartype,
         avail=None,
         wanted=None,
-        session=None,
         product=None,
         version=None,
         path=None,
@@ -62,7 +62,6 @@ class Variables:
         self.product = product
         self._avail = avail
         self.wanted = wanted
-        self._session = session
 
         # DevGoal: put some more/robust checks here to assess validity of inputs
 

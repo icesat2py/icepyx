@@ -1,5 +1,4 @@
 import datetime as dt
-import earthaccess
 import geopandas as gpd
 import json
 import matplotlib.pyplot as plt
@@ -22,6 +21,7 @@ import icepyx.core.validate_inputs as val
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
 from icepyx.core.visualization import Visualize
+from icepyx.core.auth import EarthdataAuth
 
 
 class GenQuery:
@@ -234,6 +234,7 @@ class Query(GenQuery):
         cycles=None,
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
+        auth=None,
         **kwargs,
     ):
 
@@ -276,6 +277,8 @@ class Query(GenQuery):
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
+        # authenticat
+        super(EarthdataAuth).__init__()
     # ----------------------------------------------------------------------
     # Properties
 
@@ -687,14 +690,16 @@ class Query(GenQuery):
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
                         self._source,
-                        session=self._session,
+                        _session=self._session,
+                        _s3login_credentials = self._s3login_credentials,
                         product=self.product,
                         avail=self._cust_options["variables"],
                     )
                 else:
                     self._order_vars = Variables(
                         self._source,
-                        session=self._session,
+                        _session=self._session,
+                        _s3login_credentials = self._s3login_credentials,
                         product=self.product,
                         version=self._version,
                     )
@@ -727,7 +732,10 @@ class Query(GenQuery):
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(self._source, product=self.product)
+                self._file_vars = Variables(self._source, 
+                                            _session = self._session,
+                                            _s3login_credentials = self._s3login_credentials,
+                                            product=self.product)
 
         return self._file_vars
 
@@ -898,57 +906,7 @@ class Query(GenQuery):
                 pprint.pprint(self._cust_options[k])
 
     # ----------------------------------------------------------------------
-    # Methods - Login and Granules (NSIDC-API)
-
-    def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:
-        """
-        Authenticate with NASA Earthdata to enable data ordering and download.
-
-        Generates the needed authentication sessions and tokens, including for cloud access.
-        Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
-        Methods for authenticating are:
-            1. Storing credentials as environment variables ($EARTHDATA_LOGIN and $EARTHDATA_PASSWORD)
-            2. Entering credentials interactively
-            3. Storing credentials in a .netrc file (not recommended for security reasons)
-        More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
-        The input parameters listed here are provided for backwards compatibility;
-        before earthaccess existed, icepyx handled authentication and required these inputs.
-
-        Parameters
-        ----------
-        uid : string, default None
-            Deprecated keyword for Earthdata login user ID.
-        email : string, default None
-            Deprecated keyword for backwards compatibility.
-        s3token : boolean, default False
-            Deprecated keyword to generate AWS s3 ICESat-2 data access credentials
-        kwargs : key:value pairs
-            Keyword arguments to be passed into earthaccess.login().
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
-        Enter your Earthdata Login username: ___________________
-
-        EARTHDATA_USERNAME and EARTHDATA_PASSWORD are not set in the current environment, try setting them or use a different strategy (netrc, interactive)
-        No .netrc found in /Users/username
-
-        """
-
-        auth = earthaccess.login(**kwargs)
-        if auth.authenticated:
-            self._auth = auth
-            self._session = auth.get_session()
-
-        if s3token == True:
-            self._s3login_credentials = auth.get_s3_credentials(daac="NSIDC")
-
-        if uid != None or email != None:
-            warnings.warn(
-                "The user id (uid) and/or email keyword arguments are no longer required.",
-                DeprecationWarning,
-            )
+    # Methods - Granules (NSIDC-API)
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):

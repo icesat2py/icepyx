@@ -1,6 +1,8 @@
-import numpy as np
 import os
 import pprint
+
+import numpy as np
+import parse
 
 import icepyx.core.is2ref as is2ref
 
@@ -26,7 +28,7 @@ class Variables:
     Parameters
     ----------
     vartype : string
-        One of ['order', 'file'] to indicate the source of the input variables.
+        One of ['order', 'file', 'nsidc-s3'] to indicate the source of the input variables.
         This field will be auto-populated when a variable object is created as an
         attribute of a query object.
     avail : dictionary, default None
@@ -56,7 +58,7 @@ class Variables:
         path=None,
     ):
 
-        assert vartype in ["order", "file"], "Please submit a valid variables type flag"
+        assert vartype in ["order", "file", "nsidc-s3"], "Please submit a valid variables type flag"
 
         self._vartype = vartype
         self.product = product
@@ -71,6 +73,14 @@ class Variables:
                 self._version = version
         elif self._vartype == "file":
             # DevGoal: check that the list or string are valid dir/files
+            self.path = path
+        elif self._vartype == "nsidc-s3":
+            # Grab metadata from s3 path
+            template = ('s3://nsidc-cumulus-prod-protected/ATLAS/{product}/{version}/' 
+            '{year}/{month}/{day}/{filename}')
+            s3_pathinfo = parse.parse(template, path)
+            self._version = s3_pathinfo['version']
+            self._product = s3_pathinfo['product']
             self.path = path
 
     # @property
@@ -99,7 +109,7 @@ class Variables:
         #         return self._avail
         # else:
         if not hasattr(self, "_avail") or self._avail == None:
-            if self._vartype == "order":
+            if self._vartype in ["order", "nsidc-s3"]:
                 self._avail = is2ref._get_custom_options(
                     self._session, self.product, self._version
                 )["variables"]

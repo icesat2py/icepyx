@@ -4,6 +4,7 @@ import warnings
 
 import numpy as np
 import xarray as xr
+import h5py
 
 import icepyx.core.is2cat as is2cat
 import icepyx.core.is2ref as is2ref
@@ -258,7 +259,7 @@ class Read:
         catalog=None,
         out_obj_type=None,  # xr.Dataset,
     ):
-
+        # Note: maybe just don't add default values, so that Python enforces their existence?
         if data_source is None:
             raise ValueError("Please provide a data source.")
         else:
@@ -271,10 +272,16 @@ class Read:
             )
         else:
             self._prod = is2ref._validate_product(product)
-
+        
+        # TODO delete? seems like it just validates the pattern
+        # Does Read accept a directory right now? Why would there be multiple files in the list?
+        # seems like yes, it does accept a directory
+        # does it check, then, that all the files have the same version and product?
         pattern_ck, filelist = Read._check_source_for_pattern(
             data_source, filename_pattern
         )
+        print('pattern_ck', pattern_ck)
+        print('filelist', filelist)
         assert pattern_ck
         # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
         self._pattern = filename_pattern
@@ -282,7 +289,8 @@ class Read:
         # this is a first pass at getting rid of mixed product types and warning the user.
         # it takes an approach assuming the product name is in the filename, but needs reworking if we let multiple products be loaded
         # one way to handle this would be bring in the product info during the loading step and fill in product there instead of requiring it from the user
-        filtered_filelist = [file for file in filelist if self._prod in file]
+        filtered_filelist = [file for file in filelist if self._prod in Read._get_product_and_version(file)]
+        print('filtered', filtered_filelist)
         if len(filtered_filelist) == 0:
             warnings.warn(
                 "Your filenames do not contain a product identifier (e.g. ATL06). "
@@ -665,6 +673,13 @@ class Read:
             attrs=dict(data_product=self._prod),
         )
         return is2ds
+    
+    def _get_product_and_version(filepath):
+        # TODO either persist this info or remove 'version', since it isn't necessary right now
+        with h5py.File(filepath, 'r') as f:
+            product = f['METADATA']['DatasetIdentification'].attrs['shortName'].decode()
+            version = f['METADATA']['DatasetIdentification'].attrs['VersionID'].decode()
+        return product, version
 
     def _read_single_grp(self, file, grp_path):
         """
@@ -684,25 +699,10 @@ class Read:
         Xarray dataset with the specified group.
 
         """
-
-        try:
-            grpcat = is2cat.build_catalog(
-                file, self._pattern, self._source_type, grp_paths=grp_path
-            )
-            ds = grpcat[self._source_type].read()
-
-        # NOTE: could also do this with h5py, but then would have to read in each variable in the group separately
-        except ValueError:
-            grpcat = is2cat.build_catalog(
-                file,
-                self._pattern,
-                self._source_type,
-                grp_paths=grp_path,
-                extra_engine_kwargs={"phony_dims": "access"},
-            )
-            ds = grpcat[self._source_type].read()
-
-        return ds
+        # I think this would fail if a group that has too high of a level of nesting
+        # is given. Consider this.
+        # TODO: update docstring
+        return xr.open_dataset(file, group=grp_path)
 
     def _build_single_file_dataset(self, file, groups_list):
         """
@@ -722,8 +722,11 @@ class Read:
         -------
         Xarray Dataset
         """
-
-        file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
+        # why do we do get the product twice? is it important to us that the user tells us
+        # correctly their product? Do we trust the metadata or the filename more?
+        # Also revisit the semantics of this. Not sure if it makes semantic sense for this
+        # to be a class method
+        file_product, _ = Read._get_product_and_version(file)
         assert (
             file_product == self._prod
         ), "Your product specification does not match the product specification within your files."

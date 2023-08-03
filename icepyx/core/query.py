@@ -21,7 +21,7 @@ import icepyx.core.validate_inputs as val
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
 from icepyx.core.visualization import Visualize
-from icepyx.core.auth import EarthdataAuth
+from icepyx.core.auth import EarthdataAuthMixin
 
 
 class GenQuery:
@@ -152,7 +152,7 @@ class GenQuery:
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
 # DevNote: currently this class is not tested
-class Query(GenQuery):
+class Query(GenQuery, EarthdataAuthMixin):
     """
     Query and get ICESat-2 data
 
@@ -277,8 +277,8 @@ class Query(GenQuery):
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
-        # authenticat
-        super(EarthdataAuth).__init__()
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
     # ----------------------------------------------------------------------
     # Properties
 
@@ -690,16 +690,14 @@ class Query(GenQuery):
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
                         self._source,
-                        _session=self._session,
-                        _s3login_credentials = self._s3login_credentials,
+                        auth = self.auth,
                         product=self.product,
                         avail=self._cust_options["variables"],
                     )
                 else:
                     self._order_vars = Variables(
                         self._source,
-                        _session=self._session,
-                        _s3login_credentials = self._s3login_credentials,
+                        auth=self.auth,
                         product=self.product,
                         version=self._version,
                     )
@@ -733,9 +731,9 @@ class Query(GenQuery):
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
                 self._file_vars = Variables(self._source, 
-                                            _session = self._session,
-                                            _s3login_credentials = self._s3login_credentials,
-                                            product=self.product)
+                                            auth=self.auth,
+                                            product=self.product,
+                                           )
 
         return self._file_vars
 
@@ -894,7 +892,7 @@ class Query(GenQuery):
             all(key in self._cust_options.keys() for key in keys)
         except AttributeError or KeyError:
             self._cust_options = is2ref._get_custom_options(
-                self._session, self.product, self._version
+                self.session, self.product, self._version
             )
 
         for h, k in zip(headers, keys):
@@ -1025,7 +1023,7 @@ class Query(GenQuery):
         if "email" in self._reqparams.fmted_keys.keys() or email == False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
         elif email == True:
-            user_profile = self._auth.get_user_profile()
+            user_profile = self.auth.get_user_profile()
             self._reqparams.build_params(
                 **self._reqparams.fmted_keys, email=user_profile["email_address"]
             )
@@ -1060,7 +1058,7 @@ class Query(GenQuery):
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
-                    session=self._session,
+                    session=self.session,
                     geom_filepath=self._spatial._geom_file,
                 )
 
@@ -1071,7 +1069,7 @@ class Query(GenQuery):
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,
-                session=self._session,
+                session=self.session,
                 geom_filepath=self._spatial._geom_file,
             )
 
@@ -1137,7 +1135,7 @@ class Query(GenQuery):
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
 
-        self._granules.download(verbose, path, session=self._session, restart=restart)
+        self._granules.download(verbose, path, session=self.session, restart=restart)
 
     # DevGoal: add testing? What do we test, and how, given this is a visualization.
     # DevGoal(long term): modify this to accept additional inputs, etc.

@@ -1,33 +1,54 @@
+import copy
+
 import earthaccess
 
 
-class EarthdataAuth():
+class EarthdataAuthMixin():
     """
     This class stores methods related to logging into Earthdata. It is inherited by
     any other module that requires authentication.
     """
-    def __init__(
-        self, 
-        _session=None, 
-        _s3login_credentials=None,
-    ):
-        self._session = _session
-        self._s3login_credentials = _s3login_credentials
+    def __init__(self, auth=None):
+        self._auth = copy.deepcopy(auth)
+        # initializatin of session and s3 creds is not allowed because those are generated
+        # from the auth object
+        self._session = None
+        self._s3login_credentials = None
 
     def __str__(self):
-        if self._session:
+        if self.session:
             repr_string = "EarthdataAuth obj with session initialized"
         else:
             repr_string = "EarthdataAuth obj without session initialized"
         return repr_string
-    
-    def session_started():
-        # return True/False if there is a session
-        pass
 
-    def s3credentials_created():
-        # return True/False if there are s3 credentials
-        pass
+    @property
+    def auth(self):
+        # Only login the first time .auth is accessed
+        if self._auth is None:
+            self._auth = earthaccess.login()
+        return self._auth
+
+    @property
+    def session(self):
+        # Only generate a session the first time .session is accessed
+        if self._session is None:
+            if self._auth is None:
+                self._auth = earthaccess.login()
+            if self._auth.authenticated:
+                self._session = self._auth.get_session()
+        return self._session
+
+    @property
+    def s3login_credentials(self):
+        # Only generate s3login_credentials the first time credentials are accessed
+        # TODO what if a user needs to regenerate after an hour?
+        if self._s3login_credentials is None:
+            if self._auth is None:
+                self._auth = earthaccess.login()
+            if self._auth.authenticated:
+                self._s3login_credentials = self._auth.get_s3_credentials(daac="NSIDC")
+        return self._s3login_credentials
 
     def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:
         """
@@ -42,6 +63,7 @@ class EarthdataAuth():
         More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
         The input parameters listed here are provided for backwards compatibility;
         before earthaccess existed, icepyx handled authentication and required these inputs.
+        DevNote: Maintained for backward compatibility
 
         Parameters
         ----------

@@ -3,7 +3,7 @@ import os
 import pprint
 
 import icepyx.core.is2ref as is2ref
-from icepyx.core.auth import EarthdataAuth
+from icepyx.core.auth import EarthdataAuthMixin
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 
@@ -19,7 +19,7 @@ def list_of_dict_vals(input_dict):
 
 # REFACTOR: class needs better docstrings
 # DevNote: currently this class is not tested
-class Variables(EarthdataAuth):
+class Variables(EarthdataAuthMixin):
     """
     Get, create, interact, and manipulate lists of variables and variable paths
     contained in ICESat-2 products.
@@ -54,10 +54,14 @@ class Variables(EarthdataAuth):
         product=None,
         version=None,
         path=None,
+        auth=None,
     ):
 
         assert vartype in ["order", "file"], "Please submit a valid variables type flag"
-
+        
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self, auth=auth)
+        
         self._vartype = vartype
         self.product = product
         self._avail = avail
@@ -100,7 +104,7 @@ class Variables(EarthdataAuth):
         if not hasattr(self, "_avail") or self._avail == None:
             if self._vartype == "order":
                 self._avail = is2ref._get_custom_options(
-                    self._session, self.product, self._version
+                    self.session, self.product, self._version
                 )["variables"]
 
             elif self._vartype == "file":

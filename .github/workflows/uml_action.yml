@@ -10,11 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: set up environment
         run: |
+          pip install -U pip
           pip install -r requirements.txt
           pip install icepyx pylint 
           sudo apt-get install graphviz
@@ -25,7 +26,7 @@ jobs:
           rm ./packages_dev_uml.svg
           mv ./*.svg ./doc/source/user_guide/documentation/
       - name: Commit changes
-        uses: EndBug/add-and-commit@v8
+        uses: EndBug/add-and-commit@v9
         with:
           author_name: GitHub Action
           message: "GitHub action UML generation auto-update"

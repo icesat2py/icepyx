@@ -92,7 +92,7 @@ def _get_custom_options(session, product, version):
 
     if session is None:
         raise ValueError(
-            "Don't forget to log in to Earthdata using is2_data.earthdata_login(uid, email)"
+            "Don't forget to log in to Earthdata using query.earthdata_login()"
         )
 
     capability_url = (
@@ -259,11 +259,12 @@ def _default_varlists(product):
 
     else:
         print(
-            "THE REQUESTED PRODUCT DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUTDE, AND LONGITUDE WILL BE RETURNED"
+            "THE REQUESTED PRODUCT DOES NOT YET HAVE A DEFAULT LIST SET UP. ONLY DELTA_TIME, LATITUDE, AND LONGITUDE WILL BE RETURNED"
         )
         return common_list
 
 
+# dev goal: check and test this function
 def gt2spot(gt, sc_orient):
 
     assert gt in [

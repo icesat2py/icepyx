@@ -13,6 +13,90 @@ from icepyx.core.variables import list_of_dict_vals
 # from icepyx.core.query import Query
 
 
+def _make_np_datetime(df, keyword):
+    """
+    Typecast the specified keyword dimension/coordinate/variable into a numpy datetime object.
+
+    Removes the timezone ('Z') in UTC timestamps in ICESat-2 data.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Dataframe object
+
+    keyword : str
+        name of the time variable, coordinate, or dimension
+
+    Outputs
+    -------
+    DataFrame with timezone removed.
+
+    Example
+    -------
+    >>> ds = xr.Dataset({"time": ("time_idx", [b'2019-01-11T05:26:31.323722Z'])}, coords={"time_idx": [0]})
+    >>> _make_np_datetime(ds, "time")
+    <xarray.Dataset>
+    Dimensions:   (time_idx: 1)
+    Coordinates:
+      * time_idx  (time_idx) int64 0
+    Data variables:
+        time      (time_idx) datetime64[ns] 2019-01-11T05:26:31.323722
+
+    """
+
+    if df[keyword].str.endswith("Z"):
+        # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
+        df.update({keyword: df[keyword].str[:-1].astype(np.datetime64)})
+
+    else:
+        df[keyword] = df[keyword].astype(np.datetime64)
+
+    return df
+
+
+def _get_track_type_str(grp_path) -> (str, str, str):
+    """
+    Determine whether the product contains ground tracks, pair tracks, or profiles and
+    parse the string/label the dimension accordingly.
+
+    Parameters
+    ----------
+    grp_path : str
+        The group path for the ground track, pair track, or profile.
+
+    Returns
+    -------
+    track_str : str
+       The string for the ground track, pair track, or profile of this group
+    spot_dim_name : str
+        What the dimension should be named in the dataset
+    spot_var_name : str
+        What the variable should be named in the dataset
+    """
+
+    import re
+
+    # e.g. for ATL03, ATL06, etc.
+    if re.match(r"gt[1-3]['r','l']", grp_path):
+        track_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
+        spot_dim_name = "spot"
+        spot_var_name = "gt"
+
+    # e.g. for ATL09
+    elif re.match(r"profile_[1-3]", grp_path):
+        track_str = re.match(r"profile_[1-3]", grp_path).group()
+        spot_dim_name = "profile"
+        spot_var_name = "prof"
+
+    # e.g. for ATL11
+    elif re.match(r"pt[1-3]", grp_path):
+        track_str = re.match(r"pt[1-3]", grp_path).group()
+        spot_dim_name = "pair_track"
+        spot_var_name = "pt"
+
+    return track_str, spot_dim_name, spot_var_name
+
+
 # Dev note: function fully tested (except else, which don't know how to get to)
 def _check_datasource(filepath):
     """
@@ -142,7 +226,8 @@ class Read:
 
     filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
-        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted).
+        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
+        The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
 
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
@@ -311,9 +396,9 @@ class Read:
         return False, None
 
     @staticmethod
-    def _add_var_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
+    def _add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
         """
-        Add the new variable group to the dataset template.
+        Add the new variables in the group to the dataset template.
 
         Parameters
         ----------
@@ -336,13 +421,11 @@ class Read:
         Xarray Dataset with variables from the ds variable group added.
         """
 
-        wanted_vars = list(wanted_dict.keys())
-
         if grp_path in ["orbit_info", "ancillary_data"]:
             grp_spec_vars = [
-                wanted_vars[i]
+                wanted_groups_tiered[-1][i]
                 for i, x in enumerate(wanted_groups_tiered[0])
-                if x == grp_path
+                if (x == grp_path and wanted_groups_tiered[1][i] == "none")
             ]
 
             for var in grp_spec_vars:
@@ -356,52 +439,158 @@ class Read:
                 except NameError:
                     import random
 
-                    is2ds["gran_idx"] = [random.randint(900000, 999999)]
+                    is2ds["gran_idx"] = [random.randint(800000, 899998)]
                     warnings.warn("Your granule index is made up of random values.")
                     # You must include the orbit/cycle_number and orbit/rgt variables to generate
             except KeyError:
-                pass
+                is2ds["gran_idx"] = [np.nanmax(is2ds["gran_idx"]) - 1]
 
-            try:
-                # DevNote: these lines may cause a NumPy Warning, as explained here: https://numpy.org/doc/stable/release/1.11.0-notes.html?
-                # The below line will silence this warning...
-                # warnings.filterwarnings(
-                #     "default", category=DeprecationWarning, module=np.astype()
-                # )
-                is2ds["data_start_utc"] = is2ds.data_start_utc.astype(np.datetime64)
-                is2ds["data_end_utc"] = is2ds.data_end_utc.astype(np.datetime64)
-            except AttributeError:
-                pass
+            if hasattr(is2ds, "data_start_utc"):
+                is2ds = _make_np_datetime(is2ds, "data_start_utc")
+                is2ds = _make_np_datetime(is2ds, "data_end_utc")
 
         else:
-            import re
+            track_str, spot_dim_name, spot_var_name = _get_track_type_str(grp_path)
 
-            gt_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
-            spot = is2ref.gt2spot(gt_str, is2ds.sc_orient.values[0])
-            # add a test for the new function (called here)!
+            # get the spot number if relevant
+            if spot_dim_name == "spot":
+                spot = is2ref.gt2spot(track_str, is2ds.sc_orient.values[0])
+            else:
+                spot = track_str
 
             grp_spec_vars = [
-                k for k, v in wanted_dict.items() if any(grp_path in x for x in v)
+                k
+                for k, v in wanted_dict.items()
+                if any(f"{grp_path}/{k}" in x for x in v)
             ]
-            # print(grp_spec_vars)
 
+            # handle delta_times with 1 or more dimensions
+            idx_range = range(0, len(ds.delta_time.data))
+            try:
+                photon_ids = (
+                    idx_range
+                    + np.full_like(idx_range, np.max(is2ds.photon_idx), dtype="int64")
+                    + 1
+                )
+            except AttributeError:
+                photon_ids = range(0, len(ds.delta_time.data))
+
+            hold_delta_times = ds.delta_time.data
             ds = (
                 ds.reset_coords(drop=False)
-                .expand_dims(dim=["spot", "gran_idx"])
-                .assign_coords(spot=("spot", [spot]))
-                .assign(gt=(("gran_idx", "spot"), [[gt_str]]))
+                .expand_dims(dim=[spot_dim_name, "gran_idx"])
+                .assign_coords(
+                    {
+                        spot_dim_name: (spot_dim_name, [spot]),
+                        "delta_time": ("delta_time", photon_ids),
+                    }
+                )
+                .assign({spot_var_name: (("gran_idx", spot_dim_name), [[track_str]])})
+                .rename_dims({"delta_time": "photon_idx"})
+                .rename({"delta_time": "photon_idx"})
+                # .set_index("photon_idx")
             )
 
-            # print(ds)
-            grp_spec_vars.append("gt")
+            # handle cases where the delta time is 2d due to multiple cycles in that group
+            if spot_dim_name == "pair_track" and np.ndim(hold_delta_times) > 1:
+                ds = ds.assign_coords(
+                    {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
+                )
+            else:
+                ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
+
+            # for ATL11
+            if "ref_pt" in ds.coords:
+                ds = (
+                    ds.drop_indexes(["ref_pt", "photon_idx"])
+                    .drop(["ref_pt", "photon_idx"])
+                    .swap_dims({"ref_pt": "photon_idx"})
+                    .assign_coords(
+                        ref_pt=("photon_idx", ds.ref_pt.data),
+                        photon_idx=ds.photon_idx.data,
+                    )
+                )
+
+                # for the subgoups where there is 1d delta time data, make sure that the cycle number is still a coordinate for merging
+                try:
+                    ds = ds.assign_coords(
+                        {
+                            "cycle_number": (
+                                "photon_idx",
+                                ds.cycle_number["photon_idx"].data,
+                            )
+                        }
+                    )
+                    ds["cycle_number"] = ds.cycle_number.astype(np.uint8)
+                except KeyError:
+                    pass
+
+            grp_spec_vars.extend([spot_var_name, "photon_idx"])
+
             is2ds = is2ds.merge(
-                ds[grp_spec_vars], join="outer", combine_attrs="no_conflicts"
+                ds[grp_spec_vars], join="outer", combine_attrs="drop_conflicts"
             )
-            # print(is2ds)
 
             # re-cast some dtypes to make array smaller
-            is2ds["gt"] = is2ds.gt.astype(str)
-            is2ds["spot"] = is2ds.spot.astype(np.uint8)
+            is2ds[spot_var_name] = is2ds[spot_var_name].astype(str)
+            try:
+                is2ds[spot_dim_name] = is2ds[spot_dim_name].astype(np.uint8)
+            except ValueError:
+                pass
+
+        return is2ds, ds[grp_spec_vars]
+
+    @staticmethod
+    def _combine_nested_vars(is2ds, ds, grp_path, wanted_dict):
+        """
+        Add the deeply nested variables to a dataset with appropriate coordinate information.
+
+        Parameters
+        ----------
+        is2ds : Xarray dataset
+            Dataset to add deeply nested variables to.
+        ds : Xarray dataset
+            Dataset containing improper dimensions for the variables being added
+        grp_path : str
+            hdf5 group path read into ds
+        wanted_dict : dict
+            Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
+
+        Returns
+        -------
+        Xarray Dataset with variables from the ds variable group added.
+        """
+
+        # Dev Goal: improve this type of iterating to minimize amount of looping required. Would a path handling library be useful here?
+        grp_spec_vars = [
+            k for k, v in wanted_dict.items() if any(f"{grp_path}/{k}" in x for x in v)
+        ]
+
+        # # Use this to handle issues specific to group paths that are more nested
+        # tiers = len(wanted_groups_tiered)
+        # if tiers > 3 and grp_path.count("/") == tiers - 2:
+        #     # Handle attribute conflicts that arose from data descriptions during merging
+        #     for var in grp_spec_vars:
+        #         ds[var].attrs = ds.attrs
+        #     for k in ds[var].attrs.keys():
+        #         ds.attrs.pop(k)
+        #     # warnings.warn(
+        #     #     "Due to the number of layers of variable group paths, some attributes have been dropped from your DataSet during merging",
+        #     #     UserWarning,
+        #     # )
+
+        try:
+            is2ds = _make_np_datetime(is2ds, "data_start_utc")
+            is2ds = _make_np_datetime(is2ds, "data_end_utc")
+
+        except (AttributeError, KeyError):
+            pass
+
+        try:
+            is2ds = is2ds.assign(ds[grp_spec_vars])
+        except xr.MergeError:
+            ds = ds[grp_spec_vars].reset_coords()
+            is2ds = is2ds.assign(ds)
 
         return is2ds
 
@@ -477,7 +666,7 @@ class Read:
         )
         return is2ds
 
-    def _read_single_var(self, file, grp_path):
+    def _read_single_grp(self, file, grp_path):
         """
         For a given file and variable group path, construct an Intake catalog and use it to read in the data.
 
@@ -511,12 +700,10 @@ class Read:
                 grp_paths=grp_path,
                 extra_engine_kwargs={"phony_dims": "access"},
             )
-
             ds = grpcat[self._source_type].read()
 
         return ds
 
-    # NOTE: for non-gridded datasets only
     def _build_single_file_dataset(self, file, groups_list):
         """
         Create a single xarray dataset with all of the wanted variables/groups from the wanted var list for a single data file/url.
@@ -536,7 +723,7 @@ class Read:
         Xarray Dataset
         """
 
-        file_product = self._read_single_var(file, "/").attrs["identifier_product_type"]
+        file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
         assert (
             file_product == self._prod
         ), "Your product specification does not match the product specification within your files."
@@ -545,8 +732,10 @@ class Read:
         # with h5py.File(filepath,'r') as h5pt:
         #     prod_id = h5pt.attrs["identifier_product_type"]
 
-        # DEVNOTE: does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
+        # DEVNOTE: if and elif does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
         # if a gridded product
+        # TODO: all products need to be tested, and quicklook products added or explicitly excluded
+        # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
         if self._prod in [
             "ATL14",
             "ATL15",
@@ -559,6 +748,39 @@ class Read:
         ]:
             is2ds = xr.open_dataset(file)
 
+        # Level 3b, hdf5: ATL11
+        elif self._prod in ["ATL11"]:
+            is2ds = self._build_dataset_template(file)
+
+            # returns the wanted groups as a single list of full group path strings
+            wanted_dict, wanted_groups = Variables.parse_var_list(
+                groups_list, tiered=False
+            )
+            wanted_groups_set = set(wanted_groups)
+
+            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            # wanted_groups_set.remove("orbit_info")
+            wanted_groups_set.remove("ancillary_data")
+            # Note: the sorting is critical for datasets with highly nested groups
+            wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
+
+            # returns the wanted groups as a list of lists with group path string elements separated
+            _, wanted_groups_tiered = Variables.parse_var_list(
+                groups_list, tiered=True, tiered_vars=True
+            )
+
+            while wanted_groups_list:
+                # print(wanted_groups_list)
+                grp_path = wanted_groups_list[0]
+                wanted_groups_list = wanted_groups_list[1:]
+                ds = self._read_single_grp(file, grp_path)
+                is2ds, ds = Read._add_vars_to_ds(
+                    is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
+                )
+
+            return is2ds
+
+        # Level 2 and 3a Products: ATL03, 06, 07, 08, 09, 10, 12, 13
         else:
             is2ds = self._build_dataset_template(file)
 
@@ -569,13 +791,34 @@ class Read:
             wanted_groups_set = set(wanted_groups)
             # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
             wanted_groups_set.remove("orbit_info")
+            wanted_groups_set.remove("ancillary_data")
+            # Note: the sorting is critical for datasets with highly nested groups
+            wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
+                wanted_groups_set
+            )
             # returns the wanted groups as a list of lists with group path string elements separated
-            _, wanted_groups_tiered = Variables.parse_var_list(groups_list, tiered=True)
+            _, wanted_groups_tiered = Variables.parse_var_list(
+                groups_list, tiered=True, tiered_vars=True
+            )
 
-            for grp_path in ["orbit_info"] + list(wanted_groups_set):
-                ds = self._read_single_var(file, grp_path)
-                is2ds = Read._add_var_to_ds(
+            while wanted_groups_list:
+                grp_path = wanted_groups_list[0]
+                wanted_groups_list = wanted_groups_list[1:]
+                ds = self._read_single_grp(file, grp_path)
+                is2ds, ds = Read._add_vars_to_ds(
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )
+
+                # if there are any deeper nested variables, get those so they have actual coordinates and add them
+                # this may apply to (at a minimum): ATL08
+                if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
+                    for grp_path2 in wanted_groups_list:
+                        if grp_path in grp_path2:
+                            sub_ds = self._read_single_grp(file, grp_path2)
+                            ds = Read._combine_nested_vars(
+                                ds, sub_ds, grp_path2, wanted_dict
+                            )
+                            wanted_groups_list.remove(grp_path2)
+                    is2ds = is2ds.merge(ds, join="outer", combine_attrs="no_conflicts")
 
         return is2ds

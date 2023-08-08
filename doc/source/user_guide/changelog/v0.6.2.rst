@@ -1,0 +1,28 @@
+.. _whatsnew_062:
+
+What's new in 0.6.2 (17 March 2022)
+-----------------------------------
+
+These are the changes in icepyx 0.6.2. See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+Bug fixes
+~~~~~~~~~
+
+- debug behind login Travis CI tests (#291)
+- manually remove 'z' from datetime string (#294)
+
+
+Maintenance
+^^^^^^^^^^^
+
+- update action add-and-commit v8 and remove branch/ref keywords (#290)
+- add read-in functionality for deeply nested variables (e.g. ATL08) (#281)
+- icepyx tracking (traffic and pypi) updates (#295) 
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.6.0..v0.6.2|HEAD

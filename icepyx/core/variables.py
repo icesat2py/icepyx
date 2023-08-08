@@ -84,8 +84,7 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='5') # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_vars.avail() # doctest: +SKIP
         ['ancillary_data/atlas_sdp_gps_epoch',
         'ancillary_data/control',
@@ -135,7 +134,7 @@ class Variables:
             return self._avail
 
     @staticmethod
-    def parse_var_list(varlist, tiered=True):
+    def parse_var_list(varlist, tiered=True, tiered_vars=False):
         """
         Parse a list of path strings into tiered lists and names of variables
 
@@ -149,11 +148,15 @@ class Variables:
             (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments']])
             or a single list of path strings (e.g. ['orbit_info','ancillary_data','gt1l/land_ice_segments'])
 
+        tiered_vars : boolean, default False
+            Whether or not to append a list of the variable names to the nested list of component strings
+            (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments'],
+                ['sc_orient','atlas_sdp_gps_epoch','h_li']]))
+
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1') # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail()) # doctest: +SKIP
         >>> var_dict # doctest: +SKIP
         {'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],
@@ -215,7 +218,10 @@ class Variables:
         else:
             num = np.max([v.count("/") for v in varlist])
             #         print('max needed: ' + str(num))
-            paths = [[] for i in range(num)]
+            if tiered_vars == True:
+                paths = [[] for i in range(num + 1)]
+            else:
+                paths = [[] for i in range(num)]
 
         # print(self._cust_options['variables'])
         for vn in varlist:
@@ -237,6 +243,8 @@ class Variables:
                     for i in range(j, num):
                         paths[i].append("none")
                         i = i + 1
+                    if tiered_vars == True:
+                        paths[num].append(vkey)
 
         return vgrp, paths
 
@@ -279,6 +287,8 @@ class Variables:
         # check if the list of beams, if specified, are available in the product
         if self.product == "ATL09":
             beam_avail = ["profile_" + str(i + 1) for i in range(3)]
+        elif self.product == "ATL11":
+            beam_avail = ["pt" + str(i + 1) for i in range(3)]
         else:
             beam_avail = ["gt" + str(i + 1) + "l" for i in range(3)]
             beam_avail = beam_avail + ["gt" + str(i + 1) + "r" for i in range(3)]
@@ -393,6 +403,7 @@ class Variables:
         beam_list : list of strings, default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
+            For ATL11, acceptable values are ['pt1','pt2','pt3'].
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
@@ -409,8 +420,7 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
 
         To add all variables related to a specific ICESat-2 beam
 
@@ -469,6 +479,10 @@ class Variables:
                 "data_end_utc",
             ]
 
+        # Adjust the nec_varlist for individual products
+        if self.product == "ATL11":
+            nec_varlist.remove("sc_orient")
+
         try:
             self._check_valid_lists(vgrp, allpaths, var_list=nec_varlist)
         except ValueError:
@@ -523,6 +537,7 @@ class Variables:
         beam_list : list of strings, default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
+            For ATL11, acceptable values are ['pt1','pt2','pt3'].
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
@@ -538,8 +553,7 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login(user_id,user_email) # doctest: +SKIP
-        Earthdata Login password:  ········
+        >>> reg_a.earthdata_login() # doctest: +SKIP
 
         To clear the list of wanted variables
 

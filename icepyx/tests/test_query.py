@@ -6,9 +6,11 @@ import warnings
 # 		Generic Query tests
 # ------------------------------------
 
+# seem to be adequately covered in docstrings;
+# may want to focus on testing specific queries
 
 # ------------------------------------
-# 		Icepyx-specific tests
+# 		icepyx-specific tests
 # ------------------------------------
 def test_icepyx_boundingbox_query():
     reg_a = ipx.Query(
@@ -33,7 +35,7 @@ def test_icepyx_boundingbox_query():
         "03:30:00",
         "21:30:00",
         "005",
-        ("bounding box", [-64.0, 66.0, -55.0, 72.0]),
+        ("bounding_box", [-64.0, 66.0, -55.0, 72.0]),
     )
 
     assert obs_tuple == exp_tuple

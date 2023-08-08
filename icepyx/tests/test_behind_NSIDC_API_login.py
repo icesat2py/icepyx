@@ -22,7 +22,7 @@ import warnings
             product="ATL06",
             spatial_extent=[-55, 68, -48, 71],
             date_range=["2019-02-22", "2019-02-28"],
-            version="005",
+            version="006",
         ),
     ],
 )
@@ -51,8 +51,8 @@ import json
 
 
 def test_get_custom_options_output(session):
-    obs = is2ref._get_custom_options(session, "ATL06", "005")
-    with open("./icepyx/tests/ATL06v05_options.json") as exp_json:
+    obs = is2ref._get_custom_options(session, "ATL06", "006")
+    with open("./icepyx/tests/ATL06v06_options.json") as exp_json:
         exp = json.load(exp_json)
         for key in exp.keys():
             assert key in obs.keys()

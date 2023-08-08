@@ -1,6 +1,10 @@
 import copy
+import datetime
 
 import earthaccess
+
+class AuthenticationError(Exception):
+    pass
 
 
 class EarthdataAuthMixin():
@@ -14,6 +18,7 @@ class EarthdataAuthMixin():
         # from the auth object
         self._session = None
         self._s3login_credentials = None
+        self._s3_initial_ts = None  # timer for 1h expiration on s3 credentials
 
     def __str__(self):
         if self.session:
@@ -26,28 +31,39 @@ class EarthdataAuthMixin():
     def auth(self):
         # Only login the first time .auth is accessed
         if self._auth is None:
-            self._auth = earthaccess.login()
+            auth = earthaccess.login()
+            # check for a valid auth response
+            if auth.authenticated is False:
+                # would be nice to be able to push the error message from earthaccess to the user,
+                # but I can't find where that is stored in earthaccess auth object
+                raise AuthenticationError('Earthdata authentication failed. Check output for error message')
+            else:
+                self._auth = auth
+                
         return self._auth
 
     @property
     def session(self):
         # Only generate a session the first time .session is accessed
         if self._session is None:
-            if self._auth is None:
-                self._auth = earthaccess.login()
-            if self._auth.authenticated:
-                self._session = self._auth.get_session()
+            self._session = self.auth.get_session()
         return self._session
 
     @property
     def s3login_credentials(self):
-        # Only generate s3login_credentials the first time credentials are accessed
-        # TODO what if a user needs to regenerate after an hour?
+
+        def set_s3_creds():
+            ''' Store s3login creds from `auth`and reset the starting time for the 1 hour reset
+            clock'''
+            self._s3login_credentials = self.auth.get_s3_credentials(daac="NSIDC")
+            self._s3_initial_ts = datetime.datetime.now()
+            
+        # Only generate s3login_credentials the first time credentials are accessed, or if an hour
+        # has passed since the last login    
         if self._s3login_credentials is None:
-            if self._auth is None:
-                self._auth = earthaccess.login()
-            if self._auth.authenticated:
-                self._s3login_credentials = self._auth.get_s3_credentials(daac="NSIDC")
+            set_s3_creds()
+        elif (datetime.datetime.now() - self._s3_initial_ts) >= datetime.timedelta(hours=1):
+            set_s3_creds()
         return self._s3login_credentials
 
     def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:

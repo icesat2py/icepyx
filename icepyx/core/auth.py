@@ -4,13 +4,35 @@ import datetime
 import earthaccess
 
 class AuthenticationError(Exception):
+    '''
+    Raised when an error is encountered while authenticating Earthdata credentials
+    '''
     pass
 
 
 class EarthdataAuthMixin():
     """
-    This class stores methods related to logging into Earthdata. It is inherited by
-    any other module that requires authentication.
+    This mixin class stores properties and methods related to logging into Earthdata. 
+    It can be inherited by any other class that requires authentication.
+    
+    The class provides 3 properties: auth, session, and s3login_credentials. The method
+    earthdata_login() is included for backwards compatibility.
+    
+    The class can be created without any initialization parameters, and the properties will
+    be populated when they are called. It can alternately be initialized with an 
+    earthaccess.auth.Auth object, which will then be used to create a session of 
+    s3login_credentials as they are called.
+    
+    Parameters
+    ----------
+    auth : earthaccess.auth.Auth, default None
+        Optional parameter to pass initialize an object with existing credentials
+    
+    Examples
+    --------
+    >>> a = EarthdataAuthMixin()
+    >>> a.session
+    >>> a.s3login_credentials
     """
     def __init__(self, auth=None):
         self._auth = copy.deepcopy(auth)
@@ -29,13 +51,14 @@ class EarthdataAuthMixin():
 
     @property
     def auth(self):
+        '''
+        Authentication object returned from earthaccess.login() which stores user authentication. 
+        '''
         # Only login the first time .auth is accessed
         if self._auth is None:
             auth = earthaccess.login()
             # check for a valid auth response
             if auth.authenticated is False:
-                # would be nice to be able to push the error message from earthaccess to the user,
-                # but I can't find where that is stored in earthaccess auth object
                 raise AuthenticationError('Earthdata authentication failed. Check output for error message')
             else:
                 self._auth = auth
@@ -44,6 +67,9 @@ class EarthdataAuthMixin():
 
     @property
     def session(self):
+        '''
+        Earthaccess session object for connecting to Earthdata resources.
+        '''
         # Only generate a session the first time .session is accessed
         if self._session is None:
             self._session = self.auth.get_session()
@@ -51,10 +77,13 @@ class EarthdataAuthMixin():
 
     @property
     def s3login_credentials(self):
-
+        '''
+        A dictionary which stores login credentials for AWS s3 access. This property is accessed
+        if using AWS cloud data.
+        '''
+        
         def set_s3_creds():
-            ''' Store s3login creds from `auth`and reset the starting time for the 1 hour reset
-            clock'''
+            ''' Store s3login creds from `auth`and reset the last updated timestamp'''
             self._s3login_credentials = self.auth.get_s3_credentials(daac="NSIDC")
             self._s3_initial_ts = datetime.datetime.now()
             

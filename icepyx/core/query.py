@@ -18,10 +18,10 @@ import icepyx.core.is2ref as is2ref
 # from icepyx.core.granules import Granules
 from icepyx.core.variables import Variables as Variables
 import icepyx.core.validate_inputs as val
+from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
 from icepyx.core.visualization import Visualize
-from icepyx.core.auth import EarthdataAuthMixin
 
 
 class GenQuery:

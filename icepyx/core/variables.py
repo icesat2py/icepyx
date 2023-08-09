@@ -2,8 +2,8 @@ import numpy as np
 import os
 import pprint
 
-import icepyx.core.is2ref as is2ref
 from icepyx.core.auth import EarthdataAuthMixin
+import icepyx.core.is2ref as is2ref
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 

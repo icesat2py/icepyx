@@ -35,4 +35,3 @@ def test_login_function(auth_instance):
 def test_depreciation_warning(auth_instance):
     with pytest.warns(DeprecationWarning):
         auth_instance.earthdata_login(email='me@gmail.com')
-    

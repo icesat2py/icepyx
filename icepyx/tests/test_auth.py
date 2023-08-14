@@ -8,6 +8,10 @@ from icepyx.core.auth import EarthdataAuthMixin
 
 @pytest.fixture()
 def auth_instance():
+    '''
+    An EarthdatAuthMixin object for each of the tests. Default scope is function
+    level, so a new instance should be created for each of the tests.
+    '''
     return EarthdataAuthMixin()
 
 # Test that .session creates a session

@@ -20,13 +20,6 @@ def reg():
 
 @pytest.fixture(scope="module")
 def session(reg):
-    # append to netrc file and set permissions level
-    args = ("icepyx_devteam", "urs.earthdata.nasa.gov", os.getenv("NSIDC_LOGIN"))
-    netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
-    with open(netrc_file, "a+") as f:
-        f.write("machine {1} login {0} password {2}\n".format(*args))
-        os.chmod(netrc_file, 0o600)
-    
     ed_obj = reg.session
     yield ed_obj
     ed_obj.close()

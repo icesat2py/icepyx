@@ -31,8 +31,8 @@ class EarthdataAuthMixin():
     Examples
     --------
     >>> a = EarthdataAuthMixin()
-    >>> a.session
-    >>> a.s3login_credentials
+    >>> a.session # doctest: +SKIP
+    >>> a.s3login_credentials # doctest: +SKIP
     """
     def __init__(self, auth=None):
         self._auth = copy.deepcopy(auth)

@@ -132,6 +132,10 @@ class EarthdataAuthMixin():
         No .netrc found in /Users/username
 
         """
+        warnings.warn(
+                "It is no longer required to explicitly run the `.earthdata_login()` method. Authentication will be performed by the module as needed.",
+                DeprecationWarning, stacklevel=2
+            )
         
         auth = earthaccess.login(**kwargs)
         if auth.authenticated:

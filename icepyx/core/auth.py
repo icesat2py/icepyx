@@ -1,5 +1,6 @@
 import copy
 import datetime
+import warnings
 
 import earthaccess
 
@@ -131,7 +132,7 @@ class EarthdataAuthMixin():
         No .netrc found in /Users/username
 
         """
-
+        
         auth = earthaccess.login(**kwargs)
         if auth.authenticated:
             self._auth = auth
@@ -143,5 +144,5 @@ class EarthdataAuthMixin():
         if uid != None or email != None:
             warnings.warn(
                 "The user id (uid) and/or email keyword arguments are no longer required.",
-                DeprecationWarning,
+                DeprecationWarning, stacklevel=2
             )

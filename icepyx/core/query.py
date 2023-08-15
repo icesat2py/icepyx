@@ -597,7 +597,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         {'page_size': 2000}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         >>> reg_a.reqparams # doctest: +SKIP
         {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
@@ -679,7 +678,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
@@ -723,7 +721,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
+        
         >>> reg_a.file_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
@@ -844,7 +842,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.show_custom_options(dictview=True) # doctest: +SKIP
         Subsetting options
         [{'id': 'ICESAT2',
@@ -1002,7 +999,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         order ID: [###############]
         [order status output]
@@ -1113,7 +1109,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.download_granules('/path/to/download/folder') # doctest: +SKIP
         Beginning download of zipped output...
         Data request [##########] of x order(s) is complete.

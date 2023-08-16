@@ -12,12 +12,10 @@ import warnings
 
 import icepyx.core.APIformatting as apifmt
 import icepyx.core.granules as granules
-from icepyx.core.granules import Granules as Granules
+from granules import Granules
 import icepyx.core.is2ref as is2ref
 
-# QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
-# from icepyx.core.granules import Granules
-from icepyx.core.variables import Variables as Variables
+from icepyx.core.variables import Variables
 import icepyx.core.validate_inputs as val
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp

@@ -1,3 +1,5 @@
+.. _quest_supported_label:
+
 QUEST Supported Datasets
 ========================
 

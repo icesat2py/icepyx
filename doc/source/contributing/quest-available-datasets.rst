@@ -20,4 +20,4 @@ Want to add a new dataset to QUEST? No problem! QUEST includes a template script
 
 Guidelines on how to construct your dataset module may be found here: (link to be added)
 
-Once you have developed a script with the template, you may request for the module to be added to QUEST via Github. Please see the How to Contribute page :ref:`_dev_guide_label` for instructions on how to contribute to icepyx.
+Once you have developed a script with the template, you may request for the module to be added to QUEST via Github. Please see the How to Contribute page :ref:`dev_guide_label` for instructions on how to contribute to icepyx.

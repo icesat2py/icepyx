@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 
-from icepyx.core.query import GenQuery
+from icepyx.core.query import GenQuery, Query
+from icepyx.quest.dataset_scripts.argo import Argo
 
 
 # todo: implement the subclass inheritance
@@ -83,4 +84,80 @@ class Quest(GenQuery):
 
         return str
 
+    def add_icesat2(self,
+                    product=None,
+                    start_time=None,
+                    end_time=None,
+                    version=None,
+                    cycles=None,
+                    tracks=None,
+                    files=None,
+                    **kwargs,
+                    ):
+
+        query = Query(product,
+                      self._spatial.extent,
+                      [self._temporal.start, self._temporal.end],
+                      start_time,
+                      end_time,
+                      version,
+                      cycles,
+                      tracks,
+                      files,
+                      **kwargs,
+                      )
+
+        self.datasets["icesat2"] = query
+
+
+    def add_argo(self, params=["temperature"], presRange=None):
+
+        argo = Argo(self._spatial, self._temporal, params, presRange)
+        self.datasets["argo"] = argo
+
+    def search_all(self):
+
+        for i in self.datasets.values():
+            print()
+            if isinstance(i, Query):
+                print('icesat2')
+                # i.order_granules()
+            else:
+                print(i)
+                msg = i.search_data()
+
+    def download_all(self, path=''):
+
+        for i in self.datasets.values():
+            print()
+            if isinstance(i, Query):
+                print('icesat2')
+                # i.download_granules(path)
+            else:
+                i.download()
+                print(i)
+
+
     # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality
+
+# Todo: remove this later -- just here for debugging
+if __name__ == '__main__':
+    bounding_box = [-150, 30, -120, 60]
+    date_range = ["2022-06-07", "2022-06-14"]
+    my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
+    print(my_quest._spatial)
+    print(my_quest._temporal)
+
+    my_quest.add_argo(params=["down_irradiance412", "temperature"])
+    print(my_quest.datasets["argo"].params)
+
+    my_quest.add_icesat2(product="ATL06")
+    print(my_quest.datasets["icesat2"].product)
+
+    print(my_quest)
+
+    print("\nBeginning search...")
+    my_quest.search_all()
+    print("\nBeginning download...")
+    my_quest.download_all()
+

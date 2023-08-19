@@ -23,5 +23,8 @@ def test_merge_df():
 	assert "down_irradiance412_argoqc" in df.columns
 
 
-def test_abc():
-	assert 1 == 1
+def test_validate_params():
+
+	bad_param = ["up_irradiance412"]
+
+	error_msg = Argo._validate_params(bad_param)

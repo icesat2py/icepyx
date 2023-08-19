@@ -4,7 +4,7 @@ from icepyx.core.query import GenQuery
 warnings.filterwarnings("ignore")
 
 
-class DataSet(GenQuery):
+class DataSet():
 
     """
     Parent Class for all supported datasets (i.e. ATL03, ATL07, MODIS, etc.)
@@ -17,9 +17,11 @@ class DataSet(GenQuery):
         * use existing Icepyx functionality to initialise this
         :param timeframe: datetime
         """
-        super().__init__(spatial_extent, date_range, start_time, end_time)
+
+        # super().__init__(spatial_extent, date_range, start_time, end_time)
         # self.bounding_box = boundingbox
         # self.time_frame = timeframe
+        raise NotImplementedError
 
     def _fmt_coordinates(self):
         # use icepyx geospatial module (icepyx core)

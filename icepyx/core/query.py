@@ -12,7 +12,8 @@ import warnings
 
 import icepyx.core.APIformatting as apifmt
 import icepyx.core.granules as granules
-from granules import Granules
+# from granules import Granules
+from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 
 from icepyx.core.variables import Variables

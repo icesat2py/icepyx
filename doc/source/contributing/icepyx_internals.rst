@@ -18,7 +18,8 @@ code that indicates this to Python is `EarthdataAuthMixin.__init__(self)`.
 
 For example:
 
-```python
+.. code-block:: python
+
 import icepyx as ipx
 
 region_a = ipx.Query('ATL06',[-45, 74, -44,75],['2019-11-30','2019-11-30'], \
@@ -27,7 +28,7 @@ region_a = ipx.Query('ATL06',[-45, 74, -44,75],['2019-11-30','2019-11-30'], \
 # authentication can be accessed via the Query object
 region_a.session
 region_a.s3login_credentials
-```
+
 
 **Adding authentication to a new class**
 
@@ -40,7 +41,8 @@ to the class. To do this:
 
 A minimal example of the new class (saved in `icepyx/core/newclass.py`) would be:
 
-```python
+.. code-block:: python
+
 from icepyx.core.auth import EarthdataAuthMixin
 
 class MyNewClass(EarthdataAuthMixin):
@@ -54,13 +56,14 @@ class MyNewClass(EarthdataAuthMixin):
         s = self.session
         print(s)
         return 'We authenticated inside the method!'
-```
+
+
 The class would then be accessible with:
-```
+
+.. code-block:: python
+
 from icepyx.core.newclass import MyNewClass
 
 n = MyNewClass()
 
 n.session
-
-```

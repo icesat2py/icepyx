@@ -14,10 +14,12 @@ class AuthenticationError(Exception):
 class EarthdataAuthMixin():
     """
     This mixin class stores properties and methods related to logging into Earthdata. 
-    It can be inherited by any other class that requires authentication.
+    It can be inherited by any other class that requires authentication. For 
+    example, the `Query` class inherits this one, and so a Query object has the 
+    `.session` property.
     
-    The class provides 3 properties: auth, session, and s3login_credentials. The method
-    earthdata_login() is included for backwards compatibility.
+    The class provides several properties relevant for authentication. The method
+    `earthdata_login()` is included for backwards compatibility.
     
     The class can be created without any initialization parameters, and the properties will
     be populated when they are called. It can alternately be initialized with an 
@@ -109,7 +111,8 @@ class EarthdataAuthMixin():
         More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
         The input parameters listed here are provided for backwards compatibility;
         before earthaccess existed, icepyx handled authentication and required these inputs.
-        DevNote: This method is maintained for backward compatibility. It is no longer required to explicitly run `.earthdata_login()`. Authentication will be performed by the module as needed when `.session` or `.s3login_credentials` are accessed.
+        
+        **DevNote:** This method is maintained for backward compatibility. It is no longer required to explicitly run `.earthdata_login()`. Authentication will be performed by the module as needed when `.session` or `.s3login_credentials` are accessed.
 
         Parameters
         ----------

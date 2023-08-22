@@ -67,3 +67,4 @@ The class would then be accessible with:
     n = MyNewClass()
 
     n.session
+    n.my_exciting_new_method()

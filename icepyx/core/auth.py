@@ -109,7 +109,7 @@ class EarthdataAuthMixin():
         More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
         The input parameters listed here are provided for backwards compatibility;
         before earthaccess existed, icepyx handled authentication and required these inputs.
-        DevNote: Maintained for backward compatibility
+        DevNote: This method is maintained for backward compatibility. It is no longer required to explicitly run `.earthdata_login()`. Authentication will be performed by the module as needed when `.session` or `.s3login_credentials` are accessed.
 
         Parameters
         ----------

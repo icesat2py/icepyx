@@ -27,7 +27,7 @@ class EarthdataAuthMixin():
     Parameters
     ----------
     auth : earthaccess.auth.Auth, default None
-        Optional parameter to pass initialize an object with existing credentials
+        Optional parameter to initialize an object with existing credentials.
     
     Examples
     --------

@@ -1,4 +1,4 @@
-`icepyx` Internals
+icepyx Internals
 ==================
 
 Authentication

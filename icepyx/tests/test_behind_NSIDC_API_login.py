@@ -42,7 +42,6 @@ def test_get_custom_options_output(session):
 # NOTE: best this test can do at the moment is a successful download with no errors...
 def test_download_granules_with_subsetting(reg, session):
     path = "./downloads_subset"
-    reg.session = session
     reg.order_granules()
     reg.download_granules(path)
 

@@ -13,13 +13,19 @@ class AuthenticationError(Exception):
 
 class EarthdataAuthMixin():
     """
-    This mixin class stores properties and methods related to logging into Earthdata. 
-    It can be inherited by any other class that requires authentication. For 
+    This mixin class generates the needed authentication sessions and tokens, including for NASA Earthdata cloud access.
+    Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
+    Methods for authenticating are:
+        1. Storing credentials as environment variables ($EARTHDATA_LOGIN and $EARTHDATA_PASSWORD)
+        2. Entering credentials interactively
+        3. Storing credentials in a .netrc file (not recommended for security reasons)
+    More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
+    The input parameters listed here are provided for backwards compatibility;
+    before earthaccess existed, icepyx handled authentication and required these inputs.
+
+    This class can be inherited by any other class that requires authentication. For 
     example, the `Query` class inherits this one, and so a Query object has the 
-    `.session` property.
-    
-    The class provides several properties relevant for authentication. The method
-    `earthdata_login()` is included for backwards compatibility.
+    `.session` property. The method `earthdata_login()` is included for backwards compatibility.
     
     The class can be created without any initialization parameters, and the properties will
     be populated when they are called. It can alternately be initialized with an 
@@ -101,18 +107,9 @@ class EarthdataAuthMixin():
     def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:
         """
         Authenticate with NASA Earthdata to enable data ordering and download.
-
-        Generates the needed authentication sessions and tokens, including for cloud access.
-        Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
-        Methods for authenticating are:
-            1. Storing credentials as environment variables ($EARTHDATA_LOGIN and $EARTHDATA_PASSWORD)
-            2. Entering credentials interactively
-            3. Storing credentials in a .netrc file (not recommended for security reasons)
-        More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
-        The input parameters listed here are provided for backwards compatibility;
-        before earthaccess existed, icepyx handled authentication and required these inputs.
+        Credential storage details are described in the EathdataAuthMixin class section.
         
-        **DevNote:** This method is maintained for backward compatibility. It is no longer required to explicitly run `.earthdata_login()`. Authentication will be performed by the module as needed when `.session` or `.s3login_credentials` are accessed.
+        **Note:** This method is maintained for backward compatibility. It is no longer required to explicitly run `.earthdata_login()`. Authentication will be performed by the module as needed when `.session` or `.s3login_credentials` are accessed.
 
         Parameters
         ----------

@@ -58,92 +58,18 @@ class Argo(DataSet):
         if self.argodata is None:
             df = "No data yet"
         else:
-            df = '\n' + str(self.argodata.head())
-        s = "---Argo---\n"\
-            "Parameters: {0}\n"\
-            "Pressure range: {1}\n"\
+            df = "\n" + str(self.argodata.head())
+        s = (
+            "---Argo---\n"
+            "Parameters: {0}\n"
+            "Pressure range: {1}\n"
             "Dataframe head: {2}".format(self.params, prange, df)
+        )
 
         return s
 
-
-    def search_data(
-        self, params=None, printURL=False
-    ) -> str:
-        """
-        Query for available argo profiles given the spatio temporal criteria
-        and other params specific to the dataset.
-
-        Parameters
-        ---------
-        params: list of str, default ["temperature"]
-            A list of strings, where each string is a requested parameter.
-            Only metadata for profiles with the requested parameters are returned.
-            To search for all parameters, use `params=["all"]`;
-            be careful using all for floats with BGC data, as this may be result in a large download.
-        presRange: str, default None
-            The pressure range (which correllates with depth) to search for data within.
-            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
-        printURL: boolean, default False
-            Print the URL of the data request. Useful for debugging and when no data is returned.
-
-        Returns
-        ------
-        str: message on the success status of the search
-        """
-
-        # if new search is called with additional parameters
-        if not params is None:
-            self.params.append(self._validate_parameters(params))
-            # to remove duplicated from list
-            self.params = list(set(self.params))
-
-        # builds URL to be submitted
-        baseURL = "https://argovis-api.colorado.edu/argo"
-        payload = {
-            "startDate": self._temporal._start.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            "endDate": self._temporal._end.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            "polygon": [self._fmt_coordinates()],
-            "data": self.params,
-        }
-        if self.presRange:
-            payload["presRange"] = self.presRange
-
-        # submit request
-        resp = requests.get(
-            baseURL, headers={"x-argokey": self._apikey}, params=payload
-        )
-
-        if printURL:
-            print(resp.url)
-
-        selectionProfiles = resp.json()
-
-        # Consider any status other than 2xx an error
-        if not resp.status_code // 100 == 2:
-            # check for the existence of profiles from query
-            if selectionProfiles == []:
-                msg = (
-                    "Warning: Query returned no profiles\n"
-                    "Please try different search parameters"
-                )
-                print(msg)
-                return msg
-
-            else:
-                msg = "Error: Unexpected response {}".format(resp)
-                print(msg)
-                return msg
-
-        # record the profile ids for the profiles that contain the requested parameters
-        prof_ids = []
-        for i in selectionProfiles:
-            prof_ids.append(i["_id"])
-        self.prof_ids = prof_ids
-
-        msg = "{0} valid profiles have been identified".format(len(prof_ids))
-        print(msg)
-        return msg
+    # ----------------------------------------------------------------------
+    # Formatting API Inputs
 
     def _fmt_coordinates(self) -> str:
         """
@@ -163,6 +89,9 @@ class Argo(DataSet):
 
         x = "[" + x + "]"
         return x
+
+    # ----------------------------------------------------------------------
+    # Validation
 
     def _valid_params(self) -> list:
         """
@@ -269,6 +198,85 @@ class Argo(DataSet):
                 )
 
         return params
+
+    # ----------------------------------------------------------------------
+    # Querying and Getting Data
+
+    def search_data(self, params=None, printURL=False) -> str:
+        """
+        Query for available argo profiles given the spatio temporal criteria
+        and other params specific to the dataset.
+
+        Parameters
+        ---------
+        params: list of str, default ["temperature"]
+            A list of strings, where each string is a requested parameter.
+            Only metadata for profiles with the requested parameters are returned.
+            To search for all parameters, use `params=["all"]`;
+            be careful using all for floats with BGC data, as this may be result in a large download.
+        presRange: str, default None
+            The pressure range (which correllates with depth) to search for data within.
+            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
+        printURL: boolean, default False
+            Print the URL of the data request. Useful for debugging and when no data is returned.
+
+        Returns
+        ------
+        str: message on the success status of the search
+        """
+
+        # if new search is called with additional parameters
+        if not params is None:
+            self.params.append(self._validate_parameters(params))
+            # to remove duplicated from list
+            self.params = list(set(self.params))
+
+        # builds URL to be submitted
+        baseURL = "https://argovis-api.colorado.edu/argo"
+        payload = {
+            "startDate": self._temporal._start.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "endDate": self._temporal._end.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "polygon": [self._fmt_coordinates()],
+            "data": self.params,
+        }
+        if self.presRange:
+            payload["presRange"] = self.presRange
+
+        # submit request
+        resp = requests.get(
+            baseURL, headers={"x-argokey": self._apikey}, params=payload
+        )
+
+        if printURL:
+            print(resp.url)
+
+        selectionProfiles = resp.json()
+
+        # Consider any status other than 2xx an error
+        if not resp.status_code // 100 == 2:
+            # check for the existence of profiles from query
+            if selectionProfiles == []:
+                msg = (
+                    "Warning: Query returned no profiles\n"
+                    "Please try different search parameters"
+                )
+                print(msg)
+                return msg
+
+            else:
+                msg = "Error: Unexpected response {}".format(resp)
+                print(msg)
+                return msg
+
+        # record the profile ids for the profiles that contain the requested parameters
+        prof_ids = []
+        for i in selectionProfiles:
+            prof_ids.append(i["_id"])
+        self.prof_ids = prof_ids
+
+        msg = "{0} valid profiles have been identified".format(len(prof_ids))
+        print(msg)
+        return msg
 
     def _download_profile(
         self,

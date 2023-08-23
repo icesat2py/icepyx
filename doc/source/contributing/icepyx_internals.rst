@@ -1,5 +1,5 @@
 icepyx Internals
-==================
+================
 
 Authentication
 --------------

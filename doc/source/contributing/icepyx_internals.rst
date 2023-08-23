@@ -36,7 +36,7 @@ To add authentication to an additional icepyx class, one needs to add the Mixin
 to the class. To do this:
 
 1. Add the EarthdataAuthMixin class to the ``class`` constructor (and import the mixin)
-2. Add the EarthdataAuthMixin init method with in the init method of the new class ``EarthdataAuthMixin.__init__(self)``
+2. Add the EarthdataAuthMixin init method within the init method of the new class ``EarthdataAuthMixin.__init__(self)``
 3. Access the properties using the **public** properties (Ex. ``self.session``, not ``self._session``.)
 
 A minimal example of the new class (saved in ``icepyx/core/newclass.py``) would be:

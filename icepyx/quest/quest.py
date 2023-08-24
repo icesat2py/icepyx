@@ -84,31 +84,32 @@ class Quest(GenQuery):
 
         return str
 
-    def add_icesat2(self,
-                    product=None,
-                    start_time=None,
-                    end_time=None,
-                    version=None,
-                    cycles=None,
-                    tracks=None,
-                    files=None,
-                    **kwargs,
-                    ):
+    def add_icesat2(
+        self,
+        product=None,
+        start_time=None,
+        end_time=None,
+        version=None,
+        cycles=None,
+        tracks=None,
+        files=None,
+        **kwargs,
+    ):
 
-        query = Query(product,
-                      self._spatial.extent,
-                      [self._temporal.start, self._temporal.end],
-                      start_time,
-                      end_time,
-                      version,
-                      cycles,
-                      tracks,
-                      files,
-                      **kwargs,
-                      )
+        query = Query(
+            product,
+            self._spatial.extent,
+            [self._temporal.start, self._temporal.end],
+            start_time,
+            end_time,
+            version,
+            cycles,
+            tracks,
+            files,
+            **kwargs,
+        )
 
         self.datasets["icesat2"] = query
-
 
     def add_argo(self, params=["temperature"], presRange=None):
 
@@ -120,28 +121,28 @@ class Quest(GenQuery):
         for i in self.datasets.values():
             print()
             if isinstance(i, Query):
-                print('icesat2')
-                # i.order_granules()
+                print("icesat2")
+                msg = i.avail_granules()
             else:
                 print(i)
                 msg = i.search_data()
 
-    def download_all(self, path=''):
+    def download_all(self, path=""):
 
         for i in self.datasets.values():
             print()
             if isinstance(i, Query):
-                print('icesat2')
-                # i.download_granules(path)
+                print("icesat2")
+                i.download_granules(path)
             else:
                 i.download()
                 print(i)
 
-
     # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality
 
+
 # Todo: remove this later -- just here for debugging
-if __name__ == '__main__':
+if __name__ == "__main__":
     bounding_box = [-150, 30, -120, 60]
     date_range = ["2022-06-07", "2022-06-14"]
     my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
@@ -160,4 +161,3 @@ if __name__ == '__main__':
     my_quest.search_all()
     print("\nBeginning download...")
     my_quest.download_all()
-

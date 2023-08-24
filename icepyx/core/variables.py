@@ -4,6 +4,7 @@ import pprint
 import numpy as np
 import parse
 
+from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.is2ref as is2ref
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
@@ -20,7 +21,7 @@ def list_of_dict_vals(input_dict):
 
 # REFACTOR: class needs better docstrings
 # DevNote: currently this class is not tested
-class Variables:
+class Variables(EarthdataAuthMixin):
     """
     Get, create, interact, and manipulate lists of variables and variable paths
     contained in ICESat-2 products.
@@ -52,19 +53,21 @@ class Variables:
         vartype,
         avail=None,
         wanted=None,
-        session=None,
         product=None,
         version=None,
         path=None,
+        auth=None,
     ):
 
         assert vartype in ["order", "file", "nsidc-s3"], "Please submit a valid variables type flag"
+
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self, auth=auth)
 
         self._vartype = vartype
         self.product = product
         self._avail = avail
         self.wanted = wanted
-        self._session = session
 
         # DevGoal: put some more/robust checks here to assess validity of inputs
 
@@ -94,7 +97,6 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='5') # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_vars.avail() # doctest: +SKIP
         ['ancillary_data/atlas_sdp_gps_epoch',
         'ancillary_data/control',
@@ -111,7 +113,7 @@ class Variables:
         if not hasattr(self, "_avail") or self._avail == None:
             if self._vartype in ["order", "nsidc-s3"]:
                 self._avail = is2ref._get_custom_options(
-                    self._session, self.product, self._version
+                    self.session, self.product, self._version
                 )["variables"]
 
             elif self._vartype == "file":
@@ -166,7 +168,6 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1') # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail()) # doctest: +SKIP
         >>> var_dict # doctest: +SKIP
         {'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],
@@ -430,7 +431,6 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
 
         To add all variables related to a specific ICESat-2 beam
 
@@ -563,7 +563,6 @@ class Variables:
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
 
         To clear the list of wanted variables
 

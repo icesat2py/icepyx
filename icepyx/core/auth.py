@@ -105,7 +105,7 @@ class EarthdataAuthMixin():
             set_s3_creds()
         return self._s3login_credentials
 
-    def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:
+    def earthdata_login(self, uid=None, email=None, s3token=None, **kwargs) -> None:
         """
         Authenticate with NASA Earthdata to enable data ordering and download.
         Credential storage details are described in the EathdataAuthMixin class section.
@@ -118,7 +118,7 @@ class EarthdataAuthMixin():
             Deprecated keyword for Earthdata login user ID.
         email : string, default None
             Deprecated keyword for backwards compatibility.
-        s3token : boolean, default False
+        s3token : boolean, default None
             Deprecated keyword to generate AWS s3 ICESat-2 data access credentials
         kwargs : key:value pairs
             Keyword arguments to be passed into earthaccess.login().
@@ -138,15 +138,7 @@ class EarthdataAuthMixin():
                 DeprecationWarning, stacklevel=2
             )
         
-        auth = earthaccess.login(**kwargs)
-        if auth.authenticated:
-            self._auth = auth
-            self._session = auth.get_session()
-
-        if s3token == True:
-            self._s3login_credentials = auth.get_s3_credentials(daac="NSIDC")
-
-        if uid != None or email != None:
+        if uid != None or email != None or s3token != None:
             warnings.warn(
                 "The user id (uid) and/or email keyword arguments are no longer required.",
                 DeprecationWarning, stacklevel=2

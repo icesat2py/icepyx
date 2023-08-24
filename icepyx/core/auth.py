@@ -20,8 +20,6 @@ class EarthdataAuthMixin():
         2. Entering credentials interactively
         3. Storing credentials in a .netrc file (not recommended for security reasons)
     More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
-    The input parameters listed here are provided for backwards compatibility;
-    before earthaccess existed, icepyx handled authentication and required these inputs.
 
     This class can be inherited by any other class that requires authentication. For 
     example, the `Query` class inherits this one, and so a Query object has the 
@@ -29,7 +27,7 @@ class EarthdataAuthMixin():
     
     The class can be created without any initialization parameters, and the properties will
     be populated when they are called. It can alternately be initialized with an 
-    earthaccess.auth.Auth object, which will then be used to create a session of 
+    earthaccess.auth.Auth object, which will then be used to create a session or 
     s3login_credentials as they are called.
     
     Parameters
@@ -89,6 +87,9 @@ class EarthdataAuthMixin():
         '''
         A dictionary which stores login credentials for AWS s3 access. This property is accessed
         if using AWS cloud data.
+        
+        Because s3 tokens are only good for one hour, this function will automatically check if an
+        hour has elapsed since the last token use and generate a new token if necessary.
         '''
         
         def set_s3_creds():

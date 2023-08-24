@@ -10,6 +10,14 @@ APIformatting
    :members:
    :undoc-members:
    :show-inheritance:
+   
+EarthdataAuthMixin
+------------------
+
+.. automodule:: icepyx.core.auth
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 granules
 --------

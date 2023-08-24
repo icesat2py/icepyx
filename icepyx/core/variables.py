@@ -1,9 +1,6 @@
 import os
 import pprint
 
-import numpy as np
-import parse
-
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.is2ref as is2ref
 
@@ -59,11 +56,11 @@ class Variables(EarthdataAuthMixin):
         auth=None,
     ):
 
-        assert vartype in ["order", "file", "nsidc-s3"], "Please submit a valid variables type flag"
-
+        assert vartype in ["order", "file"], "Please submit a valid variables type flag"
+        
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self, auth=auth)
-
+        
         self._vartype = vartype
         self.product = product
         self._avail = avail

@@ -20,16 +20,7 @@ def reg():
 
 @pytest.fixture(scope="module")
 def session(reg):
-
-    # append to netrc file and set permissions level
-    args = ("icepyx_devteam", "urs.earthdata.nasa.gov", os.getenv("NSIDC_LOGIN"))
-    netrc_file = os.path.join(os.path.expanduser("~"), ".netrc")
-    with open(netrc_file, "a+") as f:
-        f.write("machine {1} login {0} password {2}\n".format(*args))
-        os.chmod(netrc_file, 0o600)
-
-    reg.earthdata_login()
-    ed_obj = reg._session
+    ed_obj = reg.session
     yield ed_obj
     ed_obj.close()
 
@@ -51,7 +42,6 @@ def test_get_custom_options_output(session):
 # NOTE: best this test can do at the moment is a successful download with no errors...
 def test_download_granules_with_subsetting(reg, session):
     path = "./downloads_subset"
-    reg._session = session
     reg.order_granules()
     reg.download_granules(path)
 

@@ -1,5 +1,4 @@
 import datetime as dt
-import earthaccess
 import geopandas as gpd
 import json
 import matplotlib.pyplot as plt
@@ -11,14 +10,15 @@ import time
 import warnings
 
 import icepyx.core.APIformatting as apifmt
+from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.granules as granules
+# QUESTION: why doesn't from granules import Granules work, since granules=icepyx.core.granules?
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
-
-from icepyx.core.variables import Variables
-import icepyx.core.validate_inputs as val
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
+import icepyx.core.validate_inputs as val
+from icepyx.core.variables import Variables as Variables
 from icepyx.core.visualization import Visualize
 
 
@@ -150,7 +150,7 @@ class GenQuery:
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
 # DevNote: currently this class is not tested
-class Query(GenQuery):
+class Query(GenQuery, EarthdataAuthMixin):
     """
     Query and get ICESat-2 data
 
@@ -232,6 +232,7 @@ class Query(GenQuery):
         cycles=None,
         tracks=None,
         files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
+        auth=None,
         **kwargs,
     ):
 
@@ -274,6 +275,8 @@ class Query(GenQuery):
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
     # ----------------------------------------------------------------------
     # Properties
 
@@ -592,7 +595,6 @@ class Query(GenQuery):
         {'page_size': 2000}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         >>> reg_a.reqparams # doctest: +SKIP
         {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
@@ -674,7 +676,6 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
@@ -685,14 +686,14 @@ class Query(GenQuery):
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
                         self._source,
-                        session=self._session,
+                        auth = self.auth,
                         product=self.product,
                         avail=self._cust_options["variables"],
                     )
                 else:
                     self._order_vars = Variables(
                         self._source,
-                        session=self._session,
+                        auth=self.auth,
                         product=self.product,
                         version=self._version,
                     )
@@ -718,14 +719,17 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
+        
         >>> reg_a.file_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(self._source, product=self.product)
+                self._file_vars = Variables(self._source, 
+                                            auth=self.auth,
+                                            product=self.product,
+                                           )
 
         return self._file_vars
 
@@ -836,7 +840,6 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.show_custom_options(dictview=True) # doctest: +SKIP
         Subsetting options
         [{'id': 'ICESAT2',
@@ -884,7 +887,7 @@ class Query(GenQuery):
             all(key in self._cust_options.keys() for key in keys)
         except AttributeError or KeyError:
             self._cust_options = is2ref._get_custom_options(
-                self._session, self.product, self._version
+                self.session, self.product, self._version
             )
 
         for h, k in zip(headers, keys):
@@ -896,57 +899,7 @@ class Query(GenQuery):
                 pprint.pprint(self._cust_options[k])
 
     # ----------------------------------------------------------------------
-    # Methods - Login and Granules (NSIDC-API)
-
-    def earthdata_login(self, uid=None, email=None, s3token=False, **kwargs) -> None:
-        """
-        Authenticate with NASA Earthdata to enable data ordering and download.
-
-        Generates the needed authentication sessions and tokens, including for cloud access.
-        Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
-        Methods for authenticating are:
-            1. Storing credentials as environment variables ($EARTHDATA_LOGIN and $EARTHDATA_PASSWORD)
-            2. Entering credentials interactively
-            3. Storing credentials in a .netrc file (not recommended for security reasons)
-        More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
-        The input parameters listed here are provided for backwards compatibility;
-        before earthaccess existed, icepyx handled authentication and required these inputs.
-
-        Parameters
-        ----------
-        uid : string, default None
-            Deprecated keyword for Earthdata login user ID.
-        email : string, default None
-            Deprecated keyword for backwards compatibility.
-        s3token : boolean, default False
-            Deprecated keyword to generate AWS s3 ICESat-2 data access credentials
-        kwargs : key:value pairs
-            Keyword arguments to be passed into earthaccess.login().
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
-        Enter your Earthdata Login username: ___________________
-
-        EARTHDATA_USERNAME and EARTHDATA_PASSWORD are not set in the current environment, try setting them or use a different strategy (netrc, interactive)
-        No .netrc found in /Users/username
-
-        """
-
-        auth = earthaccess.login(**kwargs)
-        if auth.authenticated:
-            self._auth = auth
-            self._session = auth.get_session()
-
-        if s3token == True:
-            self._s3login_credentials = auth.get_s3_credentials(daac="NSIDC")
-
-        if uid != None or email != None:
-            warnings.warn(
-                "The user id (uid) and/or email keyword arguments are no longer required.",
-                DeprecationWarning,
-            )
+    # Methods - Granules (NSIDC-API)
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):
@@ -1044,7 +997,6 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         order ID: [###############]
         [order status output]
@@ -1065,7 +1017,7 @@ class Query(GenQuery):
         if "email" in self._reqparams.fmted_keys.keys() or email == False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
         elif email == True:
-            user_profile = self._auth.get_user_profile()
+            user_profile = self.auth.get_user_profile()
             self._reqparams.build_params(
                 **self._reqparams.fmted_keys, email=user_profile["email_address"]
             )
@@ -1100,7 +1052,7 @@ class Query(GenQuery):
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
-                    session=self._session,
+                    session=self.session,
                     geom_filepath=self._spatial._geom_file,
                 )
 
@@ -1111,7 +1063,7 @@ class Query(GenQuery):
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,
-                session=self._session,
+                session=self.session,
                 geom_filepath=self._spatial._geom_file,
             )
 
@@ -1155,7 +1107,6 @@ class Query(GenQuery):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
         >>> reg_a.download_granules('/path/to/download/folder') # doctest: +SKIP
         Beginning download of zipped output...
         Data request [##########] of x order(s) is complete.
@@ -1177,7 +1128,7 @@ class Query(GenQuery):
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
 
-        self._granules.download(verbose, path, session=self._session, restart=restart)
+        self._granules.download(verbose, path, session=self.session, restart=restart)
 
     # DevGoal: add testing? What do we test, and how, given this is a visualization.
     # DevGoal(long term): modify this to accept additional inputs, etc.

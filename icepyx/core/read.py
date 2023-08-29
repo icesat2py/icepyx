@@ -6,7 +6,6 @@ import numpy as np
 import xarray as xr
 import h5py
 
-import icepyx.core.is2cat as is2cat
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
@@ -207,6 +206,56 @@ def _run_fast_scandir(dir, fn_glob):
 
     return subfolders, files
 
+# Need to post on intake's page to see if this would be a useful contribution...
+# https://github.com/intake/intake/blob/0.6.4/intake/source/utils.py#L216
+def _pattern_to_glob(pattern):
+    """
+    Adapted from intake.source.utils.path_to_glob to convert a path as pattern into a glob style path
+    that uses the pattern's indicated number of '?' instead of '*' where an int was specified.
+
+    Returns pattern if pattern is not a string.
+
+    Parameters
+    ----------
+    pattern : str
+        Path as pattern optionally containing format_strings
+
+    Returns
+    -------
+    glob_path : str
+        Path with int format strings replaced with the proper number of '?' and '*' otherwise.
+
+    Examples
+    --------
+    >>> _pattern_to_glob('{year}/{month}/{day}.csv')
+    '*/*/*.csv'
+    >>> _pattern_to_glob('{year:4}/{month:2}/{day:2}.csv')
+    '????/??/??.csv'
+    >>> _pattern_to_glob('data/{year:4}{month:02}{day:02}.csv')
+    'data/????????.csv'
+    >>> _pattern_to_glob('data/*.csv')
+    'data/*.csv'
+    """
+    from string import Formatter
+
+    if not isinstance(pattern, str):
+        return pattern
+
+    fmt = Formatter()
+    glob_path = ""
+    # prev_field_name = None
+    for literal_text, field_name, format_specs, _ in fmt.parse(format_string=pattern):
+        glob_path += literal_text
+        if field_name and (glob_path != "*"):
+            try:
+                glob_path += "?" * int(format_specs)
+            except ValueError:
+                glob_path += "*"
+                # alternatively, you could use bits=utils._get_parts_of_format_string(resolved_string, literal_texts, format_specs)
+                # and then use len(bits[i]) to get the length of each format_spec
+    # print(glob_path)
+    return glob_path
+
 
 # To do: test this class and functions therein
 class Read:
@@ -322,28 +371,6 @@ class Read:
     # ----------------------------------------------------------------------
     # Properties
 
-    @property
-    def is2catalog(self):
-        """
-        Print a generic ICESat-2 Intake catalog.
-        This catalog does not specify groups, so it cannot be used to read in data.
-
-        """
-        if not hasattr(self, "_is2catalog") and hasattr(self, "_catalog_path"):
-            from intake import open_catalog
-
-            self._is2catalog = open_catalog(self._catalog_path)
-
-        else:
-            self._is2catalog = is2cat.build_catalog(
-                self.data_source,
-                self._pattern,
-                self._source_type,
-                grp_paths="/paths/to/variables",
-            )
-
-        return self._is2catalog
-
     # I cut and pasted this directly out of the Query class - going to need to reconcile the _source/file stuff there
 
     @property
@@ -378,7 +405,7 @@ class Read:
         """
         Check that the entered data source contains files that match the input filename_pattern
         """
-        glob_pattern = is2cat._pattern_to_glob(filename_pattern)
+        glob_pattern = _pattern_to_glob(filename_pattern)
 
         if os.path.isdir(source):
             _, filelist = _run_fast_scandir(source, glob_pattern)
@@ -609,9 +636,6 @@ class Read:
 
         All items in the wanted variables list will be loaded from the files into memory.
         If you do not provide a wanted variables list, a default one will be created for you.
-
-        If you would like to use the Intake catalog you provided to read in a single data variable,
-        simply call Intake's `read()` function on the is2catalog property (e.g. `reader.is2catalog.read()`).
         """
 
         # todo:

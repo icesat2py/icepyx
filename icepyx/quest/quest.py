@@ -18,9 +18,9 @@ class Quest(GenQuery):
 
     Parameters
     ----------
-    projection : proj4 string
-            Not yet implemented
-            Ex text: a string name of projection to be used for plotting (e.g. 'Mercator', 'NorthPolarStereographic')
+    proj : proj4 string
+        Geospatial projection.
+        Not yet implemented
 
     Returns
     -------
@@ -64,11 +64,6 @@ class Quest(GenQuery):
     ):
         super().__init__(spatial_extent, date_range, start_time, end_time)
         self.datasets = {}
-        self.projection = self._determine_proj(proj)
-
-    # todo: maybe move this to icepyx superquery class
-    def _determine_proj(self, proj):
-        return None
 
     def __str__(self):
         str = super(Quest, self).__str__()
@@ -83,6 +78,9 @@ class Quest(GenQuery):
             str = str[:-2]  # remove last ', '
 
         return str
+
+    # ----------------------------------------------------------------------
+    # Datasets
 
     def add_icesat2(
         self,
@@ -116,24 +114,33 @@ class Quest(GenQuery):
         argo = Argo(self._spatial, self._temporal, params, presRange)
         self.datasets["argo"] = argo
 
+    # ----------------------------------------------------------------------
+    # Methods (on all datasets)
+
+    # error handling? what happens when one of i fails...
     def search_all(self):
+        print("\nSearching all datasets...")
 
         for i in self.datasets.values():
             print()
             if isinstance(i, Query):
-                print("icesat2")
+                print("---ICESat-2---")
                 msg = i.avail_granules()
+                print(msg)
             else:
                 print(i)
-                msg = i.search_data()
+                i.search_data()
 
+    # error handling? what happens when one of i fails...
     def download_all(self, path=""):
+        print("\nDownloading all datasets...")
 
         for i in self.datasets.values():
             print()
             if isinstance(i, Query):
-                print("icesat2")
-                i.download_granules(path)
+                print("---ICESat-2---")
+                msg = i.download_granules(path)
+                print(msg)
             else:
                 i.download()
                 print(i)
@@ -146,18 +153,18 @@ if __name__ == "__main__":
     bounding_box = [-150, 30, -120, 60]
     date_range = ["2022-06-07", "2022-06-14"]
     my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
-    print(my_quest._spatial)
-    print(my_quest._temporal)
+    # print(my_quest.spatial)
+    # print(my_quest.temporal)
 
     my_quest.add_argo(params=["down_irradiance412", "temperature"])
-    print(my_quest.datasets["argo"].params)
+    # print(my_quest.datasets["argo"].params)
 
     my_quest.add_icesat2(product="ATL06")
-    print(my_quest.datasets["icesat2"].product)
+    # print(my_quest.datasets["icesat2"].product)
 
     print(my_quest)
 
-    print("\nBeginning search...")
     my_quest.search_all()
-    print("\nBeginning download...")
+
+    # this one still needs work for IS2 because of auth...
     my_quest.download_all()

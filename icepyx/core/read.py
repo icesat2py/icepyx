@@ -4,7 +4,6 @@ import warnings
 
 import numpy as np
 import xarray as xr
-import h5py
 
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
@@ -260,7 +259,7 @@ def _pattern_to_glob(pattern):
 # To do: test this class and functions therein
 class Read:
     """
-    Data object to create and use Intake catalogs to read ICESat-2 data into the specified formats.
+    Data object to read ICESat-2 data into the specified formats.
     Provides flexiblity for reading nested hdf5 files into common analysis formats.
 
     Parameters
@@ -278,10 +277,6 @@ class Read:
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-
-    catalog : string, default None
-        Full path to an Intake catalog for reading in data.
-        If you still need to create a catalog, leave as default.
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
@@ -307,7 +302,6 @@ class Read:
         filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
         out_obj_type=None,  # xr.Dataset,
     ):
-        # Note: maybe just don't add default values, so that Python enforces their existence?
         if data_source is None:
             raise ValueError("Please provide a data source.")
         else:
@@ -320,7 +314,6 @@ class Read:
             )
         else:
             self._prod = is2ref._validate_product(product)
-        
         pattern_ck, filelist = Read._check_source_for_pattern(
             data_source, filename_pattern
         )
@@ -725,10 +718,6 @@ class Read:
         -------
         Xarray Dataset
         """
-        # why do we do get the product twice? is it important to us that the user tells us
-        # correctly their product? Do we trust the metadata or the filename more?
-        # Also revisit the semantics of this. Not sure if it makes semantic sense for this
-        # to be a class method
         file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
         assert (
             file_product == self._prod

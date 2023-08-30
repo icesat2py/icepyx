@@ -305,7 +305,6 @@ class Read:
         data_source=None,
         product=None,
         filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
-        catalog=None,
         out_obj_type=None,  # xr.Dataset,
     ):
         # Note: maybe just don't add default values, so that Python enforces their existence?
@@ -322,15 +321,9 @@ class Read:
         else:
             self._prod = is2ref._validate_product(product)
         
-        # TODO delete? seems like it just validates the pattern
-        # Does Read accept a directory right now? Why would there be multiple files in the list?
-        # seems like yes, it does accept a directory
-        # does it check, then, that all the files have the same version and product?
         pattern_ck, filelist = Read._check_source_for_pattern(
             data_source, filename_pattern
         )
-        print('pattern_ck', pattern_ck)
-        print('filelist', filelist)
         assert pattern_ck
         # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
         self._pattern = filename_pattern
@@ -338,8 +331,7 @@ class Read:
         # this is a first pass at getting rid of mixed product types and warning the user.
         # it takes an approach assuming the product name is in the filename, but needs reworking if we let multiple products be loaded
         # one way to handle this would be bring in the product info during the loading step and fill in product there instead of requiring it from the user
-        filtered_filelist = [file for file in filelist if self._prod in Read._get_product_and_version(file)]
-        print('filtered', filtered_filelist)
+        filtered_filelist = [file for file in filelist if self._prod in file]
         if len(filtered_filelist) == 0:
             warnings.warn(
                 "Your filenames do not contain a product identifier (e.g. ATL06). "
@@ -355,11 +347,6 @@ class Read:
             self._filelist = filelist
 
         # after validation, use the notebook code and code outline to start implementing the rest of the class
-        if catalog is not None:
-            assert os.path.isfile(
-                catalog
-            ), f"Your catalog path '{catalog}' does not point to a valid file."
-            self._catalog_path = catalog
 
         if out_obj_type is not None:
             print(
@@ -697,17 +684,10 @@ class Read:
             attrs=dict(data_product=self._prod),
         )
         return is2ds
-    
-    def _get_product_and_version(filepath):
-        # TODO either persist this info or remove 'version', since it isn't necessary right now
-        with h5py.File(filepath, 'r') as f:
-            product = f['METADATA']['DatasetIdentification'].attrs['shortName'].decode()
-            version = f['METADATA']['DatasetIdentification'].attrs['VersionID'].decode()
-        return product, version
 
     def _read_single_grp(self, file, grp_path):
         """
-        For a given file and variable group path, construct an Intake catalog and use it to read in the data.
+        For a given file and variable group path, construct an an xarray Dataset.
 
         Parameters
         ----------
@@ -723,10 +703,9 @@ class Read:
         Xarray dataset with the specified group.
 
         """
-        # I think this would fail if a group that has too high of a level of nesting
-        # is given. Consider this.
-        # TODO: update docstring
-        return xr.open_dataset(file, group=grp_path)
+
+        return xr.open_dataset(file, group=grp_path, engine='h5netcdf', 
+                               backend_kwargs={'phony_dims': 'access'})
 
     def _build_single_file_dataset(self, file, groups_list):
         """
@@ -750,7 +729,7 @@ class Read:
         # correctly their product? Do we trust the metadata or the filename more?
         # Also revisit the semantics of this. Not sure if it makes semantic sense for this
         # to be a class method
-        file_product, _ = Read._get_product_and_version(file)
+        file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
         assert (
             file_product == self._prod
         ), "Your product specification does not match the product specification within your files."

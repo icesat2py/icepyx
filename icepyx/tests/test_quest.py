@@ -30,18 +30,18 @@ def test_add_is2(quest_instance):
     assert quest_instance.datasets[exp_key].product == prod
 
 
-def test_add_argo(quest_instance):
-    params = ["down_irradiance412", "temperature"]
-    quest_instance.add_argo(params=params)
-    exp_key = "argo"
-    exp_type = ipx.quest.dataset_scripts.argo.Argo
+# def test_add_argo(quest_instance):
+#     params = ["down_irradiance412", "temperature"]
+#     quest_instance.add_argo(params=params)
+#     exp_key = "argo"
+#     exp_type = ipx.quest.dataset_scripts.argo.Argo
 
-    obs = quest_instance.datasets
+#     obs = quest_instance.datasets
 
-    assert type(obs) == dict
-    assert exp_key in obs.keys()
-    assert type(obs[exp_key]) == exp_type
-    assert quest_instance.datasets[exp_key].params == params
+#     assert type(obs) == dict
+#     assert exp_key in obs.keys()
+#     assert type(obs[exp_key]) == exp_type
+#     assert quest_instance.datasets[exp_key].params == params
 
 
 ########## ALL DATASET METHODS TESTS ##########

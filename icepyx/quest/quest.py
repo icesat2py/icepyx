@@ -109,10 +109,10 @@ class Quest(GenQuery):
 
         self.datasets["icesat2"] = query
 
-    def add_argo(self, params=["temperature"], presRange=None):
+    # def add_argo(self, params=["temperature"], presRange=None):
 
-        argo = Argo(self._spatial, self._temporal, params, presRange)
-        self.datasets["argo"] = argo
+    #     argo = Argo(self._spatial, self._temporal, params, presRange)
+    #     self.datasets["argo"] = argo
 
     # ----------------------------------------------------------------------
     # Methods (on all datasets)
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     # print(my_quest.spatial)
     # print(my_quest.temporal)
 
-    my_quest.add_argo(params=["down_irradiance412", "temperature"])
+    # my_quest.add_argo(params=["down_irradiance412", "temperature"])
     # print(my_quest.datasets["argo"].params)
 
     my_quest.add_icesat2(product="ATL06")

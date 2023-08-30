@@ -31,4 +31,6 @@ jobs:
       after_success: codecov/codecov-action@v3
 
     - stage: behind Earthdata
-      script: pytest --verbose icepyx/tests/test_behind_NSIDC_API_login.py
+      script:
+        - export NSIDC_LOGIN=$NSIDC_LOGIN
+        - pytest --verbose icepyx/tests/test_behind_NSIDC_API_login.py

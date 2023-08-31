@@ -636,7 +636,7 @@ class Spatial:
             poly = poly.unary_union
 
             # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-            poly = poly.simplify(0.05, preserve_topology=False)
+            poly = poly.simplify(0.05, preserve_topology=True)
             poly = orient(poly, sign=1.0)
 
             # Format dictionary to polygon coordinate pairs for API submission

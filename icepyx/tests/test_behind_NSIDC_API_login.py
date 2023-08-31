@@ -1,5 +1,4 @@
 import icepyx as ipx
-from icepyx.core.Earthdata import Earthdata as Earthdata
 import os
 import pytest
 import warnings
@@ -21,16 +20,9 @@ def reg():
 
 @pytest.fixture(scope="module")
 def session(reg):
-    capability_url = "https://n5eil02u.ecs.nsidc.org/egi/capabilities/{reg.product}.{reg._version}.xml"
-    ed_obj = Earthdata(
-        "icepyx_devteam",
-        "icepyx.dev@gmail.com",
-        capability_url=capability_url,
-        pswd=os.getenv("NSIDC_LOGIN"),
-    )
-    ed_obj._start_session()
-    yield ed_obj.session
-    ed_obj.session.close()
+    ed_obj = reg.session
+    yield ed_obj
+    ed_obj.close()
 
 
 ########## is2ref module ##########
@@ -50,7 +42,6 @@ def test_get_custom_options_output(session):
 # NOTE: best this test can do at the moment is a successful download with no errors...
 def test_download_granules_with_subsetting(reg, session):
     path = "./downloads_subset"
-    reg._session = session
     reg.order_granules()
     reg.download_granules(path)
 

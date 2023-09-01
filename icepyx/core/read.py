@@ -680,7 +680,7 @@ class Read:
 
     def _read_single_grp(self, file, grp_path):
         """
-        For a given file and variable group path, construct an an xarray Dataset.
+        For a given file and variable group path, construct an xarray Dataset.
 
         Parameters
         ----------

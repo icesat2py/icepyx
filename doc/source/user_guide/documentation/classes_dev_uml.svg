@@ -257,7 +257,7 @@
 <text text-anchor="start" x="173" y="-767.8" font-family="Times,serif" font-size="14.00">Spatial</text>
 <polyline fill="none" stroke="black" points="51,-760 346,-760 "/>
 <text text-anchor="start" x="59" y="-744.8" font-family="Times,serif" font-size="14.00">_ext_type : str</text>
-<text text-anchor="start" x="59" y="-729.8" font-family="Times,serif" font-size="14.00">_gdf_spat : DataFrame, GeoDataFrame</text>
+<text text-anchor="start" x="59" y="-729.8" font-family="Times,serif" font-size="14.00">_gdf_spat : GeoDataFrame, DataFrame</text>
 <text text-anchor="start" x="59" y="-714.8" font-family="Times,serif" font-size="14.00">_geom_file : NoneType</text>
 <text text-anchor="start" x="59" y="-699.8" font-family="Times,serif" font-size="14.00">_spatial_ext</text>
 <text text-anchor="start" x="59" y="-684.8" font-family="Times,serif" font-size="14.00">_xdateln</text>

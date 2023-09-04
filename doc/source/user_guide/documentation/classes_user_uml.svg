@@ -192,14 +192,13 @@
 <!-- icepyx.core.read.Read -->
 <g id="node10" class="node">
 <title>icepyx.core.read.Read</title>
-<polygon fill="none" stroke="black" points="1540.5,-436.5 1540.5,-535.5 1642.5,-535.5 1642.5,-436.5 1540.5,-436.5"/>
-<text text-anchor="start" x="1573" y="-520.3" font-family="Times,serif" font-size="14.00">Read</text>
-<polyline fill="none" stroke="black" points="1540.5,-512.5 1642.5,-512.5 "/>
-<text text-anchor="start" x="1548.5" y="-497.3" font-family="Times,serif" font-size="14.00">data_source</text>
-<text text-anchor="start" x="1548.5" y="-482.3" font-family="Times,serif" font-size="14.00">is2catalog</text>
-<text text-anchor="start" x="1548.5" y="-467.3" font-family="Times,serif" font-size="14.00">vars</text>
-<polyline fill="none" stroke="black" points="1540.5,-459.5 1642.5,-459.5 "/>
-<text text-anchor="start" x="1571" y="-444.3" font-family="Times,serif" font-size="14.00">load()</text>
+<polygon fill="none" stroke="black" points="1540.5,-444 1540.5,-528 1642.5,-528 1642.5,-444 1540.5,-444"/>
+<text text-anchor="start" x="1573" y="-512.8" font-family="Times,serif" font-size="14.00">Read</text>
+<polyline fill="none" stroke="black" points="1540.5,-505 1642.5,-505 "/>
+<text text-anchor="start" x="1548.5" y="-489.8" font-family="Times,serif" font-size="14.00">data_source</text>
+<text text-anchor="start" x="1548.5" y="-474.8" font-family="Times,serif" font-size="14.00">vars</text>
+<polyline fill="none" stroke="black" points="1540.5,-467 1642.5,-467 "/>
+<text text-anchor="start" x="1571" y="-451.8" font-family="Times,serif" font-size="14.00">load()</text>
 </g>
 <!-- icepyx.core.spatial.Spatial -->
 <g id="node11" class="node">
@@ -255,7 +254,7 @@
 <polyline fill="none" stroke="black" points="1243,-159 1618,-159 "/>
 <text text-anchor="start" x="1343" y="-143.8" font-family="Times,serif" font-size="14.00">path : NoneType</text>
 <text text-anchor="start" x="1343" y="-128.8" font-family="Times,serif" font-size="14.00">product : NoneType</text>
-<text text-anchor="start" x="1343" y="-113.8" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
+<text text-anchor="start" x="1343" y="-113.8" font-family="Times,serif" font-size="14.00">wanted : dict, NoneType</text>
 <polyline fill="none" stroke="black" points="1243,-106 1618,-106 "/>
 <text text-anchor="start" x="1251" y="-90.8" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list)</text>
 <text text-anchor="start" x="1251" y="-75.8" font-family="Times,serif" font-size="14.00">avail(options, internal)</text>
@@ -292,8 +291,8 @@
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read -->
 <g id="edge17" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read</title>
-<path fill="none" stroke="black" d="M1491.78,-182.03C1504.65,-199.49 1517.14,-218.73 1526.5,-238 1555.65,-298 1572.99,-372.78 1582.33,-424.25"/>
-<polygon fill="black" stroke="black" points="1582.35,-424.34 1587.32,-429.56 1584.42,-436.16 1579.44,-430.94 1582.35,-424.34"/>
+<path fill="none" stroke="black" d="M1491.78,-182.03C1504.65,-199.49 1517.14,-218.73 1526.5,-238 1557.11,-301.01 1574.7,-380.31 1583.67,-431.8"/>
+<polygon fill="black" stroke="black" points="1583.73,-432.11 1588.67,-437.37 1585.72,-443.95 1580.78,-438.7 1583.73,-432.11"/>
 <text text-anchor="middle" x="1571" y="-241.8" font-family="Times,serif" font-size="14.00" fill="green">_read_vars</text>
 </g>
 <!-- icepyx.core.visualization.Visualize -->
@@ -302,11 +301,11 @@
 <polygon fill="none" stroke="black" points="1914,-0.5 1914,-219.5 2243,-219.5 2243,-0.5 1914,-0.5"/>
 <text text-anchor="start" x="2046.5" y="-204.3" font-family="Times,serif" font-size="14.00">Visualize</text>
 <polyline fill="none" stroke="black" points="1914,-196.5 2243,-196.5 "/>
-<text text-anchor="start" x="1993" y="-181.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
-<text text-anchor="start" x="1993" y="-166.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
-<text text-anchor="start" x="1993" y="-151.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
-<text text-anchor="start" x="1993" y="-136.3" font-family="Times,serif" font-size="14.00">product : NoneType, str</text>
-<text text-anchor="start" x="1993" y="-121.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
+<text text-anchor="start" x="1994" y="-181.3" font-family="Times,serif" font-size="14.00">bbox : list</text>
+<text text-anchor="start" x="1994" y="-166.3" font-family="Times,serif" font-size="14.00">cycles : NoneType</text>
+<text text-anchor="start" x="1994" y="-151.3" font-family="Times,serif" font-size="14.00">date_range : NoneType</text>
+<text text-anchor="start" x="1994" y="-136.3" font-family="Times,serif" font-size="14.00">product : str, NoneType</text>
+<text text-anchor="start" x="1994" y="-121.3" font-family="Times,serif" font-size="14.00">tracks : NoneType</text>
 <polyline fill="none" stroke="black" points="1914,-113.5 2243,-113.5 "/>
 <text text-anchor="start" x="1922" y="-98.3" font-family="Times,serif" font-size="14.00">generate_OA_parameters(): list</text>
 <text text-anchor="start" x="1922" y="-83.3" font-family="Times,serif" font-size="14.00">grid_bbox(binsize): list</text>

@@ -1,11 +1,14 @@
 import fnmatch
+import glob
 import os
 import warnings
 
+import h5py
 import numpy as np
 import xarray as xr
 
 import icepyx.core.is2ref as is2ref
+from icepyx.core.query import Query
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
 
@@ -297,56 +300,79 @@ class Read:
 
     def __init__(
         self,
-        data_source=None,
-        product=None,
-        filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
+        path,  # TODO how to deal with the fact that this is required in later versions
+        # but does not exist in past versions?
         out_obj_type=None,  # xr.Dataset,
+        product=None,
+        data_source=None,
+        filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
     ):
-        if data_source is None:
-            raise ValueError("Please provide a data source.")
-        else:
-            self._source_type = _check_datasource(data_source)
-            self.data_source = data_source
+        # Raise warnings for depreciated arguments
+        if data_source:
+            warnings.warn('The `data_source` argument is depreciated. Please use the path argument instead.')
+        # TODO this check doesn't work because default isn't None
+        if filename_pattern:
+            warnings.warn('The `filename_pattern` argument is depreciated. Instead please provide a glob string to the `path` argument')
 
-        if product is None:
-            raise ValueError(
-                "Please provide the ICESat-2 data product of your file(s)."
-            )
+        # CREATE THE FILELIST
+        # Create the filelist from the user `path` argument
+        if isinstance(path, list):
+            self._filelist = path
+        # Discussion: I think actually this parameter type will only exist for cloud?
+        # Unless we really want to abstract more stuff, i.e. the downloading
+        # elif isinstance(path, Query):
+        #     self._filelist = path.
+        elif os.path.isdir(path):
+            path = os.path.join(path, '*')
+            # TODO better flow so ths glob doesn't happen twice
+            self._filelist = glob.glob(path)
         else:
-            self._prod = is2ref._validate_product(product)
-        pattern_ck, filelist = Read._check_source_for_pattern(
-            data_source, filename_pattern
-        )
-        assert pattern_ck
-        # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
-        self._pattern = filename_pattern
+            # Discussion: should we default to recursive or not?
+            # Could allow for glob kwargs, but at that point I think we should just tell
+            # the user to run glob themself to create the filelist.
+            self._filelist = glob.glob(path)
 
-        # this is a first pass at getting rid of mixed product types and warning the user.
-        # it takes an approach assuming the product name is in the filename, but needs reworking if we let multiple products be loaded
-        # one way to handle this would be bring in the product info during the loading step and fill in product there instead of requiring it from the user
-        filtered_filelist = [file for file in filelist if self._prod in file]
-        if len(filtered_filelist) == 0:
-            warnings.warn(
-                "Your filenames do not contain a product identifier (e.g. ATL06). "
-                "You will likely need to manually merge your dataframes."
-            )
-            self._filelist = filelist
-        elif len(filtered_filelist) < len(filelist):
-            warnings.warn(
-                "Some files matching your filename pattern were removed as they were not the specified product."
-            )
-            self._filelist = filtered_filelist
-        else:
-            self._filelist = filelist
-
+        # EXTRACT THE PRODUCT FOR EACH FILE
+        # Note for ticket: this logic got a little complex in the attempt to maintain a
+        # user-given product argument. If this gets depreciated we could depricate this
+        # Create a dictionary of the metadata extracted 
+        product_dict = {}
+        for file_ in self._filelist:
+            product_dict[file_] = self._extract_product(file_)
+        # DEAL WITH MULTIPLE PRODUCTS IN THE LIST
+        # raise warning if there are multiple products present
+        if len(set(product_dict.values())) > 1:
+            # filter to only one product
+            if product:
+                warnings.warn(f'Multiple products found in list of files: {product_dict}. Files that do not match the user specified product will be removed from processing.')
+                # TODO thoughts on making filelist public read-only? It seems fair as I write
+                # all these warnings/error messages that reference a filelist.
+                self._filelist = []
+                for key, value in product_dict.items():
+                    if value == product:
+                        self._filelist.append(key)
+                    product_dict.pop(key)
+                if len(self._filelist) == 0:
+                    raise 'No files found in the file list matching the user-specified product type'
+            else:
+                raise TypeError(f'Multiple product types were found in the file list: {product_dict}. Please provide a valid `path` parameter indicating files of a single product')
+        # ASSIGN A PRODUCT TO THIS FILELIST
+        self.product = list(product_dict.values())[0]
+        if product and self.product != product:
+            warnings.warn(f'User specified product {product} does not match the product from the file metadata {self.product}')
+        
+        # Discussion: is this code meaningful to others? or can it be cleaned up?
         # after validation, use the notebook code and code outline to start implementing the rest of the class
-
+        
         if out_obj_type is not None:
             print(
                 "Output object type will be an xarray DataSet - "
                 "no other output types are implemented yet"
             )
         self._out_obj = xr.Dataset
+        
+        print('filelist:', self._filelist)
+        print('product', self.product)
 
     # ----------------------------------------------------------------------
     # Properties
@@ -379,6 +405,16 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Methods
+    
+    @staticmethod
+    def _extract_product(filepath):
+        with h5py.File(filepath, 'r') as f:
+            try:
+                product = f['METADATA']['DatasetIdentification'].attrs['shortName'].decode()
+            # TODO test that this is the proper error
+            except KeyError:
+                raise 'Unable to parse the product name from file metadata'
+        return product
 
     @staticmethod
     def _check_source_for_pattern(source, filename_pattern):

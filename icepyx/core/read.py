@@ -300,69 +300,83 @@ class Read:
 
     def __init__(
         self,
-        path,  # TODO how to deal with the fact that this is required in later versions
-        # but does not exist in past versions?
-        out_obj_type=None,  # xr.Dataset,
+        path=None,
         product=None,
         data_source=None,
         filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
+        out_obj_type=None,  # xr.Dataset,
     ):
         # Raise warnings for depreciated arguments
         if data_source:
-            warnings.warn('The `data_source` argument is depreciated. Please use the path argument instead.')
-        # TODO this check doesn't work because default isn't None
-        if filename_pattern:
-            warnings.warn('The `filename_pattern` argument is depreciated. Instead please provide a glob string to the `path` argument')
+            warnings.warn(
+                'The `data_source` argument is depreciated. Please use the path argument '
+                'instead.'
+            )
+        if filename_pattern != "ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5":
+            warnings.warn(
+                'The `filename_pattern` argument is depreciated. Instead please provide a '
+                'glob string to the `path` argument'
+            )
+        if product:
+            product = is2ref._validate_product(product)
+            warnings.warn(
+                'The `product` argument is no longer required. If the `path` argument given '
+                'contains files with multiple products the `product` argument will be used '
+                'to filter that list. In all other cases the product argument is ignored. '
+                'The recommended approach is to not include a `product` argument and instead '
+                'provide a `path` with files of only a single product type`.'
+            )
 
-        # CREATE THE FILELIST
         # Create the filelist from the user `path` argument
         if isinstance(path, list):
             self._filelist = path
-        # Discussion: I think actually this parameter type will only exist for cloud?
-        # Unless we really want to abstract more stuff, i.e. the downloading
-        # elif isinstance(path, Query):
-        #     self._filelist = path.
         elif os.path.isdir(path):
             path = os.path.join(path, '*')
-            # TODO better flow so ths glob doesn't happen twice
             self._filelist = glob.glob(path)
         else:
-            # Discussion: should we default to recursive or not?
-            # Could allow for glob kwargs, but at that point I think we should just tell
-            # the user to run glob themself to create the filelist.
             self._filelist = glob.glob(path)
+        # Remove any directories from the list
+        self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
 
-        # EXTRACT THE PRODUCT FOR EACH FILE
-        # Note for ticket: this logic got a little complex in the attempt to maintain a
-        # user-given product argument. If this gets depreciated we could depricate this
-        # Create a dictionary of the metadata extracted 
+        # Create a dictionary of the products as read from the metadata
         product_dict = {}
         for file_ in self._filelist:
             product_dict[file_] = self._extract_product(file_)
-        # DEAL WITH MULTIPLE PRODUCTS IN THE LIST
-        # raise warning if there are multiple products present
-        if len(set(product_dict.values())) > 1:
-            # filter to only one product
+            
+        # Raise warnings or errors for muliple products or products not matching the user-specified product
+        all_products = list(set(product_dict.values()))
+        if len(all_products) > 1:
             if product:
-                warnings.warn(f'Multiple products found in list of files: {product_dict}. Files that do not match the user specified product will be removed from processing.')
-                # TODO thoughts on making filelist public read-only? It seems fair as I write
-                # all these warnings/error messages that reference a filelist.
+                warnings.warn(
+                    f'Multiple products found in list of files: {product_dict}. Files that '
+                    'do not match the user specified product will be removed from processing.'
+                )
                 self._filelist = []
                 for key, value in product_dict.items():
                     if value == product:
                         self._filelist.append(key)
-                    product_dict.pop(key)
                 if len(self._filelist) == 0:
-                    raise 'No files found in the file list matching the user-specified product type'
+                    raise TypeError(
+                        'No files found in the file list matching the user-specified '
+                        'product type'
+                    )
+                # Use the cleaned filelist to assign a product
+                self._product = product
             else:
-                raise TypeError(f'Multiple product types were found in the file list: {product_dict}. Please provide a valid `path` parameter indicating files of a single product')
-        # ASSIGN A PRODUCT TO THIS FILELIST
-        self.product = list(product_dict.values())[0]
-        if product and self.product != product:
-            warnings.warn(f'User specified product {product} does not match the product from the file metadata {self.product}')
-        
-        # Discussion: is this code meaningful to others? or can it be cleaned up?
-        # after validation, use the notebook code and code outline to start implementing the rest of the class
+                raise TypeError(
+                    f'Multiple product types were found in the file list: {product_dict}.'
+                    'Please provide a valid `path` parameter indicating files of a single '
+                    'product'
+                )
+        else:
+            # Assign the identified product to the property
+            self._product = all_products[0]
+        # Raise a warning if the metadata-located product differs from the user-specified product
+        if product and self._product != product:
+            warnings.warn(
+                f'User specified product {product} does not match the product from the file'
+                ' metadata {self._product}'
+            )
         
         if out_obj_type is not None:
             print(
@@ -370,9 +384,6 @@ class Read:
                 "no other output types are implemented yet"
             )
         self._out_obj = xr.Dataset
-        
-        print('filelist:', self._filelist)
-        print('product', self.product)
 
     # ----------------------------------------------------------------------
     # Properties
@@ -398,18 +409,45 @@ class Read:
 
         if not hasattr(self, "_read_vars"):
             self._read_vars = Variables(
-                "file", path=self._filelist[0], product=self._prod
+                "file", path=self.filelist[0], product=self.product
             )
 
         return self._read_vars
+    
+    @property
+    def filelist(self):
+        """
+        A read-only property for the user to view the list of files represented by this
+        Read object.
+        """
+        return self._filelist
+    
+    @property
+    def num_files(self):
+        """
+        Return the number of files that is being processed by the object
+        """
+        return len(self.filelist)
+
+    @property
+    def product(self):
+        """
+        A read-only property for the user to view the product associated with the Read
+        object.
+        """
+        return self._product
 
     # ----------------------------------------------------------------------
     # Methods
     
     @staticmethod
     def _extract_product(filepath):
+        """
+        Read the product type from the metadata of the file. Return the product as a string.
+        """
         with h5py.File(filepath, 'r') as f:
             try:
+                # TODO consider: should we get this from the top level attrs instead? 
                 product = f['METADATA']['DatasetIdentification'].attrs['shortName'].decode()
             # TODO test that this is the proper error
             except KeyError:
@@ -675,7 +713,7 @@ class Read:
         # However, this led to errors when I tried to combine two identical datasets because the single dimension was equal.
         # In these situations, xarray recommends manually controlling the merge/concat process yourself.
         # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
-        for file in self._filelist:
+        for file in self.filelist:
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
@@ -710,7 +748,7 @@ class Read:
                 gran_idx=[np.uint64(999999)],
                 source_file=(["gran_idx"], [file]),
             ),
-            attrs=dict(data_product=self._prod),
+            attrs=dict(data_product=self.product),
         )
         return is2ds
 
@@ -754,20 +792,11 @@ class Read:
         -------
         Xarray Dataset
         """
-        file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
-        assert (
-            file_product == self._prod
-        ), "Your product specification does not match the product specification within your files."
-        # I think the below method might NOT read the file into memory as the above might?
-        # import h5py
-        # with h5py.File(filepath,'r') as h5pt:
-        #     prod_id = h5pt.attrs["identifier_product_type"]
-
         # DEVNOTE: if and elif does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
         # if a gridded product
         # TODO: all products need to be tested, and quicklook products added or explicitly excluded
         # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
-        if self._prod in [
+        if self.product in [
             "ATL14",
             "ATL15",
             "ATL16",
@@ -780,7 +809,7 @@ class Read:
             is2ds = xr.open_dataset(file)
 
         # Level 3b, hdf5: ATL11
-        elif self._prod in ["ATL11"]:
+        elif self.product in ["ATL11"]:
             is2ds = self._build_dataset_template(file)
 
             # returns the wanted groups as a single list of full group path strings

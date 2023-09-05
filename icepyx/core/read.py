@@ -297,26 +297,23 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Constructors
-
+    
+    # TODO -- update docstring
+    
     def __init__(
         self,
-        path=None,
+        data_source,
         product=None,
-        data_source=None,
-        filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
+        filename_pattern=None,
         out_obj_type=None,  # xr.Dataset,
     ):
         # Raise warnings for depreciated arguments
-        if data_source:
-            warnings.warn(
-                'The `data_source` argument is depreciated. Please use the path argument '
-                'instead.'
-            )
-        if filename_pattern != "ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5":
+        if filename_pattern:
             warnings.warn(
                 'The `filename_pattern` argument is depreciated. Instead please provide a '
-                'glob string to the `path` argument'
+                'string, list, or glob string to the `data_source` argument.'
             )
+        
         if product:
             product = is2ref._validate_product(product)
             warnings.warn(
@@ -327,14 +324,21 @@ class Read:
                 'provide a `path` with files of only a single product type`.'
             )
 
-        # Create the filelist from the user `path` argument
-        if isinstance(path, list):
-            self._filelist = path
-        elif os.path.isdir(path):
-            path = os.path.join(path, '*')
-            self._filelist = glob.glob(path)
+        # Create the filelist from the `data_source` argument
+        if filename_pattern:
+            # maintained for backward compatibility
+            pattern_ck, filelist = Read._check_source_for_pattern(
+                data_source, filename_pattern
+            )
+            assert pattern_ck
+            self._filelist = filelist
+        elif isinstance(data_source, list):
+            self._filelist = data_source
+        elif os.path.isdir(data_source):
+            data_source = os.path.join(data_source, '*')
+            self._filelist = glob.glob(data_source)
         else:
-            self._filelist = glob.glob(path)
+            self._filelist = glob.glob(data_source)
         # Remove any directories from the list
         self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
 
@@ -342,7 +346,7 @@ class Read:
         product_dict = {}
         for file_ in self._filelist:
             product_dict[file_] = self._extract_product(file_)
-            
+        
         # Raise warnings or errors for muliple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
@@ -417,23 +421,21 @@ class Read:
     @property
     def filelist(self):
         """
-        A read-only property for the user to view the list of files represented by this
-        Read object.
+        A read-only property for viewing the list of files represented by this Read object.
         """
         return self._filelist
     
     @property
     def num_files(self):
         """
-        Return the number of files that is being processed by the object
+        Return the number of files that are being processed
         """
         return len(self.filelist)
 
     @property
     def product(self):
         """
-        A read-only property for the user to view the product associated with the Read
-        object.
+        A read-only property for the user to view the product associated with the Read object.
         """
         return self._product
 
@@ -449,6 +451,7 @@ class Read:
             try:
                 # TODO consider: should we get this from the top level attrs instead? 
                 product = f['METADATA']['DatasetIdentification'].attrs['shortName'].decode()
+                product = is2ref._validate_product(product)
             # TODO test that this is the proper error
             except KeyError:
                 raise 'Unable to parse the product name from file metadata'

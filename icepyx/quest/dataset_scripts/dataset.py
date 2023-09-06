@@ -7,7 +7,7 @@ warnings.filterwarnings("ignore")
 class DataSet:
 
     """
-    Template parent class for all QUEST supported datasets (i.e. ICESat-2, Argo, MODIS, etc.).
+    Template parent class for all QUEST supported datasets (i.e. ICESat-2, Argo BGC, Argo, MODIS, etc.).
     All sub-classes must support the following methods for use via the QUEST class.
     """
 
@@ -17,7 +17,7 @@ class DataSet:
         """
         Complete any dataset specific initializations (i.e. beyond space and time) required here.
         For instance, ICESat-2 requires a product, and Argo requires parameters.
-        You could also check that the "default" space and time supplied by QUEST are the right format
+        One can also check that the "default" space and time supplied by QUEST are the right format
         (e.g. if the spatial extent must be a bounding box).
         """
         raise NotImplementedError
@@ -60,7 +60,7 @@ class DataSet:
     def search_data(self):
         """
         Query the dataset (i.e. search for available data)
-        given the spatio temporal criteria and other parameters specific to the dataset.
+        given the spatiotemporal criteria and other parameters specific to the dataset.
         """
         raise NotImplementedError
 

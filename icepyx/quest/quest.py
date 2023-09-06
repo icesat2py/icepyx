@@ -137,26 +137,36 @@ class Quest(GenQuery):
     # Methods (on all datasets)
 
     # error handling? what happens when one of i fails...
-    def search_all(self):
+    def search_all(self, **kwargs):
         """
         Searches for requred dataset within platform (i.e. ICESat-2, Argo) of interest.
+
+        Parameters
+        ----------
+        **kwargs : default None
+                Optional passing of keyword arguments to supply additional search constraints per datasets.
+                Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
+                and the value is a dictionary of acceptable keyword arguments
+                and values allowable for the `search_data()` function for that dataset.
+                For instance: `icesat2 = {"IDs":True}, argo = {}`.
         """
         print("\nSearching all datasets...")
 
-        for i in self.datasets.values():
+        for k, v in self.datasets.items():
             print()
-            try:
-                # querying ICESat-2 data
-                if isinstance(i, Query):
-                    print("---ICESat-2---")
-                    msg = i.avail_granules()
-                    print(msg)
-                else: # querying all other data sets
-                    print(i)
-                    i.search_data()
-            except:
-                dataset_name = type(i).__name__
-                print("Error querying data from {0}".format(dataset_name))
+            if isinstance(v, Query):
+                print("---ICESat-2---")
+                try:
+                    msg = v.avail_granules(kwargs[k])
+                except KeyError:
+                    msg = v.avail_granules()
+                print(msg)
+            else:
+                print(v)
+                try:
+                    v.search_data(kwargs[k])
+                except KeyError:
+                    v.search_data()
 
     # error handling? what happens when one of i fails...
     def download_all(self, path=""):
@@ -174,3 +184,27 @@ class Quest(GenQuery):
                 print(i)
 
     # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality
+
+
+# Todo: remove this later -- just here for debugging
+if __name__ == "__main__":
+    bounding_box = [-150, 30, -120, 60]
+    date_range = ["2022-06-07", "2022-06-14"]
+    my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
+    # print(my_quest.spatial)
+    # print(my_quest.temporal)
+
+    # my_quest.add_argo(params=["down_irradiance412", "temperature"])
+    # print(my_quest.datasets["argo"].params)
+
+    my_quest.add_icesat2(product="ATL06")
+    # print(my_quest.datasets["icesat2"].product)
+
+    print(my_quest)
+
+    # make sure to add some test cases for passing in kwargs...
+    my_quest.search_all()
+    # my_quest.search_all(icesat2={"IDs":True})
+
+    # this one still needs work for IS2 because of auth...
+    my_quest.download_all()

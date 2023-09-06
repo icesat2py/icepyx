@@ -59,7 +59,7 @@ class Quest(GenQuery):
         date_range=None,
         start_time=None,
         end_time=None,
-        proj="Default",
+        proj="default",
     ):
         """
         Tells QUEST to initialize data given the user input spatiotemporal data.
@@ -94,9 +94,23 @@ class Quest(GenQuery):
         tracks=None,
         files=None,
         **kwargs,
-    ):
+    ) -> None:
         """
         Adds ICESat-2 datasets to QUEST structure.
+
+        Parameters
+        ----------
+
+        For details on inputs, see the Query documentation.
+
+        Returns
+        -------
+        None
+
+        See Also
+        --------
+        icepyx.core.GenQuery
+        icepyx.core.Query
         """
 
         query = Query(
@@ -146,7 +160,7 @@ class Quest(GenQuery):
 
     # error handling? what happens when one of i fails...
     def download_all(self, path=""):
-        ' ' 'Downloads requested dataset(s).' ' '
+        " " "Downloads requested dataset(s)." " "
         print("\nDownloading all datasets...")
 
         for i in self.datasets.values():

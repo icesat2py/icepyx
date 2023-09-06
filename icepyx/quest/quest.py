@@ -9,8 +9,8 @@ from icepyx.core.query import GenQuery, Query
 class Quest(GenQuery):
     """
     QUEST - Query Unify Explore SpatioTemporal - object to query, obtain, and perform basic
-    operations on datasets for combined analysis with ICESat-2 data products.
-    A new dataset can be added using the `dataset.py` template.
+    operations on datasets (i.e. Argo, BGC Argo, MODIS, etc) for combined analysis with ICESat-2
+    data products. A new dataset can be added using the `dataset.py` template.
     QUEST expands the icepyx GenQuery superclass.
 
     See the doc page for GenQuery for details on temporal and spatial input parameters.
@@ -61,7 +61,9 @@ class Quest(GenQuery):
         end_time=None,
         proj="Default",
     ):
-       ' ' 'Initializes analyis from user input space and time data.' ' '
+        """
+        Tells QUEST to initialize data given the user input spatiotemporal data.
+        """
         super().__init__(spatial_extent, date_range, start_time, end_time)
         self.datasets = {}
 
@@ -93,7 +95,9 @@ class Quest(GenQuery):
         files=None,
         **kwargs,
     ):
-        ' ' 'Adds ICESat-2 datasets within superclass format.' ' '
+        """
+        Adds ICESat-2 datasets to QUEST structure.
+        """
 
         query = Query(
             product,
@@ -120,7 +124,9 @@ class Quest(GenQuery):
 
     # error handling? what happens when one of i fails...
     def search_all(self):
-        ' ' 'Searches for requested dataset within data class.' ' '
+        """
+        Searches for requred dataset within platform (i.e. ICESat-2, Argo) of interest.
+        """
         print("\nSearching all datasets...")
 
         for i in self.datasets.values():
@@ -135,7 +141,7 @@ class Quest(GenQuery):
 
     # error handling? what happens when one of i fails...
     def download_all(self, path=""):
-        ' ' 'Downloads requested dataset.' ' '
+        ' ' 'Downloads requested dataset(s).' ' '
         print("\nDownloading all datasets...")
 
         for i in self.datasets.values():

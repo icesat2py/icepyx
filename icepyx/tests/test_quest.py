@@ -75,6 +75,18 @@ def test_search_all(quest_instance):
     quest_instance.search_all()
 
 
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"icesat2": {"IDs": True}},
+        # {"argo":{"presRange":"10,500"}},
+        # {"icesat2":{"IDs":True}, "argo":{"presRange":"10,500"}}
+    ],
+)
+def test_search_all_kwargs(quest_instance, kwargs):
+    quest_instance.search_all(**kwargs)
+
+
 def test_download_all():
     # this will require auth in some cases...
     pass

@@ -148,7 +148,7 @@ class Quest(GenQuery):
                 Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
                 and the value is a dictionary of acceptable keyword arguments
                 and values allowable for the `search_data()` function for that dataset.
-                For instance: `icesat2 = {"IDs":True}, argo = {}`.
+                For instance: `icesat2 = {"IDs":True}, argo = {"presRange":"10,500"}`.
         """
         print("\nSearching all datasets...")
 
@@ -162,26 +162,44 @@ class Quest(GenQuery):
                     msg = v.avail_granules()
                 print(msg)
             else:
-                print(v)
+                print(k)
                 try:
                     v.search_data(kwargs[k])
                 except KeyError:
                     v.search_data()
 
     # error handling? what happens when one of i fails...
-    def download_all(self, path=""):
-        " " "Downloads requested dataset(s)." " "
+    def download_all(self, path="", **kwargs):
+        """
+        Downloads requested dataset(s).
+
+        Parameters
+        ----------
+        **kwargs : default None
+                Optional passing of keyword arguments to supply additional search constraints per datasets.
+                Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
+                and the value is a dictionary of acceptable keyword arguments
+                and values allowable for the `search_data()` function for that dataset.
+                For instance: `icesat2 = {"verbose":True}, argo = {"keep_existing":True}`.
+        """
         print("\nDownloading all datasets...")
 
-        for i in self.datasets.values():
+        for k, v in self.datasets.items():
             print()
-            if isinstance(i, Query):
+            if isinstance(v, Query):
                 print("---ICESat-2---")
-                msg = i.download_granules(path)
+                try:
+                    msg = v.download_granules(path, kwargs[k])
+                except KeyError:
+                    msg = v.download_granules(path)
                 print(msg)
             else:
-                i.download()
-                print(i)
+                print(k)
+                try:
+                    msg = v.download(kwargs[k])
+                except KeyError:
+                    msg = v.download()
+                print(msg)
 
     # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality
 
@@ -198,7 +216,9 @@ if __name__ == "__main__":
     # print(my_quest.datasets["argo"].params)
 
     my_quest.add_icesat2(product="ATL06")
+    my_quest.datasets["argo"] = "fake argo object"
     # print(my_quest.datasets["icesat2"].product)
+    print(my_quest.datasets)
 
     print(my_quest)
 

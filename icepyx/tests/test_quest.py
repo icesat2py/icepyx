@@ -87,6 +87,18 @@ def test_search_all_kwargs(quest_instance, kwargs):
     quest_instance.search_all(**kwargs)
 
 
-def test_download_all():
-    # this will require auth in some cases...
-    pass
+# TESTS NOT IMPLEMENTED
+# def test_download_all():
+#     # this will require auth in some cases...
+#     pass
+
+# @pytest.mark.parametrize(
+#     "kwargs",
+#     [
+#         {"icesat2": {"verbose":True}},
+#         # {"argo":{"keep_existing":True},
+#         # {"icesat2":{"verbose":True}, "argo":{"keep_existing":True}
+#     ],
+# )
+# def test_download_all_kwargs(quest_instance, kwargs):
+#     pass

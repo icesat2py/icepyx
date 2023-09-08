@@ -8,11 +8,8 @@ import numpy as np
 import xarray as xr
 
 import icepyx.core.is2ref as is2ref
-from icepyx.core.query import Query
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
-
-# from icepyx.core.query import Query
 
 
 def _make_np_datetime(df, keyword):
@@ -267,19 +264,19 @@ class Read:
 
     Parameters
     ----------
-    data_source : string
-        A string with a full file path or full directory path to ICESat-2 hdf5 (.h5) format files.
-        Files within a directory must have a consistent filename pattern that includes the "ATL??" data product name.
-        Files must all be within a single directory.
+    data_source : string, List
+        A string or list which specifies the files to be read. The string can be either: 1) the path of a single file 2) the path to a directory or 3) a [glob string](https://docs.python.org/3/library/glob.html).
 
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
+        **Depreciation warning:** This argument is no longer required and will be depreciated in version 1.0.0. The dataset product is read from the file metadata.
 
     filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
+        **Depreciation warning:** This argument is no longer required and will be depreciated in version 1.0.0.
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
@@ -292,13 +289,31 @@ class Read:
 
     Examples
     --------
+    Reading a single file
+    ```
+    ipx.Read('/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5') # doctest: +SKIP
+    ```
+    Reading all files in a directory
+    ```
+    ipx.Read('/path/to/data/') # doctest: +SKIP
+    ```
+    Reading files that match a particular pattern (here, all .h5 files that start with `processed_ATL06_`).
+    ```
+    ipx.Read('/path/to/data/processed_ATL06_*.h5') # doctest: +SKIP
+    ```
+    Reading a specific list of files
+    ```
+    list_of_files = ['/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5', 
+                 '/path/to/more/data/processed_ATL06_20191202102922_10160505_006_01.h5']
+    ipx.Read(list_of_files) # doctest: +SKIP
+    ```
 
     """
 
     # ----------------------------------------------------------------------
     # Constructors
     
-    # TODO -- update docstring
+    # TODO -- what if user passes an empty list, or the glob string returns empty
     
     def __init__(
         self,
@@ -317,11 +332,11 @@ class Read:
         if product:
             product = is2ref._validate_product(product)
             warnings.warn(
-                'The `product` argument is no longer required. If the `path` argument given '
+                'The `product` argument is no longer required. If the `data_source` argument given '
                 'contains files with multiple products the `product` argument will be used '
                 'to filter that list. In all other cases the product argument is ignored. '
                 'The recommended approach is to not include a `product` argument and instead '
-                'provide a `path` with files of only a single product type`.'
+                'provide a `data_source` with files of only a single product type`.'
             )
 
         # Create the filelist from the `data_source` argument
@@ -369,7 +384,7 @@ class Read:
             else:
                 raise TypeError(
                     f'Multiple product types were found in the file list: {product_dict}.'
-                    'Please provide a valid `path` parameter indicating files of a single '
+                    'Please provide a valid `data_source` parameter indicating files of a single '
                     'product'
                 )
         else:
@@ -448,15 +463,14 @@ class Read:
         Read the product type from the metadata of the file. Return the product as a string.
         """
         with h5py.File(filepath, 'r') as f:
-            try:
-                # TODO consider: should we get this from the top level attrs instead? 
-                product = f['METADATA']['DatasetIdentification'].attrs['shortName'].decode()
+            try: 
+                product = f.attrs['short_name'].decode()
                 product = is2ref._validate_product(product)
             # TODO test that this is the proper error
             except KeyError:
                 raise 'Unable to parse the product name from file metadata'
         return product
-
+    
     @staticmethod
     def _check_source_for_pattern(source, filename_pattern):
         """

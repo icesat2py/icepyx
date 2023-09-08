@@ -277,6 +277,8 @@ class Read:
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
         **Depreciation warning:** This argument is no longer required and will be depreciated in version 1.0.0.
+    glob_kwargs : dict, default {}
+        Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
@@ -313,13 +315,12 @@ class Read:
     # ----------------------------------------------------------------------
     # Constructors
     
-    # TODO -- what if user passes an empty list, or the glob string returns empty
-    
     def __init__(
         self,
         data_source,
         product=None,
         filename_pattern=None,
+        glob_kwargs = {},
         out_obj_type=None,  # xr.Dataset,
     ):
         # Raise warnings for depreciated arguments
@@ -351,9 +352,9 @@ class Read:
             self._filelist = data_source
         elif os.path.isdir(data_source):
             data_source = os.path.join(data_source, '*')
-            self._filelist = glob.glob(data_source)
+            self._filelist = glob.glob(data_source, **glob_kwargs)
         else:
-            self._filelist = glob.glob(data_source)
+            self._filelist = glob.glob(data_source, **glob_kwargs)
         # Remove any directories from the list
         self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
 
@@ -387,6 +388,11 @@ class Read:
                     'Please provide a valid `data_source` parameter indicating files of a single '
                     'product'
                 )
+        elif len(all_products) == 0:
+            raise TypeError(
+                'No files found matching the specified `data_source`. Check your glob '
+                'string or file list.'
+            )
         else:
             # Assign the identified product to the property
             self._product = all_products[0]

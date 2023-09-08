@@ -327,7 +327,8 @@ class Read:
         if filename_pattern:
             warnings.warn(
                 'The `filename_pattern` argument is depreciated. Instead please provide a '
-                'string, list, or glob string to the `data_source` argument.'
+                'string, list, or glob string to the `data_source` argument.',
+                stacklevel=2,
             )
         
         if product:
@@ -337,7 +338,8 @@ class Read:
                 'contains files with multiple products the `product` argument will be used '
                 'to filter that list. In all other cases the product argument is ignored. '
                 'The recommended approach is to not include a `product` argument and instead '
-                'provide a `data_source` with files of only a single product type`.'
+                'provide a `data_source` with files of only a single product type`.',
+                stacklevel=2,
             )
 
         # Create the filelist from the `data_source` argument
@@ -369,7 +371,8 @@ class Read:
             if product:
                 warnings.warn(
                     f'Multiple products found in list of files: {product_dict}. Files that '
-                    'do not match the user specified product will be removed from processing.'
+                    'do not match the user specified product will be removed from processing.',
+                    stacklevel=2,
                 )
                 self._filelist = []
                 for key, value in product_dict.items():
@@ -400,7 +403,8 @@ class Read:
         if product and self._product != product:
             warnings.warn(
                 f'User specified product {product} does not match the product from the file'
-                ' metadata {self._product}'
+                ' metadata {self._product}',
+                stacklevel=2,
             )
         
         if out_obj_type is not None:
@@ -442,21 +446,21 @@ class Read:
     @property
     def filelist(self):
         """
-        A read-only property for viewing the list of files represented by this Read object.
+        Return the list of files represented by this Read object.
         """
         return self._filelist
     
     @property
     def num_files(self):
         """
-        Return the number of files that are being processed
+        Return the number of files that are being processed.
         """
         return len(self.filelist)
 
     @property
     def product(self):
         """
-        A read-only property for the user to view the product associated with the Read object.
+        Return the product associated with the Read object.
         """
         return self._product
 

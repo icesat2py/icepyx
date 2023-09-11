@@ -25,17 +25,13 @@ New Features
     - add tests
 
 
-
-Bug fixes
-~~~~~~~~~
-
-- None
-
-
 Deprecations
 ~~~~~~~~~~~~
 
-- None
+- Remove intake catalog from Read module (#438)
+    
+    - delete is2cat.py and references
+    - remove intake and related modules
 
 
 Maintenance

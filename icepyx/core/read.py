@@ -272,8 +272,8 @@ class Read:
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
         **Depreciation warning:** This argument is no longer required and will be depreciated in version 1.0.0. The dataset product is read from the file metadata.
 
-    filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
-        String that shows the filename pattern as required for Intake's path_as_pattern argument.
+    filename_pattern : string, default None
+        String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
         **Depreciation warning:** This argument is no longer required and will be depreciated in version 1.0.0.
@@ -292,23 +292,18 @@ class Read:
     Examples
     --------
     Reading a single file
-    ```
-    ipx.Read('/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5') # doctest: +SKIP
-    ```
+    >>> ipx.Read('/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5') # doctest: +SKIP
+
     Reading all files in a directory
-    ```
-    ipx.Read('/path/to/data/') # doctest: +SKIP
-    ```
+    >>> ipx.Read('/path/to/data/') # doctest: +SKIP
+
     Reading files that match a particular pattern (here, all .h5 files that start with `processed_ATL06_`).
-    ```
-    ipx.Read('/path/to/data/processed_ATL06_*.h5') # doctest: +SKIP
-    ```
+    >>> ipx.Read('/path/to/data/processed_ATL06_*.h5') # doctest: +SKIP
+
     Reading a specific list of files
-    ```
-    list_of_files = ['/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5', 
+    >>> list_of_files = ['/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5', 
                  '/path/to/more/data/processed_ATL06_20191202102922_10160505_006_01.h5']
-    ipx.Read(list_of_files) # doctest: +SKIP
-    ```
+    >>> ipx.Read(list_of_files) # doctest: +SKIP
 
     """
 
@@ -326,7 +321,7 @@ class Read:
         # Raise warnings for depreciated arguments
         if filename_pattern:
             warnings.warn(
-                'The `filename_pattern` argument is depreciated. Instead please provide a '
+                'The `filename_pattern` argument is deprecated. Instead please provide a '
                 'string, list, or glob string to the `data_source` argument.',
                 stacklevel=2,
             )

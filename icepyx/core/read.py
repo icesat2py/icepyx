@@ -444,13 +444,6 @@ class Read:
         Return the list of files represented by this Read object.
         """
         return self._filelist
-    
-    @property
-    def num_files(self):
-        """
-        Return the number of files that are being processed.
-        """
-        return len(self.filelist)
 
     @property
     def product(self):

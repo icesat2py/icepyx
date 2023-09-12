@@ -20,7 +20,6 @@ Attributes
    :toctree: ../../_icepyx/
 
    Read.filelist
-   Read.num_files
    Read.product
    Read.vars
 

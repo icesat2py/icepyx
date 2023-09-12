@@ -302,9 +302,9 @@ class Read:
 
     Reading a specific list of files
     >>> list_of_files = [
-        '/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5', 
-        '/path/to/more/data/processed_ATL06_20191202102922_10160505_006_01.h5',
-        ]
+    ... '/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5', 
+    ... '/path/to/more/data/processed_ATL06_20191202102922_10160505_006_01.h5',
+    ... ]
     >>> ipx.Read(list_of_files) # doctest: +SKIP
 
     """

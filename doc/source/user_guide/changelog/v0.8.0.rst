@@ -24,6 +24,8 @@ New Features
     - add docstrings and update example notebooks
     - add tests
 
+- add atl23 (new product) to lists and tests (#445)
+
 
 Deprecations
 ~~~~~~~~~~~~

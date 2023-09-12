@@ -205,6 +205,7 @@ def _run_fast_scandir(dir, fn_glob):
 
     return subfolders, files
 
+
 # Need to post on intake's page to see if this would be a useful contribution...
 # https://github.com/intake/intake/blob/0.6.4/intake/source/utils.py#L216
 def _pattern_to_glob(pattern):
@@ -697,8 +698,12 @@ class Read:
 
         """
 
-        return xr.open_dataset(file, group=grp_path, engine='h5netcdf', 
-                               backend_kwargs={'phony_dims': 'access'})
+        return xr.open_dataset(
+            file,
+            group=grp_path,
+            engine="h5netcdf",
+            backend_kwargs={"phony_dims": "access"},
+        )
 
     def _build_single_file_dataset(self, file, groups_list):
         """
@@ -740,6 +745,7 @@ class Read:
             "ATL19",
             "ATL20",
             "ATL21",
+            "ATL23",
         ]:
             is2ds = xr.open_dataset(file)
 

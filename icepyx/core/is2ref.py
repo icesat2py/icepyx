@@ -40,6 +40,7 @@ def _validate_product(product):
             "ATL19",
             "ATL20",
             "ATL21",
+            "ATL23",
         ], error_msg
     else:
         raise TypeError(error_msg)

@@ -273,6 +273,18 @@ def test_atl21_product():
     assert obs == expected
 
 
+def test_atl23_product():
+    lcds = "atl23"
+    obs = is2ref._validate_product(lcds)
+    expected = "ATL23"
+    assert obs == expected
+
+    ucds = "ATL23"
+    obs = is2ref._validate_product(ucds)
+    expected = "ATL23"
+    assert obs == expected
+
+
 ########## about_product ##########
 # Note: requires internet connection
 # could the github flat data option be used here? https://octo.github.com/projects/flat-data

@@ -7,6 +7,7 @@ import h5py
 import numpy as np
 import xarray as xr
 
+from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
@@ -205,6 +206,7 @@ def _run_fast_scandir(dir, fn_glob):
 
     return subfolders, files
 
+
 # Need to post on intake's page to see if this would be a useful contribution...
 # https://github.com/intake/intake/blob/0.6.4/intake/source/utils.py#L216
 def _pattern_to_glob(pattern):
@@ -277,6 +279,12 @@ class Read:
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
         **Depreciation warning:** This argument is no longer required and will be depreciated in version 1.0.0.
+             
+    catalog : string, default None
+        Full path to an Intake catalog for reading in data.
+        If you still need to create a catalog, leave as default.
+        **Deprecation warning:** This argument has been depreciated. Please use the data_source argument to pass in valid data.
+
     glob_kwargs : dict, default {}
         Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
 
@@ -314,13 +322,25 @@ class Read:
     
     def __init__(
         self,
-        data_source,
+        data_source=None,  # DevNote: Make this a required arg when catalog is removed
         product=None,
         filename_pattern=None,
+        catalog=None,
         glob_kwargs = {},
         out_obj_type=None,  # xr.Dataset,
     ):
-        # Raise warnings for depreciated arguments
+        # Raise error for deprecated argument
+        if catalog:
+            raise DeprecationError(
+                'The `catalog` argument has been deprecated and intake is no longer supported. '
+                'Please use the `data_source` argument to specify your dataset instead.'
+            )
+            
+        if data_source is None:
+            raise ValueError("data_source is a required arguemnt")
+            )
+           
+        # Raise warnings for deprecated arguments
         if filename_pattern:
             warnings.warn(
                 'The `filename_pattern` argument is deprecated. Instead please provide a '
@@ -788,8 +808,12 @@ class Read:
 
         """
 
-        return xr.open_dataset(file, group=grp_path, engine='h5netcdf', 
-                               backend_kwargs={'phony_dims': 'access'})
+        return xr.open_dataset(
+            file,
+            group=grp_path,
+            engine="h5netcdf",
+            backend_kwargs={"phony_dims": "access"},
+        )
 
     def _build_single_file_dataset(self, file, groups_list):
         """
@@ -822,6 +846,7 @@ class Read:
             "ATL19",
             "ATL20",
             "ATL21",
+            "ATL23",
         ]:
             is2ds = xr.open_dataset(file)
 

@@ -1,4 +1,4 @@
-class DepreciationError(Exception):
+class DeprecationError(Exception):
     """
     Class raised for use of functionality that is no longer supported by icepyx.
     """

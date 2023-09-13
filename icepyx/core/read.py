@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 import xarray as xr
 
-from icepyx.core.exceptions import DepreciationError
+from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
@@ -283,7 +283,7 @@ class Read:
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
         If you still need to create a catalog, leave as default.
-        **Depreciation warning:** This argument has been depreciated. Please use the data_source argument to pass in valid data.
+        **Deprecation warning:** This argument has been depreciated. Please use the data_source argument to pass in valid data.
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
@@ -312,8 +312,8 @@ class Read:
     ):
         # Raise error for depreciated argument
         if catalog:
-            raise DepreciationError(
-                'The `catalog` argument has been depreciated and intake is no longer supported. '
+            raise DeprecationError(
+                'The `catalog` argument has been deprecated and intake is no longer supported. '
                 'Please use the `data_source` argument to specify your dataset instead.'
             )
 

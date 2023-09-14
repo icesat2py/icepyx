@@ -169,8 +169,11 @@ class Visualize:
             self.bbox = [lonmin, latmin, lonmax, latmax]
 
         self.date_range = (
-            [query_obj._start.strftime("%Y-%m-%d"), query_obj._end.strftime("%Y-%m-%d")]
-            if hasattr(query_obj, "_start")
+            [
+                query_obj._temporal._start.strftime("%Y-%m-%d"),
+                query_obj._temporal._end.strftime("%Y-%m-%d"),
+            ]
+            if hasattr(query_obj, "_temporal")
             else None
         )
         self.cycles = query_obj._cycles if hasattr(query_obj, "_cycles") else None

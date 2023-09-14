@@ -338,7 +338,6 @@ class Read:
             
         if data_source is None:
             raise ValueError("data_source is a required arguemnt")
-            )
            
         # Raise warnings for deprecated arguments
         if filename_pattern:

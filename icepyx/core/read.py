@@ -5,6 +5,7 @@ import warnings
 import numpy as np
 import xarray as xr
 
+from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
@@ -278,6 +279,11 @@ class Read:
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
+        
+    catalog : string, default None
+        Full path to an Intake catalog for reading in data.
+        If you still need to create a catalog, leave as default.
+        **Deprecation warning:** This argument has been depreciated. Please use the data_source argument to pass in valid data.
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
@@ -301,8 +307,16 @@ class Read:
         data_source=None,
         product=None,
         filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
+        catalog=None,
         out_obj_type=None,  # xr.Dataset,
     ):
+        # Raise error for depreciated argument
+        if catalog:
+            raise DeprecationError(
+                'The `catalog` argument has been deprecated and intake is no longer supported. '
+                'Please use the `data_source` argument to specify your dataset instead.'
+            )
+
         if data_source is None:
             raise ValueError("Please provide a data source.")
         else:

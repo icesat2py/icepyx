@@ -687,17 +687,14 @@ class Query(GenQuery, EarthdataAuthMixin):
                 # DevGoal: check for active session here
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
-                        self._source,
+                        self,
                         auth = self.auth,
-                        product=self.product,
                         avail=self._cust_options["variables"],
                     )
                 else:
                     self._order_vars = Variables(
-                        self._source,
+                        self,
                         auth=self.auth,
-                        product=self.product,
-                        version=self._version,
                     )
 
         # I think this is where property setters come in, and one should be used here? Right now order_vars.avail is only filled in
@@ -728,10 +725,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(self._source, 
-                                            auth=self.auth,
-                                            product=self.product,
-                                           )
+                self._file_vars = Variables(self, auth=self.auth)
 
         return self._file_vars
 

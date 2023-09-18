@@ -1,9 +1,11 @@
 import numpy as np
 import os
 import pprint
+import warnings
 
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.is2ref as is2ref
+import icepyx.core as ipxc
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 
@@ -48,37 +50,53 @@ class Variables(EarthdataAuthMixin):
 
     def __init__(
         self,
-        vartype,
+        data_source,
+        # data_source is either 1) a dict (?) with product / version 2) a filepath (local for
+        # now) or 3) a Query object
+        vartype=None,
         avail=None,
         wanted=None,
-        product=None,
-        version=None,
-        path=None,
+        # product=None,
+        # version=None,
+        # path=None,
         auth=None,
     ):
+        if vartype or data_source in ['order', 'file']:
+            raise warnings.warn('Depreciation Warning', stacklevel=2)
+            # Make this an error
 
-        assert vartype in ["order", "file"], "Please submit a valid variables type flag"
+        # Set the product and version from the data_source
+        # These could be streamlined if we don't try to maintain backwards compat.
+        # Is this considered a user facing feature right now? If not maintaining compatibility
+        # isn't that important, because all we need to do is change the internal code.
+        if isinstance(data_source, ipxc.query.Query):
+            self.product = data_source.product
+            self.version = data_source.product_version
+        # TODO discussion: should a Read object be an option here?
+        # YES, but figure out what to do about version
+        elif isinstance(data_source, str):
+            self.path = data_source
+            # TODO set product and version? You don't really need to, but it maintains the 
+            # conceptual consistency
+        elif isinstance(data_source, dict):
+            # TODO: assume latest version if not given?
+            # TODO: validate version is valid?
+            if 'product' not in data_source.keys():
+                raise KeyError('message')
+            else:
+                self.product = is2ref._validate_product(data_source['product'])
+                # Set version if given, else set it to None
+                self.version = data_source.get('version', None)
+        else:
+            TypeError('message')
         
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self, auth=auth)
         
-        self._vartype = vartype
-        self.product = product
         self._avail = avail
         self.wanted = wanted
 
         # DevGoal: put some more/robust checks here to assess validity of inputs
-
-        if self._vartype == "order":
-            if self._avail == None:
-                self._version = version
-        elif self._vartype == "file":
-            # DevGoal: check that the list or string are valid dir/files
-            self.path = path
-
-    # @property
-    # def wanted(self):
-    #     return self._wanted
 
     def avail(self, options=False, internal=False):
         """
@@ -97,16 +115,14 @@ class Variables(EarthdataAuthMixin):
         .
         'quality_assessment/gt3r/signal_selection_source_fraction_3']
         """
-        # if hasattr(self, '_avail'):
-        #         return self._avail
-        # else:
-        if not hasattr(self, "_avail") or self._avail == None:
-            if self._vartype == "order":
-                self._avail = is2ref._get_custom_options(
-                    self.session, self.product, self._version
-                )["variables"]
 
-            elif self._vartype == "file":
+        if not hasattr(self, "_avail") or self._avail == None:
+            if not hasattr(self, 'path'):
+                self._avail = is2ref._get_custom_options(
+                    self.session, self.product, self.version
+                )["variables"]
+            else:
+                # If a path was given, use that file to read the variables
                 import h5py
 
                 self._avail = []

@@ -15,6 +15,7 @@ def _validate_product(product):
     """
     Confirm a valid ICESat-2 product was specified
     """
+    error_msg = "A valid product string was not provided. Check user input, if given, or file metadata."
     if isinstance(product, str):
         product = str.upper(product)
         assert product in [
@@ -40,9 +41,9 @@ def _validate_product(product):
             "ATL20",
             "ATL21",
             "ATL23",
-        ], "Please enter a valid product"
+        ], error_msg
     else:
-        raise TypeError("Please enter a product string")
+        raise TypeError(error_msg)
     return product
 
 

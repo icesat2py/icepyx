@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 import xarray as xr
 
-import icepyx.core.is2cat as is2cat
+from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
@@ -207,10 +207,61 @@ def _run_fast_scandir(dir, fn_glob):
     return subfolders, files
 
 
+# Need to post on intake's page to see if this would be a useful contribution...
+# https://github.com/intake/intake/blob/0.6.4/intake/source/utils.py#L216
+def _pattern_to_glob(pattern):
+    """
+    Adapted from intake.source.utils.path_to_glob to convert a path as pattern into a glob style path
+    that uses the pattern's indicated number of '?' instead of '*' where an int was specified.
+
+    Returns pattern if pattern is not a string.
+
+    Parameters
+    ----------
+    pattern : str
+        Path as pattern optionally containing format_strings
+
+    Returns
+    -------
+    glob_path : str
+        Path with int format strings replaced with the proper number of '?' and '*' otherwise.
+
+    Examples
+    --------
+    >>> _pattern_to_glob('{year}/{month}/{day}.csv')
+    '*/*/*.csv'
+    >>> _pattern_to_glob('{year:4}/{month:2}/{day:2}.csv')
+    '????/??/??.csv'
+    >>> _pattern_to_glob('data/{year:4}{month:02}{day:02}.csv')
+    'data/????????.csv'
+    >>> _pattern_to_glob('data/*.csv')
+    'data/*.csv'
+    """
+    from string import Formatter
+
+    if not isinstance(pattern, str):
+        return pattern
+
+    fmt = Formatter()
+    glob_path = ""
+    # prev_field_name = None
+    for literal_text, field_name, format_specs, _ in fmt.parse(format_string=pattern):
+        glob_path += literal_text
+        if field_name and (glob_path != "*"):
+            try:
+                glob_path += "?" * int(format_specs)
+            except ValueError:
+                glob_path += "*"
+                # alternatively, you could use bits=utils._get_parts_of_format_string(resolved_string, literal_texts, format_specs)
+                # and then use len(bits[i]) to get the length of each format_spec
+    # print(glob_path)
+    return glob_path
+
+
 # To do: test this class and functions therein
 class Read:
     """
-    Data object to create and use Intake catalogs to read ICESat-2 data into the specified formats.
+    Data object to read ICESat-2 data into the specified formats.
     Provides flexiblity for reading nested hdf5 files into common analysis formats.
 
     Parameters
@@ -228,10 +279,11 @@ class Read:
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-
+        
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
         If you still need to create a catalog, leave as default.
+        **Deprecation warning:** This argument has been depreciated. Please use the data_source argument to pass in valid data.
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
@@ -258,6 +310,12 @@ class Read:
         catalog=None,
         out_obj_type=None,  # xr.Dataset,
     ):
+        # Raise error for depreciated argument
+        if catalog:
+            raise DeprecationError(
+                'The `catalog` argument has been deprecated and intake is no longer supported. '
+                'Please use the `data_source` argument to specify your dataset instead.'
+            )
 
         if data_source is None:
             raise ValueError("Please provide a data source.")
@@ -271,7 +329,6 @@ class Read:
             )
         else:
             self._prod = is2ref._validate_product(product)
-
         pattern_ck, filelist = Read._check_source_for_pattern(
             data_source, filename_pattern
         )
@@ -298,11 +355,6 @@ class Read:
             self._filelist = filelist
 
         # after validation, use the notebook code and code outline to start implementing the rest of the class
-        if catalog is not None:
-            assert os.path.isfile(
-                catalog
-            ), f"Your catalog path '{catalog}' does not point to a valid file."
-            self._catalog_path = catalog
 
         if out_obj_type is not None:
             print(
@@ -313,28 +365,6 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Properties
-
-    @property
-    def is2catalog(self):
-        """
-        Print a generic ICESat-2 Intake catalog.
-        This catalog does not specify groups, so it cannot be used to read in data.
-
-        """
-        if not hasattr(self, "_is2catalog") and hasattr(self, "_catalog_path"):
-            from intake import open_catalog
-
-            self._is2catalog = open_catalog(self._catalog_path)
-
-        else:
-            self._is2catalog = is2cat.build_catalog(
-                self.data_source,
-                self._pattern,
-                self._source_type,
-                grp_paths="/paths/to/variables",
-            )
-
-        return self._is2catalog
 
     # I cut and pasted this directly out of the Query class - going to need to reconcile the _source/file stuff there
 
@@ -370,7 +400,7 @@ class Read:
         """
         Check that the entered data source contains files that match the input filename_pattern
         """
-        glob_pattern = is2cat._pattern_to_glob(filename_pattern)
+        glob_pattern = _pattern_to_glob(filename_pattern)
 
         if os.path.isdir(source):
             _, filelist = _run_fast_scandir(source, glob_pattern)
@@ -601,9 +631,6 @@ class Read:
 
         All items in the wanted variables list will be loaded from the files into memory.
         If you do not provide a wanted variables list, a default one will be created for you.
-
-        If you would like to use the Intake catalog you provided to read in a single data variable,
-        simply call Intake's `read()` function on the is2catalog property (e.g. `reader.is2catalog.read()`).
         """
 
         # todo:
@@ -668,7 +695,7 @@ class Read:
 
     def _read_single_grp(self, file, grp_path):
         """
-        For a given file and variable group path, construct an Intake catalog and use it to read in the data.
+        For a given file and variable group path, construct an xarray Dataset.
 
         Parameters
         ----------
@@ -685,24 +712,12 @@ class Read:
 
         """
 
-        try:
-            grpcat = is2cat.build_catalog(
-                file, self._pattern, self._source_type, grp_paths=grp_path
-            )
-            ds = grpcat[self._source_type].read()
-
-        # NOTE: could also do this with h5py, but then would have to read in each variable in the group separately
-        except ValueError:
-            grpcat = is2cat.build_catalog(
-                file,
-                self._pattern,
-                self._source_type,
-                grp_paths=grp_path,
-                extra_engine_kwargs={"phony_dims": "access"},
-            )
-            ds = grpcat[self._source_type].read()
-
-        return ds
+        return xr.open_dataset(
+            file,
+            group=grp_path,
+            engine="h5netcdf",
+            backend_kwargs={"phony_dims": "access"},
+        )
 
     def _build_single_file_dataset(self, file, groups_list):
         """
@@ -722,7 +737,6 @@ class Read:
         -------
         Xarray Dataset
         """
-
         file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
         assert (
             file_product == self._prod
@@ -745,6 +759,7 @@ class Read:
             "ATL19",
             "ATL20",
             "ATL21",
+            "ATL23",
         ]:
             is2ds = xr.open_dataset(file)
 

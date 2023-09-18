@@ -1,5 +1,3 @@
-.. _whatsnew_0x0:
-
 What's new in 0.4.0 (DD MONTH YYYY)
 -----------------------------------
 

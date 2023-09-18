@@ -39,6 +39,7 @@ def _validate_product(product):
             "ATL19",
             "ATL20",
             "ATL21",
+            "ATL23",
         ], "Please enter a valid product"
     else:
         raise TypeError("Please enter a product string")

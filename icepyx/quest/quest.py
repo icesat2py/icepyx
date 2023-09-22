@@ -1,26 +1,26 @@
 import matplotlib.pyplot as plt
 
 from icepyx.core.query import GenQuery, Query
-from icepyx.quest.dataset_scripts.argo import Argo
+
+# from icepyx.quest.dataset_scripts.argo import Argo
 
 
 # todo: implement the subclass inheritance
 class Quest(GenQuery):
     """
     QUEST - Query Unify Explore SpatioTemporal - object to query, obtain, and perform basic
-    operations on datasets for combined analysis with ICESat-2 data products.
-    A new dataset can be added using the `dataset.py` template.
-    A list of already supported datasets is available at:
-    Expands the icepyx GenQuery superclass.
+    operations on datasets (i.e. Argo, BGC Argo, MODIS, etc) for combined analysis with ICESat-2
+    data products. A new dataset can be added using the `dataset.py` template.
+    QUEST expands the icepyx GenQuery superclass.
 
     See the doc page for GenQuery for details on temporal and spatial input parameters.
 
 
     Parameters
     ----------
-    projection : proj4 string
-            Not yet implemented
-            Ex text: a string name of projection to be used for plotting (e.g. 'Mercator', 'NorthPolarStereographic')
+    proj : proj4 string
+        Geospatial projection.
+        Not yet implemented
 
     Returns
     -------
@@ -39,7 +39,6 @@ class Quest(GenQuery):
     Date range: (2019-02-20 00:00:00, 2019-02-28 23:59:59)
     Data sets: None
 
-    # todo: make this work with real datasets
     Add datasets to the quest object.
 
     >>> reg_a.datasets = {'ATL07':None, 'Argo':None}
@@ -62,13 +61,11 @@ class Quest(GenQuery):
         end_time=None,
         proj="Default",
     ):
+        """
+        Tells QUEST to initialize data given the user input spatiotemporal data.
+        """
         super().__init__(spatial_extent, date_range, start_time, end_time)
         self.datasets = {}
-        self.projection = self._determine_proj(proj)
-
-    # todo: maybe move this to icepyx superquery class
-    def _determine_proj(self, proj):
-        return None
 
     def __str__(self):
         str = super(Quest, self).__str__()
@@ -84,80 +81,99 @@ class Quest(GenQuery):
 
         return str
 
-    def add_icesat2(self,
-                    product=None,
-                    start_time=None,
-                    end_time=None,
-                    version=None,
-                    cycles=None,
-                    tracks=None,
-                    files=None,
-                    **kwargs,
-                    ):
+    # ----------------------------------------------------------------------
+    # Datasets
 
-        query = Query(product,
-                      self._spatial.extent,
-                      [self._temporal.start, self._temporal.end],
-                      start_time,
-                      end_time,
-                      version,
-                      cycles,
-                      tracks,
-                      files,
-                      **kwargs,
-                      )
+    def add_icesat2(
+        self,
+        product=None,
+        start_time=None,
+        end_time=None,
+        version=None,
+        cycles=None,
+        tracks=None,
+        files=None,
+        **kwargs,
+    ):
+        """
+        Adds ICESat-2 datasets to QUEST structure.
+        """
+
+        query = Query(
+            product,
+            self._spatial.extent,
+            [self._temporal.start, self._temporal.end],
+            start_time,
+            end_time,
+            version,
+            cycles,
+            tracks,
+            files,
+            **kwargs,
+        )
 
         self.datasets["icesat2"] = query
 
+    # def add_argo(self, params=["temperature"], presRange=None):
 
-    def add_argo(self, params=["temperature"], presRange=None):
+    #     argo = Argo(self._spatial, self._temporal, params, presRange)
+    #     self.datasets["argo"] = argo
 
-        argo = Argo(self._spatial, self._temporal, params, presRange)
-        self.datasets["argo"] = argo
+    # ----------------------------------------------------------------------
+    # Methods (on all datasets)
 
+    # error handling? what happens when one of i fails...
     def search_all(self):
+        """
+        Searches for requred dataset within platform (i.e. ICESat-2, Argo) of interest.
+        """
+        print("\nSearching all datasets...")
 
         for i in self.datasets.values():
             print()
             if isinstance(i, Query):
-                print('icesat2')
-                # i.order_granules()
+                print("---ICESat-2---")
+                msg = i.avail_granules()
+                print(msg)
             else:
                 print(i)
-                msg = i.search_data()
+                i.search_data()
 
-    def download_all(self, path=''):
+    # error handling? what happens when one of i fails...
+    def download_all(self, path=""):
+        ' ' 'Downloads requested dataset(s).' ' '
+        print("\nDownloading all datasets...")
 
         for i in self.datasets.values():
             print()
             if isinstance(i, Query):
-                print('icesat2')
-                # i.download_granules(path)
+                print("---ICESat-2---")
+                msg = i.download_granules(path)
+                print(msg)
             else:
                 i.download()
                 print(i)
 
-
     # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality
 
+
 # Todo: remove this later -- just here for debugging
-if __name__ == '__main__':
+if __name__ == "__main__":
     bounding_box = [-150, 30, -120, 60]
     date_range = ["2022-06-07", "2022-06-14"]
     my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
-    print(my_quest._spatial)
-    print(my_quest._temporal)
+    # print(my_quest.spatial)
+    # print(my_quest.temporal)
 
-    my_quest.add_argo(params=["down_irradiance412", "temperature"])
-    print(my_quest.datasets["argo"].params)
+    # my_quest.add_argo(params=["down_irradiance412", "temperature"])
+    # print(my_quest.datasets["argo"].params)
 
     my_quest.add_icesat2(product="ATL06")
-    print(my_quest.datasets["icesat2"].product)
+    # print(my_quest.datasets["icesat2"].product)
 
     print(my_quest)
 
-    print("\nBeginning search...")
     my_quest.search_all()
-    print("\nBeginning download...")
-    my_quest.download_all()
 
+    # this one still needs work for IS2 because of auth...
+    my_quest.download_all()

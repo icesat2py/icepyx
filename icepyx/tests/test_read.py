@@ -63,7 +63,6 @@ def test_validate_source_str_not_a_dir_or_file():
                 ),
                 sorted(
                     [
-                        "./icepyx/core/is2cat.py",
                         "./icepyx/core/is2ref.py",
                         "./icepyx/tests/is2class_query.py",
                     ]
@@ -73,7 +72,7 @@ def test_validate_source_str_not_a_dir_or_file():
         (
             "./icepyx/core",
             "is2*.py",
-            ([], ["./icepyx/core/is2cat.py", "./icepyx/core/is2ref.py"]),
+            ([], ["./icepyx/core/is2ref.py"]),
         ),
         (
             "./icepyx",

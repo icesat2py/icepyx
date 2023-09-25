@@ -131,13 +131,18 @@ class Quest(GenQuery):
 
         for i in self.datasets.values():
             print()
-            if isinstance(i, Query):
-                print("---ICESat-2---")
-                msg = i.avail_granules()
-                print(msg)
-            else:
-                print(i)
-                i.search_data()
+            try:
+                # querying ICESat-2 data
+                if isinstance(i, Query):
+                    print("---ICESat-2---")
+                    msg = i.avail_granules()
+                    print(msg)
+                else: # querying all other data sets
+                    print(i)
+                    i.search_data()
+            except:
+                dataset_name = type(i).__name__
+                print("Error querying data from {0}".format(dataset_name))
 
     # error handling? what happens when one of i fails...
     def download_all(self, path=""):
@@ -155,25 +160,3 @@ class Quest(GenQuery):
                 print(i)
 
     # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality
-
-
-# Todo: remove this later -- just here for debugging
-if __name__ == "__main__":
-    bounding_box = [-150, 30, -120, 60]
-    date_range = ["2022-06-07", "2022-06-14"]
-    my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
-    # print(my_quest.spatial)
-    # print(my_quest.temporal)
-
-    # my_quest.add_argo(params=["down_irradiance412", "temperature"])
-    # print(my_quest.datasets["argo"].params)
-
-    my_quest.add_icesat2(product="ATL06")
-    # print(my_quest.datasets["icesat2"].product)
-
-    print(my_quest)
-
-    my_quest.search_all()
-
-    # this one still needs work for IS2 because of auth...
-    my_quest.download_all()

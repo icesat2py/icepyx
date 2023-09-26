@@ -1,4 +1,5 @@
 import warnings
+from icepyx.core.query import GenQuery
 
 warnings.filterwarnings("ignore")
 
@@ -6,78 +7,75 @@ warnings.filterwarnings("ignore")
 class DataSet:
 
     """
-    Parent Class for all supported datasets (i.e. ATL03, ATL07, MODIS, etc.)
-    all sub classes must support the following methods for use in
-    colocated data class
+    Template parent class for all QUEST supported datasets (i.e. ICESat-2, Argo BGC, Argo, MODIS, etc.).
+    All sub-classes must support the following methods for use via the QUEST class.
     """
 
-    def __init__(self, boundingbox, timeframe):
+    def __init__(
+        self, spatial_extent=None, date_range=None, start_time=None, end_time=None
+    ):
         """
-        * use existing Icepyx functionality to initialise this
-        :param timeframe: datetime
+        Complete any dataset specific initializations (i.e. beyond space and time) required here.
+        For instance, ICESat-2 requires a product, and Argo requires parameters.
+        One can also check that the "default" space and time supplied by QUEST are the right format
+        (e.g. if the spatial extent must be a bounding box).
         """
-        self.bounding_box = boundingbox
-        self.time_frame = timeframe
+        raise NotImplementedError
+
+    # ----------------------------------------------------------------------
+    # Formatting API Inputs
 
     def _fmt_coordinates(self):
-        # use icepyx geospatial module (icepyx core)
+        """
+        Convert spatial extent into format needed by DataSet API,
+        if different than the formats available directly from SuperQuery.
+        """
         raise NotImplementedError
 
     def _fmt_timerange(self):
         """
-        will return list of datetime objects [start_time, end_time]
+        Convert temporal information into format needed by DataSet API,
+        if different than the formats available directly from SuperQuery.
         """
         raise NotImplementedError
 
-    # todo: merge with Icepyx SuperQuery
-    def _validate_input(self):
+    # ----------------------------------------------------------------------
+    # Validation
+
+    def _validate_inputs(self):
         """
-        This may already be done in icepyx.
-        Not sure if we need this here
+        Create any additional validation functions for verifying inputs.
+        This function is not explicitly called by QUEST,
+        but is frequently needed for preparing API requests.
+
+        See Also
+        --------
+        quest.dataset_scripts.argo.Argo._validate_parameters
         """
         raise NotImplementedError
 
-    def search_data(self, delta_t):
+    # ----------------------------------------------------------------------
+    # Querying and Getting Data
+
+    def search_data(self):
         """
-        query dataset given the spatio temporal criteria
-        and other params specic to the dataset
+        Query the dataset (i.e. search for available data)
+        given the spatiotemporal criteria and other parameters specific to the dataset.
         """
         raise NotImplementedError
 
-    def download(self, out_path):
+    def download(self):
         """
-        once data is querried, the user may choose to dowload the
-        data locally
+        Download the data to your local machine.
         """
         raise NotImplementedError
+
+    # ----------------------------------------------------------------------
+    # Working with Data
 
     def visualize(self):
         """
-        (once data is downloaded)?, makes a quick plot showing where
-        data are located
-        e.g. Plots location of Argo profile or highlights ATL03 photon track
+        Tells QUEST how to plot data (for instance, which parameters to plot) on a basemap.
+        For ICESat-2, it might show a photon track, and for Argo it might show a profile location.
         """
         raise NotImplementedError
-
-    def _add2colocated_plot(self):
-        """
-        Takes visualise() functionality and adds the plot to central
-        plot with other coincident data. This will be called by
-        show_area_overlap() in Colocateddata class
-        """
-        raise NotImplementedError
-
-    """
-    The following are low priority functions
-    Not sure these are even worth keeping. Doesn't make sense for 
-    all datasets. 
-    """
-
-    # def get_meltpond_fraction(self):
-    #     raise NotImplementedError
-    #
-    # def get_sea_ice_fraction(self):
-    #     raise NotImplementedError
-    #
-    # def get_roughness(self):
-    #     raise NotImplementedError

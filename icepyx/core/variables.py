@@ -28,7 +28,12 @@ class Variables(EarthdataAuthMixin):
 
     Parameters
     ----------
+    data_source: dictionary, string, icepyx.core.Query
+        Specification of which product and version to find available variables for. This
+        can be specified as either 1) a dictionary, with the keys `product` and `version`, 
+        2) a string containing a local filepath to an IceSat-2 file or 3) a Query object
     vartype : string
+        This argument is depreciated. The vartype will be inferred from data_source.
         One of ['order', 'file'] to indicate the source of the input variables.
         This field will be auto-populated when a variable object is created as an
         attribute of a query object.
@@ -51,44 +56,44 @@ class Variables(EarthdataAuthMixin):
     def __init__(
         self,
         data_source,
-        # data_source is either 1) a dict (?) with product / version 2) a filepath (local for
-        # now) or 3) a Query object
         vartype=None,
         avail=None,
         wanted=None,
-        # product=None,
-        # version=None,
-        # path=None,
+        product=None,  # Depreciated
+        version=None,  # Depreciated
+        path=None,  # Depreciated 
         auth=None,
     ):
+        # Depreciation warnings
         if vartype or data_source in ['order', 'file']:
-            raise warnings.warn('Depreciation Warning', stacklevel=2)
-            # Make this an error
+            raise warnings.warn('It is no longer required to specify the type of variable.',
+                                stacklevel=2)
 
+        if product or version:
+            raise warnings.warn('product and version argument are no longer required. Provide' \
+                                'product via data_source dictionary', stacklevel=2)
+            data_source = {'product': product, 'version': version}
+        elif path:
+            raise warnings.warn('path  argument is no longer required. Provide path as the' \
+                                'data_source argument', stacklevel=2)
+            data_source = path
+        
         # Set the product and version from the data_source
-        # These could be streamlined if we don't try to maintain backwards compat.
-        # Is this considered a user facing feature right now? If not maintaining compatibility
-        # isn't that important, because all we need to do is change the internal code.
         if isinstance(data_source, ipxc.query.Query):
             self.product = data_source.product
             self.version = data_source.product_version
-        # TODO discussion: should a Read object be an option here?
-        # YES, but figure out what to do about version
         elif isinstance(data_source, str):
             self.path = data_source
-            # TODO set product and version? You don't really need to, but it maintains the 
-            # conceptual consistency
         elif isinstance(data_source, dict):
             # TODO: assume latest version if not given?
-            # TODO: validate version is valid?
             if 'product' not in data_source.keys():
-                raise KeyError('message')
+                raise KeyError('productd is a required key in data_source dictionary')
             else:
                 self.product = is2ref._validate_product(data_source['product'])
                 # Set version if given, else set it to None
                 self.version = data_source.get('version', None)
         else:
-            TypeError('message')
+            raise TypeError('data_source must be of type Dict, string, or icepyx.core.Query')
         
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self, auth=auth)

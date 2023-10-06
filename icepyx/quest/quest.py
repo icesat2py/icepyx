@@ -153,8 +153,8 @@ class Quest(GenQuery):
         print("\nSearching all datasets...")
 
         for k, v in self.datasets.items():
+            print()
             try:
-                print()
                 if isinstance(v, Query):
                     print("---ICESat-2---")
                     try:
@@ -189,8 +189,9 @@ class Quest(GenQuery):
         print("\nDownloading all datasets...")
 
         for k, v in self.datasets.items():
+            print()
             try:
-                print()
+
                 if isinstance(v, Query):
                     print("---ICESat-2---")
                     try:

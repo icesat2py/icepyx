@@ -152,8 +152,8 @@ class Quest(GenQuery):
         """
         print("\nSearching all datasets...")
 
-        try:
-            for k, v in self.datasets.items():
+        for k, v in self.datasets.items():
+            try:
                 print()
                 if isinstance(v, Query):
                     print("---ICESat-2---")
@@ -168,9 +168,9 @@ class Quest(GenQuery):
                         v.search_data(kwargs[k])
                     except KeyError:
                         v.search_data()
-        except:
-            dataset_name = type(v).__name__
-            print("Error querying data from {0}".format(dataset_name))
+            except:
+                dataset_name = type(v).__name__
+                print("Error querying data from {0}".format(dataset_name))
 
     # error handling? what happens if the user tries to re-download?
     def download_all(self, path="", **kwargs):
@@ -188,8 +188,8 @@ class Quest(GenQuery):
         """
         print("\nDownloading all datasets...")
 
-        try:
-            for k, v in self.datasets.items():
+        for k, v in self.datasets.items():
+            try:
                 print()
                 if isinstance(v, Query):
                     print("---ICESat-2---")
@@ -205,6 +205,6 @@ class Quest(GenQuery):
                     except KeyError:
                         msg = v.download()
                     print(msg)
-        except:
-            dataset_name = type(v).__name__
+            except:
+                dataset_name = type(v).__name__
             print("Error downloading data from {0}".format(dataset_name))

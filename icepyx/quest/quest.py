@@ -136,7 +136,7 @@ class Quest(GenQuery):
     # ----------------------------------------------------------------------
     # Methods (on all datasets)
 
-    # error handling? what happens when one of i fails...
+    # error handling? what happens when the user tries to re-query?
     def search_all(self, **kwargs):
         """
         Searches for requred dataset within platform (i.e. ICESat-2, Argo) of interest.
@@ -152,23 +152,27 @@ class Quest(GenQuery):
         """
         print("\nSearching all datasets...")
 
-        for k, v in self.datasets.items():
-            print()
-            if isinstance(v, Query):
-                print("---ICESat-2---")
-                try:
-                    msg = v.avail_granules(kwargs[k])
-                except KeyError:
-                    msg = v.avail_granules()
-                print(msg)
-            else:
-                print(k)
-                try:
-                    v.search_data(kwargs[k])
-                except KeyError:
-                    v.search_data()
+        try:
+            for k, v in self.datasets.items():
+                print()
+                if isinstance(v, Query):
+                    print("---ICESat-2---")
+                    try:
+                        msg = v.avail_granules(kwargs[k])
+                    except KeyError:
+                        msg = v.avail_granules()
+                    print(msg)
+                else:
+                    print(k)
+                    try:
+                        v.search_data(kwargs[k])
+                    except KeyError:
+                        v.search_data()
+        except:
+            dataset_name = type(v).__name__
+            print("Error querying data from {0}".format(dataset_name))
 
-    # error handling? what happens when one of i fails...
+    # error handling? what happens if the user tries to re-download?
     def download_all(self, path="", **kwargs):
         """
         Downloads requested dataset(s).
@@ -184,47 +188,23 @@ class Quest(GenQuery):
         """
         print("\nDownloading all datasets...")
 
-        for k, v in self.datasets.items():
-            print()
-            if isinstance(v, Query):
-                print("---ICESat-2---")
-                try:
-                    msg = v.download_granules(path, kwargs[k])
-                except KeyError:
-                    msg = v.download_granules(path)
-                print(msg)
-            else:
-                print(k)
-                try:
-                    msg = v.download(kwargs[k])
-                except KeyError:
-                    msg = v.download()
-                print(msg)
-
-    # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality
-
-
-# Todo: remove this later -- just here for debugging
-if __name__ == "__main__":
-    bounding_box = [-150, 30, -120, 60]
-    date_range = ["2022-06-07", "2022-06-14"]
-    my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
-    # print(my_quest.spatial)
-    # print(my_quest.temporal)
-
-    # my_quest.add_argo(params=["down_irradiance412", "temperature"])
-    # print(my_quest.datasets["argo"].params)
-
-    my_quest.add_icesat2(product="ATL06")
-    my_quest.datasets["argo"] = "fake argo object"
-    # print(my_quest.datasets["icesat2"].product)
-    print(my_quest.datasets)
-
-    print(my_quest)
-
-    # make sure to add some test cases for passing in kwargs...
-    my_quest.search_all()
-    # my_quest.search_all(icesat2={"IDs":True})
-
-    # this one still needs work for IS2 because of auth...
-    my_quest.download_all()
+        try:
+            for k, v in self.datasets.items():
+                print()
+                if isinstance(v, Query):
+                    print("---ICESat-2---")
+                    try:
+                        msg = v.download_granules(path, kwargs[k])
+                    except KeyError:
+                        msg = v.download_granules(path)
+                    print(msg)
+                else:
+                    print(k)
+                    try:
+                        msg = v.download(kwargs[k])
+                    except KeyError:
+                        msg = v.download()
+                    print(msg)
+        except:
+            dataset_name = type(v).__name__
+            print("Error downloading data from {0}".format(dataset_name))

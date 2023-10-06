@@ -4,7 +4,7 @@ from icepyx.core.query import GenQuery
 warnings.filterwarnings("ignore")
 
 
-class DataSet(GenQuery):
+class DataSet:
 
     """
     Template parent class for all QUEST supported datasets (i.e. ICESat-2, Argo BGC, Argo, MODIS, etc.).
@@ -20,9 +20,7 @@ class DataSet(GenQuery):
         One can also check that the "default" space and time supplied by QUEST are the right format
         (e.g. if the spatial extent must be a bounding box).
         """
-        super().__init__(spatial_extent, date_range, start_time, end_time)
-        # self.bounding_box = boundingbox
-        # self.time_frame = timeframe
+        raise NotImplementedError
 
     # ----------------------------------------------------------------------
     # Formatting API Inputs

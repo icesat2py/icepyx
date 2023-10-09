@@ -272,18 +272,18 @@ class Read:
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
-        **Depreciation warning:** This argument is no longer required and will be depreciated in version 1.0.0. The dataset product is read from the file metadata.
+        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0. The dataset product is read from the file metadata.
 
     filename_pattern : string, default None
         String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-        **Depreciation warning:** This argument is no longer required and will be depreciated in version 1.0.0.
-             
+        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
+
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
         If you still need to create a catalog, leave as default.
-        **Deprecation warning:** This argument has been depreciated. Please use the data_source argument to pass in valid data.
+        **Deprecation warning:** This argument has been deprecated. Please use the data_source argument to pass in valid data.
 
     glob_kwargs : dict, default {}
         Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
@@ -310,7 +310,7 @@ class Read:
 
     Reading a specific list of files
     >>> list_of_files = [
-    ... '/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5', 
+    ... '/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5',
     ... '/path/to/more/data/processed_ATL06_20191202102922_10160505_006_01.h5',
     ... ]
     >>> ipx.Read(list_of_files) # doctest: +SKIP
@@ -319,42 +319,42 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Constructors
-    
+
     def __init__(
         self,
         data_source=None,  # DevNote: Make this a required arg when catalog is removed
         product=None,
         filename_pattern=None,
         catalog=None,
-        glob_kwargs = {},
+        glob_kwargs={},
         out_obj_type=None,  # xr.Dataset,
     ):
         # Raise error for deprecated argument
         if catalog:
             raise DeprecationError(
-                'The `catalog` argument has been deprecated and intake is no longer supported. '
-                'Please use the `data_source` argument to specify your dataset instead.'
+                "The `catalog` argument has been deprecated and intake is no longer supported. "
+                "Please use the `data_source` argument to specify your dataset instead."
             )
-            
+
         if data_source is None:
             raise ValueError("data_source is a required arguemnt")
-           
+
         # Raise warnings for deprecated arguments
         if filename_pattern:
             warnings.warn(
-                'The `filename_pattern` argument is deprecated. Instead please provide a '
-                'string, list, or glob string to the `data_source` argument.',
+                "The `filename_pattern` argument is deprecated. Instead please provide a "
+                "string, list, or glob string to the `data_source` argument.",
                 stacklevel=2,
             )
-        
+
         if product:
             product = is2ref._validate_product(product)
             warnings.warn(
-                'The `product` argument is no longer required. If the `data_source` argument given '
-                'contains files with multiple products the `product` argument will be used '
-                'to filter that list. In all other cases the product argument is ignored. '
-                'The recommended approach is to not include a `product` argument and instead '
-                'provide a `data_source` with files of only a single product type`.',
+                "The `product` argument is no longer required. If the `data_source` argument given "
+                "contains files with multiple products the `product` argument will be used "
+                "to filter that list. In all other cases the product argument is ignored. "
+                "The recommended approach is to not include a `product` argument and instead "
+                "provide a `data_source` with files of only a single product type`.",
                 stacklevel=2,
             )
 
@@ -369,7 +369,7 @@ class Read:
         elif isinstance(data_source, list):
             self._filelist = data_source
         elif os.path.isdir(data_source):
-            data_source = os.path.join(data_source, '*')
+            data_source = os.path.join(data_source, "*")
             self._filelist = glob.glob(data_source, **glob_kwargs)
         else:
             self._filelist = glob.glob(data_source, **glob_kwargs)
@@ -380,14 +380,14 @@ class Read:
         product_dict = {}
         for file_ in self._filelist:
             product_dict[file_] = self._extract_product(file_)
-        
+
         # Raise warnings or errors for muliple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
             if product:
                 warnings.warn(
-                    f'Multiple products found in list of files: {product_dict}. Files that '
-                    'do not match the user specified product will be removed from processing.',
+                    f"Multiple products found in list of files: {product_dict}. Files that "
+                    "do not match the user specified product will be removed from processing.",
                     stacklevel=2,
                 )
                 self._filelist = []
@@ -396,21 +396,21 @@ class Read:
                         self._filelist.append(key)
                 if len(self._filelist) == 0:
                     raise TypeError(
-                        'No files found in the file list matching the user-specified '
-                        'product type'
+                        "No files found in the file list matching the user-specified "
+                        "product type"
                     )
                 # Use the cleaned filelist to assign a product
                 self._product = product
             else:
                 raise TypeError(
-                    f'Multiple product types were found in the file list: {product_dict}.'
-                    'Please provide a valid `data_source` parameter indicating files of a single '
-                    'product'
+                    f"Multiple product types were found in the file list: {product_dict}."
+                    "Please provide a valid `data_source` parameter indicating files of a single "
+                    "product"
                 )
         elif len(all_products) == 0:
             raise TypeError(
-                'No files found matching the specified `data_source`. Check your glob '
-                'string or file list.'
+                "No files found matching the specified `data_source`. Check your glob "
+                "string or file list."
             )
         else:
             # Assign the identified product to the property
@@ -418,11 +418,11 @@ class Read:
         # Raise a warning if the metadata-located product differs from the user-specified product
         if product and self._product != product:
             warnings.warn(
-                f'User specified product {product} does not match the product from the file'
-                ' metadata {self._product}',
+                f"User specified product {product} does not match the product from the file"
+                " metadata {self._product}",
                 stacklevel=2,
             )
-        
+
         if out_obj_type is not None:
             print(
                 "Output object type will be an xarray DataSet - "
@@ -458,7 +458,7 @@ class Read:
             )
 
         return self._read_vars
-    
+
     @property
     def filelist(self):
         """
@@ -475,21 +475,21 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Methods
-    
+
     @staticmethod
     def _extract_product(filepath):
         """
         Read the product type from the metadata of the file. Return the product as a string.
         """
-        with h5py.File(filepath, 'r') as f:
-            try: 
-                product = f.attrs['short_name'].decode()
+        with h5py.File(filepath, "r") as f:
+            try:
+                product = f.attrs["short_name"].decode()
                 product = is2ref._validate_product(product)
             # TODO test that this is the proper error
             except KeyError:
-                raise 'Unable to parse the product name from file metadata'
+                raise "Unable to parse the product name from file metadata"
         return product
-    
+
     @staticmethod
     def _check_source_for_pattern(source, filename_pattern):
         """

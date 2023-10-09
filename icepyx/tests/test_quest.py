@@ -68,7 +68,6 @@ def test_add_is2(quest_instance):
 
 ########## ALL DATASET METHODS TESTS ##########
 
-# is successful execution enough here?
 # each of the query functions should be tested in their respective modules
 def test_search_all(quest_instance):
     # Search and test all datasets

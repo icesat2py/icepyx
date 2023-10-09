@@ -32,39 +32,41 @@ def test_add_is2(quest_instance):
     assert quest_instance.datasets[exp_key].product == prod
 
 
-# def test_add_argo(quest_instance):
-#     params = ["down_irradiance412", "temperature"]
-#     quest_instance.add_argo(params=params)
-#     exp_key = "argo"
-#     exp_type = ipx.quest.dataset_scripts.argo.Argo
+def test_add_argo(quest_instance):
+    params = ["down_irradiance412", "temperature"]
+    quest_instance.add_argo(params=params)
+    exp_key = "argo"
+    exp_type = ipx.quest.dataset_scripts.argo.Argo
 
-#     obs = quest_instance.datasets
+    obs = quest_instance.datasets
 
-#     assert type(obs) == dict
-#     assert exp_key in obs.keys()
-#     assert type(obs[exp_key]) == exp_type
-#     assert quest_instance.datasets[exp_key].params == params
+    assert type(obs) == dict
+    assert exp_key in obs.keys()
+    assert type(obs[exp_key]) == exp_type
+    assert quest_instance.datasets[exp_key].params == params
 
-# def test_add_multiple_datasets():
-#     bounding_box = [-150, 30, -120, 60]
-#     date_range = ["2022-06-07", "2022-06-14"]
-#     my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
-#
-#     # print(my_quest.spatial)
-#     # print(my_quest.temporal)
-#
-#     # my_quest.add_argo(params=["down_irradiance412", "temperature"])
-#     # print(my_quest.datasets["argo"].params)
-#
-#     my_quest.add_icesat2(product="ATL06")
-#     # print(my_quest.datasets["icesat2"].product)
-#
-#     print(my_quest)
-#
-#     # my_quest.search_all()
-#     #
-#     # # this one still needs work for IS2 because of auth...
-#     # my_quest.download_all()
+
+def test_add_multiple_datasets():
+    bounding_box = [-150, 30, -120, 60]
+    date_range = ["2022-06-07", "2022-06-14"]
+    my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
+
+    # print(my_quest.spatial)
+    # print(my_quest.temporal)
+
+    # my_quest.add_argo(params=["down_irradiance412", "temperature"])
+    # print(my_quest.datasets["argo"].params)
+
+    my_quest.add_icesat2(product="ATL06")
+    # print(my_quest.datasets["icesat2"].product)
+
+    print(my_quest)
+
+    # my_quest.search_all()
+    #
+    # # this one still needs work for IS2 because of auth...
+    # my_quest.download_all()
+
 
 ########## ALL DATASET METHODS TESTS ##########
 

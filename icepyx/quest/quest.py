@@ -2,10 +2,9 @@ import matplotlib.pyplot as plt
 
 from icepyx.core.query import GenQuery, Query
 
-# from icepyx.quest.dataset_scripts.argo import Argo
+from icepyx.quest.dataset_scripts.argo import Argo
 
 
-# todo: implement the subclass inheritance
 class Quest(GenQuery):
     """
     QUEST - Query Unify Explore SpatioTemporal - object to query, obtain, and perform basic
@@ -64,6 +63,7 @@ class Quest(GenQuery):
         """
         Tells QUEST to initialize data given the user input spatiotemporal data.
         """
+
         super().__init__(spatial_extent, date_range, start_time, end_time)
         self.datasets = {}
 
@@ -114,10 +114,25 @@ class Quest(GenQuery):
 
         self.datasets["icesat2"] = query
 
-    # def add_argo(self, params=["temperature"], presRange=None):
+    def add_argo(self, params=["temperature"], presRange=None) -> None:
+        """
+        Adds Argo (including Argo-BGC) to QUEST structure.
 
-    #     argo = Argo(self._spatial, self._temporal, params, presRange)
-    #     self.datasets["argo"] = argo
+        Parameters
+        ----------
+        For details on inputs, see the Argo dataset script documentation.
+
+        Returns
+        -------
+        None
+
+        See Also
+        --------
+        quest.dataset_scripts.argo
+        """
+
+        argo = Argo(self._spatial, self._temporal, params, presRange)
+        self.datasets["argo"] = argo
 
     # ----------------------------------------------------------------------
     # Methods (on all datasets)
@@ -137,7 +152,7 @@ class Quest(GenQuery):
                     print("---ICESat-2---")
                     msg = i.avail_granules()
                     print(msg)
-                else: # querying all other data sets
+                else:  # querying all other data sets
                     print(i)
                     i.search_data()
             except:
@@ -146,7 +161,7 @@ class Quest(GenQuery):
 
     # error handling? what happens when one of i fails...
     def download_all(self, path=""):
-        ' ' 'Downloads requested dataset(s).' ' '
+        " " "Downloads requested dataset(s)." " "
         print("\nDownloading all datasets...")
 
         for i in self.datasets.values():

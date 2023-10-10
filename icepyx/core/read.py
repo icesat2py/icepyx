@@ -388,7 +388,9 @@ class Read:
             if product:
                 warnings.warn(
                     f"Multiple products found in list of files: {product_dict}. Files that "
-                    "do not match the user specified product will be removed from processing.",
+                    "do not match the user specified product will be removed from processing.\n"
+                    "Filtering files using a `product` argument is deprecated. Please use the "
+                    "`data_source` argument to specify a list of files with the same product.",
                     stacklevel=2,
                 )
                 self._filelist = []

@@ -488,9 +488,10 @@ class Read:
             try:
                 product = f.attrs["short_name"].decode()
                 product = is2ref._validate_product(product)
-            # TODO test that this is the proper error
             except KeyError:
-                raise "Unable to parse the product name from file metadata"
+                raise AttributeError(
+                    f"Unable to extract the product name from file metadata."
+                )
         return product
 
     @staticmethod

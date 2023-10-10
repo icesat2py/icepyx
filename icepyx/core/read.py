@@ -268,6 +268,7 @@ class Read:
     ----------
     data_source : string, List
         A string or list which specifies the files to be read. The string can be either: 1) the path of a single file 2) the path to a directory or 3) a [glob string](https://docs.python.org/3/library/glob.html).
+        The List must be a list of strings, each of which is the path of a single file.
 
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
@@ -322,7 +323,7 @@ class Read:
 
     def __init__(
         self,
-        data_source=None,  # DevNote: Make this a required arg when catalog is removed
+        data_source=None,
         product=None,
         filename_pattern=None,
         catalog=None,
@@ -381,7 +382,7 @@ class Read:
         for file_ in self._filelist:
             product_dict[file_] = self._extract_product(file_)
 
-        # Raise warnings or errors for muliple products or products not matching the user-specified product
+        # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
             if product:

@@ -70,6 +70,22 @@ def test_download_parse_into_df():
     assert len(reg_a.argodata) == 1943
 
 
+def test_merge_df():
+    reg_a = Argo([-150, 30, -120, 60], ["2022-06-07", "2022-06-14"])
+    param_list = ["salinity", "temperature", "down_irradiance412"]
+
+    df = reg_a.get_dataframe(params=param_list)
+
+    assert "down_irradiance412" in df.columns
+    assert "down_irradiance412_argoqc" in df.columns
+
+    df = reg_a.get_dataframe(["doxy"], keep_existing=True)
+    assert "doxy" in df.columns
+    assert "doxy_argoqc" in df.columns
+    assert "down_irradiance412" in df.columns
+    assert "down_irradiance412_argoqc" in df.columns
+
+
 """
 def test_presRange_input_param():
     reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])

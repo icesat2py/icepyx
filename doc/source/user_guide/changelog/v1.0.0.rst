@@ -1,0 +1,46 @@
+What's new in 1.0.0 (DD November 2023)
+-----------------------------------
+
+These are the changes in icepyx 1.0.0 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- None
+
+Bug fixes
+~~~~~~~~~
+
+- None
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+^^^^^^^^^^^
+
+- None
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- None
+
+
+Other
+^^^^^
+
+- None
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.8.0..v1.0.0|HEAD

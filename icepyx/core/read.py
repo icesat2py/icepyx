@@ -453,8 +453,7 @@ class Read:
         """
 
         if not hasattr(self, "_read_vars"):
-            self._read_vars = Variables(self.filelist[0])
-
+            self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars
     
     @property

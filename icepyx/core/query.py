@@ -687,13 +687,15 @@ class Query(GenQuery, EarthdataAuthMixin):
                 # DevGoal: check for active session here
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
-                        self,
+                        product=self.product,
+                        version = self.version,
                         auth = self.auth,
                         avail=self._cust_options["variables"],
                     )
                 else:
                     self._order_vars = Variables(
-                        self,
+                        product=self.product,
+                        version=self._version,
                         auth=self.auth,
                     )
 
@@ -725,7 +727,10 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(self, auth=self.auth)
+                self._file_vars = Variables(auth=self.auth,
+                                            product=self.product,
+                                            version=self.version,
+                                           )
 
         return self._file_vars
 

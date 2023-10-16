@@ -5,6 +5,8 @@ import warnings
 
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.is2ref as is2ref
+from icepyx.core.exceptions import DeprecationError
+import icepyx.core.validate_inputs as val
 import icepyx.core as ipxc
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
@@ -28,10 +30,8 @@ class Variables(EarthdataAuthMixin):
 
     Parameters
     ----------
-    data_source: dictionary, string, icepyx.core.Query
-        Specification of which product and version to find available variables for. This
-        can be specified as either 1) a dictionary, with the keys `product` and `version`, 
-        2) a string containing a local filepath to an IceSat-2 file or 3) a Query object
+    filepath: string
+        The path to a local Icesat-2 file. This is the ... TODO
     vartype : string
         This argument is depreciated. The vartype will be inferred from data_source.
         One of ['order', 'file'] to indicate the source of the input variables.
@@ -55,46 +55,41 @@ class Variables(EarthdataAuthMixin):
 
     def __init__(
         self,
-        data_source,
         vartype=None,
         avail=None,
         wanted=None,
-        product=None,  # Depreciated
-        version=None,  # Depreciated
-        path=None,  # Depreciated 
+        product=None,
+        version=None,
+        path=None,
         auth=None,
     ):
-        # Depreciation warnings
-        if vartype or data_source in ['order', 'file']:
-            raise warnings.warn('It is no longer required to specify the type of variable.',
-                                stacklevel=2)
-
-        if product or version:
-            raise warnings.warn('product and version argument are no longer required. Provide' \
-                                'product via data_source dictionary', stacklevel=2)
-            data_source = {'product': product, 'version': version}
-        elif path:
-            raise warnings.warn('path  argument is no longer required. Provide path as the' \
-                                'data_source argument', stacklevel=2)
-            data_source = path
+        # Deprecation error
+        if vartype in ['order', 'file']:
+            raise DeprecationError(
+                'It is no longer required to specify the variable type `vartype`. Instead please ',
+                'provide either the path to a local file (arg: `path`) or the product you would ',
+                'like variables for (arg: `product`).'
+            )
         
-        # Set the product and version from the data_source
-        if isinstance(data_source, ipxc.query.Query):
-            self.product = data_source.product
-            self.version = data_source.product_version
-        elif isinstance(data_source, str):
-            self.path = data_source
-        elif isinstance(data_source, dict):
-            # TODO: assume latest version if not given?
-            if 'product' not in data_source.keys():
-                raise KeyError('productd is a required key in data_source dictionary')
-            else:
-                self.product = is2ref._validate_product(data_source['product'])
-                # Set version if given, else set it to None
-                self.version = data_source.get('version', None)
+        if path and product:
+            raise TypeError(
+                'Please provide either a filepath or a product. If a filepath is provided ',
+                'variables will be read from the file. If a product is provided all available ',
+                'variables for that product will be returned.'
+            )
+        
+        # Set the product and version from either the input args or the file
+        if path:
+            self.path = path
+        elif product:
+            # Check for valid product string
+            self.product = is2ref._validate_product(product)
+            # Check for valid version string
+            # If version is not specified by the user assume the most recent version
+            self.version = val.prod_version(self.latest_version(), version)
         else:
-            raise TypeError('data_source must be of type Dict, string, or icepyx.core.Query')
-        
+            raise TypeError('Either a filepath or a product need to be given as input arguments.')
+
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self, auth=auth)
         
@@ -659,3 +654,21 @@ class Variables(EarthdataAuthMixin):
                             del self.wanted[vkey]
                     except KeyError:
                         pass
+
+    # DevNote: This is copied directly from the Query class. Is there a better way to share
+    # this functionality?
+    def latest_version(self):
+        """
+        Determine the most recent version available for the given product.
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.latest_version()
+        '006'
+        """
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self.product)
+        return max(
+            [entry["version_id"] for entry in self._about_product["feed"]["entry"]]
+        )

@@ -29,14 +29,21 @@ class Variables(EarthdataAuthMixin):
     contained in ICESat-2 products.
 
     Parameters
-    ----------
-    filepath: string
-        The path to a local Icesat-2 file. This is the ... TODO
+    ---------- 
     vartype : string
         This argument is depreciated. The vartype will be inferred from data_source.
         One of ['order', 'file'] to indicate the source of the input variables.
         This field will be auto-populated when a variable object is created as an
         attribute of a query object.
+    path : string, default None
+        The path to a local Icesat-2 file. The variables list will contain the variables
+        present in this file. Either path or product are required input arguments.
+    product : string, default None
+        Properly formatted string specifying a valid ICESat-2 product. The variables list will
+        contain all available variables for this product. Either product or path are required
+        input arguments.
+    version : string, default None
+        Properly formatted string specifying a valid version of the ICESat-2 product.
     avail : dictionary, default None
         Dictionary (key:values) of available variable names (keys) and paths (values).
     wanted : dictionary, default None
@@ -45,22 +52,17 @@ class Variables(EarthdataAuthMixin):
         A session object authenticating the user to download data using their Earthdata login information.
         The session object will automatically be passed from the query object if you
         have successfully logged in there.
-    product : string, default None
-        Properly formatted string specifying a valid ICESat-2 product
-    version : string, default None
-        Properly formatted string specifying a valid version of the ICESat-2 product
-    path : string, default None
-        For vartype file, a path to a directory of or single input data file (not yet implemented)
+
     """
 
     def __init__(
         self,
         vartype=None,
-        avail=None,
-        wanted=None,
+        path=None,
         product=None,
         version=None,
-        path=None,
+        avail=None,
+        wanted=None,
         auth=None,
     ):
         # Deprecation error

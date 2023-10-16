@@ -279,7 +279,10 @@ class Read:
         String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
+<<<<<<< HEAD
         **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
+=======
+>>>>>>> use swap_dims function to simplify dataset manipulation in read fn and remove xarray warning
 
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
@@ -591,14 +594,19 @@ class Read:
                 .assign_coords(
                     {
                         spot_dim_name: (spot_dim_name, [spot]),
-                        "delta_time": ("delta_time", photon_ids),
+                        # "delta_time": ("delta_time", photon_ids),
+                        "photon_idx": ("delta_time", photon_ids),
                     }
                 )
                 .assign({spot_var_name: (("gran_idx", spot_dim_name), [[track_str]])})
-                .rename_dims({"delta_time": "photon_idx"})
-                .rename({"delta_time": "photon_idx"})
+                .swap_dims({"delta_time": "photon_idx"})
+                # .rename_dims({"delta_time": "photon_idx"})
+                # .rename({"delta_time": "photon_idx"})
                 # .set_index("photon_idx")
             )
+
+            # DEVNOTE: simplifying the above (to use swap_dims) appears to keep delta_time as a coordinate
+            # in that case, the else below is not needed, and the if would need testing
 
             # handle cases where the delta time is 2d due to multiple cycles in that group
             if spot_dim_name == "pair_track" and np.ndim(hold_delta_times) > 1:

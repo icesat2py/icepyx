@@ -86,7 +86,7 @@ class Variables(EarthdataAuthMixin):
             self.product = is2ref._validate_product(product)
             # Check for valid version string
             # If version is not specified by the user assume the most recent version
-            self.version = val.prod_version(self.latest_version(), version)
+            self.version = val.prod_version(self.get_latest_version(), version)
         else:
             raise TypeError('Either a filepath or a product need to be given as input arguments.')
 
@@ -655,9 +655,8 @@ class Variables(EarthdataAuthMixin):
                     except KeyError:
                         pass
 
-    # DevNote: This is copied directly from the Query class. Is there a better way to share
-    # this functionality?
-    def latest_version(self):
+    # DevNote: This is a modified function from the Query class. 
+    def get_latest_version(self):
         """
         Determine the most recent version available for the given product.
 
@@ -667,8 +666,7 @@ class Variables(EarthdataAuthMixin):
         >>> reg_a.latest_version()
         '006'
         """
-        if not hasattr(self, "_about_product"):
-            self._about_product = is2ref.about_product(self.product)
+        about_info = is2ref.about_product(self.product)
         return max(
-            [entry["version_id"] for entry in self._about_product["feed"]["entry"]]
+            [entry["version_id"] for entry in about_info["feed"]["entry"]]
         )

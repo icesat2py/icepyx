@@ -88,7 +88,7 @@ class Variables(EarthdataAuthMixin):
             self.product = is2ref._validate_product(product)
             # Check for valid version string
             # If version is not specified by the user assume the most recent version
-            self.version = val.prod_version(self.get_latest_version(), version)
+            self.version = val.prod_version(self._get_latest_version(), version)
         else:
             raise TypeError('Either a filepath or a product need to be given as input arguments.')
 
@@ -659,7 +659,7 @@ class Variables(EarthdataAuthMixin):
                         pass
 
     # DevNote: This is a modified function from the Query class. 
-    def get_latest_version(self):
+    def _get_latest_version(self):
         """
         Determine the most recent version available for the given product.
 

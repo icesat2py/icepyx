@@ -688,7 +688,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
                         product=self.product,
-                        version = self.version,
+                        version = self._version,
                         auth = self.auth,
                         avail=self._cust_options["variables"],
                     )
@@ -729,7 +729,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             if self._source == "file":
                 self._file_vars = Variables(auth=self.auth,
                                             product=self.product,
-                                            version=self.version,
+                                            version=self._version,
                                            )
 
         return self._file_vars

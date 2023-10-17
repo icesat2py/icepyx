@@ -475,6 +475,7 @@ class Variables(EarthdataAuthMixin):
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
         # add the mandatory variables to the data object
+        # TODO QUESTION - why is this distinction made? How can we handle it wihtout vartype?
         if self._vartype == "order":
             nec_varlist = [
                 "sc_orient",

@@ -382,7 +382,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/54070345?v=4",
       "profile": "https://github.com/jpswinski",
       "contributions": [
-        "code"
+        "code",
+        "review"
       ]
     },
     {
@@ -430,5 +431,6 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,
-  "commitConvention": "angular"
+  "commitConvention": "angular",
+  "commitType": "docs"
 }

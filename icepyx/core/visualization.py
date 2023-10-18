@@ -4,6 +4,7 @@ Interactive visualization of spatial extent and ICESat-2 elevations
 import concurrent.futures
 import datetime
 import re
+import warnings
 
 import backoff
 import dask.array as da
@@ -332,7 +333,13 @@ class Visualize:
             A dask array containing the ICESat-2 elevation data.
         """
 
-        base_url = "https://openaltimetry.org/data/api/icesat2/level3a"
+        warnings.warn(
+            "NOTICE: visualizations requiring the OpenAltimetry API are currently (October 2023) ",
+            "unavailable while hosting of OpenAltimetry transitions from UCSD to NSIDC.",
+            "A ticket has been issued to restore programmatic API access.",
+        )
+
+        base_url = "http://openaltimetry.earthdatacloud.nasa.gov/data/api/icesat2"
         trackId, Date, cycle, bbox, product = paras
 
         # Generate API

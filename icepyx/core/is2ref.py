@@ -267,8 +267,8 @@ def _default_varlists(product):
 
 def gt2spot(gt, sc_orient):
     warnings.warn(
-        "icepyx versions 0.8.0 and earlier used an incorrect spot number calculation.",
-        "As a result, computations depending on spot number may be incorrect and should be redone.",
+        "icepyx versions 0.8.0 and earlier used an incorrect spot number calculation."
+        "As a result, computations depending on spot number may be incorrect and should be redone."
     )
 
     assert gt in [

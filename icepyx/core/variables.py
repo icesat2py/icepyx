@@ -88,7 +88,7 @@ class Variables(EarthdataAuthMixin):
             self.product = is2ref._validate_product(product)
             # Check for valid version string
             # If version is not specified by the user assume the most recent version
-            self.version = val.prod_version(self._get_latest_version(), version)
+            self.version = val.prod_version(is2ref.latest_version(self.product), version)
         else:
             raise TypeError('Either a filepath or a product need to be given as input arguments.')
 
@@ -657,19 +657,3 @@ class Variables(EarthdataAuthMixin):
                             del self.wanted[vkey]
                     except KeyError:
                         pass
-
-    # DevNote: This is a modified function from the Query class. 
-    def _get_latest_version(self):
-        """
-        Determine the most recent version available for the given product.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.latest_version()
-        '006'
-        """
-        about_info = is2ref.about_product(self.product)
-        return max(
-            [entry["version_id"] for entry in about_info["feed"]["entry"]]
-        )

@@ -263,7 +263,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
-        self._version = val.prod_version(self.latest_version(), version)
+        self._version = val.prod_version(is2ref.latest_version(self._prod), version)
 
         # build list of available CMR parameters if reducing by cycle or RGT
         # or a list of explicitly named files (full or partial names)
@@ -810,22 +810,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         if not hasattr(self, "_about_product"):
             self._about_product = is2ref.about_product(self._prod)
         pprint.pprint(self._about_product)
-
-    def latest_version(self):
-        """
-        Determine the most recent version available for the given product.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.latest_version()
-        '006'
-        """
-        if not hasattr(self, "_about_product"):
-            self._about_product = is2ref.about_product(self._prod)
-        return max(
-            [entry["version_id"] for entry in self._about_product["feed"]["entry"]]
-        )
 
     def show_custom_options(self, dictview=False):
         """

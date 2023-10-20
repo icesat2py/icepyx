@@ -319,3 +319,17 @@ def gt2spot(gt, sc_orient):
         raise ValueError("Could not compute the spot number.")
 
     return np.uint8(spot)
+
+def latest_version(product):
+    """
+    Determine the most recent version available for the given product.
+
+    Examples
+    --------
+    >>> latest_version('ATL03')
+    '006'
+    """
+    _about_product = about_product(product)
+    return max(
+        [entry["version_id"] for entry in _about_product["feed"]["entry"]]
+    )

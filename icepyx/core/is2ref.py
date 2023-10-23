@@ -1,3 +1,4 @@
+import h5py
 import json
 import numpy as np
 import requests
@@ -333,3 +334,26 @@ def latest_version(product):
     return max(
         [entry["version_id"] for entry in _about_product["feed"]["entry"]]
     )
+
+def extract_product(filepath):
+    """
+    Read the product type from the metadata of the file. Return the product as a string.
+    """
+    with h5py.File(filepath, 'r') as f:
+        try: 
+            product = f.attrs['short_name'].decode()
+            product = _validate_product(product)
+        except KeyError:
+            raise 'Unable to parse the product name from file metadata'
+    return product
+
+def extract_version(filepath):
+    """
+    Read the version from the metadata of the file. Return the version as a string.
+    """
+    with h5py.File(filepath, 'r') as f:
+        try: 
+            version = f['METADATA']['DatasetIdentification'].attrs['VersionID'].decode()
+        except KeyError:
+            raise 'Unable to parse the version from file metadata'
+    return version

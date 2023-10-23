@@ -83,6 +83,9 @@ class Variables(EarthdataAuthMixin):
         # Set the product and version from either the input args or the file
         if path:
             self.path = path
+            self.product = is2ref.extract_product(self.path)
+            # TODO what is the best way to fill in the version here? --> read it from the file
+            self.version = is2ref.extract_version(self.path)
         elif product:
             # Check for valid product string
             self.product = is2ref._validate_product(product)
@@ -475,42 +478,40 @@ class Variables(EarthdataAuthMixin):
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
         # add the mandatory variables to the data object
-        # TODO QUESTION - why is this distinction made? How can we handle it wihtout vartype?
-        if self._vartype == "order":
-            nec_varlist = [
-                "sc_orient",
-                "sc_orient_time",
-                "atlas_sdp_gps_epoch",
-                "data_start_utc",
-                "data_end_utc",
-                "granule_start_utc",
-                "granule_end_utc",
-                "start_delta_time",
-                "end_delta_time",
-            ]
-        elif self._vartype == "file":
-            nec_varlist = [
-                "sc_orient",
-                "atlas_sdp_gps_epoch",
-                "cycle_number",
-                "rgt",
-                "data_start_utc",
-                "data_end_utc",
-            ]
-
-        # Adjust the nec_varlist for individual products
-        if self.product == "ATL11":
-            nec_varlist.remove("sc_orient")
+        # TODO QUESTION - why is this distinction made? How can we handle it without vartype?
+        # if self._vartype == "order":
+        #     nec_varlist = [
+        #         "sc_orient",
+        #         "sc_orient_time",
+        #         "atlas_sdp_gps_epoch",
+        #         "data_start_utc",
+        #         "data_end_utc",
+        #         "granule_start_utc",
+        #         "granule_end_utc",
+        #         "start_delta_time",
+        #         "end_delta_time",
+        #     ]
+        # elif self._vartype == "file":
+        #     nec_varlist = [
+        #         "sc_orient",
+        #         "atlas_sdp_gps_epoch",
+        #         "cycle_number",
+        #         "rgt",
+        #         "data_start_utc",
+        #         "data_end_utc",
+        #     ]
 
         try:
-            self._check_valid_lists(vgrp, allpaths, var_list=nec_varlist)
+            self._check_valid_lists(vgrp, allpaths)
         except ValueError:
             # Assume gridded product since user input lists were previously validated
             nec_varlist = []
 
+        # TODO there is a lot of logic next that handles the required variables. Does it make
+        # sense to even have required variables anymore, if we are handling those via query/read?
         if not hasattr(self, "wanted") or self.wanted == None:
-            for varid in nec_varlist:
-                req_vars[varid] = vgrp[varid]
+            # for varid in nec_varlist:
+            #     req_vars[varid] = vgrp[varid]
             self.wanted = req_vars
 
             # DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...

@@ -379,7 +379,7 @@ class Read:
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
         for file_ in self._filelist:
-            product_dict[file_] = self._extract_product(file_)
+            product_dict[file_] = is2ref.extract_product(file_)
         
         # Raise warnings or errors for muliple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
@@ -472,21 +472,6 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Methods
-    
-    @staticmethod
-    def _extract_product(filepath):
-        """
-        Read the product type from the metadata of the file. Return the product as a string.
-        """
-        with h5py.File(filepath, 'r') as f:
-            try: 
-                product = f.attrs['short_name'].decode()
-                product = is2ref._validate_product(product)
-            # TODO test that this is the proper error
-            except KeyError:
-                raise 'Unable to parse the product name from file metadata'
-        return product
-    
     @staticmethod
     def _check_source_for_pattern(source, filename_pattern):
         """
@@ -735,6 +720,22 @@ class Read:
         # so to get a combined dataset, we need to keep track of spots under the hood, open each group, and then combine them into one xarray where the spots are IDed somehow (or only the strong ones are returned)
         # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
 
+        # Append the minimum variables needed for icepyx to merge the datasets
+                # Adjust the nec_varlist for individual products
+        var_list=[
+            "sc_orient",
+            "atlas_sdp_gps_epoch",
+            "cycle_number",
+            "rgt",
+            "data_start_utc",
+            "data_end_utc",
+        ]
+        
+        if self.product == "ATL11":
+            var_list.remove("sc_orient")
+        
+        self._read_vars.append(defaults=False, var_list=var_list)
+        print(self._read_vars)
         try:
             groups_list = list_of_dict_vals(self._read_vars.wanted)
         except AttributeError:

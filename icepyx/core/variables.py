@@ -467,7 +467,7 @@ class Variables(EarthdataAuthMixin):
             and keyword_list == None
         ), "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
 
-        req_vars = {}
+        final_vars = {}
 
         # if not hasattr(self, 'avail') or self.avail==None: self.get_avail()
         # vgrp, paths = self.parse_var_list(self.avail)
@@ -477,42 +477,15 @@ class Variables(EarthdataAuthMixin):
 
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
-        # add the mandatory variables to the data object
-        # TODO QUESTION - why is this distinction made? How can we handle it without vartype?
-        # if self._vartype == "order":
-        #     nec_varlist = [
-        #         "sc_orient",
-        #         "sc_orient_time",
-        #         "atlas_sdp_gps_epoch",
-        #         "data_start_utc",
-        #         "data_end_utc",
-        #         "granule_start_utc",
-        #         "granule_end_utc",
-        #         "start_delta_time",
-        #         "end_delta_time",
-        #     ]
-        # elif self._vartype == "file":
-        #     nec_varlist = [
-        #         "sc_orient",
-        #         "atlas_sdp_gps_epoch",
-        #         "cycle_number",
-        #         "rgt",
-        #         "data_start_utc",
-        #         "data_end_utc",
-        #     ]
-
         try:
             self._check_valid_lists(vgrp, allpaths)
         except ValueError:
             # Assume gridded product since user input lists were previously validated
             nec_varlist = []
 
-        # TODO there is a lot of logic next that handles the required variables. Does it make
-        # sense to even have required variables anymore, if we are handling those via query/read?
+        # Instantiate self.wanted to an empty dictionary if it doesn't exist
         if not hasattr(self, "wanted") or self.wanted == None:
-            # for varid in nec_varlist:
-            #     req_vars[varid] = vgrp[varid]
-            self.wanted = req_vars
+            self.wanted = {}
 
             # DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
 
@@ -521,21 +494,21 @@ class Variables(EarthdataAuthMixin):
 
         # Case only variables (but not keywords or beams) are specified
         if beam_list == None and keyword_list == None:
-            req_vars.update(self._iter_vars(sum_varlist, req_vars, vgrp))
+            final_vars.update(self._iter_vars(sum_varlist, final_vars, vgrp))
 
         # Case a beam and/or keyword list is specified (with or without variables)
         else:
-            req_vars.update(
-                self._iter_paths(sum_varlist, req_vars, vgrp, beam_list, keyword_list)
+            final_vars.update(
+                self._iter_paths(sum_varlist, final_vars, vgrp, beam_list, keyword_list)
             )
 
         # update the data object variables
-        for vkey in req_vars.keys():
+        for vkey in final_vars.keys():
             # add all matching keys and paths for new variables
             if vkey not in self.wanted.keys():
-                self.wanted[vkey] = req_vars[vkey]
+                self.wanted[vkey] = final_vars[vkey]
             else:
-                for vpath in req_vars[vkey]:
+                for vpath in final_vars[vkey]:
                     if vpath not in self.wanted[vkey]:
                         self.wanted[vkey].append(vpath)
 

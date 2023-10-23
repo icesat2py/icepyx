@@ -734,10 +734,10 @@ class Read:
         if self.product == "ATL11":
             var_list.remove("sc_orient")
         
-        self._read_vars.append(defaults=False, var_list=var_list)
-        print(self._read_vars)
+        self.vars.append(defaults=False, var_list=var_list)
+        
         try:
-            groups_list = list_of_dict_vals(self._read_vars.wanted)
+            groups_list = list_of_dict_vals(self.vars.wanted)
         except AttributeError:
             pass
 

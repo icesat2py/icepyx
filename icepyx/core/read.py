@@ -775,6 +775,8 @@ class Read:
         if self.product == "ATL11":
             var_list.remove("sc_orient")
         
+        # Note: This fails if we are reading a file that doesn't have the var_list
+        # variables in it.
         self.vars.append(defaults=False, var_list=var_list)
         
         try:

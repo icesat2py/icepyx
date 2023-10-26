@@ -646,6 +646,27 @@ class Query(GenQuery, EarthdataAuthMixin):
         if self._subsetparams == None and not kwargs:
             return {}
         else:
+            # If the user has supplied a subset list of variables, append the
+            # icepyx required variables to the Coverage dict
+            if 'Coverage' in kwargs.keys():
+                var_list = [
+                    "sc_orient",
+                    "sc_orient_time",
+                    "atlas_sdp_gps_epoch",
+                    "cycle_number",
+                    "rgt",
+                    "data_start_utc",
+                    "data_end_utc",
+                    "granule_start_utc",
+                    "granule_end_utc",
+                    "start_delta_time",
+                    "end_delta_time",
+                ]
+                self.order_vars.append(defaults=False, var_list=var_list)
+                for var, path in self.order_vars.wanted.items():
+                    if var not in kwargs['Coverage'].keys():
+                        kwargs['Coverage'][var] = path
+            
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
             if self._spatial._geom_file is not None:

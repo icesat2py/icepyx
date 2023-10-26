@@ -469,12 +469,7 @@ class Variables(EarthdataAuthMixin):
 
         final_vars = {}
 
-        # if not hasattr(self, 'avail') or self.avail==None: self.get_avail()
-        # vgrp, paths = self.parse_var_list(self.avail)
-        # allpaths = []
-        # [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
         vgrp, allpaths = self.avail(options=True, internal=True)
-
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
         try:

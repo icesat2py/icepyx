@@ -423,6 +423,22 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "rwegener2",
+      "name": "Rachel Wegener",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35503632?v=4",
+      "profile": "https://rwegener2.github.io/",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "maintenance",
+        "review",
+        "test",
+        "tutorial"
+      ]
     }
   ],
   "contributorsPerLine": 7,

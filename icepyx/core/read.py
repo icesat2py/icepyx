@@ -754,8 +754,14 @@ class Read:
         # so to get a combined dataset, we need to keep track of spots under the hood, open each group, and then combine them into one xarray where the spots are IDed somehow (or only the strong ones are returned)
         # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
 
+        if not self.vars.wanted:
+            raise AttributeError(
+                'No variables listed in self.vars.wanted. Please use the Variables class '
+                'via self.vars to search for desired variables to read and self.vars.append(...) '
+                'to add variables to the wanted variables list.'
+            )
+        
         # Append the minimum variables needed for icepyx to merge the datasets
-                # Adjust the nec_varlist for individual products
         var_list=[
             "sc_orient",
             "atlas_sdp_gps_epoch",
@@ -765,6 +771,7 @@ class Read:
             "data_end_utc",
         ]
         
+        # Adjust the nec_varlist for individual products
         if self.product == "ATL11":
             var_list.remove("sc_orient")
         

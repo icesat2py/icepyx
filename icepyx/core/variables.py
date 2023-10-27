@@ -31,7 +31,7 @@ class Variables(EarthdataAuthMixin):
     Parameters
     ---------- 
     vartype : string
-        This argument is depreciated. The vartype will be inferred from data_source.
+        This argument is deprecated. The vartype will be inferred from data_source.
         One of ['order', 'file'] to indicate the source of the input variables.
         This field will be auto-populated when a variable object is created as an
         attribute of a query object.
@@ -84,7 +84,6 @@ class Variables(EarthdataAuthMixin):
         if path:
             self.path = path
             self.product = is2ref.extract_product(self.path)
-            # TODO what is the best way to fill in the version here? --> read it from the file
             self.version = is2ref.extract_version(self.path)
         elif product:
             # Check for valid product string

@@ -382,7 +382,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/54070345?v=4",
       "profile": "https://github.com/jpswinski",
       "contributions": [
-        "code"
+        "code",
+        "review"
       ]
     },
     {
@@ -422,6 +423,31 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "rwegener2",
+      "name": "Rachel Wegener",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35503632?v=4",
+      "profile": "https://rwegener2.github.io/",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "maintenance",
+        "review",
+        "test",
+        "tutorial"
+      ]
+    },
+    {
+      "login": "whyjz",
+      "name": "Whyjay Zheng",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19339926?v=4",
+      "profile": "https://whyjz.github.io/",
+      "contributions": [
+        "tutorial"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -430,5 +456,6 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,
-  "commitConvention": "angular"
+  "commitConvention": "angular",
+  "commitType": "docs"
 }

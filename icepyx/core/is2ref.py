@@ -1,10 +1,11 @@
-import h5py
 import json
-import numpy as np
 import requests
 import warnings
 from xml.etree import ElementTree as ET
 
+import h5py
+import earthaccess
+import numpy as np
 
 import icepyx
 
@@ -340,25 +341,71 @@ def latest_version(product):
         [entry["version_id"] for entry in _about_product["feed"]["entry"]]
     )
 
-def extract_product(filepath):
+def extract_product(filepath, auth=None):
     """
-    Read the product type from the metadata of the file. Return the product as a string.
+    Read the product type from the metadata of the file. Valid for local or s3 files, but must
+    provide an auth object if reading from s3. Return the product as a string.
+    
+    Parameters
+    ---------- 
+    filepath: string
+        local or remote location of a file. Could be a local string or an s3 filepath
+    auth: earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Optional, but necessary if accessing data in an
+        s3 bucket.
     """
-    with h5py.File(filepath, 'r') as f:
-        try: 
-            product = f.attrs['short_name'].decode()
-            product = _validate_product(product)
-        except KeyError:
-            raise 'Unable to parse the product name from file metadata'
+    # Generate a file reader object relevant for the file location
+    if filepath.startswith('s3'):
+        if not auth:
+            raise AttributeError('Must provide credentials to `auth` if accessing s3 data')
+        # Read the s3 file
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
+        f = h5py.File(s3.open(filepath, 'rb'))
+    else:
+        # Otherwise assume a local filepath. Read with h5py.
+        f = h5py.File(filepath, 'r')
+    
+    # Extract the product information
+    try: 
+        product = f.attrs['short_name'].decode()
+        product = _validate_product(product)
+    except KeyError:
+        raise 'Unable to parse the product name from file metadata'
+    # Close the file reader
+    f.close()
+    
     return product
 
-def extract_version(filepath):
+def extract_version(filepath, auth=None):
     """
-    Read the version from the metadata of the file. Return the version as a string.
+    Read the version from the metadata of the file. Valid for local or s3 files, but must
+    provide an auth object if reading from s3. Return the version as a string.
+    
+    Parameters
+    ---------- 
+    filepath: string
+        local or remote location of a file. Could be a local string or an s3 filepath
+    auth: earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Optional, but necessary if accessing data in an
+        s3 bucket.
     """
-    with h5py.File(filepath, 'r') as f:
-        try: 
-            version = f['METADATA']['DatasetIdentification'].attrs['VersionID'].decode()
-        except KeyError:
-            raise 'Unable to parse the version from file metadata'
+    # Generate a file reader object relevant for the file location
+    if filepath.startswith('s3'):
+        if not auth:
+            raise AttributeError('Must provide credentials to `auth` if accessing s3 data')
+        # Read the s3 file
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
+        f = h5py.File(s3.open(filepath, 'rb'))
+    else:
+        # Otherwise assume a local filepath. Read with h5py.
+        f = h5py.File(filepath, 'r')
+
+    # Read the version information    
+    try: 
+        version = f['METADATA']['DatasetIdentification'].attrs['VersionID'].decode()
+    except KeyError:
+        raise 'Unable to parse the version from file metadata'
+    # Close the file reader
+    f.close()
+    
     return version

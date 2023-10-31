@@ -662,7 +662,6 @@ class Query(GenQuery, EarthdataAuthMixin):
                     "start_delta_time",
                     "end_delta_time",
                 ]
-                self.order_vars.append(defaults=False, var_list=var_list)
                 for var, path in self.order_vars.wanted.items():
                     if var not in kwargs['Coverage'].keys():
                         kwargs['Coverage'][var] = path

@@ -711,8 +711,8 @@ class Query(GenQuery, EarthdataAuthMixin):
                     self._order_vars = Variables(
                         product=self.product,
                         version = self._version,
-                        auth = self.auth,
                         avail=self._cust_options["variables"],
+                        auth = self.auth,
                     )
                 else:
                     self._order_vars = Variables(

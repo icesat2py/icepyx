@@ -82,15 +82,15 @@ class Variables(EarthdataAuthMixin):
         
         # Set the product and version from either the input args or the file
         if path:
-            self.path = path
-            self.product = is2ref.extract_product(self.path)
-            self.version = is2ref.extract_version(self.path)
+            self._path = path
+            self._product = is2ref.extract_product(self._path)
+            self._version = is2ref.extract_version(self._path)
         elif product:
             # Check for valid product string
-            self.product = is2ref._validate_product(product)
+            self._product = is2ref._validate_product(product)
             # Check for valid version string
             # If version is not specified by the user assume the most recent version
-            self.version = val.prod_version(is2ref.latest_version(self.product), version)
+            self._version = val.prod_version(is2ref.latest_version(self._product), version)
         else:
             raise TypeError('Either a filepath or a product need to be given as input arguments.')
 
@@ -101,6 +101,23 @@ class Variables(EarthdataAuthMixin):
         self.wanted = wanted
 
         # DevGoal: put some more/robust checks here to assess validity of inputs
+    
+    @property
+    def path(self):
+        if self._path:
+            path = self._path
+        else:
+            path = None
+        return path
+        
+    @property
+    def product(self):
+        return self._product
+        
+    @property
+    def version(self):
+        return self._version
+        
 
     def avail(self, options=False, internal=False):
         """

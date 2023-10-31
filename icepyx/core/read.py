@@ -289,9 +289,6 @@ class Read:
     glob_kwargs : dict, default {}
         Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
 
-    glob_kwargs : dict, default {}
-        Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
-
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
         Currently, only xarray.Dataset objects (default) are available.
@@ -461,20 +458,6 @@ class Read:
             self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars
     
-    @property
-    def filelist(self):
-        """
-        Return the list of files represented by this Read object.
-        """
-        return self._filelist
-
-    @property
-    def product(self):
-        """
-        Return the product associated with the Read object.
-        """
-        return self._product
-
     @property
     def filelist(self):
         """

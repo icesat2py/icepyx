@@ -9,10 +9,14 @@ On this page, we outline the datasets that are supported by the QUEST module. Cl
 List of Datasets
 ----------------
 
-* `Argo <https://argo.ucsd.edu/data/>`_
-    * The Argo mission involves a series of floats that are designed to capture vertical ocean profiles of temperature, salinity, and pressure down to ~2000 m. Some floats are in support of BGC-Argo, which also includes data relevant for biogeochemical applications: oxygen, nitrate, chlorophyll, backscatter, and solar irradiance.
-    * (Link Kelsey's paper here)
-    * (Link to example workbook here)
+`Argo <https://argo.ucsd.edu/data/>`_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The Argo mission involves a series of floats that are designed to capture vertical ocean profiles of temperature, salinity, and pressure down to ~2000 m. Some floats are in support of BGC-Argo, which also includes data relevant for biogeochemical applications: oxygen, nitrate, chlorophyll, backscatter, and solar irradiance.
+
+A paper outlining the Argo extension to QUEST is currently in preparation, with a citable preprint available in the near future.
+
+:ref:`Argo Workflow Example<quest_workbook_label>`
+(Link to example workbook here)
 
 
 Adding a Dataset to QUEST

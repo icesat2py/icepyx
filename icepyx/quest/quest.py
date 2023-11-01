@@ -21,9 +21,11 @@ class Quest(GenQuery):
         Geospatial projection.
         Not yet implemented
 
+
     Returns
     -------
     quest object
+
 
     Examples
     --------
@@ -54,8 +56,8 @@ class Quest(GenQuery):
 
     def __init__(
         self,
-        spatial_extent=None,
-        date_range=None,
+        spatial_extent,
+        date_range,
         start_time=None,
         end_time=None,
         proj="Default",
@@ -86,7 +88,7 @@ class Quest(GenQuery):
 
     def add_icesat2(
         self,
-        product=None,
+        product,
         start_time=None,
         end_time=None,
         version=None,
@@ -94,7 +96,7 @@ class Quest(GenQuery):
         tracks=None,
         files=None,
         **kwargs,
-    ):
+    ) -> None:
         """
         Adds ICESat-2 datasets to QUEST structure.
         """

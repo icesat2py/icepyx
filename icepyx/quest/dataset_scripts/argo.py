@@ -227,7 +227,7 @@ class Argo(DataSet):
 
         # if new search is called with additional parameters
         if not params is None:
-            self.params.append(self._validate_parameters(params))
+            self.params.extend(self._validate_parameters(params))
             # to remove duplicated from list
             self.params = list(set(self.params))
 
@@ -409,7 +409,7 @@ class Argo(DataSet):
 
         # if new search is called with additional parameters
         if not params is None:
-            self.params.append(self._validate_parameters(params))
+            self.params.extend(self._validate_parameters(params))
             # to remove duplicated from list
             self.params = list(set(self.params))
         else:
@@ -452,27 +452,3 @@ class Argo(DataSet):
         self.argodata.reset_index(inplace=True, drop=True)
 
         return self.argodata
-
-
-# this is just for the purpose of debugging and should be removed later (after being turned into tests)
-if __name__ == "__main__":
-    # no search results
-    # reg_a = Argo([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
-    # profiles available
-    # reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])  # "2022-04-26"])
-
-    # bgc profiles available
-    reg_a = Argo([-150, 30, -120, 60], ["2022-06-07", "2022-06-14"])
-
-    param_list = ["down_irradiance412"]
-    bad_param = ["up_irradiance412"]
-    # param_list = ["doxy"]
-
-    # reg_a.search_data(params=bad_param, printURL=True)
-
-    reg_a.download(params=param_list)
-
-    reg_a.download(params=["doxy"], keep_existing=True)  # , presRange="0.2,100"
-    # )
-
-    print(reg_a)

@@ -1,11 +1,19 @@
 import pytest
 import re
 
-from icepyx.quest.dataset_scripts.argo import Argo
+from icepyx.quest.quest import Quest
+
+# create an Argo instance via quest (Argo is a submodule)
+def argo_quest_instance(bounding_box, date_range, params=None):
+    my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
+    my_quest.add_argo()
+    my_argo = my_quest.datasets["argo"]
+
+    return my_argo
 
 
 def test_available_profiles():
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
     obs_msg = reg_a.search_data()
 
     exp_msg = "19 valid profiles have been identified"
@@ -14,7 +22,7 @@ def test_available_profiles():
 
 
 def test_no_available_profiles():
-    reg_a = Argo([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
+    reg_a = argo_quest_instance([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
     obs = reg_a.search_data()
 
     exp = (
@@ -25,7 +33,7 @@ def test_no_available_profiles():
 
 
 def test_fmt_coordinates():
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
     obs = reg_a._fmt_coordinates()
 
     exp = "[[-143.0,30.0],[-143.0,37.0],[-154.0,37.0],[-154.0,30.0],[-143.0,30.0]]"
@@ -34,7 +42,7 @@ def test_fmt_coordinates():
 
 
 def test_invalid_param():
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
 
     invalid_params = ["temp", "temperature_files"]
 
@@ -49,9 +57,8 @@ def test_invalid_param():
 
 
 def test_download_parse_into_df():
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
-    # reg_a.search_data()
-    reg_a.get_dataframe(params=["salinity"])  # note: pressure is returned by default
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
+    reg_a.download(params=["salinity"])  # note: pressure is returned by default
 
     obs_cols = reg_a.argodata.columns
 
@@ -67,32 +74,32 @@ def test_download_parse_into_df():
 
     assert set(exp_cols) == set(obs_cols)
 
-    assert len(reg_a.argodata) == 1943
+    assert len(reg_a.argodata) == 1942
+
+
+# approach for additional testing of df functions: create json files with profiles and store them in test suite
+# then use those for the comparison (e.g. number of rows in df and json match)
 
 
 def test_merge_df():
-    reg_a = Argo([-150, 30, -120, 60], ["2022-06-07", "2022-06-14"])
+    reg_a = argo_quest_instance([-150, 30, -120, 60], ["2022-06-07", "2022-06-14"])
     param_list = ["salinity", "temperature", "down_irradiance412"]
 
-    df = reg_a.get_dataframe(params=param_list)
+    df = reg_a.download(params=param_list)
 
     assert "down_irradiance412" in df.columns
     assert "down_irradiance412_argoqc" in df.columns
 
-    df = reg_a.get_dataframe(["doxy"], keep_existing=True)
+    df = reg_a.download(["doxy"], keep_existing=True)
     assert "doxy" in df.columns
     assert "doxy_argoqc" in df.columns
     assert "down_irradiance412" in df.columns
     assert "down_irradiance412_argoqc" in df.columns
 
 
-"""
 def test_presRange_input_param():
-    reg_a = Argo([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
-    reg_a.get_dataframe(params=["salinity"], presRange="0.2,100")
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
+    df = reg_a.download(params=["salinity"], presRange="0.2,100")
 
-"""
-
-# goal: check number of rows in df matches rows in json
-# approach: create json files with profiles and store them in test suite
-# then use those for the comparison
+    assert df["pressure"].min() >= 0.2
+    assert df["pressure"].max() <= 100

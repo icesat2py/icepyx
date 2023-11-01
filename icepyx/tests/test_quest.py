@@ -18,7 +18,6 @@ def quest_instance(scope="module", autouse=True):
 # Paramaterize these add_dataset tests once more datasets are added
 def test_add_is2(quest_instance):
     # Add ATL06 as a test to QUEST
-
     prod = "ATL06"
     quest_instance.add_icesat2(product=prod)
     exp_key = "icesat2"
@@ -46,37 +45,31 @@ def test_add_argo(quest_instance):
     assert quest_instance.datasets[exp_key].params == params
 
 
-def test_add_multiple_datasets():
-    bounding_box = [-150, 30, -120, 60]
-    date_range = ["2022-06-07", "2022-06-14"]
-    my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
+def test_add_multiple_datasets(quest_instance):
+    quest_instance.add_argo(params=["down_irradiance412", "temperature"])
+    # print(quest_instance.datasets["argo"].params)
 
-    # print(my_quest.spatial)
-    # print(my_quest.temporal)
+    quest_instance.add_icesat2(product="ATL06")
+    # print(quest_instance.datasets["icesat2"].product)
 
-    # my_quest.add_argo(params=["down_irradiance412", "temperature"])
-    # print(my_quest.datasets["argo"].params)
-
-    my_quest.add_icesat2(product="ATL06")
-    # print(my_quest.datasets["icesat2"].product)
-
-    print(my_quest)
-
-    # my_quest.search_all()
-    #
-    # # this one still needs work for IS2 because of auth...
-    # my_quest.download_all()
+    exp_keys = ["argo", "icesat2"]
+    assert set(exp_keys) == set(quest_instance.datasets.keys())
 
 
 ########## ALL DATASET METHODS TESTS ##########
 
-# is successful execution enough here?
 # each of the query functions should be tested in their respective modules
 def test_search_all(quest_instance):
+    quest_instance.add_argo(params=["down_irradiance412", "temperature"])
+    quest_instance.add_icesat2(product="ATL06")
+
     # Search and test all datasets
     quest_instance.search_all()
 
 
-def test_download_all():
-    # this will require auth in some cases...
-    pass
+# def test_download_all():
+#   quest_instance.add_argo(params=["down_irradiance412", "temperature"])
+#   quest_instance.add_icesat2(product="ATL06")
+#
+# # this will require auth in some cases...
+#   quest_instance.download_all()

@@ -175,5 +175,3 @@ class Quest(GenQuery):
             else:
                 i.download()
                 print(i)
-
-    # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality

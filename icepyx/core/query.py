@@ -650,21 +650,22 @@ class Query(GenQuery, EarthdataAuthMixin):
             # icepyx required variables to the Coverage dict
             if 'Coverage' in kwargs.keys():
                 var_list = [
-                    "sc_orient",
-                    "sc_orient_time",
-                    "atlas_sdp_gps_epoch",
-                    "cycle_number",
-                    "rgt",
-                    "data_start_utc",
-                    "data_end_utc",
-                    "granule_start_utc",
-                    "granule_end_utc",
-                    "start_delta_time",
-                    "end_delta_time",
+                    "orbit_info/sc_orient",
+                    "orbit_info/sc_orient_time",
+                    "ancillary_data/atlas_sdp_gps_epoch",
+                    "orbit_info/cycle_number",
+                    "orbit_info/rgt",
+                    "ancillary_data/data_start_utc",
+                    "ancillary_data/data_end_utc",
+                    "ancillary_data/granule_start_utc",
+                    "ancillary_data/granule_end_utc",
+                    "ancillary_data/start_delta_time",
+                    "ancillary_data/end_delta_time",
                 ]
-                for var, path in self.order_vars.wanted.items():
+                # Add any variables from var_list to Coverage that are not already included
+                for var in var_list:
                     if var not in kwargs['Coverage'].keys():
-                        kwargs['Coverage'][var] = path
+                        kwargs['Coverage'][var.split('/')[-1]] = [var]
             
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")

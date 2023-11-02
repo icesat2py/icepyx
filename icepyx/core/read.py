@@ -279,10 +279,7 @@ class Read:
         String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-<<<<<<< HEAD
         **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
-=======
->>>>>>> use swap_dims function to simplify dataset manipulation in read fn and remove xarray warning
 
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
@@ -613,8 +610,8 @@ class Read:
                 ds = ds.assign_coords(
                     {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
                 )
-            else:
-                ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
+            # else:
+            #     ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
 
             # for ATL11
             if "ref_pt" in ds.coords:

@@ -111,7 +111,11 @@ def _get_custom_options(session, product, version):
     # reformatting
     formats = [Format.attrib for Format in root.iter("Format")]
     format_vals = [formats[i]["value"] for i in range(len(formats))]
-    format_vals.remove("")
+    try:
+        format_vals.remove("")
+    except KeyError:
+        # ATL23 does not have an empty value
+        pass
     cust_options.update({"fileformats": format_vals})
 
     # reprojection only applicable on ICESat-2 L3B products.
@@ -346,7 +350,13 @@ def extract_product(filepath):
     """
     with h5py.File(filepath, 'r') as f:
         try: 
-            product = f.attrs['short_name'].decode()
+            product = f.attrs['short_name']
+            if isinstance(product, bytes):
+                # For most products the short name is stored in a bytes string
+                product = product.decode()
+            elif isinstance(product, np.ndarray):
+                # ATL14 saves the short_name as an array ['ATL14']
+                product = product[0]
             product = _validate_product(product)
         except KeyError:
             raise 'Unable to parse the product name from file metadata'
@@ -358,7 +368,10 @@ def extract_version(filepath):
     """
     with h5py.File(filepath, 'r') as f:
         try: 
-            version = f['METADATA']['DatasetIdentification'].attrs['VersionID'].decode()
+            version = f['METADATA']['DatasetIdentification'].attrs['VersionID']
+            if isinstance(version, np.ndarray):
+                # ATL14 stores the version as an array ['00x']
+                version = version[0]
         except KeyError:
             raise 'Unable to parse the version from file metadata'
     return version

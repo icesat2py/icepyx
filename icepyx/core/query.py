@@ -816,6 +816,14 @@ class Query(GenQuery, EarthdataAuthMixin):
         ]
         for key in summ_keys:
             print(key, ": ", self._about_product["feed"]["entry"][-1][key])
+            
+    def latest_version(self):
+        """
+        A reference function to is2ref.lates_version.
+        
+        Determine the most recent version available for the given product.
+        """
+        return is2ref.latest_version(self.product)
 
     def product_all_info(self):
         """

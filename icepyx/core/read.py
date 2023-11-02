@@ -379,7 +379,7 @@ class Read:
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
         for file_ in self._filelist:
-            product_dict[file_] = self._extract_product(file_)
+            product_dict[file_] = is2ref.extract_product(file_)
 
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
@@ -474,21 +474,6 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Methods
-    @staticmethod
-    def _extract_product(filepath):
-        """
-        Read the product type from the metadata of the file. Return the product as a string.
-        """
-        with h5py.File(filepath, "r") as f:
-            try:
-                product = f.attrs["short_name"].decode()
-                product = is2ref._validate_product(product)
-            except KeyError:
-                raise AttributeError(
-                    f"Unable to extract the product name from file metadata."
-                )
-        return product
-
     @staticmethod
     def _check_source_for_pattern(source, filename_pattern):
         """

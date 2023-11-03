@@ -145,6 +145,13 @@ class Quest(GenQuery):
         See Also
         --------
         quest.dataset_scripts.argo
+        icepyx.query.GenQuery
+
+        Examples
+        --------
+        # example with profiles available
+        >>> reg_a = Quest([-154, 30,-143, 37], ['2022-04-12', '2022-04-26'])
+        >>> reg_a.add_argo(params=["temperature", "salinity"])
         """
 
         argo = Argo(self._spatial, self._temporal, params, presRange)

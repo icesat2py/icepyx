@@ -8,32 +8,12 @@ from icepyx.quest.dataset_scripts.dataset import DataSet
 
 class Argo(DataSet):
     """
-    Initialises an Argo Dataset object
-    Used to query physical and BGC Argo profiles
-
-    Examples
-    --------
-    # example with profiles available
-    >>> reg_a = Argo([-154, 30,-143, 37], ['2022-04-12', '2022-04-26'])
-    >>> reg_a.search_data()
-    >>> print(reg_a.profiles[['pres', 'temp', 'lat', 'lon']].head())
-        pres    temp     lat      lon
-    0   3.9  18.608  33.401 -153.913
-    1   5.7  18.598  33.401 -153.913
-    2   7.7  18.588  33.401 -153.913
-    3   9.7  18.462  33.401 -153.913
-    4  11.7  18.378  33.401 -153.913
-
-    # example with no profiles
-    >>> reg_a = Argo([-55, 68, -48, 71], ['2019-02-20', '2019-02-28'])
-    >>> reg_a.search_data()
-    Warning: Query returned no profiles
-    Please try different search parameters
+    Initialises an Argo Dataset object via a Quest object.
+    Used to query physical and BGC Argo profiles.
 
     See Also
     --------
     DataSet
-    GenQuery
     """
 
     # Note: it looks like ArgoVis now accepts polygons, not just bounding boxes

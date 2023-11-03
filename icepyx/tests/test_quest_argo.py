@@ -6,7 +6,7 @@ from icepyx.quest.quest import Quest
 # create an Argo instance via quest (Argo is a submodule)
 def argo_quest_instance(bounding_box, date_range, params=None):
     my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
-    my_quest.add_argo()
+    my_quest.add_argo(params)
     my_argo = my_quest.datasets["argo"]
 
     return my_argo

@@ -820,7 +820,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             
     def latest_version(self):
         """
-        A reference function to is2ref.lates_version.
+        A reference function to is2ref.latest_version.
         
         Determine the most recent version available for the given product.
         """

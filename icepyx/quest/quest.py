@@ -60,7 +60,7 @@ class Quest(GenQuery):
         date_range,
         start_time=None,
         end_time=None,
-        proj="Default",
+        proj="default",
     ):
         """
         Tells QUEST to initialize data given the user input spatiotemporal data.
@@ -99,6 +99,20 @@ class Quest(GenQuery):
     ) -> None:
         """
         Adds ICESat-2 datasets to QUEST structure.
+
+        Parameters
+        ----------
+
+        For details on inputs, see the Query documentation.
+
+        Returns
+        -------
+        None
+
+        See Also
+        --------
+        icepyx.core.GenQuery
+        icepyx.core.Query
         """
 
         query = Query(
@@ -139,39 +153,81 @@ class Quest(GenQuery):
     # ----------------------------------------------------------------------
     # Methods (on all datasets)
 
-    # error handling? what happens when one of i fails...
-    def search_all(self):
+    # error handling? what happens when the user tries to re-query?
+    def search_all(self, **kwargs):
         """
         Searches for requred dataset within platform (i.e. ICESat-2, Argo) of interest.
+
+        Parameters
+        ----------
+        **kwargs : default None
+                Optional passing of keyword arguments to supply additional search constraints per datasets.
+                Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
+                and the value is a dictionary of acceptable keyword arguments
+                and values allowable for the `search_data()` function for that dataset.
+                For instance: `icesat2 = {"IDs":True}, argo = {"presRange":"10,500"}`.
         """
         print("\nSearching all datasets...")
 
-        for i in self.datasets.values():
+        for k, v in self.datasets.items():
             print()
             try:
-                # querying ICESat-2 data
-                if isinstance(i, Query):
+                if isinstance(v, Query):
                     print("---ICESat-2---")
-                    msg = i.avail_granules()
+                    try:
+                        msg = v.avail_granules(kwargs[k])
+                    except KeyError:
+                        msg = v.avail_granules()
                     print(msg)
-                else:  # querying all other data sets
-                    print(i)
-                    i.search_data()
+
+                else:
+                    print(k)
+                    try:
+                        v.search_data(kwargs[k])
+                    except KeyError:
+                        v.search_data()
+
             except:
-                dataset_name = type(i).__name__
+                dataset_name = type(v).__name__
                 print("Error querying data from {0}".format(dataset_name))
 
-    # error handling? what happens when one of i fails...
-    def download_all(self, path=""):
-        " " "Downloads requested dataset(s)." " "
+                
+    # error handling? what happens if the user tries to re-download?
+    def download_all(self, path="", **kwargs):
+        """
+        Downloads requested dataset(s).
+
+        Parameters
+        ----------
+        **kwargs : default None
+                Optional passing of keyword arguments to supply additional search constraints per datasets.
+                Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
+                and the value is a dictionary of acceptable keyword arguments
+                and values allowable for the `search_data()` function for that dataset.
+                For instance: `icesat2 = {"verbose":True}, argo = {"keep_existing":True}`.
+        """
+
         print("\nDownloading all datasets...")
 
-        for i in self.datasets.values():
+        for k, v in self.datasets.items():
             print()
-            if isinstance(i, Query):
-                print("---ICESat-2---")
-                msg = i.download_granules(path)
-                print(msg)
-            else:
-                i.download()
-                print(i)
+
+            try:
+
+                if isinstance(v, Query):
+                    print("---ICESat-2---")
+                    try:
+                        msg = v.download_granules(path, kwargs[k])
+                    except KeyError:
+                        msg = v.download_granules(path)
+                    print(msg)
+                else:
+                    print(k)
+                    try:
+                        msg = v.download(kwargs[k])
+                    except KeyError:
+                        msg = v.download()
+                    print(msg)
+            except:
+                dataset_name = type(v).__name__
+            print("Error downloading data from {0}".format(dataset_name))

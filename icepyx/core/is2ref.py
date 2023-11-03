@@ -15,6 +15,7 @@ def _validate_product(product):
     """
     Confirm a valid ICESat-2 product was specified
     """
+    error_msg = "A valid product string was not provided. Check user input, if given, or file metadata."
     if isinstance(product, str):
         product = str.upper(product)
         assert product in [
@@ -40,9 +41,9 @@ def _validate_product(product):
             "ATL20",
             "ATL21",
             "ATL23",
-        ], "Please enter a valid product"
+        ], error_msg
     else:
-        raise TypeError("Please enter a product string")
+        raise TypeError(error_msg)
     return product
 
 
@@ -265,8 +266,11 @@ def _default_varlists(product):
         return common_list
 
 
-# dev goal: check and test this function
 def gt2spot(gt, sc_orient):
+    warnings.warn(
+        "icepyx versions 0.8.0 and earlier used an incorrect spot number calculation."
+        "As a result, computations depending on spot number may be incorrect and should be redone."
+    )
 
     assert gt in [
         "gt1l",
@@ -280,12 +284,13 @@ def gt2spot(gt, sc_orient):
     gr_num = np.uint8(gt[2])
     gr_lr = gt[3]
 
+    # spacecraft oriented forward
     if sc_orient == 1:
         if gr_num == 1:
             if gr_lr == "l":
-                spot = 2
+                spot = 6
             elif gr_lr == "r":
-                spot = 1
+                spot = 5
         elif gr_num == 2:
             if gr_lr == "l":
                 spot = 4
@@ -293,16 +298,17 @@ def gt2spot(gt, sc_orient):
                 spot = 3
         elif gr_num == 3:
             if gr_lr == "l":
-                spot = 6
+                spot = 2
             elif gr_lr == "r":
-                spot = 5
+                spot = 1
 
+    # spacecraft oriented backward
     elif sc_orient == 0:
         if gr_num == 1:
             if gr_lr == "l":
-                spot = 5
+                spot = 1
             elif gr_lr == "r":
-                spot = 6
+                spot = 2
         elif gr_num == 2:
             if gr_lr == "l":
                 spot = 3
@@ -310,9 +316,9 @@ def gt2spot(gt, sc_orient):
                 spot = 4
         elif gr_num == 3:
             if gr_lr == "l":
-                spot = 1
+                spot = 5
             elif gr_lr == "r":
-                spot = 2
+                spot = 6
 
     if "spot" not in locals():
         raise ValueError("Could not compute the spot number.")

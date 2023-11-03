@@ -179,7 +179,6 @@ class Quest(GenQuery):
                     except KeyError:
                         msg = v.avail_granules()
                     print(msg)
-
                 else:
                     print(k)
                     try:
@@ -191,7 +190,6 @@ class Quest(GenQuery):
                 dataset_name = type(v).__name__
                 print("Error querying data from {0}".format(dataset_name))
 
-                
     # error handling? what happens if the user tries to re-download?
     def download_all(self, path="", **kwargs):
         """

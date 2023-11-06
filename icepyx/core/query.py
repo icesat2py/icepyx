@@ -12,6 +12,7 @@ import warnings
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.granules as granules
+
 # QUESTION: why doesn't from granules import Granules work, since granules=icepyx.core.granules?
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
@@ -448,6 +449,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
+
     # ----------------------------------------------------------------------
     # Properties
 
@@ -648,7 +650,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             # If the user has supplied a subset list of variables, append the
             # icepyx required variables to the Coverage dict
-            if 'Coverage' in kwargs.keys():
+            if "Coverage" in kwargs.keys():
                 var_list = [
                     "orbit_info/sc_orient",
                     "orbit_info/sc_orient_time",
@@ -664,9 +666,9 @@ class Query(GenQuery, EarthdataAuthMixin):
                 ]
                 # Add any variables from var_list to Coverage that are not already included
                 for var in var_list:
-                    if var not in kwargs['Coverage'].keys():
-                        kwargs['Coverage'][var.split('/')[-1]] = [var]
-            
+                    if var not in kwargs["Coverage"].keys():
+                        kwargs["Coverage"][var.split("/")[-1]] = [var]
+
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
             if self._spatial._geom_file is not None:
@@ -710,9 +712,9 @@ class Query(GenQuery, EarthdataAuthMixin):
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
                         product=self.product,
-                        version = self._version,
+                        version=self._version,
                         avail=self._cust_options["variables"],
-                        auth = self.auth,
+                        auth=self.auth,
                     )
                 else:
                     self._order_vars = Variables(
@@ -742,17 +744,18 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        
+
         >>> reg_a.file_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(auth=self.auth,
-                                            product=self.product,
-                                            version=self._version,
-                                           )
+                self._file_vars = Variables(
+                    auth=self.auth,
+                    product=self.product,
+                    version=self._version,
+                )
 
         return self._file_vars
 
@@ -817,20 +820,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         ]
         for key in summ_keys:
             print(key, ": ", self._about_product["feed"]["entry"][-1][key])
-            
-    def latest_version(self):
-        """
-        A reference function to is2ref.latest_version.
-        
-        Determine the most recent version available for the given product.
-        
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.latest_version()
-        '006'
-        """
-        return is2ref.latest_version(self.product)
 
     def product_all_info(self):
         """
@@ -846,6 +835,20 @@ class Query(GenQuery, EarthdataAuthMixin):
         if not hasattr(self, "_about_product"):
             self._about_product = is2ref.about_product(self._prod)
         pprint.pprint(self._about_product)
+
+    def latest_version(self):
+        """
+        A reference function to is2ref.latest_version.
+
+        Determine the most recent version available for the given product.
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.latest_version()
+        '006'
+        """
+        return is2ref.latest_version(self.product)
 
     def show_custom_options(self, dictview=False):
         """

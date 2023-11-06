@@ -4,15 +4,19 @@ import re
 from icepyx.quest.quest import Quest
 
 # create an Argo instance via quest (Argo is a submodule)
-def argo_quest_instance(bounding_box, date_range):
-    my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
-    my_quest.add_argo()
-    my_argo = my_quest.datasets["argo"]
+@pytest.fixture(scope="function")
+def argo_quest_instance():
+    def _argo_quest_instance(bounding_box, date_range):  # aka "factories as fixtures"
+        my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
+        my_quest.add_argo()
+        my_argo = my_quest.datasets["argo"]
 
-    return my_argo
+        return my_argo
+
+    return _argo_quest_instance
 
 
-def test_available_profiles():
+def test_available_profiles(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
     obs_msg = reg_a.search_data()
 
@@ -21,7 +25,7 @@ def test_available_profiles():
     assert obs_msg == exp_msg
 
 
-def test_no_available_profiles():
+def test_no_available_profiles(argo_quest_instance):
     reg_a = argo_quest_instance([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
     obs = reg_a.search_data()
 
@@ -32,7 +36,7 @@ def test_no_available_profiles():
     assert obs == exp
 
 
-def test_fmt_coordinates():
+def test_fmt_coordinates(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
     obs = reg_a._fmt_coordinates()
 
@@ -41,7 +45,7 @@ def test_fmt_coordinates():
     assert obs == exp
 
 
-def test_invalid_param():
+def test_invalid_param(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
 
     invalid_params = ["temp", "temperature_files"]
@@ -56,7 +60,7 @@ def test_invalid_param():
         reg_a._validate_parameters(invalid_params)
 
 
-def test_download_parse_into_df():
+def test_download_parse_into_df(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
     reg_a.download(params=["salinity"])  # note: pressure is returned by default
 
@@ -81,7 +85,7 @@ def test_download_parse_into_df():
 # then use those for the comparison (e.g. number of rows in df and json match)
 
 
-def test_merge_df():
+def test_merge_df(argo_quest_instance):
     reg_a = argo_quest_instance([-150, 30, -120, 60], ["2022-06-07", "2022-06-14"])
     param_list = ["salinity", "temperature", "down_irradiance412"]
 
@@ -97,8 +101,8 @@ def test_merge_df():
     assert "down_irradiance412_argoqc" in df.columns
 
 
-def test_presRange_input_param():
-    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
+def test_presRange_input_param(argo_quest_instance):
+    reg_a = argo_quest_instance([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
     df = reg_a.download(params=["salinity"], presRange="0.2,180")
 
     assert df["pressure"].min() >= 0.2

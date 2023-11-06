@@ -4,9 +4,9 @@ import re
 from icepyx.quest.quest import Quest
 
 # create an Argo instance via quest (Argo is a submodule)
-def argo_quest_instance(bounding_box, date_range, params=None):
+def argo_quest_instance(bounding_box, date_range):
     my_quest = Quest(spatial_extent=bounding_box, date_range=date_range)
-    my_quest.add_argo(params)
+    my_quest.add_argo()
     my_argo = my_quest.datasets["argo"]
 
     return my_argo
@@ -99,7 +99,8 @@ def test_merge_df():
 
 def test_presRange_input_param():
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
-    df = reg_a.download(params=["salinity"], presRange="0.2,100")
+    df = reg_a.download(params=["salinity"], presRange="0.2,180")
 
     assert df["pressure"].min() >= 0.2
-    assert df["pressure"].max() <= 100
+    assert df["pressure"].max() <= 180
+    assert "salinity" in df.columns

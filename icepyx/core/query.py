@@ -823,6 +823,12 @@ class Query(GenQuery, EarthdataAuthMixin):
         A reference function to is2ref.latest_version.
         
         Determine the most recent version available for the given product.
+        
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.latest_version()
+        '006'
         """
         return is2ref.latest_version(self.product)
 

@@ -259,49 +259,50 @@
 <!-- icepyx.core.variables.Variables -->
 <g id="node14" class="node">
 <title>icepyx.core.variables.Variables</title>
-<polygon fill="none" stroke="black" points="1404,-38 1404,-182 1779,-182 1779,-38 1404,-38"/>
-<text text-anchor="start" x="1558" y="-166.8" font-family="Times,serif" font-size="14.00">Variables</text>
-<polyline fill="none" stroke="black" points="1404,-159 1779,-159 "/>
-<text text-anchor="start" x="1504" y="-143.8" font-family="Times,serif" font-size="14.00">path : NoneType</text>
-<text text-anchor="start" x="1504" y="-128.8" font-family="Times,serif" font-size="14.00">product : NoneType</text>
-<text text-anchor="start" x="1504" y="-113.8" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
-<polyline fill="none" stroke="black" points="1404,-106 1779,-106 "/>
-<text text-anchor="start" x="1412" y="-90.8" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list)</text>
-<text text-anchor="start" x="1412" y="-75.8" font-family="Times,serif" font-size="14.00">avail(options, internal)</text>
-<text text-anchor="start" x="1412" y="-60.8" font-family="Times,serif" font-size="14.00">parse_var_list(varlist, tiered, tiered_vars)</text>
-<text text-anchor="start" x="1412" y="-45.8" font-family="Times,serif" font-size="14.00">remove(all, var_list, beam_list, keyword_list)</text>
+<polygon fill="none" stroke="black" points="1404,-30.5 1404,-189.5 1779,-189.5 1779,-30.5 1404,-30.5"/>
+<text text-anchor="start" x="1558" y="-174.3" font-family="Times,serif" font-size="14.00">Variables</text>
+<polyline fill="none" stroke="black" points="1404,-166.5 1779,-166.5 "/>
+<text text-anchor="start" x="1504" y="-151.3" font-family="Times,serif" font-size="14.00">path</text>
+<text text-anchor="start" x="1504" y="-136.3" font-family="Times,serif" font-size="14.00">product</text>
+<text text-anchor="start" x="1504" y="-121.3" font-family="Times,serif" font-size="14.00">version</text>
+<text text-anchor="start" x="1504" y="-106.3" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
+<polyline fill="none" stroke="black" points="1404,-98.5 1779,-98.5 "/>
+<text text-anchor="start" x="1412" y="-83.3" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list)</text>
+<text text-anchor="start" x="1412" y="-68.3" font-family="Times,serif" font-size="14.00">avail(options, internal)</text>
+<text text-anchor="start" x="1412" y="-53.3" font-family="Times,serif" font-size="14.00">parse_var_list(varlist, tiered, tiered_vars)</text>
+<text text-anchor="start" x="1412" y="-38.3" font-family="Times,serif" font-size="14.00">remove(all, var_list, beam_list, keyword_list)</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
 <g id="edge4" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1636.47,-182.19C1645.73,-204.41 1651.37,-229.3 1646.5,-253 1613.36,-414.38 1523.65,-588.48 1474.25,-676.13"/>
+<path fill="none" stroke="black" d="M1639.37,-189.57C1646.83,-209.83 1650.83,-231.89 1646.5,-253 1613.36,-414.38 1523.65,-588.48 1474.25,-676.13"/>
 <polygon fill="none" stroke="black" points="1471.2,-674.42 1469.31,-684.85 1477.29,-677.87 1471.2,-674.42"/>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query -->
 <g id="edge14" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query</title>
-<path fill="none" stroke="black" d="M1460.1,-182.04C1432.25,-199.08 1403.68,-218.14 1378.5,-238 1368.41,-245.95 1358.33,-254.4 1348.35,-263.15"/>
+<path fill="none" stroke="black" d="M1448.01,-189.54C1424.08,-204.6 1400.05,-221 1378.5,-238 1368.41,-245.95 1358.33,-254.4 1348.35,-263.15"/>
 <polygon fill="black" stroke="black" points="1348.18,-263.3 1346.35,-270.27 1339.21,-271.27 1341.04,-264.29 1348.18,-263.3"/>
 <text text-anchor="middle" x="1420.5" y="-241.8" font-family="Times,serif" font-size="14.00" fill="green">_order_vars</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query -->
 <g id="edge15" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query</title>
-<path fill="none" stroke="black" d="M1533.02,-182.18C1511.95,-205.92 1487.25,-231.72 1462.5,-253 1436.96,-274.96 1408.73,-296.49 1380.3,-316.66"/>
+<path fill="none" stroke="black" d="M1526.46,-189.51C1506.91,-211.14 1484.72,-233.89 1462.5,-253 1436.96,-274.96 1408.73,-296.49 1380.3,-316.66"/>
 <polygon fill="black" stroke="black" points="1380.05,-316.84 1377.45,-323.56 1370.24,-323.74 1372.84,-317.02 1380.05,-316.84"/>
 <text text-anchor="middle" x="1520.5" y="-241.8" font-family="Times,serif" font-size="14.00" fill="green">_order_vars</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query -->
 <g id="edge16" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query</title>
-<path fill="none" stroke="black" d="M1591.81,-182.3C1588.76,-206.72 1581.65,-232.92 1566.5,-253 1520.71,-313.68 1450.03,-355.73 1381.67,-384.34"/>
+<path fill="none" stroke="black" d="M1590.77,-189.64C1587.27,-211.87 1580.15,-234.92 1566.5,-253 1520.71,-313.68 1450.03,-355.73 1381.67,-384.34"/>
 <polygon fill="black" stroke="black" points="1381.39,-384.46 1377.35,-390.43 1370.28,-389 1374.32,-383.02 1381.39,-384.46"/>
 <text text-anchor="middle" x="1609" y="-241.8" font-family="Times,serif" font-size="14.00" fill="green">_file_vars</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read -->
 <g id="edge17" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read</title>
-<path fill="none" stroke="black" d="M1653.23,-182.27C1666,-199.65 1678.34,-218.79 1687.5,-238 1708.9,-282.87 1721.74,-337.86 1729.04,-379.13"/>
+<path fill="none" stroke="black" d="M1658.67,-189.82C1669.46,-205.12 1679.65,-221.53 1687.5,-238 1708.9,-282.87 1721.74,-337.86 1729.04,-379.13"/>
 <polygon fill="black" stroke="black" points="1729.08,-379.37 1734.02,-384.61 1731.08,-391.2 1726.14,-385.95 1729.08,-379.37"/>
 <text text-anchor="middle" x="1731" y="-241.8" font-family="Times,serif" font-size="14.00" fill="green">_read_vars</text>
 </g>

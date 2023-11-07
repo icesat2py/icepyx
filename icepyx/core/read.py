@@ -3,6 +3,7 @@ import glob
 import os
 import warnings
 
+import earthaccess
 import h5py
 import numpy as np
 import xarray as xr
@@ -340,6 +341,10 @@ class Read(EarthdataAuthMixin):
             
         if data_source is None:
             raise ValueError("data_source is a required arguemnt")
+        
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
+        
         # Raise warnings for deprecated arguments
         if filename_pattern:
             warnings.warn(
@@ -368,7 +373,7 @@ class Read(EarthdataAuthMixin):
             assert pattern_ck
             self._filelist = filelist
         elif isinstance(data_source, str) and data_source.startswith('s3'):
-            self._filelist = list(data_source)
+            self._filelist = [data_source]
         elif isinstance(data_source, list):
             self._filelist = data_source
         elif os.path.isdir(data_source):
@@ -378,11 +383,13 @@ class Read(EarthdataAuthMixin):
             self._filelist = glob.glob(data_source, **glob_kwargs)
         # Remove any directories from the list
         self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
-
+        print('FILELIST', self._filelist)
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
         for file_ in self._filelist:
-            product_dict[file_] = is2ref.extract_product(file_)
+            # TODO not addressed: If user gives a list of s3 paths, or mixed s3 with local path
+            print("FILE", file_)
+            product_dict[file_] = is2ref.extract_product(file_, auth=self.auth)
 
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
@@ -434,9 +441,6 @@ class Read(EarthdataAuthMixin):
                 "no other output types are implemented yet"
             )
         self._out_obj = xr.Dataset
-    
-        # initialize authentication properties
-        EarthdataAuthMixin.__init__(self)
 
     # ----------------------------------------------------------------------
     # Properties

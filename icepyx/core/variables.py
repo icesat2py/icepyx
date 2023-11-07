@@ -74,7 +74,7 @@ class Variables(EarthdataAuthMixin):
         
         if path and product:
             raise TypeError(
-                'Please provide either a filepath or a product. If a filepath is provided ',
+                'Please provide either a path or a product. If a path is provided ',
                 'variables will be read from the file. If a product is provided all available ',
                 'variables for that product will be returned.'
             )
@@ -94,7 +94,7 @@ class Variables(EarthdataAuthMixin):
             # If version is not specified by the user assume the most recent version
             self._version = val.prod_version(is2ref.latest_version(self._product), version)
         else:
-            raise TypeError('Either a filepath or a product need to be given as input arguments.')
+            raise TypeError('Either a path or a product need to be given as input arguments.')
         
         self._avail = avail
         self.wanted = wanted

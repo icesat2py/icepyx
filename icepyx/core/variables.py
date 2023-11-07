@@ -78,6 +78,7 @@ class Variables(EarthdataAuthMixin):
                 'variables will be read from the file. If a product is provided all available ',
                 'variables for that product will be returned.'
             )
+
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self, auth=auth)
         

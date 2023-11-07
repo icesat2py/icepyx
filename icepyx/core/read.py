@@ -379,7 +379,7 @@ class Read:
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
         for file_ in self._filelist:
-            product_dict[file_] = self._extract_product(file_)
+            product_dict[file_] = is2ref.extract_product(file_)
 
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
@@ -474,21 +474,6 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Methods
-    @staticmethod
-    def _extract_product(filepath):
-        """
-        Read the product type from the metadata of the file. Return the product as a string.
-        """
-        with h5py.File(filepath, "r") as f:
-            try:
-                product = f.attrs["short_name"].decode()
-                product = is2ref._validate_product(product)
-            except KeyError:
-                raise AttributeError(
-                    f"Unable to extract the product name from file metadata."
-                )
-        return product
-
     @staticmethod
     def _check_source_for_pattern(source, filename_pattern):
         """
@@ -745,22 +730,22 @@ class Read:
             )
         
         # Append the minimum variables needed for icepyx to merge the datasets
-        var_list=[
-            "sc_orient",
-            "atlas_sdp_gps_epoch",
-            "cycle_number",
-            "rgt",
-            "data_start_utc",
-            "data_end_utc",
-        ]
-        
-        # Adjust the nec_varlist for individual products
-        if self.product == "ATL11":
-            var_list.remove("sc_orient")
-        
-        # Note: This fails if we are reading a file that doesn't have the var_list
-        # variables in it.
-        self.vars.append(defaults=False, var_list=var_list)
+        # Skip products which do not contain required variables
+        if self.product not in ['ATL14', 'ATL15', 'ATL23']:
+            var_list=[
+                "sc_orient",
+                "atlas_sdp_gps_epoch",
+                "cycle_number",
+                "rgt",
+                "data_start_utc",
+                "data_end_utc",
+            ]
+
+            # Adjust the nec_varlist for individual products
+            if self.product == "ATL11":
+                var_list.remove("sc_orient")
+
+            self.vars.append(defaults=False, var_list=var_list)
         
         try:
             groups_list = list_of_dict_vals(self.vars.wanted)

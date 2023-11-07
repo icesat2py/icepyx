@@ -7,6 +7,7 @@ import h5py
 import numpy as np
 import xarray as xr
 
+from icepyx.core.auth import EarthdataAuthMixin
 from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
@@ -259,7 +260,7 @@ def _pattern_to_glob(pattern):
 
 
 # To do: test this class and functions therein
-class Read:
+class Read(EarthdataAuthMixin):
     """
     Data object to read ICESat-2 data into the specified formats.
     Provides flexiblity for reading nested hdf5 files into common analysis formats.
@@ -366,6 +367,8 @@ class Read:
             )
             assert pattern_ck
             self._filelist = filelist
+        elif isinstance(data_source, str) and data_source.startswith('s3'):
+            self._filelist = list(data_source)
         elif isinstance(data_source, list):
             self._filelist = data_source
         elif os.path.isdir(data_source):
@@ -431,6 +434,9 @@ class Read:
                 "no other output types are implemented yet"
             )
         self._out_obj = xr.Dataset
+    
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
 
     # ----------------------------------------------------------------------
     # Properties
@@ -759,6 +765,11 @@ class Read:
         # In these situations, xarray recommends manually controlling the merge/concat process yourself.
         # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
         for file in self.filelist:
+            if file.startswith('s3'):
+                # If path is an s3 path create an s3fs filesystem to reference the file
+                # TODO would it be better to be able to generate an s3fs session from the Mixin?
+                s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=self.auth)
+                file = s3.open(file, 'rb')
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))

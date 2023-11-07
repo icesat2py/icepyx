@@ -320,10 +320,10 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Constructors
-
+    
     def __init__(
         self,
-        data_source=None,
+        data_source=None,  # DevNote: Make this a required arg when catalog is removed
         product=None,
         filename_pattern=None,
         catalog=None,
@@ -336,10 +336,9 @@ class Read:
                 "The `catalog` argument has been deprecated and intake is no longer supported. "
                 "Please use the `data_source` argument to specify your dataset instead."
             )
-
+            
         if data_source is None:
             raise ValueError("data_source is a required arguemnt")
-
         # Raise warnings for deprecated arguments
         if filename_pattern:
             warnings.warn(
@@ -380,7 +379,7 @@ class Read:
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
         for file_ in self._filelist:
-            product_dict[file_] = self._extract_product(file_)
+            product_dict[file_] = is2ref.extract_product(file_)
 
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
@@ -456,12 +455,9 @@ class Read:
         """
 
         if not hasattr(self, "_read_vars"):
-            self._read_vars = Variables(
-                "file", path=self.filelist[0], product=self.product
-            )
-
+            self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars
-
+    
     @property
     def filelist(self):
         """
@@ -478,22 +474,6 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Methods
-
-    @staticmethod
-    def _extract_product(filepath):
-        """
-        Read the product type from the metadata of the file. Return the product as a string.
-        """
-        with h5py.File(filepath, "r") as f:
-            try:
-                product = f.attrs["short_name"].decode()
-                product = is2ref._validate_product(product)
-            except KeyError:
-                raise AttributeError(
-                    f"Unable to extract the product name from file metadata."
-                )
-        return product
-
     @staticmethod
     def _check_source_for_pattern(source, filename_pattern):
         """
@@ -739,8 +719,33 @@ class Read:
         # so to get a combined dataset, we need to keep track of spots under the hood, open each group, and then combine them into one xarray where the spots are IDed somehow (or only the strong ones are returned)
         # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
 
+        if not self.vars.wanted:
+            raise AttributeError(
+                'No variables listed in self.vars.wanted. Please use the Variables class '
+                'via self.vars to search for desired variables to read and self.vars.append(...) '
+                'to add variables to the wanted variables list.'
+            )
+        
+        # Append the minimum variables needed for icepyx to merge the datasets
+        # Skip products which do not contain required variables
+        if self.product not in ['ATL14', 'ATL15', 'ATL23']:
+            var_list=[
+                "sc_orient",
+                "atlas_sdp_gps_epoch",
+                "cycle_number",
+                "rgt",
+                "data_start_utc",
+                "data_end_utc",
+            ]
+
+            # Adjust the nec_varlist for individual products
+            if self.product == "ATL11":
+                var_list.remove("sc_orient")
+
+            self.vars.append(defaults=False, var_list=var_list)
+        
         try:
-            groups_list = list_of_dict_vals(self._read_vars.wanted)
+            groups_list = list_of_dict_vals(self.vars.wanted)
         except AttributeError:
             pass
 

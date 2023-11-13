@@ -616,11 +616,12 @@ class Read:
         except (AttributeError, KeyError):
             pass
 
-        try:
-            is2ds = is2ds.assign(ds[grp_spec_vars])
-        except xr.MergeError:
-            ds = ds[grp_spec_vars].reset_coords()
-            is2ds = is2ds.assign(ds)
+        ds = ds[grp_spec_vars].reset_coords()
+        is2ds = is2ds.assign(ds)
+
+        # manually remove delta time as a dimension
+        if "delta_time" in is2ds.dims:
+            is2ds = is2ds.drop_dims("delta_time")
 
         return is2ds
 

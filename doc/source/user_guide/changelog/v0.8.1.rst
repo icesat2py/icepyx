@@ -1,0 +1,18 @@
+What's new in 0.8.1 (14 November 2023)
+-------------------------------------
+
+These are the changes in icepyx 0.8.1 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+
+Bug fixes
+~~~~~~~~~
+
+- fix ATL08 delta_time dimension read error (#470)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.8.0..v0.8.1|HEAD

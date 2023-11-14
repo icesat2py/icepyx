@@ -33,13 +33,13 @@
 <polygon fill="none" stroke="black" points="1371,-1052.5 1371,-1241.5 1692,-1241.5 1692,-1052.5 1371,-1052.5"/>
 <text text-anchor="start" x="1458" y="-1226.3" font-family="Times,serif" font-size="14.00">EarthdataAuthMixin</text>
 <polyline fill="none" stroke="black" points="1371,-1218.5 1692,-1218.5 "/>
-<text text-anchor="start" x="1398" y="-1203.3" font-family="Times,serif" font-size="14.00">_auth : Auth, NoneType</text>
-<text text-anchor="start" x="1398" y="-1188.3" font-family="Times,serif" font-size="14.00">_s3_initial_ts : NoneType, datetime</text>
-<text text-anchor="start" x="1398" y="-1173.3" font-family="Times,serif" font-size="14.00">_s3login_credentials : NoneType, dict</text>
-<text text-anchor="start" x="1398" y="-1158.3" font-family="Times,serif" font-size="14.00">_session : NoneType, Session</text>
-<text text-anchor="start" x="1398" y="-1143.3" font-family="Times,serif" font-size="14.00">auth</text>
-<text text-anchor="start" x="1398" y="-1128.3" font-family="Times,serif" font-size="14.00">s3login_credentials</text>
-<text text-anchor="start" x="1398" y="-1113.3" font-family="Times,serif" font-size="14.00">session</text>
+<text text-anchor="start" x="1406.5" y="-1203.3" font-family="Times,serif" font-size="14.00">_auth : NoneType</text>
+<text text-anchor="start" x="1406.5" y="-1188.3" font-family="Times,serif" font-size="14.00">_s3_initial_ts : NoneType, datetime</text>
+<text text-anchor="start" x="1406.5" y="-1173.3" font-family="Times,serif" font-size="14.00">_s3login_credentials : NoneType</text>
+<text text-anchor="start" x="1406.5" y="-1158.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
+<text text-anchor="start" x="1406.5" y="-1143.3" font-family="Times,serif" font-size="14.00">auth</text>
+<text text-anchor="start" x="1406.5" y="-1128.3" font-family="Times,serif" font-size="14.00">s3login_credentials</text>
+<text text-anchor="start" x="1406.5" y="-1113.3" font-family="Times,serif" font-size="14.00">session</text>
 <polyline fill="none" stroke="black" points="1371,-1105.5 1692,-1105.5 "/>
 <text text-anchor="start" x="1379" y="-1090.3" font-family="Times,serif" font-size="14.00">__init__(auth)</text>
 <text text-anchor="start" x="1379" y="-1075.3" font-family="Times,serif" font-size="14.00">__str__()</text>
@@ -48,14 +48,14 @@
 <!-- icepyx.core.query.GenQuery -->
 <g id="node4" class="node">
 <title>icepyx.core.query.GenQuery</title>
-<polygon fill="none" stroke="black" points="390.5,-1097.5 390.5,-1196.5 814.5,-1196.5 814.5,-1097.5 390.5,-1097.5"/>
-<text text-anchor="start" x="566" y="-1181.3" font-family="Times,serif" font-size="14.00">GenQuery</text>
-<polyline fill="none" stroke="black" points="390.5,-1173.5 814.5,-1173.5 "/>
-<text text-anchor="start" x="566.5" y="-1158.3" font-family="Times,serif" font-size="14.00">_spatial</text>
-<text text-anchor="start" x="566.5" y="-1143.3" font-family="Times,serif" font-size="14.00">_temporal</text>
-<polyline fill="none" stroke="black" points="390.5,-1135.5 814.5,-1135.5 "/>
-<text text-anchor="start" x="398.5" y="-1120.3" font-family="Times,serif" font-size="14.00">__init__(spatial_extent, date_range, start_time, end_time)</text>
-<text text-anchor="start" x="398.5" y="-1105.3" font-family="Times,serif" font-size="14.00">__str__()</text>
+<polygon fill="none" stroke="black" points="401.5,-1097.5 401.5,-1196.5 825.5,-1196.5 825.5,-1097.5 401.5,-1097.5"/>
+<text text-anchor="start" x="577" y="-1181.3" font-family="Times,serif" font-size="14.00">GenQuery</text>
+<polyline fill="none" stroke="black" points="401.5,-1173.5 825.5,-1173.5 "/>
+<text text-anchor="start" x="577.5" y="-1158.3" font-family="Times,serif" font-size="14.00">_spatial</text>
+<text text-anchor="start" x="577.5" y="-1143.3" font-family="Times,serif" font-size="14.00">_temporal</text>
+<polyline fill="none" stroke="black" points="401.5,-1135.5 825.5,-1135.5 "/>
+<text text-anchor="start" x="409.5" y="-1120.3" font-family="Times,serif" font-size="14.00">__init__(spatial_extent, date_range, start_time, end_time)</text>
+<text text-anchor="start" x="409.5" y="-1105.3" font-family="Times,serif" font-size="14.00">__str__()</text>
 </g>
 <!-- icepyx.core.granules.Granules -->
 <g id="node5" class="node">
@@ -229,8 +229,8 @@
 <!-- icepyx.core.query.Query&#45;&gt;icepyx.core.query.GenQuery -->
 <g id="edge3" class="edge">
 <title>icepyx.core.query.Query&#45;&gt;icepyx.core.query.GenQuery</title>
-<path fill="none" stroke="black" d="M857.79,-994.19C854.69,-996.48 851.59,-998.75 848.5,-1001 802.64,-1034.35 748.65,-1066.85 702.96,-1092.59"/>
-<polygon fill="none" stroke="black" points="701.24,-1089.54 694.23,-1097.48 704.66,-1095.65 701.24,-1089.54"/>
+<path fill="none" stroke="black" d="M857.99,-993.9C854.82,-996.29 851.66,-998.65 848.5,-1001 804.3,-1033.83 752.47,-1066.39 708.74,-1092.31"/>
+<polygon fill="none" stroke="black" points="706.94,-1089.3 700.11,-1097.4 710.5,-1095.33 706.94,-1089.3"/>
 </g>
 <!-- icepyx.core.read.Read -->
 <g id="node11" class="node">
@@ -238,7 +238,7 @@
 <polygon fill="none" stroke="black" points="1745.5,-526.5 1745.5,-805.5 2285.5,-805.5 2285.5,-526.5 1745.5,-526.5"/>
 <text text-anchor="start" x="1997" y="-790.3" font-family="Times,serif" font-size="14.00">Read</text>
 <polyline fill="none" stroke="black" points="1745.5,-782.5 2285.5,-782.5 "/>
-<text text-anchor="start" x="1931" y="-767.3" font-family="Times,serif" font-size="14.00">_filelist : list, NoneType</text>
+<text text-anchor="start" x="1931" y="-767.3" font-family="Times,serif" font-size="14.00">_filelist : NoneType, list</text>
 <text text-anchor="start" x="1931" y="-752.3" font-family="Times,serif" font-size="14.00">_out_obj : Dataset</text>
 <text text-anchor="start" x="1931" y="-737.3" font-family="Times,serif" font-size="14.00">_pattern : str</text>
 <text text-anchor="start" x="1931" y="-722.3" font-family="Times,serif" font-size="14.00">_prod : str</text>
@@ -259,37 +259,37 @@
 <!-- icepyx.core.spatial.Spatial -->
 <g id="node12" class="node">
 <title>icepyx.core.spatial.Spatial</title>
-<polygon fill="none" stroke="black" points="212,-549 212,-783 507,-783 507,-549 212,-549"/>
-<text text-anchor="start" x="334" y="-767.8" font-family="Times,serif" font-size="14.00">Spatial</text>
-<polyline fill="none" stroke="black" points="212,-760 507,-760 "/>
-<text text-anchor="start" x="220" y="-744.8" font-family="Times,serif" font-size="14.00">_ext_type : str</text>
-<text text-anchor="start" x="220" y="-729.8" font-family="Times,serif" font-size="14.00">_gdf_spat : GeoDataFrame, DataFrame</text>
-<text text-anchor="start" x="220" y="-714.8" font-family="Times,serif" font-size="14.00">_geom_file : NoneType</text>
-<text text-anchor="start" x="220" y="-699.8" font-family="Times,serif" font-size="14.00">_spatial_ext</text>
-<text text-anchor="start" x="220" y="-684.8" font-family="Times,serif" font-size="14.00">_xdateln</text>
-<text text-anchor="start" x="220" y="-669.8" font-family="Times,serif" font-size="14.00">extent</text>
-<text text-anchor="start" x="220" y="-654.8" font-family="Times,serif" font-size="14.00">extent_as_gdf</text>
-<text text-anchor="start" x="220" y="-639.8" font-family="Times,serif" font-size="14.00">extent_file</text>
-<text text-anchor="start" x="220" y="-624.8" font-family="Times,serif" font-size="14.00">extent_type</text>
-<polyline fill="none" stroke="black" points="212,-617 507,-617 "/>
-<text text-anchor="start" x="278" y="-601.8" font-family="Times,serif" font-size="14.00">__init__(spatial_extent)</text>
-<text text-anchor="start" x="278" y="-586.8" font-family="Times,serif" font-size="14.00">__str__()</text>
-<text text-anchor="start" x="278" y="-571.8" font-family="Times,serif" font-size="14.00">fmt_for_CMR()</text>
-<text text-anchor="start" x="278" y="-556.8" font-family="Times,serif" font-size="14.00">fmt_for_EGI()</text>
+<polygon fill="none" stroke="black" points="301.5,-549 301.5,-783 507.5,-783 507.5,-549 301.5,-549"/>
+<text text-anchor="start" x="379" y="-767.8" font-family="Times,serif" font-size="14.00">Spatial</text>
+<polyline fill="none" stroke="black" points="301.5,-760 507.5,-760 "/>
+<text text-anchor="start" x="309.5" y="-744.8" font-family="Times,serif" font-size="14.00">_ext_type : str</text>
+<text text-anchor="start" x="309.5" y="-729.8" font-family="Times,serif" font-size="14.00">_gdf_spat : GeoDataFrame</text>
+<text text-anchor="start" x="309.5" y="-714.8" font-family="Times,serif" font-size="14.00">_geom_file : NoneType</text>
+<text text-anchor="start" x="309.5" y="-699.8" font-family="Times,serif" font-size="14.00">_spatial_ext</text>
+<text text-anchor="start" x="309.5" y="-684.8" font-family="Times,serif" font-size="14.00">_xdateln</text>
+<text text-anchor="start" x="309.5" y="-669.8" font-family="Times,serif" font-size="14.00">extent</text>
+<text text-anchor="start" x="309.5" y="-654.8" font-family="Times,serif" font-size="14.00">extent_as_gdf</text>
+<text text-anchor="start" x="309.5" y="-639.8" font-family="Times,serif" font-size="14.00">extent_file</text>
+<text text-anchor="start" x="309.5" y="-624.8" font-family="Times,serif" font-size="14.00">extent_type</text>
+<polyline fill="none" stroke="black" points="301.5,-617 507.5,-617 "/>
+<text text-anchor="start" x="323" y="-601.8" font-family="Times,serif" font-size="14.00">__init__(spatial_extent)</text>
+<text text-anchor="start" x="323" y="-586.8" font-family="Times,serif" font-size="14.00">__str__()</text>
+<text text-anchor="start" x="323" y="-571.8" font-family="Times,serif" font-size="14.00">fmt_for_CMR()</text>
+<text text-anchor="start" x="323" y="-556.8" font-family="Times,serif" font-size="14.00">fmt_for_EGI()</text>
 </g>
 <!-- icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery -->
 <g id="edge11" class="edge">
 <title>icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery</title>
-<path fill="none" stroke="black" d="M365.22,-783.36C373.83,-860.08 394.68,-959.73 444.5,-1034 459.12,-1055.79 479.51,-1074.71 500.79,-1090.47"/>
-<polygon fill="black" stroke="black" points="500.86,-1090.52 508.06,-1090.75 510.62,-1097.49 503.41,-1097.26 500.86,-1090.52"/>
-<text text-anchor="middle" x="472" y="-1022.8" font-family="Times,serif" font-size="14.00" fill="green">_spatial</text>
+<path fill="none" stroke="black" d="M402.62,-783.32C406.34,-859.54 420.97,-958.65 466.5,-1034 479.4,-1055.36 498.04,-1074.07 517.72,-1089.79"/>
+<polygon fill="black" stroke="black" points="517.93,-1089.95 525.13,-1090.43 527.45,-1097.25 520.26,-1096.77 517.93,-1089.95"/>
+<text text-anchor="middle" x="494" y="-1022.8" font-family="Times,serif" font-size="14.00" fill="green">_spatial</text>
 </g>
 <!-- icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery -->
 <g id="edge12" class="edge">
 <title>icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery</title>
-<path fill="none" stroke="black" d="M410.77,-783.12C440.22,-847.97 478.77,-929.81 516.5,-1001 531.74,-1029.75 549.96,-1060.88 565.7,-1086.9"/>
-<polygon fill="black" stroke="black" points="565.82,-1087.09 572.35,-1090.13 572.05,-1097.34 565.52,-1094.29 565.82,-1087.09"/>
-<text text-anchor="middle" x="562" y="-1022.8" font-family="Times,serif" font-size="14.00" fill="green">_spatial</text>
+<path fill="none" stroke="black" d="M435.19,-783.24C454.53,-848.86 482.32,-931.42 516.5,-1001 531.18,-1030.88 551.13,-1061.83 569.12,-1087.42"/>
+<polygon fill="black" stroke="black" points="569.21,-1087.54 575.95,-1090.11 576.17,-1097.32 569.43,-1094.75 569.21,-1087.54"/>
+<text text-anchor="middle" x="560" y="-1022.8" font-family="Times,serif" font-size="14.00" fill="green">_spatial</text>
 </g>
 <!-- icepyx.core.temporal.Temporal -->
 <g id="node13" class="node">
@@ -308,9 +308,9 @@
 <!-- icepyx.core.temporal.Temporal&#45;&gt;icepyx.core.query.GenQuery -->
 <g id="edge13" class="edge">
 <title>icepyx.core.temporal.Temporal&#45;&gt;icepyx.core.query.GenQuery</title>
-<path fill="none" stroke="black" d="M671.88,-730.61C656.39,-823.31 627.83,-994.36 612.63,-1085.35"/>
-<polygon fill="black" stroke="black" points="612.6,-1085.54 615.55,-1092.12 610.62,-1097.38 607.66,-1090.8 612.6,-1085.54"/>
-<text text-anchor="middle" x="658.5" y="-1022.8" font-family="Times,serif" font-size="14.00" fill="green">_temporal</text>
+<path fill="none" stroke="black" d="M673.34,-730.61C659.98,-823.31 635.34,-994.36 622.24,-1085.35"/>
+<polygon fill="black" stroke="black" points="622.22,-1085.5 625.32,-1092.01 620.5,-1097.38 617.4,-1090.87 622.22,-1085.5"/>
+<text text-anchor="middle" x="666.5" y="-1022.8" font-family="Times,serif" font-size="14.00" fill="green">_temporal</text>
 </g>
 <!-- icepyx.core.variables.Variables -->
 <g id="node14" class="node">

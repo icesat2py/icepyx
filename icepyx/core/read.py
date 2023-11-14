@@ -279,7 +279,7 @@ class Read:
         String that shows the filename pattern as required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-        
+
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
         If you still need to create a catalog, leave as default.
@@ -313,8 +313,8 @@ class Read:
         # Raise error for depreciated argument
         if catalog:
             raise DeprecationError(
-                'The `catalog` argument has been deprecated and intake is no longer supported. '
-                'Please use the `data_source` argument to specify your dataset instead.'
+                "The `catalog` argument has been deprecated and intake is no longer supported. "
+                "Please use the `data_source` argument to specify your dataset instead."
             )
 
         if data_source is None:
@@ -616,11 +616,8 @@ class Read:
         except (AttributeError, KeyError):
             pass
 
-        try:
-            is2ds = is2ds.assign(ds[grp_spec_vars])
-        except xr.MergeError:
-            ds = ds[grp_spec_vars].reset_coords()
-            is2ds = is2ds.assign(ds)
+        ds = ds[grp_spec_vars].swap_dims({"delta_time": "photon_idx"})
+        is2ds = is2ds.assign(ds)
 
         return is2ds
 

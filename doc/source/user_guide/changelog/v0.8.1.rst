@@ -9,7 +9,7 @@ including other versions of icepyx.
 Bug fixes
 ~~~~~~~~~
 
-- fix ATL08 delta_time dimension read error (#470)
+- fix the ATL08 delta_time dimension read error (#470)
 
 
 Contributors

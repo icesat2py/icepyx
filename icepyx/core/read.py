@@ -616,12 +616,8 @@ class Read:
         except (AttributeError, KeyError):
             pass
 
-        ds = ds[grp_spec_vars].reset_coords()
+        ds = ds[grp_spec_vars].swap_dims({"delta_time": "photon_idx"})
         is2ds = is2ds.assign(ds)
-
-        # manually remove delta time as a dimension
-        if "delta_time" in is2ds.dims:
-            is2ds = is2ds.drop_dims("delta_time")
 
         return is2ds
 

@@ -20,7 +20,7 @@ class Quest(GenQuery):
     proj : proj4 string
         Geospatial projection.
         Not yet implemented
-
+        
 
     Returns
     -------
@@ -130,6 +130,7 @@ class Quest(GenQuery):
 
         self.datasets["icesat2"] = query
 
+        
     def add_argo(self, params=["temperature"], presRange=None) -> None:
         """
         Adds Argo (including Argo-BGC) to QUEST structure.
@@ -156,6 +157,7 @@ class Quest(GenQuery):
 
         argo = Argo(self._spatial, self._temporal, params, presRange)
         self.datasets["argo"] = argo
+
 
     # ----------------------------------------------------------------------
     # Methods (on all datasets)

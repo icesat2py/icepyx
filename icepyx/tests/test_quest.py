@@ -18,6 +18,7 @@ def quest_instance(scope="module", autouse=True):
 # Paramaterize these add_dataset tests once more datasets are added
 def test_add_is2(quest_instance):
     # Add ATL06 as a test to QUEST
+
     prod = "ATL06"
     quest_instance.add_icesat2(product=prod)
     exp_key = "icesat2"
@@ -65,6 +66,7 @@ def test_search_all(quest_instance):
 
     # Search and test all datasets
     quest_instance.search_all()
+
 
 @pytest.mark.parametrize(
     "kwargs",

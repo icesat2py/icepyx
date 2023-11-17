@@ -11,6 +11,21 @@ class Argo(DataSet):
     Initialises an Argo Dataset object via a Quest object.
     Used to query physical and BGC Argo profiles.
 
+    Parameters
+    ---------
+    aoi:
+        area of interest supplied via the spatial parameter of the QUEST object
+    toi:
+        time period of interest supplied via the temporal parameter of the QUEST object
+    params: list of str, default ["temperature"]
+        A list of strings, where each string is a requested parameter.
+        Only metadata for profiles with the requested parameters are returned.
+        To search for all parameters, use `params=["all"]`;
+        be careful using all for floats with BGC data, as this may be result in a large download.
+    presRange: str, default None
+        The pressure range (which correllates with depth) to search for data within.
+        Input as a "shallow-limit,deep-limit" string.
+
     See Also
     --------
     DataSet
@@ -19,8 +34,8 @@ class Argo(DataSet):
     # Note: it looks like ArgoVis now accepts polygons, not just bounding boxes
     def __init__(self, aoi, toi, params=["temperature"], presRange=None):
         # super().__init__(boundingbox, timeframe)
-        self.params = self._validate_parameters(params)
-        self.presRange = presRange
+        self._params = self._validate_parameters(params)
+        self._presRange = presRange
         self._spatial = aoi
         self._temporal = toi
         # todo: verify that this will only work with a bounding box (I think our code can accept arbitrary polygons)
@@ -47,6 +62,44 @@ class Argo(DataSet):
         )
 
         return s
+
+    # ----------------------------------------------------------------------
+    # Properties
+
+    @property
+    def params(self) -> list:
+        """
+        User's list of Argo parameters to search (query) and download.
+
+        The user may modify this list directly.
+        """
+
+        return self._params
+
+    @params.setter
+    def params(self, value):
+        """
+        Validate the input list of parameters.
+        """
+        self._params = list(set(self._validate_parameters(value)))
+
+    @property
+    def presRange(self) -> str:
+        """
+        User's pressure range to search (query) and download.
+
+        The user may modify this string directly.
+        """
+
+        return self._presRange
+
+    @presRange.setter
+    def presRange(self, value):
+        """
+        Update the presRange based on the user input
+        """
+
+        self._presRange = value
 
     # ----------------------------------------------------------------------
     # Formatting API Inputs
@@ -177,26 +230,33 @@ class Argo(DataSet):
                     i, valid_params
                 )
 
-        return params
+        return list(set(params))
 
     # ----------------------------------------------------------------------
     # Querying and Getting Data
 
-    def search_data(self, params=None, printURL=False) -> str:
+    def search_data(self, params=None, presRange=None, printURL=False) -> str:
         """
         Query for available argo profiles given the spatio temporal criteria
         and other params specific to the dataset.
+        Searches will automatically use the parameter and pressure range inputs
+        supplied when the `quest.argo` object was created unless replacement arguments
+        are added here.
 
         Parameters
         ---------
-        params: list of str, default ["temperature"]
+        params: list of str, default None
             A list of strings, where each string is a requested parameter.
+            This kwarg is used to replace the existing list in `self.params`.
+            Do not submit this kwarg if you would like to use the existing `self.params` list.
             Only metadata for profiles with the requested parameters are returned.
             To search for all parameters, use `params=["all"]`;
             be careful using all for floats with BGC data, as this may be result in a large download.
         presRange: str, default None
             The pressure range (which correllates with depth) to search for data within.
-            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
+            This kwarg is used to replace the existing pressure range in `self.presRange`.
+            Do not submit this kwarg if you would like to use the existing `self.presRange` values.
+            Input as a "shallow-limit,deep-limit" string.
         printURL: boolean, default False
             Print the URL of the data request. Useful for debugging and when no data is returned.
 
@@ -205,11 +265,12 @@ class Argo(DataSet):
         str: message on the success status of the search
         """
 
-        # if new search is called with additional parameters
+        # if search is called with replaced parameters or presRange
         if not params is None:
-            self.params.extend(self._validate_parameters(params))
-            # to remove duplicated from list
-            self.params = list(set(self.params))
+            self.params = params
+
+        if not presRange is None:
+            self.presRange = presRange
 
         # builds URL to be submitted
         baseURL = "https://argovis-api.colorado.edu/argo"
@@ -219,7 +280,8 @@ class Argo(DataSet):
             "polygon": [self._fmt_coordinates()],
             "data": self.params,
         }
-        if self.presRange:
+
+        if self.presRange is not None:
             payload["presRange"] = self.presRange
 
         # submit request
@@ -252,6 +314,7 @@ class Argo(DataSet):
         prof_ids = []
         for i in selectionProfiles:
             prof_ids.append(i["_id"])
+        # should we be doing a set/duplicates check here??
         self.prof_ids = prof_ids
 
         msg = "{0} valid profiles have been identified".format(len(prof_ids))
@@ -261,8 +324,6 @@ class Argo(DataSet):
     def _download_profile(
         self,
         profile_number,
-        params=None,
-        presRange=None,
         printURL=False,
     ) -> dict:
         """
@@ -272,13 +333,6 @@ class Argo(DataSet):
         ---------
         profile_number: str
             String containing the argo profile ID of the data being downloaded.
-        params: list of str, default None
-            A list of strings, where each string is a requested parameter.
-            Only data for the requested parameters are returned.
-            To download all parameters, use `params=["all"]`.
-        presRange: str, default None
-            The pressure range (which correllates with depth) to download data within.
-            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
         printURL: boolean, default False
             Print the URL of the data request. Useful for debugging and when no data is returned.
 
@@ -291,11 +345,11 @@ class Argo(DataSet):
         baseURL = "https://argovis-api.colorado.edu/argo"
         payload = {
             "id": profile_number,
-            "data": params,
+            "data": self.params,
         }
 
-        if presRange:
-            payload["presRange"] = presRange
+        if self.presRange:
+            payload["presRange"] = self.presRange
 
         # submit request
         resp = requests.get(
@@ -355,18 +409,24 @@ class Argo(DataSet):
         Downloads the requested data for a list of profile IDs (stored under .prof_ids) and returns it in a DataFrame.
 
         Data is also stored in self.argodata.
+        Note that if new inputs (`params` or `presRange`) are supplied and `keep_existing=True`,
+        the existing data will not be limited to the new input parameters.
 
         Parameters
         ----------
-        params: list of str, default ["temperature", "pressure]
+        params: list of str, default None
             A list of strings, where each string is a requested parameter.
+            This kwarg is used to replace the existing list in `self.params`.
+            Do not submit this kwarg if you would like to use the existing `self.params` list.
             Only metadata for profiles with the requested parameters are returned.
             To search for all parameters, use `params=["all"]`.
             For a list of available parameters, see: `reg._valid_params`
         presRange: str, default None
             The pressure range (which correllates with depth) to search for data within.
-            Input as a "shallow-limit,deep-limit" string. Note the lack of space.
-        keep_existing: Boolean, default True
+            This kwarg is used to replace the existing pressure range in `self.presRange`.
+            Do not submit this kwarg if you would like to use the existing `self.presRange` values.
+            Input as a "shallow-limit,deep-limit" string.
+        keep_existing: boolean, default True
             Provides the option to clear any existing downloaded data before downloading more.
 
         Returns
@@ -387,27 +447,22 @@ class Argo(DataSet):
                 "will be added to previously downloaded data.",
             )
 
-        # if new search is called with additional parameters
+        # if download is called with replaced parameters or presRange
         if not params is None:
-            self.params.extend(self._validate_parameters(params))
-            # to remove duplicated from list
-            self.params = list(set(self.params))
-        else:
-            params = self.params
+            self.params = params
 
-        # if new search is called with new pressure range
         if not presRange is None:
             self.presRange = presRange
 
         # Add qc data for each of the parameters requested
-        if params == ["all"]:
+        if self.params == ["all"]:
             pass
         else:
-            for p in params:
-                if p.endswith("_argoqc") or (p + "_argoqc" in params):
+            for p in self.params:
+                if p.endswith("_argoqc") or (p + "_argoqc" in self.params):
                     pass
                 else:
-                    params.append(p + "_argoqc")
+                    self.params.append(p + "_argoqc")
 
         # intentionally resubmit search to reset prof_ids, in case the user requested different parameters
         self.search_data()
@@ -416,9 +471,7 @@ class Argo(DataSet):
         merged_df = pd.DataFrame(columns=["profile_id"])
         for i in self.prof_ids:
             print("processing profile", i)
-            profile_data = self._download_profile(
-                i, params=params, presRange=presRange, printURL=True
-            )
+            profile_data = self._download_profile(i)
             profile_df = self._parse_into_df(profile_data[0])
             merged_df = pd.concat([merged_df, profile_df], sort=False)
 

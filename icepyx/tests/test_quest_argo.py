@@ -16,24 +16,8 @@ def argo_quest_instance():
     return _argo_quest_instance
 
 
-def test_available_profiles(argo_quest_instance):
-    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
-    obs_msg = reg_a.search_data()
-
-    exp_msg = "19 valid profiles have been identified"
-
-    assert obs_msg == exp_msg
-
-
-def test_no_available_profiles(argo_quest_instance):
-    reg_a = argo_quest_instance([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
-    obs = reg_a.search_data()
-
-    exp = (
-        "Warning: Query returned no profiles\n" "Please try different search parameters"
-    )
-
-    assert obs == exp
+# ---------------------------------------------------
+# Test Formatting and Validation
 
 
 def test_fmt_coordinates(argo_quest_instance):
@@ -45,7 +29,7 @@ def test_fmt_coordinates(argo_quest_instance):
     assert obs == exp
 
 
-def test_invalid_param(argo_quest_instance):
+def test_validate_parameters(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
 
     invalid_params = ["temp", "temperature_files"]
@@ -60,15 +44,105 @@ def test_invalid_param(argo_quest_instance):
         reg_a._validate_parameters(invalid_params)
 
 
+# ---------------------------------------------------
+# Test Setters
+
+
+def test_param_setter(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+
+    exp = ["temperature"]
+    assert reg_a.params == exp
+
+    reg_a.params = ["temperature", "salinity"]
+
+    exp = list(set(["temperature", "salinity"]))
+    assert reg_a.params == exp
+
+
+def test_param_setter_invalid_inputs(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+
+    exp = ["temperature"]
+    assert reg_a.params == exp
+
+    ermsg = re.escape(
+        "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+            "temp", reg_a._valid_params()
+        )
+    )
+
+    with pytest.raises(AssertionError, match=ermsg):
+        reg_a.params = ["temp", "salinity"]
+
+
+def test_presRange_setter(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+
+    exp = None
+    assert reg_a.presRange == exp
+
+    reg_a.presRange = "0.5,150"
+
+    exp = "0.5,150"
+    assert reg_a.presRange == exp
+
+
+def test_presRange_setter_invalid_inputs(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+
+    exp = None
+    assert reg_a.presRange == exp
+
+    reg_a.presRange = (
+        "0.5, sam"  # it looks like the API will take a string with a space
+    )
+
+    # this setter doesn't currently have a validation check, so would need to search
+    obs_msg = reg_a.search_data()
+
+    exp_msg = "Error: Unexpected response <Response [400]>"
+
+    assert obs_msg == exp_msg
+
+
+# ---------------------------------------------------
+# Test search_data
+
+
+def test_search_data_available_profiles(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+    obs_msg = reg_a.search_data()
+
+    exp_msg = "19 valid profiles have been identified"
+
+    assert obs_msg == exp_msg
+
+
+def test_search_data_no_available_profiles(argo_quest_instance):
+    reg_a = argo_quest_instance([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
+    obs = reg_a.search_data()
+
+    exp = (
+        "Warning: Query returned no profiles\n" "Please try different search parameters"
+    )
+
+    assert obs == exp
+
+
+# ---------------------------------------------------
+# Test download and df
+
+
 def test_download_parse_into_df(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
-    reg_a.download(params=["salinity"])  # note: pressure is returned by default
+    reg_a.download()  # note: pressure is returned by default
 
     obs_cols = reg_a.argodata.columns
 
     exp_cols = [
-        "salinity",
-        "salinity_argoqc",
+        "temperature",
+        "temperature_argoqc",
         "pressure",
         "profile_id",
         "lat",
@@ -78,7 +152,7 @@ def test_download_parse_into_df(argo_quest_instance):
 
     assert set(exp_cols) == set(obs_cols)
 
-    assert len(reg_a.argodata) == 1942
+    assert len(reg_a.argodata) == 2948
 
 
 # approach for additional testing of df functions: create json files with profiles and store them in test suite
@@ -101,10 +175,59 @@ def test_merge_df(argo_quest_instance):
     assert "down_irradiance412_argoqc" in df.columns
 
 
-def test_presRange_input_param(argo_quest_instance):
-    reg_a = argo_quest_instance([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
+# ---------------------------------------------------
+# Test kwargs to replace params and presRange in search and download
+
+
+def test_replace_param_search(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+
+    obs = reg_a.search_data(params=["doxy"])
+
+    exp = (
+        "Warning: Query returned no profiles\n" "Please try different search parameters"
+    )
+
+    assert obs == exp
+
+
+def test_replace_param_download(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
+    reg_a.download(params=["salinity"])  # note: pressure is returned by default
+
+    obs_cols = reg_a.argodata.columns
+
+    exp_cols = [
+        "salinity",
+        "salinity_argoqc",
+        "pressure",
+        "profile_id",
+        "lat",
+        "lon",
+        "date",
+    ]
+
+    assert set(exp_cols) == set(obs_cols)
+
+    assert len(reg_a.argodata) == 1942
+
+
+def test_replace_presRange_search(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+    obs_msg = reg_a.search_data(presRange="100,600")
+
+    exp_msg = "19 valid profiles have been identified"
+
+    assert obs_msg == exp_msg
+
+
+def test_replace_presRange_download(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
     df = reg_a.download(params=["salinity"], presRange="0.2,180")
 
     assert df["pressure"].min() >= 0.2
     assert df["pressure"].max() <= 180
     assert "salinity" in df.columns
+
+
+# second pres range test where does have a higher max pressure because only the new data was presRange limited?

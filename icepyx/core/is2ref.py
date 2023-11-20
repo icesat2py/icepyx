@@ -421,3 +421,35 @@ def latest_version(product):
     return max(
         [entry["version_id"] for entry in _about_product["feed"]["entry"]]
     )
+
+def extract_product(filepath):
+    """
+    Read the product type from the metadata of the file. Return the product as a string.
+    """
+    with h5py.File(filepath, 'r') as f:
+        try: 
+            product = f.attrs['short_name']
+            if isinstance(product, bytes):
+                # For most products the short name is stored in a bytes string
+                product = product.decode()
+            elif isinstance(product, np.ndarray):
+                # ATL14 saves the short_name as an array ['ATL14']
+                product = product[0]
+            product = _validate_product(product)
+        except KeyError:
+            raise 'Unable to parse the product name from file metadata'
+    return product
+
+def extract_version(filepath):
+    """
+    Read the version from the metadata of the file. Return the version as a string.
+    """
+    with h5py.File(filepath, 'r') as f:
+        try: 
+            version = f['METADATA']['DatasetIdentification'].attrs['VersionID']
+            if isinstance(version, np.ndarray):
+                # ATL14 stores the version as an array ['00x']
+                version = version[0]
+        except KeyError:
+            raise 'Unable to parse the version from file metadata'
+    return version

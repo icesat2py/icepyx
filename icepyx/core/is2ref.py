@@ -1,5 +1,6 @@
 import h5py
 import json
+import numpy as np
 import requests
 import warnings
 from xml.etree import ElementTree as ET

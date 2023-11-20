@@ -4,14 +4,10 @@ import requests
 import warnings
 from xml.etree import ElementTree as ET
 
-import h5py
 import earthaccess
-import numpy as np
 
-import icepyx
 
 # ICESat-2 specific reference functions
-# options to get customization options for ICESat-2 data (though could be used generally)
 
 
 def _validate_product(product):
@@ -50,7 +46,6 @@ def _validate_product(product):
     return product
 
 
-# DevGoal: See if there's a way to dynamically get this list so it's automatically updated
 def _validate_OA_product(product):
     """
     Confirm a valid ICESat-2 product was specified
@@ -87,6 +82,7 @@ def about_product(prod):
 
 
 # DevGoal: use a mock of this output to test later functions, such as displaying options and widgets, etc.
+# options to get customization options for ICESat-2 data (though could be used generally)
 def _get_custom_options(session, product, version):
     """
     Get lists of what customization options are available for the product from NSIDC.

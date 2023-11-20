@@ -700,11 +700,8 @@ class Read:
         except (AttributeError, KeyError):
             pass
 
-        try:
-            is2ds = is2ds.assign(ds[grp_spec_vars])
-        except xr.MergeError:
-            ds = ds[grp_spec_vars].reset_coords()
-            is2ds = is2ds.assign(ds)
+        ds = ds[grp_spec_vars].swap_dims({"delta_time": "photon_idx"})
+        is2ds = is2ds.assign(ds)
 
         return is2ds
 

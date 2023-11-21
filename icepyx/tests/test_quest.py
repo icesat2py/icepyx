@@ -43,7 +43,7 @@ def test_add_argo(quest_instance):
     assert type(obs) == dict
     assert exp_key in obs.keys()
     assert type(obs[exp_key]) == exp_type
-    assert quest_instance.datasets[exp_key].params == params
+    assert set(quest_instance.datasets[exp_key].params) == set(params)
 
 
 def test_add_multiple_datasets(quest_instance):
@@ -72,8 +72,8 @@ def test_search_all(quest_instance):
     "kwargs",
     [
         {"icesat2": {"IDs": True}},
-        {"argo":{"presRange":"10,500"}},
-        {"icesat2":{"IDs":True}, "argo":{"presRange":"10,500"}}
+        {"argo": {"presRange": "10,500"}},
+        {"icesat2": {"IDs": True}, "argo": {"presRange": "10,500"}},
     ],
 )
 def test_search_all_kwargs(quest_instance, kwargs):

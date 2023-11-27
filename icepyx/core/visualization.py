@@ -339,13 +339,12 @@ class Visualize:
             "A ticket has been issued to restore programmatic API access."
         )
 
-        base_url = "http://openaltimetry.earthdatacloud.nasa.gov/data/api/icesat2"
+        base_url = "https://openaltimetry.earthdatacloud.nasa.gov/data/api/icesat2/"
         trackId, Date, cycle, bbox, product = paras
 
         # Generate API
         payload = {
-            "product": product.lower(),
-            "endDate": Date,
+            "date": Date,
             "minx": str(bbox[0]),
             "miny": str(bbox[1]),
             "maxx": str(bbox[2]),
@@ -355,12 +354,16 @@ class Visualize:
         }  # default return all six beams
 
         # request OpenAltimetry
-        r = self.make_request(base_url, payload)
+        r = self.make_request(base_url + product.lower(), payload)
 
+        print(r)
         # get elevation data
         elevation_data = r.json()
+        print(elevation_data)
 
         df = pd.json_normalize(data=elevation_data, record_path=["data"])
+
+        print(df)
 
         # get data we need (with the correct date)
         try:

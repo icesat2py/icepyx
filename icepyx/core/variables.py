@@ -48,11 +48,10 @@ class Variables(EarthdataAuthMixin):
         Dictionary (key:values) of available variable names (keys) and paths (values).
     wanted : dictionary, default None
         As avail, but for the desired list of variables
-    session : requests.session object
-        A session object authenticating the user to download data using their Earthdata login information.
-        The session object will automatically be passed from the query object if you
-        have successfully logged in there.
-
+    auth : earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Available as an argument so an existing 
+        earthaccess.auth.Auth object can be used for authentication. If not given, a new auth 
+        object will be created whenever authentication is needed. 
     """
 
     def __init__(
@@ -75,16 +74,25 @@ class Variables(EarthdataAuthMixin):
         
         if path and product:
             raise TypeError(
-                'Please provide either a filepath or a product. If a filepath is provided ',
+                'Please provide either a path or a product. If a path is provided ',
                 'variables will be read from the file. If a product is provided all available ',
                 'variables for that product will be returned.'
             )
+
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self, auth=auth)
         
         # Set the product and version from either the input args or the file
         if path:
-            self._path = path
-            self._product = is2ref.extract_product(self._path)
-            self._version = is2ref.extract_version(self._path)
+            self._path = val.check_s3bucket(path)
+            # Set up auth
+            if self._path.startswith('s3'):
+                auth = self.auth
+            else:
+                auth = None
+            # Read the product and version from the file
+            self._product = is2ref.extract_product(self._path, auth=auth)
+            self._version = is2ref.extract_version(self._path, auth=auth)
         elif product:
             # Check for valid product string
             self._product = is2ref._validate_product(product)
@@ -92,10 +100,7 @@ class Variables(EarthdataAuthMixin):
             # If version is not specified by the user assume the most recent version
             self._version = val.prod_version(is2ref.latest_version(self._product), version)
         else:
-            raise TypeError('Either a filepath or a product need to be given as input arguments.')
-
-        # initialize authentication properties
-        EarthdataAuthMixin.__init__(self, auth=auth)
+            raise TypeError('Either a path or a product need to be given as input arguments.')
         
         self._avail = avail
         self.wanted = wanted
@@ -138,7 +143,7 @@ class Variables(EarthdataAuthMixin):
         """
 
         if not hasattr(self, "_avail") or self._avail == None:
-            if not hasattr(self, 'path'):
+            if not hasattr(self, 'path') or self.path.startswith('s3'):
                 self._avail = is2ref._get_custom_options(
                     self.session, self.product, self.version
                 )["variables"]

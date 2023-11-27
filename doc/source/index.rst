@@ -146,10 +146,9 @@ ICESat-2 datasets to enable scientific discovery.
    contributing/contributors_link
    contributing/contribution_guidelines
    contributing/how_to_contribute
-   contributing/quest-available-datasets
+   contributing/attribution_link
    contributing/icepyx_internals
    contributing/quest-available-datasets
-   contributing/attribution_link
    contributing/development_plan
    contributing/release_guide
    contributing/code_of_conduct_link

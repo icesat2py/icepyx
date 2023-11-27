@@ -350,6 +350,10 @@ class Query(GenQuery, EarthdataAuthMixin):
         reference ground tracks are used. Example: "0594"
     files : string, default None
         A placeholder for future development. Not used for any purposes yet.
+    auth : earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Available as an argument so an existing 
+        earthaccess.auth.Auth object can be used for authentication. If not given, a new auth 
+        object will be created whenever authentication is needed. 
 
     Returns
     -------

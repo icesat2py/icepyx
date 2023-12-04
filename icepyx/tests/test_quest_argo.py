@@ -92,9 +92,9 @@ def test_presRange_setter_invalid_inputs(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
 
     exp = None
-    assert reg_a.presRange == exp
+    assert reg_a._presRange == exp
 
-    reg_a.presRange = (
+    reg_a._presRange = (
         "0.5, sam"  # it looks like the API will take a string with a space
     )
 

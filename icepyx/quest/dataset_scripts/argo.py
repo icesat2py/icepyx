@@ -404,7 +404,7 @@ class Argo(DataSet):
 
         return profileDf
 
-    def download(self, params=None, presRange=None, keep_existing=True) -> pd.DataFrame:
+    def download(self, params=None, presRange=None, keep_existing=True, savename='') -> pd.DataFrame:
         """
         Downloads the requested data for a list of profile IDs (stored under .prof_ids) and returns it in a DataFrame.
 
@@ -471,9 +471,12 @@ class Argo(DataSet):
         merged_df = pd.DataFrame(columns=["profile_id"])
         for i in self.prof_ids:
             print("processing profile", i)
-            profile_data = self._download_profile(i)
-            profile_df = self._parse_into_df(profile_data[0])
-            merged_df = pd.concat([merged_df, profile_df], sort=False)
+            try:
+                profile_data = self._download_profile(i)
+                profile_df = self._parse_into_df(profile_data[0])
+                merged_df = pd.concat([merged_df, profile_df], sort=False)
+            except:
+                print('\tError processing profile {0}. Skipping.'.format(i))
 
         # now that we have a df from this round of downloads, we can add it to any existing dataframe
         # note that if a given column has previously been added, update needs to be used to replace nans (merge will not replace the nan values)
@@ -484,4 +487,6 @@ class Argo(DataSet):
 
         self.argodata.reset_index(inplace=True, drop=True)
 
+        if savename:
+            self.argodata.to_csv(savename + '_argo.csv')
         return self.argodata

@@ -8,10 +8,8 @@ import h5py
 import earthaccess
 import numpy as np
 
-import icepyx
 
 # ICESat-2 specific reference functions
-# options to get customization options for ICESat-2 data (though could be used generally)
 
 
 def _validate_product(product):
@@ -50,9 +48,6 @@ def _validate_product(product):
     return product
 
 
-# DevGoal: See if there's a way to dynamically get this list so it's automatically updated
-
-
 def _validate_OA_product(product):
     """
     Confirm a valid ICESat-2 product was specified
@@ -89,6 +84,7 @@ def about_product(prod):
 
 
 # DevGoal: use a mock of this output to test later functions, such as displaying options and widgets, etc.
+# options to get customization options for ICESat-2 data (though could be used generally)
 def _get_custom_options(session, product, version):
     """
     Get lists of what customization options are available for the product from NSIDC.
@@ -332,6 +328,7 @@ def gt2spot(gt, sc_orient):
 
     return np.uint8(spot)
 
+
 def latest_version(product):
     """
     Determine the most recent version available for the given product.
@@ -342,17 +339,17 @@ def latest_version(product):
     '006'
     """
     _about_product = about_product(product)
-    return max(
-        [entry["version_id"] for entry in _about_product["feed"]["entry"]]
-    )
+
+    return max([entry["version_id"] for entry in _about_product["feed"]["entry"]])
+
 
 def extract_product(filepath, auth=None):
     """
     Read the product type from the metadata of the file. Valid for local or s3 files, but must
     provide an auth object if reading from s3. Return the product as a string.
-    
+
     Parameters
-    ---------- 
+    ----------
     filepath: string
         local or remote location of a file. Could be a local string or an s3 filepath
     auth: earthaccess.auth.Auth, default None
@@ -360,19 +357,21 @@ def extract_product(filepath, auth=None):
         s3 bucket.
     """
     # Generate a file reader object relevant for the file location
-    if filepath.startswith('s3'):
+    if filepath.startswith("s3"):
         if not auth:
-            raise AttributeError('Must provide credentials to `auth` if accessing s3 data')
+            raise AttributeError(
+                "Must provide credentials to `auth` if accessing s3 data"
+            )
         # Read the s3 file
         s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
-        f = h5py.File(s3.open(filepath, 'rb'))
+        f = h5py.File(s3.open(filepath, "rb"))
     else:
         # Otherwise assume a local filepath. Read with h5py.
-        f = h5py.File(filepath, 'r')
-    
+        f = h5py.File(filepath, "r")
+
     # Extract the product information
-    try: 
-        product = f.attrs['short_name']
+    try:
+        product = f.attrs["short_name"]
         if isinstance(product, bytes):
             # For most products the short name is stored in a bytes string
             product = product.decode()
@@ -381,18 +380,20 @@ def extract_product(filepath, auth=None):
             product = product[0]
         product = _validate_product(product)
     except KeyError:
-        raise 'Unable to parse the product name from file metadata'
+        raise "Unable to parse the product name from file metadata"
+        
     # Close the file reader
     f.close()
     return product
+
 
 def extract_version(filepath, auth=None):
     """
     Read the version from the metadata of the file. Valid for local or s3 files, but must
     provide an auth object if reading from s3. Return the version as a string.
-    
+
     Parameters
-    ---------- 
+    ----------
     filepath: string
         local or remote location of a file. Could be a local string or an s3 filepath
     auth: earthaccess.auth.Auth, default None
@@ -400,24 +401,27 @@ def extract_version(filepath, auth=None):
         s3 bucket.
     """
     # Generate a file reader object relevant for the file location
-    if filepath.startswith('s3'):
+    if filepath.startswith("s3"):
         if not auth:
-            raise AttributeError('Must provide credentials to `auth` if accessing s3 data')
+            raise AttributeError(
+                "Must provide credentials to `auth` if accessing s3 data"
+            )
         # Read the s3 file
         s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
-        f = h5py.File(s3.open(filepath, 'rb'))
+        f = h5py.File(s3.open(filepath, "rb"))
     else:
         # Otherwise assume a local filepath. Read with h5py.
-        f = h5py.File(filepath, 'r')
+        f = h5py.File(filepath, "r")
 
-    # Read the version information    
-    try: 
-        version = f['METADATA']['DatasetIdentification'].attrs['VersionID']
+    # Read the version information
+    try:
+        version = f["METADATA"]["DatasetIdentification"].attrs["VersionID"]
         if isinstance(version, np.ndarray):
             # ATL14 stores the version as an array ['00x']
             version = version[0]
     except KeyError:
-        raise 'Unable to parse the version from file metadata'
+        raise "Unable to parse the version from file metadata"
+
     # Close the file reader
     f.close()
     return version

@@ -85,8 +85,15 @@ class Variables(EarthdataAuthMixin):
         # Set the product and version from either the input args or the file
         if path:
             self._path = val.check_s3bucket(path)
-            self._product = is2ref.extract_product(self._path, auth=self.auth)
-            self._version = is2ref.extract_version(self._path, auth=self.auth)
+
+            # Set up auth
+            if self._path.startswith('s3'):
+                auth = self.auth
+            else:
+                auth = None
+            # Read the product and version from the file
+            self._product = is2ref.extract_product(self._path, auth=auth)
+            self._version = is2ref.extract_version(self._path, auth=auth)
         elif product:
             # Check for valid product string
             self._product = is2ref._validate_product(product)

@@ -383,6 +383,7 @@ class Read(EarthdataAuthMixin):
             self._filelist = glob.glob(data_source, **glob_kwargs)
         # Remove any directories from the list
         self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
+
         print('FILELIST', self._filelist)
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
@@ -468,6 +469,20 @@ class Read(EarthdataAuthMixin):
             self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars
     
+    @property
+    def filelist(self):
+        """
+        Return the list of files represented by this Read object.
+        """
+        return self._filelist
+
+    @property
+    def product(self):
+        """
+        Return the product associated with the Read object.
+        """
+        return self._product
+
     @property
     def filelist(self):
         """
@@ -601,13 +616,11 @@ class Read(EarthdataAuthMixin):
                 .assign_coords(
                     {
                         spot_dim_name: (spot_dim_name, [spot]),
-                        "delta_time": ("delta_time", photon_ids),
+                        "photon_idx": ("delta_time", photon_ids),
                     }
                 )
                 .assign({spot_var_name: (("gran_idx", spot_dim_name), [[track_str]])})
-                .rename_dims({"delta_time": "photon_idx"})
-                .rename({"delta_time": "photon_idx"})
-                # .set_index("photon_idx")
+                .swap_dims({"delta_time": "photon_idx"})
             )
 
             # handle cases where the delta time is 2d due to multiple cycles in that group
@@ -615,8 +628,6 @@ class Read(EarthdataAuthMixin):
                 ds = ds.assign_coords(
                     {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
                 )
-            else:
-                ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
 
             # for ATL11
             if "ref_pt" in ds.coords:
@@ -705,11 +716,8 @@ class Read(EarthdataAuthMixin):
         except (AttributeError, KeyError):
             pass
 
-        try:
-            is2ds = is2ds.assign(ds[grp_spec_vars])
-        except xr.MergeError:
-            ds = ds[grp_spec_vars].reset_coords()
-            is2ds = is2ds.assign(ds)
+        ds = ds[grp_spec_vars].swap_dims({"delta_time": "photon_idx"})
+        is2ds = is2ds.assign(ds)
 
         return is2ds
 
@@ -734,15 +742,15 @@ class Read(EarthdataAuthMixin):
 
         if not self.vars.wanted:
             raise AttributeError(
-                'No variables listed in self.vars.wanted. Please use the Variables class '
-                'via self.vars to search for desired variables to read and self.vars.append(...) '
-                'to add variables to the wanted variables list.'
+                "No variables listed in self.vars.wanted. Please use the Variables class "
+                "via self.vars to search for desired variables to read and self.vars.append(...) "
+                "to add variables to the wanted variables list."
             )
-        
+
         # Append the minimum variables needed for icepyx to merge the datasets
         # Skip products which do not contain required variables
-        if self.product not in ['ATL14', 'ATL15', 'ATL23']:
-            var_list=[
+        if self.product not in ["ATL14", "ATL15", "ATL23"]:
+            var_list = [
                 "sc_orient",
                 "atlas_sdp_gps_epoch",
                 "cycle_number",
@@ -756,7 +764,7 @@ class Read(EarthdataAuthMixin):
                 var_list.remove("sc_orient")
 
             self.vars.append(defaults=False, var_list=var_list)
-        
+
         try:
             groups_list = list_of_dict_vals(self.vars.wanted)
         except AttributeError:
@@ -774,6 +782,7 @@ class Read(EarthdataAuthMixin):
                 # TODO would it be better to be able to generate an s3fs session from the Mixin?
                 s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=self.auth)
                 file = s3.open(file, 'rb')
+
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))

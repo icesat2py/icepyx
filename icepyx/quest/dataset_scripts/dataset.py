@@ -69,6 +69,12 @@ class DataSet:
         """
         raise NotImplementedError
 
+    def save(self, filepath):
+        """
+        Save the downloaded data to a directory on your local machine.
+        """
+        raise NotImplementedError
+
     # ----------------------------------------------------------------------
     # Working with Data
 

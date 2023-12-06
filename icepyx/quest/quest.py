@@ -235,3 +235,13 @@ class Quest(GenQuery):
             except:
                 dataset_name = type(v).__name__
                 print("Error downloading data from {0}".format(dataset_name))
+
+
+    def save_all(self, path):
+
+        for k, v in self.datasets.items():
+            if isinstance(v, Query):
+                print("ICESat-2 granules are saved during download")
+            else:
+                print("Saving " + k)
+                v.save(path)

@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 import pandas as pd
 import requests
@@ -404,7 +406,7 @@ class Argo(DataSet):
 
         return profileDf
 
-    def download(self, params=None, presRange=None, keep_existing=True, savename='') -> pd.DataFrame:
+    def download(self, params=None, presRange=None, keep_existing=True) -> pd.DataFrame:
         """
         Downloads the requested data for a list of profile IDs (stored under .prof_ids) and returns it in a DataFrame.
 
@@ -487,6 +489,26 @@ class Argo(DataSet):
 
         self.argodata.reset_index(inplace=True, drop=True)
 
-        if savename:
-            self.argodata.to_csv(savename + '_argo.csv')
         return self.argodata
+
+    def save(self, filepath):
+        """
+        Saves the argo dataframe to a csv at the specified location
+
+        Parameters
+        ----------
+        filepath: string containing complete filepath and name of file
+            extension will be removed and replaced with csv. Also appends
+            '_argo.csv' to filename
+            e.g. /path/to/file/my_data(.csv)
+        """
+
+
+        # create the directory if it doesn't exist
+        path, file = os.path.split(filepath)
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        # remove file extension
+        base, ext = os.path.splitext(filepath)
+        self.argodata.to_csv(base + '_argo.csv')

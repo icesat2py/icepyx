@@ -14,18 +14,15 @@ class Quest(GenQuery):
 
     See the doc page for GenQuery for details on temporal and spatial input parameters.
 
-
     Parameters
     ----------
     proj : proj4 string
         Geospatial projection.
         Not yet implemented
 
-
     Returns
     -------
     quest object
-
 
     Examples
     --------
@@ -167,11 +164,11 @@ class Quest(GenQuery):
         Parameters
         ----------
         **kwargs : default None
-                Optional passing of keyword arguments to supply additional search constraints per datasets.
-                Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
-                and the value is a dictionary of acceptable keyword arguments
-                and values allowable for the `search_data()` function for that dataset.
-                For instance: `icesat2 = {"IDs":True}, argo = {"presRange":"10,500"}`.
+            Optional passing of keyword arguments to supply additional search constraints per datasets.
+            Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
+            and the value is a dictionary of acceptable keyword arguments
+            and values allowable for the `search_data()` function for that dataset.
+            For instance: `icesat2 = {"IDs":True}, argo = {"presRange":"10,500"}`.
         """
         print("\nSearching all datasets...")
 
@@ -204,11 +201,11 @@ class Quest(GenQuery):
         Parameters
         ----------
         **kwargs : default None
-                Optional passing of keyword arguments to supply additional search constraints per datasets.
-                Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
-                and the value is a dictionary of acceptable keyword arguments
-                and values allowable for the `search_data()` function for that dataset.
-                For instance: `icesat2 = {"verbose":True}, argo = {"keep_existing":True}`.
+            Optional passing of keyword arguments to supply additional search constraints per datasets.
+            Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
+            and the value is a dictionary of acceptable keyword arguments
+            and values allowable for the `search_data()` function for that dataset.
+            For instance: `icesat2 = {"verbose":True}, argo = {"keep_existing":True}`.
         """
 
         print("\nDownloading all datasets...")
@@ -236,6 +233,16 @@ class Quest(GenQuery):
                 print("Error downloading data from {0}".format(dataset_name))
 
     def save_all(self, path):
+        """
+        Saves all datasets according to their respective `.save()` functionality.
+
+        Parameters
+        ----------
+        path : str
+            Path at which to save the dataset files.
+
+        """
+
         for k, v in self.datasets.items():
             if isinstance(v, Query):
                 print("ICESat-2 granules are saved during download")

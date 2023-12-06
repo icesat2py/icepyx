@@ -46,6 +46,7 @@ class Argo(DataSet):
         self._apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
 
     def __str__(self):
+
         if self.presRange is None:
             prange = "All"
         else:
@@ -477,7 +478,7 @@ class Argo(DataSet):
                 profile_df = self._parse_into_df(profile_data[0])
                 merged_df = pd.concat([merged_df, profile_df], sort=False)
             except:
-                print("\tError processing profile {0}. Skipping.".format(i))
+                print('\tError processing profile {0}. Skipping.'.format(i))
 
         # now that we have a df from this round of downloads, we can add it to any existing dataframe
         # note that if a given column has previously been added, update needs to be used to replace nans (merge will not replace the nan values)
@@ -502,6 +503,7 @@ class Argo(DataSet):
             e.g. /path/to/file/my_data(.csv)
         """
 
+
         # create the directory if it doesn't exist
         path, file = os.path.split(filepath)
         if not os.path.exists(path):
@@ -509,4 +511,4 @@ class Argo(DataSet):
 
         # remove file extension
         base, ext = os.path.splitext(filepath)
-        self.argodata.to_csv(base + "_argo.csv")
+        self.argodata.to_csv(base + '_argo.csv')

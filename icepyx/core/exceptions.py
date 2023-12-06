@@ -2,7 +2,6 @@ class DeprecationError(Exception):
     """
     Class raised for use of functionality that is no longer supported by icepyx.
     """
-
     pass
 
 
@@ -28,3 +27,5 @@ class NsidcQueryError(QueryError):
 
     def __str__(self):
         return f"{self.msgtxt}: {self.errmsg}"
+
+    

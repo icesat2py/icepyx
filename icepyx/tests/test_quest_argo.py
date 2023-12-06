@@ -5,7 +5,6 @@ import re
 
 from icepyx.quest.quest import Quest
 
-
 # create an Argo instance via quest (Argo is a submodule)
 @pytest.fixture(scope="function")
 def argo_quest_instance():
@@ -161,17 +160,16 @@ def test_download_parse_into_df(argo_quest_instance):
 # approach for additional testing of df functions: create json files with profiles and store them in test suite
 # then use those for the comparison (e.g. number of rows in df and json match)
 
-
 def test_save_df_to_csv(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-13"])
     reg_a.download()  # note: pressure is returned by default
+
 
     path = os.getcwd() + "test_file"
     reg_a.save(path)
 
     assert os.path.exists(path + "_argo.csv")
     os.remove(path + "_argo.csv")
-
 
 def test_merge_df(argo_quest_instance):
     reg_a = argo_quest_instance([-150, 30, -120, 60], ["2022-06-07", "2022-06-14"])
@@ -189,9 +187,10 @@ def test_merge_df(argo_quest_instance):
     assert "down_irradiance412_argoqc" in df.columns
 
 
+
+
 # ---------------------------------------------------
 # Test kwargs to replace params and presRange in search and download
-
 
 def test_replace_param_search(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])

@@ -76,6 +76,7 @@ def get_authors(revision_range):
     # "Co-authored by" commits, which come from backports by the bot,
     # and one for regular commits.
     if ".mailmap" in os.listdir(this_repo.git.working_dir):
+
         xpr = re.compile(r"Co-authored-by: (?P<name>[^<]+) ")
 
         gitcur = list(os.popen("git shortlog -s " + revision_range).readlines())
@@ -93,6 +94,7 @@ def get_authors(revision_range):
         pre = set(pre)
 
     else:
+
         xpr = re.compile(r"Co-authored-by: (?P<name>[^<]+) ")
         cur = set(
             xpr.findall(

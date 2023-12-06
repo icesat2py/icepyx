@@ -9,7 +9,6 @@ import warnings
 # seem to be adequately covered in docstrings;
 # may want to focus on testing specific queries
 
-
 # ------------------------------------
 # 		icepyx-specific tests
 # ------------------------------------

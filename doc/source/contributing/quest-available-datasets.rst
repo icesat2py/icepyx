@@ -23,6 +23,7 @@ Adding a Dataset to QUEST
 
 Want to add a new dataset to QUEST? No problem! QUEST includes a template script (``dataset.py``) that may be used to create your own querying module for a dataset of interest.
 
-Once you have developed a script with the template, you may request for the module to be added to QUEST via Github. Please see the How to Contribute page :ref:`dev_guide_label` for instructions on how to contribute to icepyx.
+Once you have developed a script with the template, you may request for the module to be added to QUEST via GitHub.
+Please see the How to Contribute page :ref:`dev_guide_label` for instructions on how to contribute to icepyx.
 
 Detailed guidelines on how to construct your dataset module are currently a work in progress.

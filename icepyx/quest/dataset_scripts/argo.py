@@ -15,16 +15,16 @@ class Argo(DataSet):
 
     Parameters
     ---------
-    aoi:
+    aoi :
         area of interest supplied via the spatial parameter of the QUEST object
-    toi:
+    toi :
         time period of interest supplied via the temporal parameter of the QUEST object
-    params: list of str, default ["temperature"]
+    params : list of str, default ["temperature"]
         A list of strings, where each string is a requested parameter.
         Only metadata for profiles with the requested parameters are returned.
         To search for all parameters, use `params=["all"]`;
         be careful using all for floats with BGC data, as this may be result in a large download.
-    presRange: str, default None
+    presRange : str, default None
         The pressure range (which correllates with depth) to search for data within.
         Input as a "shallow-limit,deep-limit" string.
 
@@ -35,7 +35,6 @@ class Argo(DataSet):
 
     # Note: it looks like ArgoVis now accepts polygons, not just bounding boxes
     def __init__(self, aoi, toi, params=["temperature"], presRange=None):
-        # super().__init__(boundingbox, timeframe)
         self._params = self._validate_parameters(params)
         self._presRange = presRange
         self._spatial = aoi
@@ -82,6 +81,7 @@ class Argo(DataSet):
         """
         Validate the input list of parameters.
         """
+
         self._params = list(set(self._validate_parameters(value)))
 
     @property
@@ -134,6 +134,7 @@ class Argo(DataSet):
         To get a list of valid parameters, comment out the validation line in `search_data` herein,
         submit a search with an invalid parameter, and get the list from the response.
         """
+
         valid_params = [
             # all argo
             "pressure",
@@ -246,24 +247,24 @@ class Argo(DataSet):
 
         Parameters
         ---------
-        params: list of str, default None
+        params : list of str, default None
             A list of strings, where each string is a requested parameter.
             This kwarg is used to replace the existing list in `self.params`.
             Do not submit this kwarg if you would like to use the existing `self.params` list.
             Only metadata for profiles with the requested parameters are returned.
             To search for all parameters, use `params=["all"]`;
             be careful using all for floats with BGC data, as this may be result in a large download.
-        presRange: str, default None
+        presRange : str, default None
             The pressure range (which correllates with depth) to search for data within.
             This kwarg is used to replace the existing pressure range in `self.presRange`.
             Do not submit this kwarg if you would like to use the existing `self.presRange` values.
             Input as a "shallow-limit,deep-limit" string.
-        printURL: boolean, default False
+        printURL : boolean, default False
             Print the URL of the data request. Useful for debugging and when no data is returned.
 
         Returns
         ------
-        str: message on the success status of the search
+        str : message on the success status of the search
         """
 
         # if search is called with replaced parameters or presRange
@@ -339,7 +340,7 @@ class Argo(DataSet):
 
         Returns
         ------
-        dict: json formatted dictionary of the profile data
+        dict : json formatted dictionary of the profile data
         """
 
         # builds URL to be submitted
@@ -380,7 +381,7 @@ class Argo(DataSet):
 
         Returns
         -------
-        pandas DataFrame of the profile data
+        pd.DataFrame : DataFrame of profile data
         """
 
         profileDf = pd.DataFrame(
@@ -415,24 +416,24 @@ class Argo(DataSet):
 
         Parameters
         ----------
-        params: list of str, default None
+        params : list of str, default None
             A list of strings, where each string is a requested parameter.
             This kwarg is used to replace the existing list in `self.params`.
             Do not submit this kwarg if you would like to use the existing `self.params` list.
             Only metadata for profiles with the requested parameters are returned.
             To search for all parameters, use `params=["all"]`.
             For a list of available parameters, see: `reg._valid_params`
-        presRange: str, default None
+        presRange : str, default None
             The pressure range (which correllates with depth) to search for data within.
             This kwarg is used to replace the existing pressure range in `self.presRange`.
             Do not submit this kwarg if you would like to use the existing `self.presRange` values.
             Input as a "shallow-limit,deep-limit" string.
-        keep_existing: boolean, default True
+        keep_existing : boolean, default True
             Provides the option to clear any existing downloaded data before downloading more.
 
         Returns
         -------
-        pd.DataFrame: DataFrame of requested data
+        pd.DataFrame : DataFrame of requested data
         """
 
         # TODO: do some basic testing of this block and how the dataframe merging actually behaves
@@ -496,10 +497,11 @@ class Argo(DataSet):
 
         Parameters
         ----------
-        filepath: string containing complete filepath and name of file
-            extension will be removed and replaced with csv. Also appends
-            '_argo.csv' to filename
-            e.g. /path/to/file/my_data(.csv)
+        filepath : str
+            String containing complete filepath and name of file
+            Any extension will be removed and replaced with csv.
+            Also appends '_argo.csv' to filename
+            e.g. /path/to/file/my_data(_argo.csv)
         """
 
         # create the directory if it doesn't exist
@@ -507,6 +509,7 @@ class Argo(DataSet):
         if not os.path.exists(path):
             os.mkdir(path)
 
-        # remove file extension
+        # remove any file extension
         base, ext = os.path.splitext(filepath)
+
         self.argodata.to_csv(base + "_argo.csv")

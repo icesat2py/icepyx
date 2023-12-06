@@ -224,9 +224,9 @@ class Quest(GenQuery):
                 else:
                     print(k)
                     try:
-                        msg = v.download(kwargs[k], savename=path)
+                        msg = v.download(kwargs[k])
                     except KeyError:
-                        msg = v.download(savename=path)
+                        msg = v.download()
                     print(msg)
             except:
                 dataset_name = type(v).__name__

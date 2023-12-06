@@ -11,7 +11,6 @@ class DataSet:
     All sub-classes must support the following methods for use via the QUEST class.
     """
 
-
     def __init__(self, spatial_extent, date_range, start_time=None, end_time=None):
         """
         Complete any dataset specific initializations (i.e. beyond space and time) required here.

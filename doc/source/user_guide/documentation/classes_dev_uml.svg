@@ -30,20 +30,20 @@
 <!-- icepyx.core.auth.EarthdataAuthMixin -->
 <g id="node3" class="node">
 <title>icepyx.core.auth.EarthdataAuthMixin</title>
-<polygon fill="none" stroke="black" points="1371,-962.5 1371,-1151.5 1692,-1151.5 1692,-962.5 1371,-962.5"/>
-<text text-anchor="start" x="1458" y="-1136.3" font-family="Times,serif" font-size="14.00">EarthdataAuthMixin</text>
-<polyline fill="none" stroke="black" points="1371,-1128.5 1692,-1128.5 "/>
-<text text-anchor="start" x="1406.5" y="-1113.3" font-family="Times,serif" font-size="14.00">_auth : NoneType</text>
-<text text-anchor="start" x="1406.5" y="-1098.3" font-family="Times,serif" font-size="14.00">_s3_initial_ts : NoneType, datetime</text>
-<text text-anchor="start" x="1406.5" y="-1083.3" font-family="Times,serif" font-size="14.00">_s3login_credentials : NoneType</text>
-<text text-anchor="start" x="1406.5" y="-1068.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
-<text text-anchor="start" x="1406.5" y="-1053.3" font-family="Times,serif" font-size="14.00">auth</text>
-<text text-anchor="start" x="1406.5" y="-1038.3" font-family="Times,serif" font-size="14.00">s3login_credentials</text>
-<text text-anchor="start" x="1406.5" y="-1023.3" font-family="Times,serif" font-size="14.00">session</text>
-<polyline fill="none" stroke="black" points="1371,-1015.5 1692,-1015.5 "/>
-<text text-anchor="start" x="1379" y="-1000.3" font-family="Times,serif" font-size="14.00">__init__(auth)</text>
-<text text-anchor="start" x="1379" y="-985.3" font-family="Times,serif" font-size="14.00">__str__()</text>
-<text text-anchor="start" x="1379" y="-970.3" font-family="Times,serif" font-size="14.00">earthdata_login(uid, email, s3token): None</text>
+<polygon fill="none" stroke="black" points="1371,-992.5 1371,-1181.5 1692,-1181.5 1692,-992.5 1371,-992.5"/>
+<text text-anchor="start" x="1458" y="-1166.3" font-family="Times,serif" font-size="14.00">EarthdataAuthMixin</text>
+<polyline fill="none" stroke="black" points="1371,-1158.5 1692,-1158.5 "/>
+<text text-anchor="start" x="1406.5" y="-1143.3" font-family="Times,serif" font-size="14.00">_auth : NoneType</text>
+<text text-anchor="start" x="1406.5" y="-1128.3" font-family="Times,serif" font-size="14.00">_s3_initial_ts : NoneType, datetime</text>
+<text text-anchor="start" x="1406.5" y="-1113.3" font-family="Times,serif" font-size="14.00">_s3login_credentials : NoneType</text>
+<text text-anchor="start" x="1406.5" y="-1098.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
+<text text-anchor="start" x="1406.5" y="-1083.3" font-family="Times,serif" font-size="14.00">auth</text>
+<text text-anchor="start" x="1406.5" y="-1068.3" font-family="Times,serif" font-size="14.00">s3login_credentials</text>
+<text text-anchor="start" x="1406.5" y="-1053.3" font-family="Times,serif" font-size="14.00">session</text>
+<polyline fill="none" stroke="black" points="1371,-1045.5 1692,-1045.5 "/>
+<text text-anchor="start" x="1379" y="-1030.3" font-family="Times,serif" font-size="14.00">__init__(auth)</text>
+<text text-anchor="start" x="1379" y="-1015.3" font-family="Times,serif" font-size="14.00">__str__()</text>
+<text text-anchor="start" x="1379" y="-1000.3" font-family="Times,serif" font-size="14.00">earthdata_login(uid, email, s3token): None</text>
 </g>
 <!-- icepyx.core.query.GenQuery -->
 <g id="node4" class="node">

@@ -11,9 +11,7 @@ class DataSet:
     All sub-classes must support the following methods for use via the QUEST class.
     """
 
-    def __init__(
-        self, spatial_extent=None, date_range=None, start_time=None, end_time=None
-    ):
+    def __init__(self, spatial_extent, date_range, start_time=None, end_time=None):
         """
         Complete any dataset specific initializations (i.e. beyond space and time) required here.
         For instance, ICESat-2 requires a product, and Argo requires parameters.
@@ -67,6 +65,12 @@ class DataSet:
     def download(self):
         """
         Download the data to your local machine.
+        """
+        raise NotImplementedError
+
+    def save(self, filepath):
+        """
+        Save the downloaded data to a directory on your local machine.
         """
         raise NotImplementedError
 

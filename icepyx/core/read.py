@@ -1,6 +1,7 @@
 import fnmatch
 import glob
 import os
+import sys
 import warnings
 
 import earthaccess
@@ -259,6 +260,18 @@ def _pattern_to_glob(pattern):
     # print(glob_path)
     return glob_path
 
+def _confirm_proceed():
+    '''
+    Ask the user if they wish to proceed with processing. If 'y', or 'yes', then continue. Any
+    other user input will abort the process.
+    '''
+    answer = input("Do you wish to proceed (not recommended) y/[n]?")
+    if answer.lower() in ['y', 'yes']:
+        pass
+    else:
+        warnings.warn('Aborting', stacklevel=2)
+        sys.exit(0)
+
 
 # To do: test this class and functions therein
 class Read(EarthdataAuthMixin):
@@ -372,26 +385,54 @@ class Read(EarthdataAuthMixin):
             )
             assert pattern_ck
             self._filelist = filelist
-        elif isinstance(data_source, str) and data_source.startswith('s3'):
-            self._filelist = [data_source]
         elif isinstance(data_source, list):
+            # if data_source is a list pass that directly to _filelist
             self._filelist = data_source
         elif os.path.isdir(data_source):
+            # if data_source is a directory glob search the directory and assign to _filelist
             data_source = os.path.join(data_source, "*")
             self._filelist = glob.glob(data_source, **glob_kwargs)
+        elif isinstance(data_source, str):
+            if data_source.startswith('s3'):
+                # if the string is an s3 path put it in the _filelist without globbing
+                self._filelist = [data_source]
+            else:
+                # data_source is a globable string
+                self._filelist = glob.glob(data_source, **glob_kwargs)
         else:
-            self._filelist = glob.glob(data_source, **glob_kwargs)
-        # Remove any directories from the list
+            raise TypeError(
+                'data_source should be a list of files, a directory, the path to a file, '
+                'or a glob string.'
+            )
+        # Remove any directories from the list (these get generated during recursive
+        # glob search)
         self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
 
-        print('FILELIST', self._filelist)
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
-        for file_ in self._filelist:
-            # TODO not addressed: If user gives a list of s3 paths, or mixed s3 with local path
-            print("FILE", file_)
+        self.is_s3 = [False]*len(self._filelist)
+        for i, file_ in enumerate(self._filelist):
+            # If the path is an s3 path set the respective element of self.is_s3 to True
+            if file_.startswith('s3'):
+                self.is_s3[i] = True
             product_dict[file_] = is2ref.extract_product(file_, auth=self.auth)
 
+        # Raise an error if there are both s3 and non-s3 paths present
+        if len(set(self.is_s3)) > 1:
+            raise TypeError(
+                'Mixed local and s3 paths is not supported. data_source must contain '
+                'only s3 paths or only local paths'
+            )
+        self.is_s3 = self.is_s3[0]  # Change is_s3 into one boolean value for _filelist
+        # Raise warning if more than 2 s3 files are given
+        if self.is_s3 is True and len(self._filelist) > 2:
+            warnings.warn(
+                'Processing more than two s3 files can take a prohibitively long time. '
+                'Approximate access time (using `.load()`) can exceed 6 minutes per data '
+                'variable.', stacklevel=2
+            )
+            _confirm_proceed()
+            
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
@@ -747,6 +788,14 @@ class Read(EarthdataAuthMixin):
                 "to add variables to the wanted variables list."
             )
 
+        if self.is_s3 is True and len(self.vars.wanted) > 3:
+            warnings.warn(
+                'Loading more than 3 variables from an s3 object can be prohibitively slow'
+                'Approximate access time (using `.load()`) can exceed 6 minutes per data '
+                'variable.'
+            )
+            _confirm_proceed()
+
         # Append the minimum variables needed for icepyx to merge the datasets
         # Skip products which do not contain required variables
         if self.product not in ["ATL14", "ATL15", "ATL23"]:
@@ -786,6 +835,7 @@ class Read(EarthdataAuthMixin):
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
+            file.close()
 
         if len(all_dss) == 1:
             return all_dss[0]

@@ -80,7 +80,6 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     # DevGoal: the crs setting and management needs to be improved
 
     elif extent_type == "polygon" and file == False:
-
         # if spatial_extent is already a Polygon
         if isinstance(spatial_extent, Polygon):
             spatial_extent_geom = spatial_extent
@@ -248,7 +247,6 @@ def validate_polygon_pairs(spatial_extent):
     if (spatial_extent[0][0] != spatial_extent[-1][0]) or (
         spatial_extent[0][1] != spatial_extent[-1][1]
     ):
-
         # Throw a warning
         warnings.warn(
             "WARNING: Polygon's first and last point's coordinates differ,"
@@ -436,7 +434,6 @@ class Spatial:
 
         # Check if spatial_extent is a list of coordinates (bounding box or polygon)
         if isinstance(spatial_extent, (list, np.ndarray)):
-
             # bounding box
             if len(spatial_extent) == 4 and all(
                 isinstance(i, scalar_types) for i in spatial_extent

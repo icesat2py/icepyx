@@ -142,7 +142,6 @@ class Visualize:
         cycles=None,
         tracks=None,
     ):
-
         if query_obj:
             pass
         else:
@@ -241,7 +240,6 @@ class Visualize:
         is2_file_list = []
 
         for bbox_i in bbox_list:
-
             try:
                 region = ipx.Query(
                     self.product,
@@ -364,7 +362,6 @@ class Visualize:
 
         # get data we need (with the correct date)
         try:
-
             df_series = df.query(expr="date == @Date").iloc[0]
             beam_data = df_series.beams
 
@@ -483,7 +480,6 @@ class Visualize:
             return (None,) * 2
 
         else:
-
             cols = (
                 ["lat", "lon", "elevation", "canopy", "rgt", "cycle"]
                 if self.product == "ATL08"

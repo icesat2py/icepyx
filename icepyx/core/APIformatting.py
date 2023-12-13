@@ -205,7 +205,6 @@ class Parameters:
     """
 
     def __init__(self, partype, values=None, reqtype=None):
-
         assert partype in [
             "CMR",
             "required",

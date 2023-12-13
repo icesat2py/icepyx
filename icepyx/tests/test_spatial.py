@@ -351,7 +351,6 @@ def test_poly_list_auto_close():
 
 
 def test_poly_file_simple_one_poly():
-
     poly_from_file = spat.Spatial(
         str(
             Path(
@@ -391,7 +390,6 @@ def test_bad_poly_inputfile_type_throws_error():
 
 
 def test_gdf_from_one_bbox():
-
     obs = spat.geodataframe("bounding_box", [-55, 68, -48, 71])
     geom = [Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))]
     exp = gpd.GeoDataFrame(geometry=geom)

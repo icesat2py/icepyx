@@ -29,7 +29,7 @@ class Variables(EarthdataAuthMixin):
     contained in ICESat-2 products.
 
     Parameters
-    ---------- 
+    ----------
     vartype : string
         This argument is deprecated. The vartype will be inferred from data_source.
         One of ['order', 'file'] to indicate the source of the input variables.
@@ -49,9 +49,9 @@ class Variables(EarthdataAuthMixin):
     wanted : dictionary, default None
         As avail, but for the desired list of variables
     auth : earthaccess.auth.Auth, default None
-        An earthaccess authentication object. Available as an argument so an existing 
-        earthaccess.auth.Auth object can be used for authentication. If not given, a new auth 
-        object will be created whenever authentication is needed. 
+        An earthaccess authentication object. Available as an argument so an existing
+        earthaccess.auth.Auth object can be used for authentication. If not given, a new auth
+        object will be created whenever authentication is needed.
     """
 
     def __init__(
@@ -65,28 +65,28 @@ class Variables(EarthdataAuthMixin):
         auth=None,
     ):
         # Deprecation error
-        if vartype in ['order', 'file']:
+        if vartype in ["order", "file"]:
             raise DeprecationError(
-                'It is no longer required to specify the variable type `vartype`. Instead please ',
-                'provide either the path to a local file (arg: `path`) or the product you would ',
-                'like variables for (arg: `product`).'
+                "It is no longer required to specify the variable type `vartype`. Instead please ",
+                "provide either the path to a local file (arg: `path`) or the product you would ",
+                "like variables for (arg: `product`).",
             )
-        
+
         if path and product:
             raise TypeError(
-                'Please provide either a path or a product. If a path is provided ',
-                'variables will be read from the file. If a product is provided all available ',
-                'variables for that product will be returned.'
+                "Please provide either a path or a product. If a path is provided ",
+                "variables will be read from the file. If a product is provided all available ",
+                "variables for that product will be returned.",
             )
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self, auth=auth)
-        
+
         # Set the product and version from either the input args or the file
         if path:
             self._path = val.check_s3bucket(path)
             # Set up auth
-            if self._path.startswith('s3'):
+            if self._path.startswith("s3"):
                 auth = self.auth
             else:
                 auth = None
@@ -98,15 +98,19 @@ class Variables(EarthdataAuthMixin):
             self._product = is2ref._validate_product(product)
             # Check for valid version string
             # If version is not specified by the user assume the most recent version
-            self._version = val.prod_version(is2ref.latest_version(self._product), version)
+            self._version = val.prod_version(
+                is2ref.latest_version(self._product), version
+            )
         else:
-            raise TypeError('Either a path or a product need to be given as input arguments.')
-        
+            raise TypeError(
+                "Either a path or a product need to be given as input arguments."
+            )
+
         self._avail = avail
         self.wanted = wanted
 
         # DevGoal: put some more/robust checks here to assess validity of inputs
-    
+
     @property
     def path(self):
         if self._path:
@@ -114,15 +118,14 @@ class Variables(EarthdataAuthMixin):
         else:
             path = None
         return path
-        
+
     @property
     def product(self):
         return self._product
-        
+
     @property
     def version(self):
         return self._version
-        
 
     def avail(self, options=False, internal=False):
         """
@@ -143,7 +146,7 @@ class Variables(EarthdataAuthMixin):
         """
 
         if not hasattr(self, "_avail") or self._avail == None:
-            if not hasattr(self, 'path') or self.path.startswith('s3'):
+            if not hasattr(self, "path") or self.path.startswith("s3"):
                 self._avail = is2ref._get_custom_options(
                     self.session, self.product, self.version
                 )["variables"]
@@ -628,7 +631,6 @@ class Variables(EarthdataAuthMixin):
                             for bkw in beam_list:
                                 if bkw in vpath_kws:
                                     for kw in keyword_list:
-
                                         if kw in vpath_kws:
                                             self.wanted[vkey].remove(vpath)
                         except TypeError:

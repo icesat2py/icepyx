@@ -1,12 +1,15 @@
-import icepyx as ipx
-import os
+import json
 import pytest
-import warnings
+
+import icepyx as ipx
+import icepyx.core.is2ref as is2ref
 
 
 # Misc notes and needed tests
-# test avail data and subsetting success for each input type (kml, shp, list of coords, bbox)
-# check that downloaded data is subset? or is this an NSIDC level test so long as we verify the right info is submitted?
+# test avail data and subsetting success for each input type
+# (kml, shp, list of coords, bbox)
+# check that downloaded data is subset?
+# or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
 @pytest.fixture(scope="module")
@@ -26,8 +29,6 @@ def session(reg):
 
 
 ########## is2ref module ##########
-import icepyx.core.is2ref as is2ref
-import json
 
 
 def test_get_custom_options_output(session):

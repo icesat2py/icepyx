@@ -1,15 +1,15 @@
 import pytest
-import warnings
 import datetime as dt
-from shapely.geometry import Polygon
 
 import icepyx.core.APIformatting as apifmt
 
 
-# DevNote: is this a situation where you'd ideally build a test class, since you're just repeating the
-# test function with different inputs? Especially for the _fmt_spaital, where there's >2 tests?
+# DevNote: is this a situation where you'd ideally build a test class,
+# since you're just repeating the test function with different inputs?
+# Especially for the _fmt_spaital, where there's >2 tests?
 
-# CMR temporal and spatial formats --> what's the best way to compare formatted text? character by character comparison of strings?
+# CMR temporal and spatial formats --> what's the best way to compare formatted text?
+# character by character comparison of strings?
 
 
 ########## _fmt_temporal ##########
@@ -46,7 +46,16 @@ def test_var_subset_list_fmt():
             "start_delta_time": ["ancillary_data/start_delta_time"],
         }
     )
-    exp = "/ancillary_data/atlas_sdp_gps_epoch,/ancillary_data/data_end_utc,/ancillary_data/data_start_utc,/ancillary_data/end_delta_time,/ancillary_data/granule_end_utc,/ancillary_data/granule_start_utc,/profile_2/high_rate/latitude,/profile_2/low_rate/latitude,/orbit_info/sc_orient,/ancillary_data/start_delta_time"
+    exp = """/ancillary_data/atlas_sdp_gps_epoch,
+    /ancillary_data/data_end_utc,
+    /ancillary_data/data_start_utc,
+    /ancillary_data/end_delta_time,
+    /ancillary_data/granule_end_utc,
+    /ancillary_data/granule_start_utc,
+    /profile_2/high_rate/latitude,
+    /profile_2/low_rate/latitude,
+    /orbit_info/sc_orient,
+    /ancillary_data/start_delta_time"""
     assert obs == exp
 
 

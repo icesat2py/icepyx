@@ -1,6 +1,4 @@
 import icepyx as ipx
-import pytest
-import warnings
 
 # ------------------------------------
 # 		Generic Query tests

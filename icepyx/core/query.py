@@ -341,7 +341,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : string, default most recent version
         Product version, given as a 3 digit string. If no version is given, the current
-        version is used. Example: "004"
+        version is used. Example: "006"
     cycles : string or a list of strings, default all available orbital cycles
         Product cycle, given as a 2 digit string. If no cycle is given, all available
         cycles are used. Example: "04"
@@ -350,6 +350,10 @@ class Query(GenQuery, EarthdataAuthMixin):
         reference ground tracks are used. Example: "0594"
     files : string, default None
         A placeholder for future development. Not used for any purposes yet.
+    auth : earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Available as an argument so an existing
+        earthaccess.auth.Auth object can be used for authentication. If not given, a new auth
+        object will be created whenever authentication is needed.
 
     Returns
     -------
@@ -407,7 +411,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         auth=None,
         **kwargs,
     ):
-
         # Check necessary combination of input has been specified
         if (
             (product is None or spatial_extent is None)

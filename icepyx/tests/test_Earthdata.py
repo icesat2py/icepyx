@@ -8,6 +8,7 @@ import pytest
 import shutil
 import warnings
 
+
 # PURPOSE: test different authentication methods
 @pytest.fixture(scope="module", autouse=True)
 def setup_earthdata():
@@ -65,7 +66,6 @@ def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
         url = "urs.earthdata.nasa.gov"
         mock_uid, _, mock_pwd = netrc.netrc(netrc).authenticators(url)
     except:
-
         mock_uid = os.environ.get("EARTHDATA_USERNAME")
         mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
 

@@ -46,16 +46,18 @@ def test_var_subset_list_fmt():
             "start_delta_time": ["ancillary_data/start_delta_time"],
         }
     )
-    exp = """/ancillary_data/atlas_sdp_gps_epoch,
-    /ancillary_data/data_end_utc,
-    /ancillary_data/data_start_utc,
-    /ancillary_data/end_delta_time,
-    /ancillary_data/granule_end_utc,
-    /ancillary_data/granule_start_utc,
-    /profile_2/high_rate/latitude,
-    /profile_2/low_rate/latitude,
-    /orbit_info/sc_orient,
-    /ancillary_data/start_delta_time"""
+    exp = (
+        "/ancillary_data/atlas_sdp_gps_epoch,"
+        "/ancillary_data/data_end_utc,"
+        "/ancillary_data/data_start_utc,"
+        "/ancillary_data/end_delta_time,"
+        "/ancillary_data/granule_end_utc,"
+        "/ancillary_data/granule_start_utc,"
+        "/profile_2/high_rate/latitude,"
+        "/profile_2/low_rate/latitude,"
+        "/orbit_info/sc_orient,"
+        "/ancillary_data/start_delta_time"
+    )
     assert obs == exp
 
 

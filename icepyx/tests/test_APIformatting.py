@@ -139,7 +139,7 @@ def test_CMRparams_no_other_inputs():
 
     CMRparams.build_params(
         product="ATL06",
-        version="005",
+        version="006",
         start=dt.datetime(2019, 2, 20, 0, 0),
         end=dt.datetime(2019, 2, 24, 23, 59, 59),
         extent_type="bounding_box",
@@ -148,7 +148,7 @@ def test_CMRparams_no_other_inputs():
     obs_fmted_params = CMRparams.fmted_keys
     exp_fmted_params = {
         "short_name": "ATL06",
-        "version": "005",
+        "version": "006",
         "temporal": "2019-02-20T00:00:00Z,2019-02-24T23:59:59Z",
         "bounding_box": "-55.0,68.0,-48.0,71.0",
     }

@@ -12,7 +12,7 @@ import warnings
 @pytest.fixture(scope="module")
 def reg():
     live_reg = ipx.Query(
-        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="005"
+        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="006"
     )
     yield live_reg
     del live_reg

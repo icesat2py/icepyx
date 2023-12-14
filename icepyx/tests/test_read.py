@@ -15,7 +15,7 @@ def test_check_datasource_type():
     [
         ("./", "is2_local"),
         (
-            "s3://nsidc-cumulus-prod-protected/ATLAS/ATL03/004/2019/11/30/ATL03_20191130221008_09930503_004_01.h5",
+            "s3://nsidc-cumulus-prod-protected/ATLAS/ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5",
             "is2_s3",
         ),
     ],

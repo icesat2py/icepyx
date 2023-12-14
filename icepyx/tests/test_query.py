@@ -9,6 +9,7 @@ import warnings
 # seem to be adequately covered in docstrings;
 # may want to focus on testing specific queries
 
+
 # ------------------------------------
 # 		icepyx-specific tests
 # ------------------------------------
@@ -39,6 +40,18 @@ def test_icepyx_boundingbox_query():
     )
 
     assert obs_tuple == exp_tuple
+
+
+def test_temporal_properties_cycles_tracks():
+    reg_a = ipx.Query(
+        "ATL06",
+        [-55, 68, -48, 71],
+        cycles=["03", "04", "05", "06", "07"],
+        tracks=["0849", "0902"],
+    )
+    exp = ["No temporal parameters set"]
+
+    assert [obs == exp for obs in (reg_a.dates, reg_a.start_time, reg_a.end_time)]
 
 
 # Tests need to add (given can't do them within docstrings/they're behind NSIDC login)

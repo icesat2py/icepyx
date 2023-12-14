@@ -1,9 +1,13 @@
 import numpy as np
 import os
 import pprint
+import warnings
 
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.is2ref as is2ref
+from icepyx.core.exceptions import DeprecationError
+import icepyx.core.validate_inputs as val
+import icepyx.core as ipxc
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 
@@ -27,58 +31,101 @@ class Variables(EarthdataAuthMixin):
     Parameters
     ----------
     vartype : string
+        This argument is deprecated. The vartype will be inferred from data_source.
         One of ['order', 'file'] to indicate the source of the input variables.
         This field will be auto-populated when a variable object is created as an
         attribute of a query object.
+    path : string, default None
+        The path to a local Icesat-2 file. The variables list will contain the variables
+        present in this file. Either path or product are required input arguments.
+    product : string, default None
+        Properly formatted string specifying a valid ICESat-2 product. The variables list will
+        contain all available variables for this product. Either product or path are required
+        input arguments.
+    version : string, default None
+        Properly formatted string specifying a valid version of the ICESat-2 product.
     avail : dictionary, default None
         Dictionary (key:values) of available variable names (keys) and paths (values).
     wanted : dictionary, default None
         As avail, but for the desired list of variables
-    session : requests.session object
-        A session object authenticating the user to download data using their Earthdata login information.
-        The session object will automatically be passed from the query object if you
-        have successfully logged in there.
-    product : string, default None
-        Properly formatted string specifying a valid ICESat-2 product
-    version : string, default None
-        Properly formatted string specifying a valid version of the ICESat-2 product
-    path : string, default None
-        For vartype file, a path to a directory of or single input data file (not yet implemented)
+    auth : earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Available as an argument so an existing
+        earthaccess.auth.Auth object can be used for authentication. If not given, a new auth
+        object will be created whenever authentication is needed.
     """
 
     def __init__(
         self,
-        vartype,
-        avail=None,
-        wanted=None,
+        vartype=None,
+        path=None,
         product=None,
         version=None,
-        path=None,
+        avail=None,
+        wanted=None,
         auth=None,
     ):
+        # Deprecation error
+        if vartype in ["order", "file"]:
+            raise DeprecationError(
+                "It is no longer required to specify the variable type `vartype`. Instead please ",
+                "provide either the path to a local file (arg: `path`) or the product you would ",
+                "like variables for (arg: `product`).",
+            )
 
-        assert vartype in ["order", "file"], "Please submit a valid variables type flag"
-        
+        if path and product:
+            raise TypeError(
+                "Please provide either a path or a product. If a path is provided ",
+                "variables will be read from the file. If a product is provided all available ",
+                "variables for that product will be returned.",
+            )
+
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self, auth=auth)
-        
-        self._vartype = vartype
-        self.product = product
+
+        # Set the product and version from either the input args or the file
+        if path:
+            self._path = val.check_s3bucket(path)
+            # Set up auth
+            if self._path.startswith("s3"):
+                auth = self.auth
+            else:
+                auth = None
+            # Read the product and version from the file
+            self._product = is2ref.extract_product(self._path, auth=auth)
+            self._version = is2ref.extract_version(self._path, auth=auth)
+        elif product:
+            # Check for valid product string
+            self._product = is2ref._validate_product(product)
+            # Check for valid version string
+            # If version is not specified by the user assume the most recent version
+            self._version = val.prod_version(
+                is2ref.latest_version(self._product), version
+            )
+        else:
+            raise TypeError(
+                "Either a path or a product need to be given as input arguments."
+            )
+
         self._avail = avail
         self.wanted = wanted
 
         # DevGoal: put some more/robust checks here to assess validity of inputs
 
-        if self._vartype == "order":
-            if self._avail == None:
-                self._version = version
-        elif self._vartype == "file":
-            # DevGoal: check that the list or string are valid dir/files
-            self.path = path
+    @property
+    def path(self):
+        if self._path:
+            path = self._path
+        else:
+            path = None
+        return path
 
-    # @property
-    # def wanted(self):
-    #     return self._wanted
+    @property
+    def product(self):
+        return self._product
+
+    @property
+    def version(self):
+        return self._version
 
     def avail(self, options=False, internal=False):
         """
@@ -97,16 +144,14 @@ class Variables(EarthdataAuthMixin):
         .
         'quality_assessment/gt3r/signal_selection_source_fraction_3']
         """
-        # if hasattr(self, '_avail'):
-        #         return self._avail
-        # else:
-        if not hasattr(self, "_avail") or self._avail == None:
-            if self._vartype == "order":
-                self._avail = is2ref._get_custom_options(
-                    self.session, self.product, self._version
-                )["variables"]
 
-            elif self._vartype == "file":
+        if not hasattr(self, "_avail") or self._avail == None:
+            if not hasattr(self, "path") or self.path.startswith("s3"):
+                self._avail = is2ref._get_custom_options(
+                    self.session, self.product, self.version
+                )["variables"]
+            else:
+                # If a path was given, use that file to read the variables
                 import h5py
 
                 self._avail = []
@@ -446,53 +491,14 @@ class Variables(EarthdataAuthMixin):
             and keyword_list == None
         ), "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
 
-        req_vars = {}
+        final_vars = {}
 
-        # if not hasattr(self, 'avail') or self.avail==None: self.get_avail()
-        # vgrp, paths = self.parse_var_list(self.avail)
-        # allpaths = []
-        # [allpaths.extend(np.unique(np.array(paths[p]))) for p in range(len(paths))]
         vgrp, allpaths = self.avail(options=True, internal=True)
-
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
-        # add the mandatory variables to the data object
-        if self._vartype == "order":
-            nec_varlist = [
-                "sc_orient",
-                "sc_orient_time",
-                "atlas_sdp_gps_epoch",
-                "data_start_utc",
-                "data_end_utc",
-                "granule_start_utc",
-                "granule_end_utc",
-                "start_delta_time",
-                "end_delta_time",
-            ]
-        elif self._vartype == "file":
-            nec_varlist = [
-                "sc_orient",
-                "atlas_sdp_gps_epoch",
-                "cycle_number",
-                "rgt",
-                "data_start_utc",
-                "data_end_utc",
-            ]
-
-        # Adjust the nec_varlist for individual products
-        if self.product == "ATL11":
-            nec_varlist.remove("sc_orient")
-
-        try:
-            self._check_valid_lists(vgrp, allpaths, var_list=nec_varlist)
-        except ValueError:
-            # Assume gridded product since user input lists were previously validated
-            nec_varlist = []
-
+        # Instantiate self.wanted to an empty dictionary if it doesn't exist
         if not hasattr(self, "wanted") or self.wanted == None:
-            for varid in nec_varlist:
-                req_vars[varid] = vgrp[varid]
-            self.wanted = req_vars
+            self.wanted = {}
 
             # DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
 
@@ -501,21 +507,21 @@ class Variables(EarthdataAuthMixin):
 
         # Case only variables (but not keywords or beams) are specified
         if beam_list == None and keyword_list == None:
-            req_vars.update(self._iter_vars(sum_varlist, req_vars, vgrp))
+            final_vars.update(self._iter_vars(sum_varlist, final_vars, vgrp))
 
         # Case a beam and/or keyword list is specified (with or without variables)
         else:
-            req_vars.update(
-                self._iter_paths(sum_varlist, req_vars, vgrp, beam_list, keyword_list)
+            final_vars.update(
+                self._iter_paths(sum_varlist, final_vars, vgrp, beam_list, keyword_list)
             )
 
         # update the data object variables
-        for vkey in req_vars.keys():
+        for vkey in final_vars.keys():
             # add all matching keys and paths for new variables
             if vkey not in self.wanted.keys():
-                self.wanted[vkey] = req_vars[vkey]
+                self.wanted[vkey] = final_vars[vkey]
             else:
-                for vpath in req_vars[vkey]:
+                for vpath in final_vars[vkey]:
                     if vpath not in self.wanted[vkey]:
                         self.wanted[vkey].append(vpath)
 
@@ -625,7 +631,6 @@ class Variables(EarthdataAuthMixin):
                             for bkw in beam_list:
                                 if bkw in vpath_kws:
                                     for kw in keyword_list:
-
                                         if kw in vpath_kws:
                                             self.wanted[vkey].remove(vpath)
                         except TypeError:

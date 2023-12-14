@@ -12,11 +12,10 @@ import warnings
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.granules as granules
-from icepyx.core.granules import Granules as Granules
-import icepyx.core.is2ref as is2ref
 
-# QUESTION: why doesn't from granules import Granules as Granules work, since granules=icepyx.core.granules?
-# from icepyx.core.granules import Granules
+# QUESTION: why doesn't from granules import Granules work, since granules=icepyx.core.granules?
+from icepyx.core.granules import Granules
+import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
 import icepyx.core.validate_inputs as val
@@ -148,6 +147,177 @@ class GenQuery:
         )
         return str
 
+    # ----------------------------------------------------------------------
+    # Properties
+
+    @property
+    def temporal(self):
+        """
+        Return the Temporal object containing date/time range information for the query object.
+
+        See Also
+        --------
+        temporal.Temporal.start
+        temporal.Temporal.end
+        temporal.Temporal
+
+        Examples
+        --------
+        >>> reg_a = GenQuery([-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> print(reg_a.temporal)
+        Start date and time: 2019-02-20 00:00:00
+        End date and time: 2019-02-28 23:59:59
+
+        >>> reg_a = GenQuery([-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
+        >>> print(reg_a.temporal)
+        ['No temporal parameters set']
+        """
+
+        if hasattr(self, "_temporal"):
+            return self._temporal
+        else:
+            return ["No temporal parameters set"]
+
+    @property
+    def spatial(self):
+        """
+        Return the spatial object, which provides the underlying functionality for validating
+        and formatting geospatial objects. The spatial object has several properties to enable
+        user access to the stored spatial extent in multiple formats.
+
+        See Also
+        --------
+        spatial.Spatial.spatial_extent
+        spatial.Spatial.extent_type
+        spatial.Spatial.extent_file
+        spatial.Spatial
+
+        Examples
+        --------
+        >>> reg_a = ipx.GenQuery([-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.spatial # doctest: +SKIP
+        <icepyx.core.spatial.Spatial at [location]>
+
+        >>> print(reg_a.spatial)
+        Extent type: bounding_box
+        Coordinates: [-55.0, 68.0, -48.0, 71.0]
+
+        """
+        return self._spatial
+
+    @property
+    def spatial_extent(self):
+        """
+        Return an array showing the spatial extent of the query object.
+        Spatial extent is returned as an input type (which depends on how
+        you initially entered your spatial data) followed by the geometry data.
+        Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+        Polygon data is [longitude1, latitude1, longitude2, latitude2,
+                        ... longitude_n,latitude_n, longitude1,latitude1].
+
+        Returns
+        -------
+        tuple of length 2
+        First tuple element is the spatial type ("bounding box" or "polygon").
+        Second tuple element is the spatial extent as a list of coordinates.
+
+        Examples
+        --------
+
+        # Note: coordinates returned as float, not int
+        >>> reg_a = GenQuery([-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.spatial_extent
+        ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
+
+        >>> reg_a = GenQuery([(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
+        >>> reg_a.spatial_extent
+        ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
+
+        # NOTE Is this where we wanted to put the file-based test/example?
+        # The test file path is: examples/supporting_files/simple_test_poly.gpkg
+
+        See Also
+        --------
+        Spatial.extent
+        Spatial.extent_type
+        Spatial.extent_as_gdf
+
+        """
+
+        return (self._spatial._ext_type, self._spatial._spatial_ext)
+
+    @property
+    def dates(self):
+        """
+        Return an array showing the date range of the query object.
+        Dates are returned as an array containing the start and end datetime objects, inclusive, in that order.
+
+        Examples
+        --------
+        >>> reg_a = ipx.GenQuery([-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.dates
+        ['2019-02-20', '2019-02-28']
+
+        >>> reg_a = GenQuery([-55, 68, -48, 71])
+        >>> reg_a.dates
+        ['No temporal parameters set']
+        """
+        if not hasattr(self, "_temporal"):
+            return ["No temporal parameters set"]
+        else:
+            return [
+                self._temporal._start.strftime("%Y-%m-%d"),
+                self._temporal._end.strftime("%Y-%m-%d"),
+            ]  # could also use self._start.date()
+
+    @property
+    def start_time(self):
+        """
+        Return the start time specified for the start date.
+
+        Examples
+        --------
+        >>> reg_a = ipx.GenQuery([-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.start_time
+        '00:00:00'
+
+        >>> reg_a = ipx.GenQuery([-55, 68, -48, 71],['2019-02-20','2019-02-28'], start_time='12:30:30')
+        >>> reg_a.start_time
+        '12:30:30'
+
+        >>> reg_a = GenQuery([-55, 68, -48, 71])
+        >>> reg_a.start_time
+        ['No temporal parameters set']
+        """
+        if not hasattr(self, "_temporal"):
+            return ["No temporal parameters set"]
+        else:
+            return self._temporal._start.strftime("%H:%M:%S")
+
+    @property
+    def end_time(self):
+        """
+        Return the end time specified for the end date.
+
+        Examples
+        --------
+        >>> reg_a = ipx.GenQuery([-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.end_time
+        '23:59:59'
+
+        >>> reg_a = ipx.GenQuery([-55, 68, -48, 71],['2019-02-20','2019-02-28'], end_time='10:20:20')
+        >>> reg_a.end_time
+        '10:20:20'
+
+        >>> reg_a = GenQuery([-55, 68, -48, 71])
+        >>> reg_a.end_time
+        ['No temporal parameters set']
+        """
+        if not hasattr(self, "_temporal"):
+            return ["No temporal parameters set"]
+        else:
+            return self._temporal._end.strftime("%H:%M:%S")
+
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
 # Note: add files to docstring once implemented
@@ -180,6 +350,10 @@ class Query(GenQuery, EarthdataAuthMixin):
         reference ground tracks are used. Example: "0594"
     files : string, default None
         A placeholder for future development. Not used for any purposes yet.
+    auth : earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Available as an argument so an existing
+        earthaccess.auth.Auth object can be used for authentication. If not given, a new auth
+        object will be created whenever authentication is needed.
 
     Returns
     -------
@@ -237,7 +411,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         auth=None,
         **kwargs,
     ):
-
         # Check necessary combination of input has been specified
         if (
             (product is None or spatial_extent is None)
@@ -263,7 +436,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
-        self._version = val.prod_version(self.latest_version(), version)
+        self._version = val.prod_version(is2ref.latest_version(self._prod), version)
 
         # build list of available CMR parameters if reducing by cycle or RGT
         # or a list of explicitly named files (full or partial names)
@@ -279,6 +452,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
+
     # ----------------------------------------------------------------------
     # Properties
 
@@ -332,174 +506,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         '004'
         """
         return self._version
-
-    @property
-    def temporal(self):
-        """
-        Return the Temporal object containing date/time range information for the query object.
-
-        See Also
-        --------
-        temporal.Temporal.start
-        temporal.Temporal.end
-        temporal.Temporal
-
-        Examples
-        --------
-        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> print(reg_a.temporal)
-        Start date and time: 2019-02-20 00:00:00
-        End date and time: 2019-02-28 23:59:59
-
-        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
-        >>> print(reg_a.temporal)
-        ['No temporal parameters set']
-        """
-
-        if hasattr(self, "_temporal"):
-            return self._temporal
-        else:
-            return ["No temporal parameters set"]
-
-    @property
-    def spatial(self):
-        """
-        Return the spatial object, which provides the underlying functionality for validating
-        and formatting geospatial objects. The spatial object has several properties to enable
-        user access to the stored spatial extent in multiple formats.
-
-        See Also
-        --------
-        spatial.Spatial.spatial_extent
-        spatial.Spatial.extent_type
-        spatial.Spatial.extent_file
-        spatial.Spatial
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.spatial # doctest: +SKIP
-        <icepyx.core.spatial.Spatial at [location]>
-
-        >>> print(reg_a.spatial)
-        Extent type: bounding_box
-        Coordinates: [-55.0, 68.0, -48.0, 71.0]
-
-        """
-        return self._spatial
-
-    @property
-    def spatial_extent(self):
-        """
-        Return an array showing the spatial extent of the query object.
-        Spatial extent is returned as an input type (which depends on how
-        you initially entered your spatial data) followed by the geometry data.
-        Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon data is [longitude1, latitude1, longitude2, latitude2,
-                        ... longitude_n,latitude_n, longitude1,latitude1].
-
-        Returns
-        -------
-        tuple of length 2
-        First tuple element is the spatial type ("bounding box" or "polygon").
-        Second tuple element is the spatial extent as a list of coordinates.
-
-        Examples
-        --------
-
-        # Note: coordinates returned as float, not int
-        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.spatial_extent
-        ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
-
-        >>> reg_a = Query('ATL06',[(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)],['2019-02-20','2019-02-28'])
-        >>> reg_a.spatial_extent
-        ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
-
-        # NOTE Is this where we wanted to put the file-based test/example?
-        # The test file path is: examples/supporting_files/simple_test_poly.gpkg
-
-        See Also
-        --------
-        Spatial.extent
-        Spatial.extent_type
-        Spatial.extent_as_gdf
-
-        """
-
-        return (self._spatial._ext_type, self._spatial._spatial_ext)
-
-    @property
-    def dates(self):
-        """
-        Return an array showing the date range of the query object.
-        Dates are returned as an array containing the start and end datetime objects, inclusive, in that order.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.dates
-        ['2019-02-20', '2019-02-28']
-
-        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
-        >>> reg_a.dates
-        ['No temporal parameters set']
-        """
-        if not hasattr(self, "_temporal"):
-            return ["No temporal parameters set"]
-        else:
-            return [
-                self._temporal._start.strftime("%Y-%m-%d"),
-                self._temporal._end.strftime("%Y-%m-%d"),
-            ]  # could also use self._start.date()
-
-    @property
-    def start_time(self):
-        """
-        Return the start time specified for the start date.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.start_time
-        '00:00:00'
-
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], start_time='12:30:30')
-        >>> reg_a.start_time
-        '12:30:30'
-
-        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
-        >>> reg_a.start_time
-        ['No temporal parameters set']
-        """
-        if not hasattr(self, "_temporal"):
-            return ["No temporal parameters set"]
-        else:
-            return self._temporal._start.strftime("%H:%M:%S")
-
-    @property
-    def end_time(self):
-        """
-        Return the end time specified for the end date.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.end_time
-        '23:59:59'
-
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], end_time='10:20:20')
-        >>> reg_a.end_time
-        '10:20:20'
-
-        >>> reg_a = Query('ATL06',[-55, 68, -48, 71],cycles=['03','04','05','06','07'], tracks=['0849','0902'])
-        >>> reg_a.end_time
-        ['No temporal parameters set']
-        """
-        if not hasattr(self, "_temporal"):
-            return ["No temporal parameters set"]
-        else:
-            return self._temporal._end.strftime("%H:%M:%S")
 
     @property
     def cycles(self):
@@ -645,6 +651,27 @@ class Query(GenQuery, EarthdataAuthMixin):
         if self._subsetparams == None and not kwargs:
             return {}
         else:
+            # If the user has supplied a subset list of variables, append the
+            # icepyx required variables to the Coverage dict
+            if "Coverage" in kwargs.keys():
+                var_list = [
+                    "orbit_info/sc_orient",
+                    "orbit_info/sc_orient_time",
+                    "ancillary_data/atlas_sdp_gps_epoch",
+                    "orbit_info/cycle_number",
+                    "orbit_info/rgt",
+                    "ancillary_data/data_start_utc",
+                    "ancillary_data/data_end_utc",
+                    "ancillary_data/granule_start_utc",
+                    "ancillary_data/granule_end_utc",
+                    "ancillary_data/start_delta_time",
+                    "ancillary_data/end_delta_time",
+                ]
+                # Add any variables from var_list to Coverage that are not already included
+                for var in var_list:
+                    if var not in kwargs["Coverage"].keys():
+                        kwargs["Coverage"][var.split("/")[-1]] = [var]
+
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
             if self._spatial._geom_file is not None:
@@ -687,17 +714,16 @@ class Query(GenQuery, EarthdataAuthMixin):
                 # DevGoal: check for active session here
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
-                        self._source,
-                        auth = self.auth,
                         product=self.product,
+                        version=self._version,
                         avail=self._cust_options["variables"],
+                        auth=self.auth,
                     )
                 else:
                     self._order_vars = Variables(
-                        self._source,
-                        auth=self.auth,
                         product=self.product,
                         version=self._version,
+                        auth=self.auth,
                     )
 
         # I think this is where property setters come in, and one should be used here? Right now order_vars.avail is only filled in
@@ -721,17 +747,18 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        
+
         >>> reg_a.file_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(self._source, 
-                                            auth=self.auth,
-                                            product=self.product,
-                                           )
+                self._file_vars = Variables(
+                    auth=self.auth,
+                    product=self.product,
+                    version=self._version,
+                )
 
         return self._file_vars
 
@@ -814,6 +841,8 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     def latest_version(self):
         """
+        A reference function to is2ref.latest_version.
+
         Determine the most recent version available for the given product.
 
         Examples
@@ -822,11 +851,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a.latest_version()
         '006'
         """
-        if not hasattr(self, "_about_product"):
-            self._about_product = is2ref.about_product(self._prod)
-        return max(
-            [entry["version_id"] for entry in self._about_product["feed"]["entry"]]
-        )
+        return is2ref.latest_version(self.product)
 
     def show_custom_options(self, dictview=False):
         """

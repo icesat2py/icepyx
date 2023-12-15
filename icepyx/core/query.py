@@ -12,8 +12,6 @@ import warnings
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.granules as granules
-
-# QUESTION: why doesn't from granules import Granules work, since granules=icepyx.core.granules?
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
@@ -348,8 +346,6 @@ class Query(GenQuery, EarthdataAuthMixin):
     tracks : string or a list of strings, default all available reference ground tracks (RGTs)
         Product track, given as a 4 digit string. If no track is given, all available
         reference ground tracks are used. Example: "0594"
-    files : string, default None
-        A placeholder for future development. Not used for any purposes yet.
     auth : earthaccess.auth.Auth, default None
         An earthaccess authentication object. Available as an argument so an existing
         earthaccess.auth.Auth object can be used for authentication. If not given, a new auth
@@ -407,7 +403,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         version=None,
         cycles=None,
         tracks=None,
-        files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
         auth=None,
         **kwargs,
     ):
@@ -423,14 +418,6 @@ class Query(GenQuery, EarthdataAuthMixin):
             raise ValueError(
                 "Please provide the required inputs. Use help([function]) to view the function's documentation"
             )
-
-        if files is not None:
-            self._source = "files"
-            # self.file_vars = Variables(self._source)
-        else:
-            self._source = "order"
-            # self.order_vars = Variables(self._source)
-        # self.variables = Variables(self._source)
 
         self._prod = is2ref._validate_product(product)
 
@@ -710,21 +697,20 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
 
         if not hasattr(self, "_order_vars"):
-            if self._source == "order":
-                # DevGoal: check for active session here
-                if hasattr(self, "_cust_options"):
-                    self._order_vars = Variables(
-                        product=self.product,
-                        version=self._version,
-                        avail=self._cust_options["variables"],
-                        auth=self.auth,
-                    )
-                else:
-                    self._order_vars = Variables(
-                        product=self.product,
-                        version=self._version,
-                        auth=self.auth,
-                    )
+            # DevGoal: check for active session here
+            if hasattr(self, "_cust_options"):
+                self._order_vars = Variables(
+                    product=self.product,
+                    version=self._version,
+                    avail=self._cust_options["variables"],
+                    auth=self.auth,
+                )
+            else:
+                self._order_vars = Variables(
+                    product=self.product,
+                    version=self._version,
+                    auth=self.auth,
+                )
 
         # I think this is where property setters come in, and one should be used here? Right now order_vars.avail is only filled in
         # if _cust_options exists when the class is initialized, but not if _cust_options is filled in prior to another call to order_vars
@@ -733,34 +719,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         #     self._order_vars.avail = self._cust_options['variables']
 
         return self._order_vars
-
-    @property
-    def file_vars(self):
-        """
-        Return the file variables object.
-        This instance is generated when files are used to create the data object (not yet implemented).
-
-        See Also
-        --------
-        variables.Variables
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-
-        >>> reg_a.file_vars # doctest: +SKIP
-        <icepyx.core.variables.Variables at [location]>
-        """
-
-        if not hasattr(self, "_file_vars"):
-            if self._source == "file":
-                self._file_vars = Variables(
-                    auth=self.auth,
-                    product=self.product,
-                    version=self._version,
-                )
-
-        return self._file_vars
 
     @property
     def granules(self):

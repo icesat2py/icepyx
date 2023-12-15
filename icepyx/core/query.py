@@ -407,13 +407,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         **kwargs,
     ):
         # Check necessary combination of input has been specified
-        if (
-            (product is None or spatial_extent is None)
-            or (
-                (date_range is None and cycles is None and tracks is None)
-                and int(product[-2:]) <= 13
-            )
-            and files is None
+        if (product is None or spatial_extent is None) or (
+            (date_range is None and cycles is None and tracks is None)
+            and int(product[-2:]) <= 13
         ):
             raise ValueError(
                 "Please provide the required inputs. Use help([function]) to view the function's documentation"
@@ -615,7 +611,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
-            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
+            Acceptable key values are
+            ['format','projection','projection_parameters','Coverage'].
             At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
 
         See Also
@@ -714,8 +711,10 @@ class Query(GenQuery, EarthdataAuthMixin):
                     auth=self.auth,
                 )
 
-        # I think this is where property setters come in, and one should be used here? Right now order_vars.avail is only filled in
-        # if _cust_options exists when the class is initialized, but not if _cust_options is filled in prior to another call to order_vars
+        # I think this is where property setters come in, and one should be used here?
+        # Right now order_vars.avail is only filled in
+        # if _cust_options exists when the class is initialized,
+        # but not if _cust_options is filled in prior to another call to order_vars
         # if self._order_vars.avail == None and hasattr(self, '_cust_options'):
         #     print('got into the loop')
         #     self._order_vars.avail = self._cust_options['variables']
@@ -726,7 +725,8 @@ class Query(GenQuery, EarthdataAuthMixin):
     def granules(self):
         """
         Return the granules object, which provides the underlying funtionality for searching, ordering,
-        and downloading granules for the specified product. Users are encouraged to use the built in wrappers
+        and downloading granules for the specified product.
+        Users are encouraged to use the built-in wrappers
         rather than trying to access the granules object themselves.
 
         See Also
@@ -767,7 +767,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         version_id :  006
         time_start :  2018-10-14T00:00:00.000Z
         coordinate_system :  CARTESIAN
-        summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
+        summary :  "This data set (ATL06) provides geolocated, land-ice
+        surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary
+        parameters that can be used to interpret and assess the quality of the height estimates.
+        The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS)
+        instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory."
         orbit_parameters :  {}
         """
         if not hasattr(self, "_about_product"):
@@ -1106,7 +1110,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         if not hasattr(self, "_granules"):
             self.granules
 
-        if restart == True:
+        if restart is True:
             pass
         else:
             if (

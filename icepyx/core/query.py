@@ -1,12 +1,6 @@
-import datetime as dt
 import geopandas as gpd
-import json
 import matplotlib.pyplot as plt
-import numpy as np
-import os
-from pathlib import Path
 import pprint
-import time
 import warnings
 
 import icepyx.core.APIformatting as apifmt
@@ -32,14 +26,17 @@ class GenQuery:
     Parameters
     ----------
     spatial_extent : list of coordinates or string (i.e. file name)
-        Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
+        Spatial extent of interest, provided as a bounding box,
+        list of polygon coordinates, or
         geospatial polygon file.
         NOTE: Longitude values are assumed to be in the range -180 to +180,
-        with 0 being the Prime Meridian (Greenwich). See xdateline for regions crossing the date line.
+        with 0 being the Prime Meridian (Greenwich).
+        See xdateline for regions crossing the date line.
         You can submit at most one bounding box or list of polygon coordinates.
         Per NSIDC requirements, geospatial polygon files may only contain one feature (polygon).
         Bounding box coordinates should be provided in decimal degrees as
-        [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+        [lower-left-longitude, lower-left-latitute,
+        upper-right-longitude, upper-right-latitude].
         Polygon coordinates should be provided as coordinate pairs in decimal degrees as
         [(longitude1, latitude1), (longitude2, latitude2), ... (longitude_n,latitude_n), (longitude1,latitude1)]
         or
@@ -71,7 +68,8 @@ class GenQuery:
         where HH = hours, mm = minutes, ss = seconds.
         If None is given (and a datetime.datetime object is not supplied for `date_range`),
         a default of 23:59:59 is applied.
-        If a datetime.datetime object was created without times, the datetime package defaults will apply over those of icepyx
+        If a datetime.datetime object was created without times,
+        the datetime package defaults will apply over those of icepyx
     xdateline : boolean, default None
         Keyword argument to enforce spatial inputs that cross the International Date Line.
         Internally, this will translate your longitudes to 0 to 360 to construct the
@@ -209,7 +207,8 @@ class GenQuery:
         Return an array showing the spatial extent of the query object.
         Spatial extent is returned as an input type (which depends on how
         you initially entered your spatial data) followed by the geometry data.
-        Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+        Bounding box data is [lower-left-longitude, lower-left-latitute,
+                            ... upper-right-longitude, upper-right-latitude].
         Polygon data is [longitude1, latitude1, longitude2, latitude2,
                         ... longitude_n,latitude_n, longitude1,latitude1].
 
@@ -248,7 +247,8 @@ class GenQuery:
     def dates(self):
         """
         Return an array showing the date range of the query object.
-        Dates are returned as an array containing the start and end datetime objects, inclusive, in that order.
+        Dates are returned as an array containing the start and end datetime
+        objects, inclusive, in that order.
 
         Examples
         --------
@@ -318,7 +318,6 @@ class GenQuery:
 
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
-# Note: add files to docstring once implemented
 # DevNote: currently this class is not tested
 class Query(GenQuery, EarthdataAuthMixin):
     """
@@ -338,14 +337,15 @@ class Query(GenQuery, EarthdataAuthMixin):
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : string, default most recent version
-        Product version, given as a 3 digit string. If no version is given, the current
-        version is used. Example: "006"
+        Product version, given as a 3 digit string.
+        If no version is given, the current version is used. Example: "006"
     cycles : string or a list of strings, default all available orbital cycles
-        Product cycle, given as a 2 digit string. If no cycle is given, all available
-        cycles are used. Example: "04"
+        Product cycle, given as a 2 digit string.
+        If no cycle is given, all available cycles are used. Example: "04"
     tracks : string or a list of strings, default all available reference ground tracks (RGTs)
-        Product track, given as a 4 digit string. If no track is given, all available
-        reference ground tracks are used. Example: "0594"
+        Product track, given as a 4 digit string.
+        If no track is given, all available reference ground tracks are used.
+        Example: "0594"
     auth : earthaccess.auth.Auth, default None
         An earthaccess authentication object. Available as an argument so an existing
         earthaccess.auth.Auth object can be used for authentication. If not given, a new auth
@@ -581,7 +581,8 @@ class Query(GenQuery, EarthdataAuthMixin):
     @property
     def reqparams(self):
         """
-        Display the required key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
+        Display the required key:value pairs that will be submitted.
+        It generates the dictionary if it does not already exist.
 
         Examples
         --------
@@ -605,7 +606,8 @@ class Query(GenQuery, EarthdataAuthMixin):
     # DevQuestion: if I make this a property, I get a "dict" object is not callable when I try to give input kwargs... what approach should I be taking?
     def subsetparams(self, **kwargs):
         """
-        Display the subsetting key:value pairs that will be submitted. It generates the dictionary if it does not already exist
+        Display the subsetting key:value pairs that will be submitted.
+        It generates the dictionary if it does not already exist
         and returns an empty dictionary if subsetting is set to False during ordering.
 
         Parameters
@@ -635,7 +637,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             kwargs["start"] = self._temporal._start
             kwargs["end"] = self._temporal._end
 
-        if self._subsetparams == None and not kwargs:
+        if self._subsetparams is None and not kwargs:
             return {}
         else:
             # If the user has supplied a subset list of variables, append the
@@ -659,7 +661,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                     if var not in kwargs["Coverage"].keys():
                         kwargs["Coverage"][var.split("/")[-1]] = [var]
 
-            if self._subsetparams == None:
+            if self._subsetparams is None:
                 self._subsetparams = apifmt.Parameters("subset")
             if self._spatial._geom_file is not None:
                 self._subsetparams.build_params(
@@ -743,7 +745,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         if not hasattr(self, "_granules"):
             self._granules = Granules()
-        elif self._granules == None:
+        elif self._granules is None:
             self._granules = Granules()
 
         return self._granules
@@ -999,9 +1001,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         if self._reqparams._reqtype == "search":
             self._reqparams._reqtype = "download"
 
-        if "email" in self._reqparams.fmted_keys.keys() or email == False:
+        if "email" in self._reqparams.fmted_keys.keys() or email is False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
-        elif email == True:
+        elif email is True:
             user_profile = self.auth.get_user_profile()
             self._reqparams.build_params(
                 **self._reqparams.fmted_keys, email=user_profile["email_address"]
@@ -1010,9 +1012,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         if subset is False:
             self._subsetparams = None
         elif (
-            subset == True
+            subset is True
             and hasattr(self, "_subsetparams")
-            and self._subsetparams == None
+            and self._subsetparams is None
         ):
             del self._subsetparams
 

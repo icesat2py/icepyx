@@ -354,12 +354,21 @@ class Visualize:
         # request OpenAltimetry
         r = self.make_request(base_url + product.lower(), payload)
 
-        print(r)
+        # print(r)
+        print(r.url)
         # get elevation data
         elevation_data = r.json()
-        print(elevation_data)
+        # print(elevation_data)
 
-        df = pd.json_normalize(data=elevation_data, record_path=["data"])
+        # see https://pandas.pydata.org/docs/reference/api/pandas.json_normalize.html
+        # this can be updated, but the data is now in a completely different format, so it will take some work
+        # it looks like we'll need something like record_path=["series"][data_name], meta=data_name
+        # where data_name is as defined below.
+        # I think we'll end up getting rid of the beam_data section entirely
+        # and we have to add cycle and track values as columns (and can drop the other info now there?)
+        # I think we can do the iteration on the below df instead of beam_data,
+        # and we'll need to update the functions below to have the proper col names
+        df = pd.json_normalize(data=elevation_data, record_path=["series"], max_level=1)
 
         print(df)
 
@@ -372,6 +381,7 @@ class Visualize:
             beam_data = None
 
         if not beam_data:
+            print("beam data is none")
             return
 
         data_name = "lat_lon_elev_canopy" if product == "ATL08" else "lat_lon_elev"

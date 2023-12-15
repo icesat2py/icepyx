@@ -1,5 +1,6 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
+from pathlib import Path  # used in docstring tests
 import pprint
 import warnings
 

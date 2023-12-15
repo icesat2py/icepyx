@@ -768,11 +768,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         version_id :  006
         time_start :  2018-10-14T00:00:00.000Z
         coordinate_system :  CARTESIAN
-        summary :  "This data set (ATL06) provides geolocated, land-ice
-        surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary
-        parameters that can be used to interpret and assess the quality of the height estimates.
-        The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS)
-        instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory."
+        summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
         orbit_parameters :  {}
         """
         if not hasattr(self, "_about_product"):

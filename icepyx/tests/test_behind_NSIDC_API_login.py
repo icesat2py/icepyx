@@ -1,4 +1,5 @@
 import json
+import os
 import pytest
 
 import icepyx as ipx

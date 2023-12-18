@@ -2,7 +2,7 @@
 max_line_length = 88
 per-file-ignores = 
     # too many leading '#' for block comment
-    test/*:E266
+    tests/*:E266
     # line too long (several test strs)
     test_granules.py:E501
     # imported but unused

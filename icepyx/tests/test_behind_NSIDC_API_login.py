@@ -34,8 +34,8 @@ def session(reg):
 
 
 def test_get_custom_options_output(session):
-    obs = is2ref._get_custom_options(session, "ATL06", "005")
-    with open("./icepyx/tests/ATL06v05_options.json") as exp_json:
+    obs = is2ref._get_custom_options(session, "ATL06", "006")
+    with open("./icepyx/tests/ATL06v06_options.json") as exp_json:
         exp = json.load(exp_json)
         assert all(keys in obs.keys() for keys in exp.keys())
         assert all(obs[key] == exp[key] for key in exp.keys())

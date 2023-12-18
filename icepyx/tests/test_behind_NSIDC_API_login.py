@@ -23,6 +23,7 @@ def reg():
 
 @pytest.fixture(scope="module")
 def session(reg):
+    os.environ = {"EARTHDATA_EMAIL": "icepyx.dev@gmail.com"}
     ed_obj = reg.session
     yield ed_obj
     ed_obj.close()

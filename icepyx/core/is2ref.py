@@ -419,6 +419,9 @@ def extract_version(filepath, auth=None):
         if isinstance(version, np.ndarray):
             # ATL14 stores the version as an array ['00x']
             version = version[0]
+        if isinstance(version, bytes):
+            version = version.decode()
+            
     except KeyError:
         raise "Unable to parse the version from file metadata"
 

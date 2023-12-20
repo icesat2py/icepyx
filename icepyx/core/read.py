@@ -415,7 +415,10 @@ class Read(EarthdataAuthMixin):
             # If the path is an s3 path set the respective element of self.is_s3 to True
             if file_.startswith('s3'):
                 self.is_s3[i] = True
-            product_dict[file_] = is2ref.extract_product(file_, auth=self.auth)
+                auth=self.auth
+            else:
+                auth=None
+            product_dict[file_] = is2ref.extract_product(file_, auth=auth)
 
         # Raise an error if there are both s3 and non-s3 paths present
         if len(set(self.is_s3)) > 1:

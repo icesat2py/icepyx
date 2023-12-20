@@ -509,20 +509,6 @@ class Read(EarthdataAuthMixin):
         if not hasattr(self, "_read_vars"):
             self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars
-    
-    @property
-    def filelist(self):
-        """
-        Return the list of files represented by this Read object.
-        """
-        return self._filelist
-
-    @property
-    def product(self):
-        """
-        Return the product associated with the Read object.
-        """
-        return self._product
 
     @property
     def filelist(self):

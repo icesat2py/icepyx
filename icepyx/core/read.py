@@ -3,7 +3,6 @@ import glob
 import os
 import warnings
 
-import h5py
 import numpy as np
 import xarray as xr
 
@@ -157,9 +156,9 @@ def _validate_source(source):
     # acceptable inputs (for now) are a single file or directory
     # would ultimately like to make a Path (from pathlib import Path; isinstance(source, Path)) an option
     # see https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py#L82
-    assert type(source) == str, "You must enter your input as a string."
+    assert type(source) is str, "You must enter your input as a string."
     assert (
-        os.path.isdir(source) == True or os.path.isfile(source) == True
+        os.path.isdir(source) is True or os.path.isfile(source) is True
     ), "Your data source string is not a valid data source."
     return True
 
@@ -323,7 +322,7 @@ class Read:
 
     def __init__(
         self,
-        data_source=None,  # DevNote: Make this a required arg when catalog is removed
+        data_source,
         product=None,
         filename_pattern=None,
         catalog=None,
@@ -339,23 +338,21 @@ class Read:
 
         if data_source is None:
             raise ValueError("data_source is a required arguemnt")
+
         # Raise warnings for deprecated arguments
         if filename_pattern:
-            warnings.warn(
+            raise DeprecationError(
                 "The `filename_pattern` argument is deprecated. Instead please provide a "
-                "string, list, or glob string to the `data_source` argument.",
-                stacklevel=2,
+                "string, list, or glob string to the `data_source` argument."
             )
 
         if product:
-            product = is2ref._validate_product(product)
-            warnings.warn(
+            raise DeprecationError(
                 "The `product` argument is no longer required. If the `data_source` argument given "
                 "contains files with multiple products the `product` argument will be used "
                 "to filter that list. In all other cases the product argument is ignored. "
                 "The recommended approach is to not include a `product` argument and instead "
-                "provide a `data_source` with files of only a single product type`.",
-                stacklevel=2,
+                "provide a `data_source` with files of only a single product type`."
             )
 
         # Create the filelist from the `data_source` argument

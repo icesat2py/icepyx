@@ -356,14 +356,14 @@ class Read:
             )
 
         # Create the filelist from the `data_source` argument
-        if filename_pattern:
-            # maintained for backward compatibility
-            pattern_ck, filelist = Read._check_source_for_pattern(
-                data_source, filename_pattern
-            )
-            assert pattern_ck
-            self._filelist = filelist
-        elif isinstance(data_source, list):
+        # if filename_pattern:
+        #     # maintained for backward compatibility
+        #     pattern_ck, filelist = Read._check_source_for_pattern(
+        #         data_source, filename_pattern
+        #     )
+        #     assert pattern_ck
+        #     self._filelist = filelist
+        if isinstance(data_source, list):
             self._filelist = data_source
         elif os.path.isdir(data_source):
             data_source = os.path.join(data_source, "*")
@@ -381,31 +381,32 @@ class Read:
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
-            if product:
-                warnings.warn(
-                    f"Multiple products found in list of files: {product_dict}. Files that "
-                    "do not match the user specified product will be removed from processing.\n"
-                    "Filtering files using a `product` argument is deprecated. Please use the "
-                    "`data_source` argument to specify a list of files with the same product.",
-                    stacklevel=2,
-                )
-                self._filelist = []
-                for key, value in product_dict.items():
-                    if value == product:
-                        self._filelist.append(key)
-                if len(self._filelist) == 0:
-                    raise TypeError(
-                        "No files found in the file list matching the user-specified "
-                        "product type"
-                    )
-                # Use the cleaned filelist to assign a product
-                self._product = product
-            else:
-                raise TypeError(
-                    f"Multiple product types were found in the file list: {product_dict}."
-                    "Please provide a valid `data_source` parameter indicating files of a single "
-                    "product"
-                )
+            # Should this code be removed now, or when the deprecation error for the arg is?
+            # if product:
+            #     warnings.warn(
+            #         f"Multiple products found in list of files: {product_dict}. Files that "
+            #         "do not match the user specified product will be removed from processing.\n"
+            #         "Filtering files using a `product` argument is deprecated. Please use the "
+            #         "`data_source` argument to specify a list of files with the same product.",
+            #         stacklevel=2,
+            #     )
+            #     self._filelist = []
+            #     for key, value in product_dict.items():
+            #         if value == product:
+            #             self._filelist.append(key)
+            #     if len(self._filelist) == 0:
+            #         raise TypeError(
+            #             "No files found in the file list matching the user-specified "
+            #             "product type"
+            #         )
+            #     # Use the cleaned filelist to assign a product
+            #     self._product = product
+            # else:
+            raise TypeError(
+                f"Multiple product types were found in the file list: {product_dict}."
+                "Please provide a valid `data_source` parameter indicating files of a single "
+                "product"
+            )
         elif len(all_products) == 0:
             raise TypeError(
                 "No files found matching the specified `data_source`. Check your glob "
@@ -414,13 +415,13 @@ class Read:
         else:
             # Assign the identified product to the property
             self._product = all_products[0]
-        # Raise a warning if the metadata-located product differs from the user-specified product
-        if product and self._product != product:
-            warnings.warn(
-                f"User specified product {product} does not match the product from the file"
-                " metadata {self._product}",
-                stacklevel=2,
-            )
+        # # Raise a warning if the metadata-located product differs from the user-specified product
+        # if product and self._product != product:
+        #     warnings.warn(
+        #         f"User specified product {product} does not match the product from the file"
+        #         " metadata {self._product}",
+        #         stacklevel=2,
+        #     )
 
         if out_obj_type is not None:
             print(
@@ -431,8 +432,6 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Properties
-
-    # I cut and pasted this directly out of the Query class - going to need to reconcile the _source/file stuff there
 
     @property
     def vars(self):
@@ -743,11 +742,7 @@ class Read:
             pass
 
         all_dss = []
-        # DevNote: I'd originally hoped to rely on intake-xarray in order to not have to iterate through the files myself,
-        # by providing a generalized url/source in building the catalog.
-        # However, this led to errors when I tried to combine two identical datasets because the single dimension was equal.
-        # In these situations, xarray recommends manually controlling the merge/concat process yourself.
-        # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
+
         for file in self.filelist:
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)

@@ -2,10 +2,10 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 from pathlib import Path  # used in docstring tests
 import pprint
-import warnings
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
+from icepyx.core.exceptions import DeprecationError
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
@@ -455,10 +455,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         product
         """
-        warnings.filterwarnings("always")
-        warnings.warn(
+        DeprecationError(
             "In line with most common usage, 'dataset' has been replaced by 'product'.",
-            DeprecationWarning,
         )
 
     @property

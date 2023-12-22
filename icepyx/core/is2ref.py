@@ -1,12 +1,11 @@
 import h5py
 import json
+import numpy as np
 import requests
 import warnings
 from xml.etree import ElementTree as ET
 
-import h5py
 import earthaccess
-import numpy as np
 
 
 # ICESat-2 specific reference functions

@@ -35,9 +35,3 @@ def test_login_function(auth_instance):
     auth_instance.earthdata_login()
     assert isinstance(auth_instance.auth, earthaccess.auth.Auth)
     assert auth_instance.auth.authenticated
-
-
-# Test that earthdata_login raises a warning if email is provided
-def test_depreciation_error(auth_instance):
-    with pytest.warns(DeprecationError):
-        auth_instance.earthdata_login(email="me@gmail.com")

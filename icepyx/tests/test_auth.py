@@ -4,6 +4,7 @@ import requests
 import earthaccess
 
 from icepyx.core.auth import EarthdataAuthMixin
+from icepyx.core.exceptions import DeprecationError
 
 
 @pytest.fixture()
@@ -37,6 +38,6 @@ def test_login_function(auth_instance):
 
 
 # Test that earthdata_login raises a warning if email is provided
-def test_depreciation_warning(auth_instance):
-    with pytest.warns(DeprecationWarning):
+def test_depreciation_error(auth_instance):
+    with pytest.warns(DeprecationError):
         auth_instance.earthdata_login(email="me@gmail.com")

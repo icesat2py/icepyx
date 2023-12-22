@@ -260,16 +260,17 @@ def _pattern_to_glob(pattern):
     # print(glob_path)
     return glob_path
 
+
 def _confirm_proceed():
-    '''
+    """
     Ask the user if they wish to proceed with processing. If 'y', or 'yes', then continue. Any
     other user input will abort the process.
-    '''
+    """
     answer = input("Do you wish to proceed (not recommended) y/[n]?")
-    if answer.lower() in ['y', 'yes']:
+    if answer.lower() in ["y", "yes"]:
         pass
     else:
-        warnings.warn('Aborting', stacklevel=2)
+        warnings.warn("Aborting", stacklevel=2)
         sys.exit(0)
 
 
@@ -335,7 +336,7 @@ class Read(EarthdataAuthMixin):
 
     # ----------------------------------------------------------------------
     # Constructors
-    
+
     def __init__(
         self,
         data_source=None,  # DevNote: Make this a required arg when catalog is removed
@@ -351,13 +352,13 @@ class Read(EarthdataAuthMixin):
                 "The `catalog` argument has been deprecated and intake is no longer supported. "
                 "Please use the `data_source` argument to specify your dataset instead."
             )
-            
+
         if data_source is None:
             raise ValueError("data_source is a required arguemnt")
-        
+
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
-        
+
         # Raise warnings for deprecated arguments
         if filename_pattern:
             warnings.warn(
@@ -393,7 +394,7 @@ class Read(EarthdataAuthMixin):
             data_source = os.path.join(data_source, "*")
             self._filelist = glob.glob(data_source, **glob_kwargs)
         elif isinstance(data_source, str):
-            if data_source.startswith('s3'):
+            if data_source.startswith("s3"):
                 # if the string is an s3 path put it in the _filelist without globbing
                 self._filelist = [data_source]
             else:
@@ -401,8 +402,8 @@ class Read(EarthdataAuthMixin):
                 self._filelist = glob.glob(data_source, **glob_kwargs)
         else:
             raise TypeError(
-                'data_source should be a list of files, a directory, the path to a file, '
-                'or a glob string.'
+                "data_source should be a list of files, a directory, the path to a file, "
+                "or a glob string."
             )
         # Remove any directories from the list (these get generated during recursive
         # glob search)
@@ -410,32 +411,33 @@ class Read(EarthdataAuthMixin):
 
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
-        self.is_s3 = [False]*len(self._filelist)
+        self.is_s3 = [False] * len(self._filelist)
         for i, file_ in enumerate(self._filelist):
             # If the path is an s3 path set the respective element of self.is_s3 to True
-            if file_.startswith('s3'):
+            if file_.startswith("s3"):
                 self.is_s3[i] = True
-                auth=self.auth
+                auth = self.auth
             else:
-                auth=None
+                auth = None
             product_dict[file_] = is2ref.extract_product(file_, auth=auth)
 
         # Raise an error if there are both s3 and non-s3 paths present
         if len(set(self.is_s3)) > 1:
             raise TypeError(
-                'Mixed local and s3 paths is not supported. data_source must contain '
-                'only s3 paths or only local paths'
+                "Mixed local and s3 paths is not supported. data_source must contain "
+                "only s3 paths or only local paths"
             )
         self.is_s3 = self.is_s3[0]  # Change is_s3 into one boolean value for _filelist
         # Raise warning if more than 2 s3 files are given
         if self.is_s3 is True and len(self._filelist) > 2:
             warnings.warn(
-                'Processing more than two s3 files can take a prohibitively long time. '
-                'Approximate access time (using `.load()`) can exceed 6 minutes per data '
-                'variable.', stacklevel=2
+                "Processing more than two s3 files can take a prohibitively long time. "
+                "Approximate access time (using `.load()`) can exceed 6 minutes per data "
+                "variable.",
+                stacklevel=2,
             )
             _confirm_proceed()
-            
+
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
@@ -779,9 +781,9 @@ class Read(EarthdataAuthMixin):
 
         if self.is_s3 is True and len(self.vars.wanted) > 3:
             warnings.warn(
-                'Loading more than 3 variables from an s3 object can be prohibitively slow'
-                'Approximate access time (using `.load()`) can exceed 6 minutes per data '
-                'variable.'
+                "Loading more than 3 variables from an s3 object can be prohibitively slow"
+                "Approximate access time (using `.load()`) can exceed 6 minutes per data "
+                "variable."
             )
             _confirm_proceed()
 
@@ -815,11 +817,11 @@ class Read(EarthdataAuthMixin):
         # In these situations, xarray recommends manually controlling the merge/concat process yourself.
         # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
         for file in self.filelist:
-            if file.startswith('s3'):
+            if file.startswith("s3"):
                 # If path is an s3 path create an s3fs filesystem to reference the file
                 # TODO would it be better to be able to generate an s3fs session from the Mixin?
                 s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=self.auth)
-                file = s3.open(file, 'rb')
+                file = s3.open(file, "rb")
 
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)

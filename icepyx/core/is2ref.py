@@ -381,7 +381,7 @@ def extract_product(filepath, auth=None):
         product = _validate_product(product)
     except KeyError:
         raise "Unable to parse the product name from file metadata"
-        
+
     # Close the file reader
     f.close()
     return product
@@ -421,7 +421,7 @@ def extract_version(filepath, auth=None):
             version = version[0]
         if isinstance(version, bytes):
             version = version.decode()
-            
+
     except KeyError:
         raise "Unable to parse the version from file metadata"
 

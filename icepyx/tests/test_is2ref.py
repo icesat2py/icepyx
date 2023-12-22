@@ -1,5 +1,4 @@
 import pytest
-import warnings
 
 import icepyx.core.is2ref as is2ref
 

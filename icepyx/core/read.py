@@ -820,7 +820,7 @@ class Read(EarthdataAuthMixin):
             if file.startswith("s3"):
                 # If path is an s3 path create an s3fs filesystem to reference the file
                 # TODO would it be better to be able to generate an s3fs session from the Mixin?
-                s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=self.auth)
+                s3 = earthaccess.get_s3fs_session(daac="NSIDC")
                 file = s3.open(file, "rb")
 
             all_dss.append(

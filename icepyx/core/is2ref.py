@@ -362,7 +362,7 @@ def extract_product(filepath, auth=None):
                 "Must provide credentials to `auth` if accessing s3 data"
             )
         # Read the s3 file
-        s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC")
         f = h5py.File(s3.open(filepath, "rb"))
     else:
         # Otherwise assume a local filepath. Read with h5py.
@@ -406,7 +406,7 @@ def extract_version(filepath, auth=None):
                 "Must provide credentials to `auth` if accessing s3 data"
             )
         # Read the s3 file
-        s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC")
         f = h5py.File(s3.open(filepath, "rb"))
     else:
         # Otherwise assume a local filepath. Read with h5py.

@@ -122,10 +122,10 @@ class EarthdataAuthMixin:
         Credential storage details are described in the
         EathdataAuthMixin class section.
 
-        **Note:** This method is maintained for backward compatibility.
+        **Note:** This method is maintained to enable passing of keyword
+        arguments directly to earthaccess.
         It is no longer required to explicitly run `.earthdata_login()`.
-        Authentication will be performed by the module as needed when
-        `.session` or `.s3login_credentials` are accessed.
+        Authentication will be performed by the module as needed.
 
         Parameters
         ----------
@@ -138,6 +138,7 @@ class EarthdataAuthMixin:
             data access credentials
         kwargs : key:value pairs
             Keyword arguments to be passed into earthaccess.login().
+            Not yet implemented.
 
         Examples
         --------
@@ -149,15 +150,8 @@ class EarthdataAuthMixin:
         No .netrc found in /Users/username
 
         """
-        warnings.warn(
+        raise DeprecationError(
             "It is no longer required to explicitly run the `.earthdata_login()` method."
             "Authentication will be performed by the module as needed.",
-            DeprecationWarning,
             stacklevel=2,
         )
-
-        if uid is not None or email is not None or s3token is not None:
-            raise DeprecationError(
-                "The `uid`, `email`, and `s3token` arguments are deprecated."
-                "Please remove these arguments from your `earthdata_login()` function call."
-            )

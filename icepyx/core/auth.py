@@ -153,5 +153,4 @@ class EarthdataAuthMixin:
         raise DeprecationError(
             "It is no longer required to explicitly run the `.earthdata_login()` method."
             "Authentication will be performed by the module as needed.",
-            stacklevel=2,
         )

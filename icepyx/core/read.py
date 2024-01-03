@@ -7,6 +7,7 @@ import warnings
 import earthaccess
 import h5py
 import numpy as np
+from s3fs.core import S3File
 import xarray as xr
 
 from icepyx.core.auth import EarthdataAuthMixin
@@ -826,7 +827,8 @@ class Read(EarthdataAuthMixin):
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
-            file.close()
+            if isinstance(file, S3File):
+                file.close()
 
         if len(all_dss) == 1:
             return all_dss[0]

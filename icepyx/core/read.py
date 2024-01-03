@@ -5,7 +5,6 @@ import sys
 import warnings
 
 import earthaccess
-import h5py
 import numpy as np
 from s3fs.core import S3File
 import xarray as xr
@@ -136,7 +135,7 @@ def _check_datasource(filepath):
     Then the dict can also contain a catalog key with a dict of catalogs for each of those types of inputs ("s3" or "local")
     In general, the issue we'll run into with multiple files is going to be merging during the read in,
     so it could be beneficial to not hide this too much and mandate users handle this intentionally outside the read in itself.
-    
+
     this function was derived with some of the following resources, based on echopype
     https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py
 
@@ -161,9 +160,9 @@ def _validate_source(source):
     # acceptable inputs (for now) are a single file or directory
     # would ultimately like to make a Path (from pathlib import Path; isinstance(source, Path)) an option
     # see https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py#L82
-    assert type(source) == str, "You must enter your input as a string."
+    assert isinstance(source, str), "You must enter your input as a string."
     assert (
-        os.path.isdir(source) == True or os.path.isfile(source) == True
+        os.path.isdir(source) is True or os.path.isfile(source) is True
     ), "Your data source string is not a valid data source."
     return True
 
@@ -284,13 +283,18 @@ class Read(EarthdataAuthMixin):
     Parameters
     ----------
     data_source : string, List
-        A string or list which specifies the files to be read. The string can be either: 1) the path of a single file 2) the path to a directory or 3) a [glob string](https://docs.python.org/3/library/glob.html).
+        A string or list which specifies the files to be read.
+        The string can be either:
+        1) the path of a single file
+        2) the path to a directory or
+        3) a [glob string](https://docs.python.org/3/library/glob.html).
         The List must be a list of strings, each of which is the path of a single file.
 
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
-        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0. The dataset product is read from the file metadata.
+        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
+        The dataset product is read from the file metadata.
 
     filename_pattern : string, default None
         String that shows the filename pattern as previously required for Intake's path_as_pattern argument.

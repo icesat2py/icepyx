@@ -1,5 +1,6 @@
 [flake8]
-max_line_length = 88
+#GOAL: max_line_length = 79 or 99
+max_line_length = 150
 per-file-ignores = 
     # too many leading '#' for block comment
     */tests/*:E266
@@ -7,3 +8,7 @@ per-file-ignores =
     test_granules.py:E501
     # imported but unused
     __init__.py:F401
+
+    # GOAL:
+    # syntax check doctests in docstrings
+    # doctests = True

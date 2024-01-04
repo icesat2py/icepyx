@@ -24,6 +24,20 @@ New (and Updated) Features
     
     - Refactor Variables class to be user facing functionality
 
+- Expand Variables class to read s3 urls (#464)
+    
+    - expand extract_product and extract_version to check for s3 url
+    - add cloud notes to variables notebook
+
+- add argo functionality to QUEST (#427)
+    
+    - add argo.py dataset functionality and implementation through QUEST
+    - demonstrate QUEST usage via example notebook
+    - add save to QUEST DataSet class template
+
+- Expand icepyx to read s3 data (#468)
+
+
 
 Bug fixes
 ~~~~~~~~~
@@ -34,17 +48,22 @@ Bug fixes
     - comment out tests that use OA API
 
 - fix spot number calculation (#458)
+- Update read module coordinate dimension manipulations to use new xarray index (#473)
+- Fix behind EDL tests (#480)
 
 Deprecations
 ~~~~~~~~~~~~
 
 - deprecate filename_pattern and product class Read inputs (#444)
+- remove `file` input arg and `_source` property from query (and improve some formatting) (#479)
 
 
 Maintenance
 ^^^^^^^^^^^
 
 - update QUEST and GenQuery classes for argo integration (#441)
+- format all code files using black (#476)
+- update tests to data version 006 and resolve flake8 errors on edited files (#478)
 
 
 Documentation
@@ -55,6 +74,10 @@ Documentation
 - docs: add jpswinski as a contributor for review (#461)
 - docs: add whyjz as a contributor for tutorial (#462)
 - add newest icepyx citations (#455)
+- traffic updates Aug-Dec 2023 (#477)
+- docs: add lheagy as a contributor for mentoring, and review (#481)
+- docs: add rtilling as a contributor for ideas (#484)
+
 
 
 Other

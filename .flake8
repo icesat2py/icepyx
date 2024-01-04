@@ -21,6 +21,7 @@ ignore =
     F401 # imported but unused
     F841 # assigned and unused (in tests)
 
+
     # GOAL:
     # syntax check doctests in docstrings
     # doctests = True

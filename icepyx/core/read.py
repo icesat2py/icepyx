@@ -490,35 +490,6 @@ class Read(EarthdataAuthMixin):
 
     # ----------------------------------------------------------------------
     # Methods
-    @staticmethod
-    def _check_source_for_pattern(source, filename_pattern):
-        """
-        Check that the entered data source contains files that match the input filename_pattern
-        """
-        glob_pattern = _pattern_to_glob(filename_pattern)
-
-        if os.path.isdir(source):
-            _, filelist = _run_fast_scandir(source, glob_pattern)
-            assert (
-                len(filelist) > 0
-            ), "None of your filenames match the specified pattern."
-            print(
-                f"You have {len(filelist)} files matching the filename pattern to be read in."
-            )
-            return True, filelist
-        elif os.path.isfile(source):
-            assert fnmatch.fnmatch(
-                os.path.basename(source), glob_pattern
-            ), "Your input filename does not match the filename pattern."
-            return True, [source]
-        elif isinstance(source, str):
-            if source.startswith("s3://"):
-                return True, [source]
-        elif isinstance(source, list):
-            if all(source.startswith("s3://")):
-                return True, source
-
-        return False, None
 
     @staticmethod
     def _add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
@@ -727,9 +698,13 @@ class Read(EarthdataAuthMixin):
         # add a check that wanted variables exists, and create them with defaults if possible (and let the user know)
         # write tests for the functions!
 
-        # Notes: intake wants an entire group, not an individual variable (which makes sense if we're using its smarts to set up lat, lon, etc)
-        # so to get a combined dataset, we need to keep track of spots under the hood, open each group, and then combine them into one xarray where the spots are IDed somehow (or only the strong ones are returned)
-        # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
+        # Notes: intake wants an entire group, not an individual variable
+        # (which makes sense if we're using its smarts to set up lat, lon, etc)
+        # so to get a combined dataset, we need to keep track of spots under the hood,
+        # open each group, and then combine them into one xarray where the spots are IDed somehow
+        # (or only the strong ones are returned)
+        # this means we need to get/track from each dataset we open some of the metadata,
+        # which we include as mandatory variables when constructing the wanted list
 
         if not self.vars.wanted:
             raise AttributeError(

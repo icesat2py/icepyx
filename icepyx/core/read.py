@@ -270,7 +270,7 @@ def _confirm_proceed():
     "Processing more than two s3 files can take a prohibitively long time. "
     "Approximate access time (using `.load()`) can exceed 6 minutes per data "
     "variable.",
-    stacklevel=4,
+    stacklevel=2,
     )
     
     answer = input("Do you wish to proceed (not recommended) y/[n]?")

@@ -30,20 +30,20 @@
 <!-- icepyx.core.auth.EarthdataAuthMixin -->
 <g id="node3" class="node">
 <title>icepyx.core.auth.EarthdataAuthMixin</title>
-<polygon fill="none" stroke="black" points="1291,-947.5 1291,-1136.5 1612,-1136.5 1612,-947.5 1291,-947.5"/>
-<text text-anchor="start" x="1378" y="-1121.3" font-family="Times,serif" font-size="14.00">EarthdataAuthMixin</text>
-<polyline fill="none" stroke="black" points="1291,-1113.5 1612,-1113.5 "/>
-<text text-anchor="start" x="1326.5" y="-1098.3" font-family="Times,serif" font-size="14.00">_auth : NoneType</text>
-<text text-anchor="start" x="1326.5" y="-1083.3" font-family="Times,serif" font-size="14.00">_s3_initial_ts : NoneType, datetime</text>
-<text text-anchor="start" x="1326.5" y="-1068.3" font-family="Times,serif" font-size="14.00">_s3login_credentials : NoneType</text>
-<text text-anchor="start" x="1326.5" y="-1053.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
-<text text-anchor="start" x="1326.5" y="-1038.3" font-family="Times,serif" font-size="14.00">auth</text>
-<text text-anchor="start" x="1326.5" y="-1023.3" font-family="Times,serif" font-size="14.00">s3login_credentials</text>
-<text text-anchor="start" x="1326.5" y="-1008.3" font-family="Times,serif" font-size="14.00">session</text>
-<polyline fill="none" stroke="black" points="1291,-1000.5 1612,-1000.5 "/>
-<text text-anchor="start" x="1299" y="-985.3" font-family="Times,serif" font-size="14.00">__init__(auth)</text>
-<text text-anchor="start" x="1299" y="-970.3" font-family="Times,serif" font-size="14.00">__str__()</text>
-<text text-anchor="start" x="1299" y="-955.3" font-family="Times,serif" font-size="14.00">earthdata_login(uid, email, s3token): None</text>
+<polygon fill="none" stroke="black" points="1467,-947.5 1467,-1136.5 1788,-1136.5 1788,-947.5 1467,-947.5"/>
+<text text-anchor="start" x="1554" y="-1121.3" font-family="Times,serif" font-size="14.00">EarthdataAuthMixin</text>
+<polyline fill="none" stroke="black" points="1467,-1113.5 1788,-1113.5 "/>
+<text text-anchor="start" x="1502.5" y="-1098.3" font-family="Times,serif" font-size="14.00">_auth : NoneType</text>
+<text text-anchor="start" x="1502.5" y="-1083.3" font-family="Times,serif" font-size="14.00">_s3_initial_ts : NoneType, datetime</text>
+<text text-anchor="start" x="1502.5" y="-1068.3" font-family="Times,serif" font-size="14.00">_s3login_credentials : NoneType</text>
+<text text-anchor="start" x="1502.5" y="-1053.3" font-family="Times,serif" font-size="14.00">_session : NoneType</text>
+<text text-anchor="start" x="1502.5" y="-1038.3" font-family="Times,serif" font-size="14.00">auth</text>
+<text text-anchor="start" x="1502.5" y="-1023.3" font-family="Times,serif" font-size="14.00">s3login_credentials</text>
+<text text-anchor="start" x="1502.5" y="-1008.3" font-family="Times,serif" font-size="14.00">session</text>
+<polyline fill="none" stroke="black" points="1467,-1000.5 1788,-1000.5 "/>
+<text text-anchor="start" x="1475" y="-985.3" font-family="Times,serif" font-size="14.00">__init__(auth)</text>
+<text text-anchor="start" x="1475" y="-970.3" font-family="Times,serif" font-size="14.00">__str__()</text>
+<text text-anchor="start" x="1475" y="-955.3" font-family="Times,serif" font-size="14.00">earthdata_login(uid, email, s3token): None</text>
 </g>
 <!-- icepyx.core.query.GenQuery -->
 <g id="node4" class="node">
@@ -120,14 +120,14 @@
 <text text-anchor="start" x="819" y="-369.3" font-family="Times,serif" font-size="14.00">visualize_spatial_extent()</text>
 </g>
 <!-- icepyx.core.granules.Granules&#45;&gt;icepyx.core.query.Query -->
-<g id="edge9" class="edge">
+<g id="edge10" class="edge">
 <title>icepyx.core.granules.Granules&#45;&gt;icepyx.core.query.Query</title>
 <path fill="none" stroke="black" d="M686.01,-217.62C691.55,-258.37 705.22,-310.14 738.5,-343 756.87,-361.14 771.67,-351.12 799.53,-360.9"/>
 <polygon fill="black" stroke="black" points="799.83,-361.03 806.92,-359.69 810.88,-365.72 803.79,-367.05 799.83,-361.03"/>
 <text text-anchor="middle" x="773.5" y="-331.8" font-family="Times,serif" font-size="14.00" fill="green">_granules</text>
 </g>
 <!-- icepyx.core.granules.Granules&#45;&gt;icepyx.core.query.Query -->
-<g id="edge10" class="edge">
+<g id="edge11" class="edge">
 <title>icepyx.core.granules.Granules&#45;&gt;icepyx.core.query.Query</title>
 <path fill="none" stroke="black" d="M737.12,-217.74C770.37,-254.72 814.09,-302.31 854.5,-343 857.68,-346.21 860.9,-349.43 864.13,-352.66"/>
 <polygon fill="black" stroke="black" points="864.24,-352.76 871.31,-354.16 872.74,-361.23 865.67,-359.83 864.24,-352.76"/>
@@ -190,28 +190,28 @@
 <text text-anchor="start" x="1051" y="-53.3" font-family="Times,serif" font-size="14.00">check_values()</text>
 </g>
 <!-- icepyx.core.APIformatting.Parameters&#45;&gt;icepyx.core.query.Query -->
-<g id="edge5" class="edge">
+<g id="edge6" class="edge">
 <title>icepyx.core.APIformatting.Parameters&#45;&gt;icepyx.core.query.Query</title>
 <path fill="none" stroke="black" d="M1091.33,-264.73C1074.38,-282.17 1055.25,-298.29 1034.5,-310 994.79,-332.41 962.78,-293.04 933.5,-328 927.46,-335.21 922.82,-342.56 919.44,-350.02"/>
 <polygon fill="black" stroke="black" points="919.4,-350.14 921.09,-357.15 915.27,-361.4 913.58,-354.39 919.4,-350.14"/>
 <text text-anchor="middle" x="981.5" y="-331.8" font-family="Times,serif" font-size="14.00" fill="green">_CMRparams</text>
 </g>
 <!-- icepyx.core.APIformatting.Parameters&#45;&gt;icepyx.core.query.Query -->
-<g id="edge6" class="edge">
+<g id="edge7" class="edge">
 <title>icepyx.core.APIformatting.Parameters&#45;&gt;icepyx.core.query.Query</title>
 <path fill="none" stroke="black" d="M1081.69,-264.8C1069.68,-284.8 1059.19,-306.25 1052.5,-328 1050.34,-335.01 1048.69,-342.11 1047.51,-349.25"/>
 <polygon fill="black" stroke="black" points="1047.49,-349.42 1050.69,-355.89 1045.95,-361.32 1042.76,-354.86 1047.49,-349.42"/>
 <text text-anchor="middle" x="1095" y="-331.8" font-family="Times,serif" font-size="14.00" fill="green">_reqparams</text>
 </g>
 <!-- icepyx.core.APIformatting.Parameters&#45;&gt;icepyx.core.query.Query -->
-<g id="edge7" class="edge">
+<g id="edge8" class="edge">
 <title>icepyx.core.APIformatting.Parameters&#45;&gt;icepyx.core.query.Query</title>
 <path fill="none" stroke="black" d="M1163,-264.69C1161.98,-285.69 1161.07,-307.53 1160.5,-328 1160.31,-334.99 1160.13,-342.08 1159.97,-349.23"/>
 <polygon fill="black" stroke="black" points="1159.97,-349.31 1163.84,-355.39 1159.71,-361.31 1155.84,-355.23 1159.97,-349.31"/>
 <text text-anchor="middle" x="1214.5" y="-331.8" font-family="Times,serif" font-size="14.00" fill="green">_subsetparams</text>
 </g>
 <!-- icepyx.core.APIformatting.Parameters&#45;&gt;icepyx.core.query.Query -->
-<g id="edge8" class="edge">
+<g id="edge9" class="edge">
 <title>icepyx.core.APIformatting.Parameters&#45;&gt;icepyx.core.query.Query</title>
 <path fill="none" stroke="black" d="M1243.18,-264.7C1253.63,-284.96 1262.76,-306.53 1268.5,-328 1270.38,-335.02 1271.77,-342.11 1272.73,-349.24"/>
 <polygon fill="black" stroke="black" points="1272.74,-349.34 1277.33,-354.9 1273.95,-361.28 1269.37,-355.71 1272.74,-349.34"/>
@@ -220,8 +220,8 @@
 <!-- icepyx.core.query.Query&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
 <g id="edge2" class="edge">
 <title>icepyx.core.query.Query&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1348.35,-895.63C1358.99,-910.63 1369.29,-925.15 1379.01,-938.85"/>
-<polygon fill="none" stroke="black" points="1376.35,-941.14 1384.99,-947.27 1382.05,-937.09 1376.35,-941.14"/>
+<path fill="none" stroke="black" d="M1462.17,-895.63C1479.87,-911.19 1496.99,-926.25 1513.08,-940.4"/>
+<polygon fill="none" stroke="black" points="1511.08,-943.29 1520.9,-947.27 1515.7,-938.04 1511.08,-943.29"/>
 </g>
 <!-- icepyx.core.query.Query&#45;&gt;icepyx.core.query.GenQuery -->
 <g id="edge3" class="edge">
@@ -232,25 +232,32 @@
 <!-- icepyx.core.read.Read -->
 <g id="node11" class="node">
 <title>icepyx.core.read.Read</title>
-<polygon fill="none" stroke="black" points="1655.5,-496.5 1655.5,-760.5 2271.5,-760.5 2271.5,-496.5 1655.5,-496.5"/>
-<text text-anchor="start" x="1945" y="-745.3" font-family="Times,serif" font-size="14.00">Read</text>
-<polyline fill="none" stroke="black" points="1655.5,-737.5 2271.5,-737.5 "/>
-<text text-anchor="start" x="1874.5" y="-722.3" font-family="Times,serif" font-size="14.00">_filelist : NoneType, list</text>
-<text text-anchor="start" x="1874.5" y="-707.3" font-family="Times,serif" font-size="14.00">_out_obj : Dataset</text>
-<text text-anchor="start" x="1874.5" y="-692.3" font-family="Times,serif" font-size="14.00">_product : NoneType, str</text>
-<text text-anchor="start" x="1874.5" y="-677.3" font-family="Times,serif" font-size="14.00">_read_vars</text>
-<text text-anchor="start" x="1874.5" y="-662.3" font-family="Times,serif" font-size="14.00">filelist</text>
-<text text-anchor="start" x="1874.5" y="-647.3" font-family="Times,serif" font-size="14.00">product</text>
-<text text-anchor="start" x="1874.5" y="-632.3" font-family="Times,serif" font-size="14.00">vars</text>
-<polyline fill="none" stroke="black" points="1655.5,-624.5 2271.5,-624.5 "/>
-<text text-anchor="start" x="1663.5" y="-609.3" font-family="Times,serif" font-size="14.00">__init__(data_source, product, filename_pattern, catalog, glob_kwargs, out_obj_type)</text>
-<text text-anchor="start" x="1663.5" y="-594.3" font-family="Times,serif" font-size="14.00">_add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict)</text>
-<text text-anchor="start" x="1663.5" y="-579.3" font-family="Times,serif" font-size="14.00">_build_dataset_template(file)</text>
-<text text-anchor="start" x="1663.5" y="-564.3" font-family="Times,serif" font-size="14.00">_build_single_file_dataset(file, groups_list)</text>
-<text text-anchor="start" x="1663.5" y="-549.3" font-family="Times,serif" font-size="14.00">_check_source_for_pattern(source, filename_pattern)</text>
-<text text-anchor="start" x="1663.5" y="-534.3" font-family="Times,serif" font-size="14.00">_combine_nested_vars(is2ds, ds, grp_path, wanted_dict)</text>
-<text text-anchor="start" x="1663.5" y="-519.3" font-family="Times,serif" font-size="14.00">_read_single_grp(file, grp_path)</text>
-<text text-anchor="start" x="1663.5" y="-504.3" font-family="Times,serif" font-size="14.00">load()</text>
+<polygon fill="none" stroke="black" points="1655.5,-489 1655.5,-768 2271.5,-768 2271.5,-489 1655.5,-489"/>
+<text text-anchor="start" x="1945" y="-752.8" font-family="Times,serif" font-size="14.00">Read</text>
+<polyline fill="none" stroke="black" points="1655.5,-745 2271.5,-745 "/>
+<text text-anchor="start" x="1874.5" y="-729.8" font-family="Times,serif" font-size="14.00">_filelist : NoneType, list</text>
+<text text-anchor="start" x="1874.5" y="-714.8" font-family="Times,serif" font-size="14.00">_out_obj : Dataset</text>
+<text text-anchor="start" x="1874.5" y="-699.8" font-family="Times,serif" font-size="14.00">_product : NoneType, str</text>
+<text text-anchor="start" x="1874.5" y="-684.8" font-family="Times,serif" font-size="14.00">_read_vars</text>
+<text text-anchor="start" x="1874.5" y="-669.8" font-family="Times,serif" font-size="14.00">filelist</text>
+<text text-anchor="start" x="1874.5" y="-654.8" font-family="Times,serif" font-size="14.00">is_s3</text>
+<text text-anchor="start" x="1874.5" y="-639.8" font-family="Times,serif" font-size="14.00">product</text>
+<text text-anchor="start" x="1874.5" y="-624.8" font-family="Times,serif" font-size="14.00">vars</text>
+<polyline fill="none" stroke="black" points="1655.5,-617 2271.5,-617 "/>
+<text text-anchor="start" x="1663.5" y="-601.8" font-family="Times,serif" font-size="14.00">__init__(data_source, product, filename_pattern, catalog, glob_kwargs, out_obj_type)</text>
+<text text-anchor="start" x="1663.5" y="-586.8" font-family="Times,serif" font-size="14.00">_add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict)</text>
+<text text-anchor="start" x="1663.5" y="-571.8" font-family="Times,serif" font-size="14.00">_build_dataset_template(file)</text>
+<text text-anchor="start" x="1663.5" y="-556.8" font-family="Times,serif" font-size="14.00">_build_single_file_dataset(file, groups_list)</text>
+<text text-anchor="start" x="1663.5" y="-541.8" font-family="Times,serif" font-size="14.00">_check_source_for_pattern(source, filename_pattern)</text>
+<text text-anchor="start" x="1663.5" y="-526.8" font-family="Times,serif" font-size="14.00">_combine_nested_vars(is2ds, ds, grp_path, wanted_dict)</text>
+<text text-anchor="start" x="1663.5" y="-511.8" font-family="Times,serif" font-size="14.00">_read_single_grp(file, grp_path)</text>
+<text text-anchor="start" x="1663.5" y="-496.8" font-family="Times,serif" font-size="14.00">load()</text>
+</g>
+<!-- icepyx.core.read.Read&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
+<g id="edge4" class="edge">
+<title>icepyx.core.read.Read&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
+<path fill="none" stroke="black" d="M1850.21,-768.24C1804.46,-824.28 1752.62,-887.76 1710.48,-939.37"/>
+<polygon fill="none" stroke="black" points="1707.68,-937.27 1704.07,-947.23 1713.1,-941.69 1707.68,-937.27"/>
 </g>
 <!-- icepyx.core.spatial.Spatial -->
 <g id="node12" class="node">
@@ -274,14 +281,14 @@
 <text text-anchor="start" x="276" y="-519.3" font-family="Times,serif" font-size="14.00">fmt_for_EGI()</text>
 </g>
 <!-- icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery -->
-<g id="edge11" class="edge">
+<g id="edge12" class="edge">
 <title>icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery</title>
 <path fill="none" stroke="black" d="M362.44,-745.8C369.48,-804.46 385.2,-874.52 419.5,-929 421.38,-931.99 423.38,-934.93 425.47,-937.82"/>
 <polygon fill="black" stroke="black" points="425.58,-937.96 432.41,-940.25 432.93,-947.45 426.09,-945.16 425.58,-937.96"/>
 <text text-anchor="middle" x="447" y="-917.8" font-family="Times,serif" font-size="14.00" fill="green">_spatial</text>
 </g>
 <!-- icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery -->
-<g id="edge12" class="edge">
+<g id="edge13" class="edge">
 <title>icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery</title>
 <path fill="none" stroke="black" d="M400.63,-745.54C419.76,-793.13 443.75,-848.16 469.5,-896 476.82,-909.6 485.07,-923.54 493.6,-937.14"/>
 <polygon fill="black" stroke="black" points="493.72,-937.33 500.32,-940.25 500.16,-947.46 493.56,-944.54 493.72,-937.33"/>
@@ -302,7 +309,7 @@
 <text text-anchor="start" x="486.5" y="-571.8" font-family="Times,serif" font-size="14.00">__str__()</text>
 </g>
 <!-- icepyx.core.temporal.Temporal&#45;&gt;icepyx.core.query.GenQuery -->
-<g id="edge13" class="edge">
+<g id="edge14" class="edge">
 <title>icepyx.core.temporal.Temporal&#45;&gt;icepyx.core.query.GenQuery</title>
 <path fill="none" stroke="black" d="M624.79,-693.35C613.98,-757.84 597.08,-858.62 584.26,-935.1"/>
 <polygon fill="black" stroke="black" points="584.22,-935.32 587.17,-941.9 582.24,-947.15 579.28,-940.58 584.22,-935.32"/>
@@ -335,30 +342,30 @@
 <text text-anchor="start" x="1357" y="-8.3" font-family="Times,serif" font-size="14.00">remove(all, var_list, beam_list, keyword_list)</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
-<g id="edge4" class="edge">
+<g id="edge5" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1605.93,-309.62C1605.8,-320.92 1605.36,-332.14 1604.5,-343 1584.88,-591.1 1587.57,-657.49 1516.5,-896 1512.4,-909.75 1507.29,-923.89 1501.74,-937.71"/>
-<polygon fill="none" stroke="black" points="1498.4,-936.63 1497.84,-947.21 1504.87,-939.29 1498.4,-936.63"/>
+<path fill="none" stroke="black" d="M1603.58,-309.77C1603.9,-315.93 1604.21,-322.02 1604.5,-328 1614.91,-544.48 1621.84,-798.17 1625.18,-937.04"/>
+<polygon fill="none" stroke="black" points="1621.68,-937.33 1625.42,-947.25 1628.68,-937.16 1621.68,-937.33"/>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query -->
-<g id="edge14" class="edge">
+<g id="edge15" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query</title>
 <path fill="none" stroke="black" d="M1439.68,-309.8C1433.85,-315.92 1428.11,-322 1422.5,-328 1415.04,-335.98 1407.5,-344.12 1399.92,-352.36"/>
 <polygon fill="black" stroke="black" points="1399.79,-352.5 1398.68,-359.63 1391.68,-361.35 1392.79,-354.22 1399.79,-352.5"/>
 <text text-anchor="middle" x="1464.5" y="-331.8" font-family="Times,serif" font-size="14.00" fill="green">_order_vars</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query -->
-<g id="edge15" class="edge">
+<g id="edge16" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.query.Query</title>
 <path fill="none" stroke="black" d="M1528.97,-309.9C1522.01,-321.49 1514.51,-332.67 1506.5,-343 1504.19,-345.98 1501.84,-348.95 1499.45,-351.91"/>
 <polygon fill="black" stroke="black" points="1499.34,-352.05 1498.62,-359.22 1491.73,-361.32 1492.44,-354.14 1499.34,-352.05"/>
 <text text-anchor="middle" x="1558.5" y="-331.8" font-family="Times,serif" font-size="14.00" fill="green">_order_vars</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read -->
-<g id="edge16" class="edge">
+<g id="edge17" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read</title>
-<path fill="none" stroke="black" d="M1714.14,-309.73C1758.79,-366.64 1809.16,-430.83 1852.89,-486.54"/>
-<polygon fill="black" stroke="black" points="1853,-486.68 1859.85,-488.93 1860.4,-496.12 1853.55,-493.87 1853,-486.68"/>
+<path fill="none" stroke="black" d="M1714.14,-309.73C1756.81,-364.11 1804.7,-425.14 1847.02,-479.07"/>
+<polygon fill="black" stroke="black" points="1847.18,-479.27 1854.03,-481.52 1854.59,-488.71 1847.73,-486.46 1847.18,-479.27"/>
 <text text-anchor="middle" x="1773" y="-331.8" font-family="Times,serif" font-size="14.00" fill="green">_read_vars</text>
 </g>
 <!-- icepyx.core.visualization.Visualize -->

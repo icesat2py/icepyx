@@ -1,12 +1,15 @@
 import fnmatch
 import glob
 import os
+import sys
 import warnings
 
-import h5py
+import earthaccess
 import numpy as np
+from s3fs.core import S3File
 import xarray as xr
 
+from icepyx.core.auth import EarthdataAuthMixin
 from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
@@ -132,7 +135,7 @@ def _check_datasource(filepath):
     Then the dict can also contain a catalog key with a dict of catalogs for each of those types of inputs ("s3" or "local")
     In general, the issue we'll run into with multiple files is going to be merging during the read in,
     so it could be beneficial to not hide this too much and mandate users handle this intentionally outside the read in itself.
-    
+
     this function was derived with some of the following resources, based on echopype
     https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py
 
@@ -157,9 +160,9 @@ def _validate_source(source):
     # acceptable inputs (for now) are a single file or directory
     # would ultimately like to make a Path (from pathlib import Path; isinstance(source, Path)) an option
     # see https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py#L82
-    assert type(source) == str, "You must enter your input as a string."
+    assert isinstance(source, str), "You must enter your input as a string."
     assert (
-        os.path.isdir(source) == True or os.path.isfile(source) == True
+        os.path.isdir(source) is True or os.path.isfile(source) is True
     ), "Your data source string is not a valid data source."
     return True
 
@@ -258,8 +261,21 @@ def _pattern_to_glob(pattern):
     return glob_path
 
 
+def _confirm_proceed():
+    """
+    Ask the user if they wish to proceed with processing. If 'y', or 'yes', then continue. Any
+    other user input will abort the process.
+    """
+    answer = input("Do you wish to proceed (not recommended) y/[n]?")
+    if answer.lower() in ["y", "yes"]:
+        pass
+    else:
+        warnings.warn("Aborting", stacklevel=2)
+        sys.exit(0)
+
+
 # To do: test this class and functions therein
-class Read:
+class Read(EarthdataAuthMixin):
     """
     Data object to read ICESat-2 data into the specified formats.
     Provides flexiblity for reading nested hdf5 files into common analysis formats.
@@ -267,13 +283,18 @@ class Read:
     Parameters
     ----------
     data_source : string, List
-        A string or list which specifies the files to be read. The string can be either: 1) the path of a single file 2) the path to a directory or 3) a [glob string](https://docs.python.org/3/library/glob.html).
+        A string or list which specifies the files to be read.
+        The string can be either:
+        1) the path of a single file
+        2) the path to a directory or
+        3) a [glob string](https://docs.python.org/3/library/glob.html).
         The List must be a list of strings, each of which is the path of a single file.
 
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
-        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0. The dataset product is read from the file metadata.
+        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
+        The dataset product is read from the file metadata.
 
     filename_pattern : string, default None
         String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
@@ -339,6 +360,10 @@ class Read:
 
         if data_source is None:
             raise ValueError("data_source is a required arguemnt")
+
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
+
         # Raise warnings for deprecated arguments
         if filename_pattern:
             warnings.warn(
@@ -367,19 +392,56 @@ class Read:
             assert pattern_ck
             self._filelist = filelist
         elif isinstance(data_source, list):
+            # if data_source is a list pass that directly to _filelist
             self._filelist = data_source
         elif os.path.isdir(data_source):
+            # if data_source is a directory glob search the directory and assign to _filelist
             data_source = os.path.join(data_source, "*")
             self._filelist = glob.glob(data_source, **glob_kwargs)
+        elif isinstance(data_source, str):
+            if data_source.startswith("s3"):
+                # if the string is an s3 path put it in the _filelist without globbing
+                self._filelist = [data_source]
+            else:
+                # data_source is a globable string
+                self._filelist = glob.glob(data_source, **glob_kwargs)
         else:
-            self._filelist = glob.glob(data_source, **glob_kwargs)
-        # Remove any directories from the list
+            raise TypeError(
+                "data_source should be a list of files, a directory, the path to a file, "
+                "or a glob string."
+            )
+        # Remove any directories from the list (these get generated during recursive
+        # glob search)
         self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
 
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
-        for file_ in self._filelist:
-            product_dict[file_] = is2ref.extract_product(file_)
+        self.is_s3 = [False] * len(self._filelist)
+        for i, file_ in enumerate(self._filelist):
+            # If the path is an s3 path set the respective element of self.is_s3 to True
+            if file_.startswith("s3"):
+                self.is_s3[i] = True
+                auth = self.auth
+            else:
+                auth = None
+            product_dict[file_] = is2ref.extract_product(file_, auth=auth)
+
+        # Raise an error if there are both s3 and non-s3 paths present
+        if len(set(self.is_s3)) > 1:
+            raise TypeError(
+                "Mixed local and s3 paths is not supported. data_source must contain "
+                "only s3 paths or only local paths"
+            )
+        self.is_s3 = self.is_s3[0]  # Change is_s3 into one boolean value for _filelist
+        # Raise warning if more than 2 s3 files are given
+        if self.is_s3 is True and len(self._filelist) > 2:
+            warnings.warn(
+                "Processing more than two s3 files can take a prohibitively long time. "
+                "Approximate access time (using `.load()`) can exceed 6 minutes per data "
+                "variable.",
+                stacklevel=2,
+            )
+            _confirm_proceed()
 
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
@@ -722,6 +784,14 @@ class Read:
                 "to add variables to the wanted variables list."
             )
 
+        if self.is_s3 is True and len(self.vars.wanted) > 3:
+            warnings.warn(
+                "Loading more than 3 variables from an s3 object can be prohibitively slow"
+                "Approximate access time (using `.load()`) can exceed 6 minutes per data "
+                "variable."
+            )
+            _confirm_proceed()
+
         # Append the minimum variables needed for icepyx to merge the datasets
         # Skip products which do not contain required variables
         if self.product not in ["ATL14", "ATL15", "ATL23"]:
@@ -752,9 +822,17 @@ class Read:
         # In these situations, xarray recommends manually controlling the merge/concat process yourself.
         # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
         for file in self.filelist:
+            if file.startswith("s3"):
+                # If path is an s3 path create an s3fs filesystem to reference the file
+                # TODO would it be better to be able to generate an s3fs session from the Mixin?
+                s3 = earthaccess.get_s3fs_session(daac="NSIDC")
+                file = s3.open(file, "rb")
+
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
+            if isinstance(file, S3File):
+                file.close()
 
         if len(all_dss) == 1:
             return all_dss[0]

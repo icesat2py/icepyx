@@ -11,6 +11,10 @@ per-file-ignores =
     # import not at top of file
     doc/source/conf.py:E402
 
+    # GOAL:
+    # syntax check doctests in docstrings
+    # doctests = True
+
 # GOAL: remove these ignores
 ignore = 
     E501 # line too long
@@ -20,7 +24,3 @@ ignore =
     E722 # bare except
     F401 # imported but unused
     F841 # assigned and unused (in tests)
-
-# GOAL:
-# syntax check doctests in docstrings
-# doctests = True

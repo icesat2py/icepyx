@@ -448,6 +448,25 @@
       "contributions": [
         "tutorial"
       ]
+    },
+    {
+      "login": "lheagy",
+      "name": "Lindsey Heagy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6361812?v=4",
+      "profile": "http://lindseyjh.ca/",
+      "contributions": [
+        "mentoring",
+        "review"
+      ]
+    },
+    {
+      "login": "rtilling",
+      "name": "rtilling",
+      "avatar_url": "https://avatars.githubusercontent.com/u/52253385?v=4",
+      "profile": "https://github.com/rtilling",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

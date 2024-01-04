@@ -2,10 +2,9 @@ import matplotlib.pyplot as plt
 
 from icepyx.core.query import GenQuery, Query
 
-# from icepyx.quest.dataset_scripts.argo import Argo
+from icepyx.quest.dataset_scripts.argo import Argo
 
 
-# todo: implement the subclass inheritance
 class Quest(GenQuery):
     """
     QUEST - Query Unify Explore SpatioTemporal - object to query, obtain, and perform basic
@@ -14,7 +13,6 @@ class Quest(GenQuery):
     QUEST expands the icepyx GenQuery superclass.
 
     See the doc page for GenQuery for details on temporal and spatial input parameters.
-
 
     Parameters
     ----------
@@ -55,8 +53,8 @@ class Quest(GenQuery):
 
     def __init__(
         self,
-        spatial_extent=None,
-        date_range=None,
+        spatial_extent,
+        date_range,
         start_time=None,
         end_time=None,
         proj="default",
@@ -64,6 +62,7 @@ class Quest(GenQuery):
         """
         Tells QUEST to initialize data given the user input spatiotemporal data.
         """
+
         super().__init__(spatial_extent, date_range, start_time, end_time)
         self.datasets = {}
 
@@ -86,7 +85,7 @@ class Quest(GenQuery):
 
     def add_icesat2(
         self,
-        product=None,
+        product,
         start_time=None,
         end_time=None,
         version=None,
@@ -100,7 +99,6 @@ class Quest(GenQuery):
 
         Parameters
         ----------
-
         For details on inputs, see the Query documentation.
 
         Returns
@@ -128,10 +126,32 @@ class Quest(GenQuery):
 
         self.datasets["icesat2"] = query
 
-    # def add_argo(self, params=["temperature"], presRange=None):
+    def add_argo(self, params=["temperature"], presRange=None) -> None:
+        """
+        Adds Argo (including Argo-BGC) to QUEST structure.
 
-    #     argo = Argo(self._spatial, self._temporal, params, presRange)
-    #     self.datasets["argo"] = argo
+        Parameters
+        ----------
+        For details on inputs, see the Argo dataset script documentation.
+
+        Returns
+        -------
+        None
+
+        See Also
+        --------
+        quest.dataset_scripts.argo
+        icepyx.query.GenQuery
+
+        Examples
+        --------
+        # example with profiles available
+        >>> reg_a = Quest([-154, 30,-143, 37], ['2022-04-12', '2022-04-26'])
+        >>> reg_a.add_argo(params=["temperature", "salinity"])
+        """
+
+        argo = Argo(self._spatial, self._temporal, params, presRange)
+        self.datasets["argo"] = argo
 
     # ----------------------------------------------------------------------
     # Methods (on all datasets)
@@ -144,11 +164,11 @@ class Quest(GenQuery):
         Parameters
         ----------
         **kwargs : default None
-                Optional passing of keyword arguments to supply additional search constraints per datasets.
-                Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
-                and the value is a dictionary of acceptable keyword arguments
-                and values allowable for the `search_data()` function for that dataset.
-                For instance: `icesat2 = {"IDs":True}, argo = {"presRange":"10,500"}`.
+            Optional passing of keyword arguments to supply additional search constraints per datasets.
+            Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
+            and the value is a dictionary of acceptable keyword arguments
+            and values allowable for the `search_data()` function for that dataset.
+            For instance: `icesat2 = {"IDs":True}, argo = {"presRange":"10,500"}`.
         """
         print("\nSearching all datasets...")
 
@@ -168,6 +188,7 @@ class Quest(GenQuery):
                         v.search_data(kwargs[k])
                     except KeyError:
                         v.search_data()
+
             except:
                 dataset_name = type(v).__name__
                 print("Error querying data from {0}".format(dataset_name))
@@ -180,18 +201,19 @@ class Quest(GenQuery):
         Parameters
         ----------
         **kwargs : default None
-                Optional passing of keyword arguments to supply additional search constraints per datasets.
-                Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
-                and the value is a dictionary of acceptable keyword arguments
-                and values allowable for the `search_data()` function for that dataset.
-                For instance: `icesat2 = {"verbose":True}, argo = {"keep_existing":True}`.
+            Optional passing of keyword arguments to supply additional search constraints per datasets.
+            Each key must match the dataset name (e.g. "icesat2", "argo") as in quest.datasets.keys(),
+            and the value is a dictionary of acceptable keyword arguments
+            and values allowable for the `search_data()` function for that dataset.
+            For instance: `icesat2 = {"verbose":True}, argo = {"keep_existing":True}`.
         """
+
         print("\nDownloading all datasets...")
 
         for k, v in self.datasets.items():
             print()
-            try:
 
+            try:
                 if isinstance(v, Query):
                     print("---ICESat-2---")
                     try:
@@ -208,4 +230,22 @@ class Quest(GenQuery):
                     print(msg)
             except:
                 dataset_name = type(v).__name__
-            print("Error downloading data from {0}".format(dataset_name))
+                print("Error downloading data from {0}".format(dataset_name))
+
+    def save_all(self, path):
+        """
+        Saves all datasets according to their respective `.save()` functionality.
+
+        Parameters
+        ----------
+        path : str
+            Path at which to save the dataset files.
+
+        """
+
+        for k, v in self.datasets.items():
+            if isinstance(v, Query):
+                print("ICESat-2 granules are saved during download")
+            else:
+                print("Saving " + k)
+                v.save(path)

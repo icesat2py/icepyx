@@ -64,6 +64,16 @@ Maintenance
 - update QUEST and GenQuery classes for argo integration (#441)
 - format all code files using black (#476)
 - update tests to data version 006 and resolve flake8 errors on edited files (#478)
+-  update github actions and add black linter for PRs (#475)
+
+    - update pypi action to use OIDC trusted publisher mgmt
+    - generalize the flake8 action to a general linting action and add black
+    - put flake8 config parameters into a separate file (.flake8)
+    - update versions of actions/pre-commit hooks
+    - specify uml updates only need to run on PRs to development
+    - do not run uml updates on PRs into main #449)
+    - update docs config files to be compliant
+    - temporarily ignore many flake8 error codes until legacy files are updated
 
 
 Documentation
@@ -77,13 +87,6 @@ Documentation
 - traffic updates Aug-Dec 2023 (#477)
 - docs: add lheagy as a contributor for mentoring, and review (#481)
 - docs: add rtilling as a contributor for ideas (#484)
-
-
-
-Other
-^^^^^
-
-- None
 
 
 Contributors

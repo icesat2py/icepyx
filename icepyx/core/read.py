@@ -266,13 +266,6 @@ def _confirm_proceed():
     Ask the user if they wish to proceed with processing. If 'y', or 'yes', then continue. Any
     other user input will abort the process.
     """
-    warnings.warn(
-    "Processing more than two s3 files can take a prohibitively long time. "
-    "Approximate access time (using `.load()`) can exceed 6 minutes per data "
-    "variable.",
-    stacklevel=2,
-    )
-    
     answer = input("Do you wish to proceed (not recommended) y/[n]?")
     if answer.lower() in ["y", "yes"]:
         pass
@@ -442,6 +435,12 @@ class Read(EarthdataAuthMixin):
         self.is_s3 = self.is_s3[0]  # Change is_s3 into one boolean value for _filelist
         # Raise warning if more than 2 s3 files are given
         if self.is_s3 is True and len(self._filelist) > 2:
+            warnings.warn(
+                "Processing more than two s3 files can take a prohibitively long time. "
+                "Approximate access time (using `.load()`) can exceed 6 minutes per data "
+                "variable.",
+                stacklevel=2,
+            )
             _confirm_proceed()
 
         # Raise warnings or errors for multiple products or products not matching the user-specified product

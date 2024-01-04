@@ -32,6 +32,5 @@ def test_get_s3login_credentials(auth_instance):
 
 # Test that earthdata_login generates an auth object
 def test_login_function(auth_instance):
-    auth_instance.earthdata_login()
     assert isinstance(auth_instance.auth, earthaccess.auth.Auth)
     assert auth_instance.auth.authenticated

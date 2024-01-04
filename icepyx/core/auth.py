@@ -122,8 +122,7 @@ class EarthdataAuthMixin:
         Credential storage details are described in the
         EathdataAuthMixin class section.
 
-        **Note:** This method is maintained to enable passing of keyword
-        arguments directly to earthaccess.
+        **Note:** This method is deprecated and will be removed in a future release.
         It is no longer required to explicitly run `.earthdata_login()`.
         Authentication will be performed by the module as needed.
 
@@ -138,7 +137,6 @@ class EarthdataAuthMixin:
             data access credentials
         kwargs : key:value pairs
             Keyword arguments to be passed into earthaccess.login().
-            Not yet implemented.
 
         Examples
         --------

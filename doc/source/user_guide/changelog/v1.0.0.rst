@@ -50,6 +50,7 @@ Bug fixes
 - fix spot number calculation (#458)
 - Update read module coordinate dimension manipulations to use new xarray index (#473)
 - Fix behind EDL tests (#480)
+- fix permissions for publishing to pypi (#487) 
 
 Deprecations
 ~~~~~~~~~~~~

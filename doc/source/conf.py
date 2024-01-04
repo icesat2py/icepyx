@@ -10,12 +10,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import datetime
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../sphinxext"))
-import datetime
 
 import icepyx
 
@@ -121,7 +121,8 @@ def setup(app):
 # this should possibly be moved to the sphinxext directory as a standalone .py file
 # -- custom style for pybtex output -------------------------------------------
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle
-from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
+
+# from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
 from pybtex.plugin import register_plugin
 
 # I seem to be unable to figure out how to control what is used for the label. It would

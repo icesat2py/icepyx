@@ -17,9 +17,20 @@ Usage::
 
 The output is utf8 rst.
 
-Custom extension from the Pandas library: https://github.com/pandas-dev/pandas/blob/1.1.x/doc/sphinxext/announce.py
+Custom extension from the Pandas library:
+https://github.com/pandas-dev/pandas/blob/1.1.x/doc/sphinxext/announce.py
 Copied 10 August 2020 and subsequently modified.
-Specifically, get_authors was adjusted to check for a .mailmap file and use the git through the command line in order to utilize it if present. Using a mailmap file is currently not possible in gitpython (from git import Repo), and the recommended solution is to bring in the mailmap file yourself and use it to modify the author list (i.e. replicate the functionality that already exists in git). This felt a bit out of time-scope for right now. Alternatively, the git-fame library (imported as gitfame) uses the mailmap file and compiles statistics, but the python wrapper for this command line tool was taking forever. So, I've reverted to using os.system to use git behind the scenes instead.
+Specifically, get_authors was adjusted to check for a .mailmap file
+and use the git through the command line in order to utilize it if present.
+Using a mailmap file is currently not possible in gitpython
+(from git import Repo), and the recommended solution is to
+bring in the mailmap file yourself and use it to modify the author list
+(i.e. replicate the functionality that already exists in git).
+This felt a bit out of time-scope for right now.
+Alternatively, the git-fame library (imported as gitfame)
+uses the mailmap file and compiles statistics,
+but the python wrapper for this command line tool was taking forever.
+So, I've reverted to using os.system to use git behind the scenes instead.
 
 Dependencies
 ------------

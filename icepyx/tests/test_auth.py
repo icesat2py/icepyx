@@ -4,6 +4,7 @@ import requests
 import earthaccess
 
 from icepyx.core.auth import EarthdataAuthMixin
+from icepyx.core.exceptions import DeprecationError
 
 
 @pytest.fixture()
@@ -31,12 +32,5 @@ def test_get_s3login_credentials(auth_instance):
 
 # Test that earthdata_login generates an auth object
 def test_login_function(auth_instance):
-    auth_instance.earthdata_login()
     assert isinstance(auth_instance.auth, earthaccess.auth.Auth)
     assert auth_instance.auth.authenticated
-
-
-# Test that earthdata_login raises a warning if email is provided
-def test_depreciation_warning(auth_instance):
-    with pytest.warns(DeprecationWarning):
-        auth_instance.earthdata_login(email="me@gmail.com")

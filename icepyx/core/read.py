@@ -293,15 +293,14 @@ class Read(EarthdataAuthMixin):
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
-        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
+        **Deprecation warning:** This argument is no longer required and has been deprecated.
         The dataset product is read from the file metadata.
 
     filename_pattern : string, default None
         String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
         The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
         The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
-
+        **Deprecation warning:** This argument is no longer required and has been deprecated.
     catalog : string, default None
         Full path to an Intake catalog for reading in data.
         If you still need to create a catalog, leave as default.

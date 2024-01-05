@@ -338,7 +338,6 @@ def latest_version(product):
     '006'
     """
     _about_product = about_product(product)
-
     return max([entry["version_id"] for entry in _about_product["feed"]["entry"]])
 
 
@@ -362,7 +361,7 @@ def extract_product(filepath, auth=None):
                 "Must provide credentials to `auth` if accessing s3 data"
             )
         # Read the s3 file
-        s3 = earthaccess.get_s3fs_session(daac="NSIDC")
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
         f = h5py.File(s3.open(filepath, "rb"))
     else:
         # Otherwise assume a local filepath. Read with h5py.
@@ -380,7 +379,6 @@ def extract_product(filepath, auth=None):
         product = _validate_product(product)
     except KeyError:
         raise "Unable to parse the product name from file metadata"
-
     # Close the file reader
     f.close()
     return product
@@ -406,7 +404,7 @@ def extract_version(filepath, auth=None):
                 "Must provide credentials to `auth` if accessing s3 data"
             )
         # Read the s3 file
-        s3 = earthaccess.get_s3fs_session(daac="NSIDC")
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
         f = h5py.File(s3.open(filepath, "rb"))
     else:
         # Otherwise assume a local filepath. Read with h5py.
@@ -418,12 +416,8 @@ def extract_version(filepath, auth=None):
         if isinstance(version, np.ndarray):
             # ATL14 stores the version as an array ['00x']
             version = version[0]
-        if isinstance(version, bytes):
-            version = version.decode()
-
     except KeyError:
         raise "Unable to parse the version from file metadata"
-
     # Close the file reader
     f.close()
     return version

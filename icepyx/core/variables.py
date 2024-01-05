@@ -85,7 +85,6 @@ class Variables(EarthdataAuthMixin):
         # Set the product and version from either the input args or the file
         if path:
             self._path = val.check_s3bucket(path)
-
             # Set up auth
             if self._path.startswith("s3"):
                 auth = self.auth

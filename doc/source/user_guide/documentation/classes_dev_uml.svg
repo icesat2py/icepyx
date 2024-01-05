@@ -232,32 +232,31 @@
 <!-- icepyx.core.read.Read -->
 <g id="node11" class="node">
 <title>icepyx.core.read.Read</title>
-<polygon fill="none" stroke="black" points="1655.5,-489 1655.5,-768 2271.5,-768 2271.5,-489 1655.5,-489"/>
-<text text-anchor="start" x="1945" y="-752.8" font-family="Times,serif" font-size="14.00">Read</text>
-<polyline fill="none" stroke="black" points="1655.5,-745 2271.5,-745 "/>
-<text text-anchor="start" x="1874.5" y="-729.8" font-family="Times,serif" font-size="14.00">_filelist : NoneType, list</text>
-<text text-anchor="start" x="1874.5" y="-714.8" font-family="Times,serif" font-size="14.00">_out_obj : Dataset</text>
-<text text-anchor="start" x="1874.5" y="-699.8" font-family="Times,serif" font-size="14.00">_product : NoneType, str</text>
-<text text-anchor="start" x="1874.5" y="-684.8" font-family="Times,serif" font-size="14.00">_read_vars</text>
-<text text-anchor="start" x="1874.5" y="-669.8" font-family="Times,serif" font-size="14.00">filelist</text>
-<text text-anchor="start" x="1874.5" y="-654.8" font-family="Times,serif" font-size="14.00">is_s3</text>
-<text text-anchor="start" x="1874.5" y="-639.8" font-family="Times,serif" font-size="14.00">product</text>
-<text text-anchor="start" x="1874.5" y="-624.8" font-family="Times,serif" font-size="14.00">vars</text>
-<polyline fill="none" stroke="black" points="1655.5,-617 2271.5,-617 "/>
-<text text-anchor="start" x="1663.5" y="-601.8" font-family="Times,serif" font-size="14.00">__init__(data_source, product, filename_pattern, catalog, glob_kwargs, out_obj_type)</text>
-<text text-anchor="start" x="1663.5" y="-586.8" font-family="Times,serif" font-size="14.00">_add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict)</text>
-<text text-anchor="start" x="1663.5" y="-571.8" font-family="Times,serif" font-size="14.00">_build_dataset_template(file)</text>
-<text text-anchor="start" x="1663.5" y="-556.8" font-family="Times,serif" font-size="14.00">_build_single_file_dataset(file, groups_list)</text>
-<text text-anchor="start" x="1663.5" y="-541.8" font-family="Times,serif" font-size="14.00">_check_source_for_pattern(source, filename_pattern)</text>
-<text text-anchor="start" x="1663.5" y="-526.8" font-family="Times,serif" font-size="14.00">_combine_nested_vars(is2ds, ds, grp_path, wanted_dict)</text>
-<text text-anchor="start" x="1663.5" y="-511.8" font-family="Times,serif" font-size="14.00">_read_single_grp(file, grp_path)</text>
-<text text-anchor="start" x="1663.5" y="-496.8" font-family="Times,serif" font-size="14.00">load()</text>
+<polygon fill="none" stroke="black" points="1655.5,-496.5 1655.5,-760.5 2271.5,-760.5 2271.5,-496.5 1655.5,-496.5"/>
+<text text-anchor="start" x="1945" y="-745.3" font-family="Times,serif" font-size="14.00">Read</text>
+<polyline fill="none" stroke="black" points="1655.5,-737.5 2271.5,-737.5 "/>
+<text text-anchor="start" x="1899.5" y="-722.3" font-family="Times,serif" font-size="14.00">_filelist : list</text>
+<text text-anchor="start" x="1899.5" y="-707.3" font-family="Times,serif" font-size="14.00">_out_obj : Dataset</text>
+<text text-anchor="start" x="1899.5" y="-692.3" font-family="Times,serif" font-size="14.00">_product</text>
+<text text-anchor="start" x="1899.5" y="-677.3" font-family="Times,serif" font-size="14.00">_read_vars</text>
+<text text-anchor="start" x="1899.5" y="-662.3" font-family="Times,serif" font-size="14.00">filelist</text>
+<text text-anchor="start" x="1899.5" y="-647.3" font-family="Times,serif" font-size="14.00">is_s3</text>
+<text text-anchor="start" x="1899.5" y="-632.3" font-family="Times,serif" font-size="14.00">product</text>
+<text text-anchor="start" x="1899.5" y="-617.3" font-family="Times,serif" font-size="14.00">vars</text>
+<polyline fill="none" stroke="black" points="1655.5,-609.5 2271.5,-609.5 "/>
+<text text-anchor="start" x="1663.5" y="-594.3" font-family="Times,serif" font-size="14.00">__init__(data_source, glob_kwargs, out_obj_type, product, filename_pattern, catalog)</text>
+<text text-anchor="start" x="1663.5" y="-579.3" font-family="Times,serif" font-size="14.00">_add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict)</text>
+<text text-anchor="start" x="1663.5" y="-564.3" font-family="Times,serif" font-size="14.00">_build_dataset_template(file)</text>
+<text text-anchor="start" x="1663.5" y="-549.3" font-family="Times,serif" font-size="14.00">_build_single_file_dataset(file, groups_list)</text>
+<text text-anchor="start" x="1663.5" y="-534.3" font-family="Times,serif" font-size="14.00">_combine_nested_vars(is2ds, ds, grp_path, wanted_dict)</text>
+<text text-anchor="start" x="1663.5" y="-519.3" font-family="Times,serif" font-size="14.00">_read_single_grp(file, grp_path)</text>
+<text text-anchor="start" x="1663.5" y="-504.3" font-family="Times,serif" font-size="14.00">load()</text>
 </g>
 <!-- icepyx.core.read.Read&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
 <g id="edge4" class="edge">
 <title>icepyx.core.read.Read&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1850.21,-768.24C1804.46,-824.28 1752.62,-887.76 1710.48,-939.37"/>
-<polygon fill="none" stroke="black" points="1707.68,-937.27 1704.07,-947.23 1713.1,-941.69 1707.68,-937.27"/>
+<path fill="none" stroke="black" d="M1856.49,-760.55C1809.25,-818.41 1754.57,-885.38 1710.49,-939.37"/>
+<polygon fill="none" stroke="black" points="1707.67,-937.28 1704.06,-947.24 1713.1,-941.7 1707.67,-937.28"/>
 </g>
 <!-- icepyx.core.spatial.Spatial -->
 <g id="node12" class="node">
@@ -364,8 +363,8 @@
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read -->
 <g id="edge17" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read</title>
-<path fill="none" stroke="black" d="M1714.14,-309.73C1756.81,-364.11 1804.7,-425.14 1847.02,-479.07"/>
-<polygon fill="black" stroke="black" points="1847.18,-479.27 1854.03,-481.52 1854.59,-488.71 1847.73,-486.46 1847.18,-479.27"/>
+<path fill="none" stroke="black" d="M1714.14,-309.73C1758.79,-366.64 1809.16,-430.83 1852.89,-486.54"/>
+<polygon fill="black" stroke="black" points="1853,-486.68 1859.85,-488.93 1860.4,-496.12 1853.55,-493.87 1853,-486.68"/>
 <text text-anchor="middle" x="1773" y="-331.8" font-family="Times,serif" font-size="14.00" fill="green">_read_vars</text>
 </g>
 <!-- icepyx.core.visualization.Visualize -->

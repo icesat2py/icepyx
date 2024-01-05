@@ -1,7 +1,6 @@
 import numpy as np
 import os
 import pprint
-import warnings
 
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.is2ref as is2ref

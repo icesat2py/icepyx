@@ -32,5 +32,5 @@ jobs:
 
     - stage: behind Earthdata
       script:
-        - export EARTHDATA_PASSWORD=$NSIDC_LOGIN
+        - export NSIDC_LOGIN=$NSIDC_LOGIN
         - pytest icepyx/tests/test_behind_NSIDC_API_login.py

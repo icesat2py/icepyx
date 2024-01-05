@@ -297,7 +297,7 @@ class Read(EarthdataAuthMixin):
         The desired format for the data to be read in.
         Currently, only xarray.Dataset objects (default) are available.
         Please ask us how to help enable usage of other data objects!
-    
+
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
@@ -351,7 +351,6 @@ class Read(EarthdataAuthMixin):
         filename_pattern=None,
         catalog=None,
     ):
-
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
 
@@ -364,7 +363,7 @@ class Read(EarthdataAuthMixin):
 
         if product:
             raise DeprecationError("The `product` argument is no longer required.")
-        
+
         if catalog:
             raise DeprecationError(
                 "The `catalog` argument has been deprecated and intake is no longer supported. "
@@ -390,6 +389,7 @@ class Read(EarthdataAuthMixin):
                 "data_source should be a list of files, a directory, the path to a file, "
                 "or a glob string."
             )
+
         # Remove any directories from the list (these get generated during recursive
         # glob search)
         self._filelist = [f for f in self._filelist if not os.path.isdir(f)]

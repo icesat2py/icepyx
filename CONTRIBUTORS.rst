@@ -58,7 +58,6 @@ Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/d
           <td align="center" valign="top" width="14.28%"><a href="https://github.com/ravindraK08"><img src="https://avatars.githubusercontent.com/u/124502384?v=4?s=100" width="100px;" alt="ravindraK08"/><br /><sub><b>ravindraK08</b></sub></a><br /><a href="https://github.com/icesat2py/icepyx/pulls?q=is%3Apr+reviewed-by%3AravindraK08" title="Reviewed Pull Requests">👀</a></td>
         </tr>
         <tr>
-          <td align="center" valign="top" width="14.28%"><a href="https://github.com/rtilling"><img src="https://avatars.githubusercontent.com/u/52253385?v=4?s=100" width="100px;" alt="rtilling"/><br /><sub><b>rtilling</b></sub></a><br /><a href="#ideas-rtilling" title="Ideas, Planning, & Feedback">🤔</a></td>
           <td align="center" valign="top" width="14.28%"><a href="https://github.com/SmithB"><img src="https://avatars.githubusercontent.com/u/2279144?v=4?s=100" width="100px;" alt="smithb"/><br /><sub><b>smithb</b></sub></a><br /><a href="#ideas-smithb" title="Ideas, Planning, & Feedback">🤔</a></td>
           <td align="center" valign="top" width="14.28%"><a href="https://github.com/tedmaksym"><img src="https://avatars.githubusercontent.com/u/13255911?v=4?s=100" width="100px;" alt="tedmaksym"/><br /><sub><b>tedmaksym</b></sub></a><br /><a href="#ideas-tedmaksym" title="Ideas, Planning, & Feedback">🤔</a></td>
           <td align="center" valign="top" width="14.28%"><a href="https://github.com/trevorskaggs"><img src="https://avatars.githubusercontent.com/u/1276123?v=4?s=100" width="100px;" alt="trevorskaggs"/><br /><sub><b>trevorskaggs</b></sub></a><br /><a href="https://github.com/icesat2py/icepyx/issues?q=author%3Atrevorskaggs" title="Bug reports">🐛</a> <a href="https://github.com/icesat2py/icepyx/commits?author=trevorskaggs" title="Code">💻</a></td>
@@ -70,6 +69,6 @@ Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/d
     <!-- markdownlint-restore -->
     <!-- prettier-ignore-end -->
 
-    <!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the `all-contributors <https://github.com/all-contributors/all-contributors>`_ specification. Contributions of any kind welcome!

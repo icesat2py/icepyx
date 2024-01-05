@@ -76,7 +76,7 @@ Maintenance
     - update docs config files to be compliant
     - temporarily ignore many flake8 error codes until legacy files are updated
 
-- Convert deprecation warnings to errors #482 
+- Convert deprecation warnings to errors and remove associated checks #482 
 
 
 Documentation

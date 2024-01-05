@@ -12,29 +12,29 @@ per-file-ignores =
     doc/source/conf.py:E402
 
 # GOAL: remove these ignores
-ignore = 
-    # line too long
-    E501
-    # comparison syntax
-    E711
-    # comparison syntax
-    E712
-    # comparison syntax in tests
-    E714
-    # comparison syntax in tests
-    E721
-    # bare except
-    E722
-    # ambiguous var name
-    E741
-    # imported but unused
-    F401
-    # unable to detect undefined names
-    F403
-    # assigned and unused (in tests)
-    F841
-    # line break before binary operator
-    W503
+; ignore = 
+;     # line too long
+;     E501
+;     # comparison syntax
+;     E711
+;     # comparison syntax
+;     E712
+;     # comparison syntax in tests
+;     E714
+;     # comparison syntax in tests
+;     E721
+;     # bare except
+;     E722
+;     # ambiguous var name
+;     E741
+;     # imported but unused
+;     F401
+;     # unable to detect undefined names
+;     F403
+;     # assigned and unused (in tests)
+;     F841
+;     # line break before binary operator
+;     W503
 
     # GOAL:
     # syntax check doctests in docstrings

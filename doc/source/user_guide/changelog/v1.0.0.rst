@@ -1,4 +1,4 @@
-What's new in 1.0.0 (DD December 2023)
+What's new in 1.0.0 (5 January 2024)
 -----------------------------------
 
 These are the changes in icepyx 1.0.0 See :ref:`release` for a full changelog

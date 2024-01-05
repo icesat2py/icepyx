@@ -290,23 +290,6 @@ class Read(EarthdataAuthMixin):
         3) a [glob string](https://docs.python.org/3/library/glob.html).
         The List must be a list of strings, each of which is the path of a single file.
 
-    product : string
-        ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
-        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
-        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
-        The dataset product is read from the file metadata.
-
-    filename_pattern : string, default None
-        String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
-        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
-        The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-        **Deprecation warning:** This argument is no longer required and will be deprecated in version 1.0.0.
-
-    catalog : string, default None
-        Full path to an Intake catalog for reading in data.
-        If you still need to create a catalog, leave as default.
-        **Deprecation warning:** This argument has been deprecated. Please use the data_source argument to pass in valid data.
-
     glob_kwargs : dict, default {}
         Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
 
@@ -314,6 +297,22 @@ class Read(EarthdataAuthMixin):
         The desired format for the data to be read in.
         Currently, only xarray.Dataset objects (default) are available.
         Please ask us how to help enable usage of other data objects!
+
+    product : string
+        ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
+        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
+        **Deprecation warning:** This argument is no longer required and has been deprecated.
+        The dataset product is read from the file metadata.
+
+    filename_pattern : string, default None
+        String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
+        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
+        The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
+        **Deprecation warning:** This argument is no longer required and has been deprecated.
+    catalog : string, default None
+        Full path to an Intake catalog for reading in data.
+        If you still need to create a catalog, leave as default.
+        **Deprecation warning:** This argument has been deprecated. Please use the data_source argument to pass in valid data.
 
     Returns
     -------
@@ -344,54 +343,34 @@ class Read(EarthdataAuthMixin):
 
     def __init__(
         self,
-        data_source=None,  # DevNote: Make this a required arg when catalog is removed
+        data_source,
+        glob_kwargs={},
+        out_obj_type=None,  # xr.Dataset,
+        # deprecated arguments
         product=None,
         filename_pattern=None,
         catalog=None,
-        glob_kwargs={},
-        out_obj_type=None,  # xr.Dataset,
     ):
-        # Raise error for deprecated argument
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
+
+        # Raise errors for deprecated arguments
+        if filename_pattern:
+            raise DeprecationError(
+                "The `filename_pattern` argument is deprecated. Instead please provide a "
+                "string, list, or glob string to the `data_source` argument."
+            )
+
+        if product:
+            raise DeprecationError("The `product` argument is no longer required.")
+
         if catalog:
             raise DeprecationError(
                 "The `catalog` argument has been deprecated and intake is no longer supported. "
                 "Please use the `data_source` argument to specify your dataset instead."
             )
 
-        if data_source is None:
-            raise ValueError("data_source is a required arguemnt")
-
-        # initialize authentication properties
-        EarthdataAuthMixin.__init__(self)
-
-        # Raise warnings for deprecated arguments
-        if filename_pattern:
-            warnings.warn(
-                "The `filename_pattern` argument is deprecated. Instead please provide a "
-                "string, list, or glob string to the `data_source` argument.",
-                stacklevel=2,
-            )
-
-        if product:
-            product = is2ref._validate_product(product)
-            warnings.warn(
-                "The `product` argument is no longer required. If the `data_source` argument given "
-                "contains files with multiple products the `product` argument will be used "
-                "to filter that list. In all other cases the product argument is ignored. "
-                "The recommended approach is to not include a `product` argument and instead "
-                "provide a `data_source` with files of only a single product type`.",
-                stacklevel=2,
-            )
-
-        # Create the filelist from the `data_source` argument
-        if filename_pattern:
-            # maintained for backward compatibility
-            pattern_ck, filelist = Read._check_source_for_pattern(
-                data_source, filename_pattern
-            )
-            assert pattern_ck
-            self._filelist = filelist
-        elif isinstance(data_source, list):
+        if isinstance(data_source, list):
             # if data_source is a list pass that directly to _filelist
             self._filelist = data_source
         elif os.path.isdir(data_source):
@@ -410,6 +389,7 @@ class Read(EarthdataAuthMixin):
                 "data_source should be a list of files, a directory, the path to a file, "
                 "or a glob string."
             )
+
         # Remove any directories from the list (these get generated during recursive
         # glob search)
         self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
@@ -446,31 +426,11 @@ class Read(EarthdataAuthMixin):
         # Raise warnings or errors for multiple products or products not matching the user-specified product
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
-            if product:
-                warnings.warn(
-                    f"Multiple products found in list of files: {product_dict}. Files that "
-                    "do not match the user specified product will be removed from processing.\n"
-                    "Filtering files using a `product` argument is deprecated. Please use the "
-                    "`data_source` argument to specify a list of files with the same product.",
-                    stacklevel=2,
-                )
-                self._filelist = []
-                for key, value in product_dict.items():
-                    if value == product:
-                        self._filelist.append(key)
-                if len(self._filelist) == 0:
-                    raise TypeError(
-                        "No files found in the file list matching the user-specified "
-                        "product type"
-                    )
-                # Use the cleaned filelist to assign a product
-                self._product = product
-            else:
-                raise TypeError(
-                    f"Multiple product types were found in the file list: {product_dict}."
-                    "Please provide a valid `data_source` parameter indicating files of a single "
-                    "product"
-                )
+            raise TypeError(
+                f"Multiple product types were found in the file list: {product_dict}."
+                "Please provide a valid `data_source` parameter indicating files of a single "
+                "product"
+            )
         elif len(all_products) == 0:
             raise TypeError(
                 "No files found matching the specified `data_source`. Check your glob "
@@ -479,13 +439,6 @@ class Read(EarthdataAuthMixin):
         else:
             # Assign the identified product to the property
             self._product = all_products[0]
-        # Raise a warning if the metadata-located product differs from the user-specified product
-        if product and self._product != product:
-            warnings.warn(
-                f"User specified product {product} does not match the product from the file"
-                " metadata {self._product}",
-                stacklevel=2,
-            )
 
         if out_obj_type is not None:
             print(
@@ -496,8 +449,6 @@ class Read(EarthdataAuthMixin):
 
     # ----------------------------------------------------------------------
     # Properties
-
-    # I cut and pasted this directly out of the Query class - going to need to reconcile the _source/file stuff there
 
     @property
     def vars(self):
@@ -536,35 +487,6 @@ class Read(EarthdataAuthMixin):
 
     # ----------------------------------------------------------------------
     # Methods
-    @staticmethod
-    def _check_source_for_pattern(source, filename_pattern):
-        """
-        Check that the entered data source contains files that match the input filename_pattern
-        """
-        glob_pattern = _pattern_to_glob(filename_pattern)
-
-        if os.path.isdir(source):
-            _, filelist = _run_fast_scandir(source, glob_pattern)
-            assert (
-                len(filelist) > 0
-            ), "None of your filenames match the specified pattern."
-            print(
-                f"You have {len(filelist)} files matching the filename pattern to be read in."
-            )
-            return True, filelist
-        elif os.path.isfile(source):
-            assert fnmatch.fnmatch(
-                os.path.basename(source), glob_pattern
-            ), "Your input filename does not match the filename pattern."
-            return True, [source]
-        elif isinstance(source, str):
-            if source.startswith("s3://"):
-                return True, [source]
-        elif isinstance(source, list):
-            if all(source.startswith("s3://")):
-                return True, source
-
-        return False, None
 
     @staticmethod
     def _add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
@@ -773,9 +695,13 @@ class Read(EarthdataAuthMixin):
         # add a check that wanted variables exists, and create them with defaults if possible (and let the user know)
         # write tests for the functions!
 
-        # Notes: intake wants an entire group, not an individual variable (which makes sense if we're using its smarts to set up lat, lon, etc)
-        # so to get a combined dataset, we need to keep track of spots under the hood, open each group, and then combine them into one xarray where the spots are IDed somehow (or only the strong ones are returned)
-        # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
+        # Notes: intake wants an entire group, not an individual variable
+        # (which makes sense if we're using its smarts to set up lat, lon, etc)
+        # so to get a combined dataset, we need to keep track of spots under the hood,
+        # open each group, and then combine them into one xarray where the spots are IDed somehow
+        # (or only the strong ones are returned)
+        # this means we need to get/track from each dataset we open some of the metadata,
+        # which we include as mandatory variables when constructing the wanted list
 
         if not self.vars.wanted:
             raise AttributeError(
@@ -816,11 +742,7 @@ class Read(EarthdataAuthMixin):
             pass
 
         all_dss = []
-        # DevNote: I'd originally hoped to rely on intake-xarray in order to not have to iterate through the files myself,
-        # by providing a generalized url/source in building the catalog.
-        # However, this led to errors when I tried to combine two identical datasets because the single dimension was equal.
-        # In these situations, xarray recommends manually controlling the merge/concat process yourself.
-        # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
+
         for file in self.filelist:
             if file.startswith("s3"):
                 # If path is an s3 path create an s3fs filesystem to reference the file

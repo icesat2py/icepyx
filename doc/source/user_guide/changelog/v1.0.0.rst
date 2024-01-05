@@ -38,7 +38,6 @@ New (and Updated) Features
 - Expand icepyx to read s3 data (#468)
 
 
-
 Bug fixes
 ~~~~~~~~~
 
@@ -51,6 +50,7 @@ Bug fixes
 - Update read module coordinate dimension manipulations to use new xarray index (#473)
 - Fix behind EDL tests (#480)
 - fix permissions for publishing to pypi (#487) 
+
 
 Deprecations
 ~~~~~~~~~~~~
@@ -65,7 +65,7 @@ Maintenance
 - update QUEST and GenQuery classes for argo integration (#441)
 - format all code files using black (#476)
 - update tests to data version 006 and resolve flake8 errors on edited files (#478)
--  update github actions and add black linter for PRs (#475)
+- update github actions and add black linter for PRs (#475)
 
     - update pypi action to use OIDC trusted publisher mgmt
     - generalize the flake8 action to a general linting action and add black
@@ -75,6 +75,8 @@ Maintenance
     - do not run uml updates on PRs into main #449)
     - update docs config files to be compliant
     - temporarily ignore many flake8 error codes until legacy files are updated
+
+- Convert deprecation warnings to errors #482 
 
 
 Documentation

@@ -12,7 +12,6 @@ import warnings
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.granules as granules
-
 # QUESTION: why doesn't from granules import Granules work, since granules=icepyx.core.granules?
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
@@ -433,7 +432,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
-        self._version = val.prod_version(is2ref.latest_version(self._prod), version)
+        self._version = val.prod_version(self.latest_version(), version)
 
         # build list of available CMR parameters if reducing by cycle or RGT
         # or a list of explicitly named files (full or partial names)
@@ -449,7 +448,6 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
-
     # ----------------------------------------------------------------------
     # Properties
 
@@ -648,27 +646,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         if self._subsetparams == None and not kwargs:
             return {}
         else:
-            # If the user has supplied a subset list of variables, append the
-            # icepyx required variables to the Coverage dict
-            if "Coverage" in kwargs.keys():
-                var_list = [
-                    "orbit_info/sc_orient",
-                    "orbit_info/sc_orient_time",
-                    "ancillary_data/atlas_sdp_gps_epoch",
-                    "orbit_info/cycle_number",
-                    "orbit_info/rgt",
-                    "ancillary_data/data_start_utc",
-                    "ancillary_data/data_end_utc",
-                    "ancillary_data/granule_start_utc",
-                    "ancillary_data/granule_end_utc",
-                    "ancillary_data/start_delta_time",
-                    "ancillary_data/end_delta_time",
-                ]
-                # Add any variables from var_list to Coverage that are not already included
-                for var in var_list:
-                    if var not in kwargs["Coverage"].keys():
-                        kwargs["Coverage"][var.split("/")[-1]] = [var]
-
             if self._subsetparams == None:
                 self._subsetparams = apifmt.Parameters("subset")
             if self._spatial._geom_file is not None:
@@ -711,16 +688,17 @@ class Query(GenQuery, EarthdataAuthMixin):
                 # DevGoal: check for active session here
                 if hasattr(self, "_cust_options"):
                     self._order_vars = Variables(
+                        self._source,
+                        auth = self.auth,
                         product=self.product,
-                        version=self._version,
                         avail=self._cust_options["variables"],
-                        auth=self.auth,
                     )
                 else:
                     self._order_vars = Variables(
+                        self._source,
+                        auth=self.auth,
                         product=self.product,
                         version=self._version,
-                        auth=self.auth,
                     )
 
         # I think this is where property setters come in, and one should be used here? Right now order_vars.avail is only filled in
@@ -744,18 +722,17 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-
+        
         >>> reg_a.file_vars # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 
         if not hasattr(self, "_file_vars"):
             if self._source == "file":
-                self._file_vars = Variables(
-                    auth=self.auth,
-                    product=self.product,
-                    version=self._version,
-                )
+                self._file_vars = Variables(self._source, 
+                                            auth=self.auth,
+                                            product=self.product,
+                                           )
 
         return self._file_vars
 
@@ -838,8 +815,6 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     def latest_version(self):
         """
-        A reference function to is2ref.latest_version.
-
         Determine the most recent version available for the given product.
 
         Examples
@@ -848,7 +823,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a.latest_version()
         '006'
         """
-        return is2ref.latest_version(self.product)
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
+        return max(
+            [entry["version_id"] for entry in self._about_product["feed"]["entry"]]
+        )
 
     def show_custom_options(self, dictview=False):
         """

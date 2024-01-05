@@ -67,6 +67,14 @@ validate\_inputs
    :undoc-members:
    :show-inheritance:
 
+variables
+---------
+
+.. automodule:: icepyx.core.variables
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 visualize
 ---------
 

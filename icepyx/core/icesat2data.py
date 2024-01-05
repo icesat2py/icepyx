@@ -1,10 +1,12 @@
-from icepyx.core.exceptions import DeprecationError
+import warnings
 
 
 class Icesat2Data:
     def __init__(
         self,
     ):
-        DeprecationError(
+        warnings.filterwarnings("always")
+        warnings.warn(
             "DEPRECATED. Please use icepyx.Query to create a download data object (all other functionality is the same)",
+            DeprecationWarning,
         )

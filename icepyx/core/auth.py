@@ -3,7 +3,6 @@ import datetime
 import warnings
 
 import earthaccess
-from icepyx.core.exceptions import DeprecationError
 
 
 class AuthenticationError(Exception):
@@ -16,8 +15,7 @@ class AuthenticationError(Exception):
 
 class EarthdataAuthMixin:
     """
-    This mixin class generates the needed authentication sessions and tokens,
-    including for NASA Earthdata cloud access.
+    This mixin class generates the needed authentication sessions and tokens, including for NASA Earthdata cloud access.
     Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
     Methods for authenticating are:
         1. Storing credentials as environment variables ($EARTHDATA_LOGIN and $EARTHDATA_PASSWORD)
@@ -25,14 +23,12 @@ class EarthdataAuthMixin:
         3. Storing credentials in a .netrc file (not recommended for security reasons)
     More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).
 
-    This class can be inherited by any other class that requires authentication.
-    For example, the `Query` class inherits this one, and so a Query object has the
-    `.session` property.
-    The method `earthdata_login()` is included for backwards compatibility.
+    This class can be inherited by any other class that requires authentication. For
+    example, the `Query` class inherits this one, and so a Query object has the
+    `.session` property. The method `earthdata_login()` is included for backwards compatibility.
 
     The class can be created without any initialization parameters, and the properties will
-    be populated when they are called.
-    It can alternately be initialized with an
+    be populated when they are called. It can alternately be initialized with an
     earthaccess.auth.Auth object, which will then be used to create a session or
     s3login_credentials as they are called.
 
@@ -94,8 +90,8 @@ class EarthdataAuthMixin:
     @property
     def s3login_credentials(self):
         """
-        A dictionary which stores login credentials for AWS s3 access.
-        This property is accessed if using AWS cloud data.
+        A dictionary which stores login credentials for AWS s3 access. This property is accessed
+        if using AWS cloud data.
 
         Because s3 tokens are only good for one hour, this function will automatically check if an
         hour has elapsed since the last token use and generate a new token if necessary.
@@ -119,12 +115,9 @@ class EarthdataAuthMixin:
     def earthdata_login(self, uid=None, email=None, s3token=None, **kwargs) -> None:
         """
         Authenticate with NASA Earthdata to enable data ordering and download.
-        Credential storage details are described in the
-        EathdataAuthMixin class section.
+        Credential storage details are described in the EathdataAuthMixin class section.
 
-        **Note:** This method is deprecated and will be removed in a future release.
-        It is no longer required to explicitly run `.earthdata_login()`.
-        Authentication will be performed by the module as needed.
+        **Note:** This method is maintained for backward compatibility. It is no longer required to explicitly run `.earthdata_login()`. Authentication will be performed by the module as needed when `.session` or `.s3login_credentials` are accessed.
 
         Parameters
         ----------
@@ -133,8 +126,7 @@ class EarthdataAuthMixin:
         email : string, default None
             Deprecated keyword for backwards compatibility.
         s3token : boolean, default None
-            Deprecated keyword to generate AWS s3 ICESat-2
-            data access credentials
+            Deprecated keyword to generate AWS s3 ICESat-2 data access credentials
         kwargs : key:value pairs
             Keyword arguments to be passed into earthaccess.login().
 
@@ -148,7 +140,15 @@ class EarthdataAuthMixin:
         No .netrc found in /Users/username
 
         """
-        raise DeprecationError(
-            "It is no longer required to explicitly run the `.earthdata_login()` method."
-            "Authentication will be performed by the module as needed.",
+        warnings.warn(
+            "It is no longer required to explicitly run the `.earthdata_login()` method. Authentication will be performed by the module as needed.",
+            DeprecationWarning,
+            stacklevel=2,
         )
+
+        if uid != None or email != None or s3token != None:
+            warnings.warn(
+                "The user id (uid) and/or email keyword arguments are no longer required.",
+                DeprecationWarning,
+                stacklevel=2,
+            )

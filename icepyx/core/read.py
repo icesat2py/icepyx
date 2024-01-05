@@ -1,16 +1,19 @@
 import fnmatch
+import glob
 import os
+import sys
 import warnings
 
+import earthaccess
 import numpy as np
+from s3fs.core import S3File
 import xarray as xr
 
+from icepyx.core.auth import EarthdataAuthMixin
 from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
-
-# from icepyx.core.query import Query
 
 
 def _make_np_datetime(df, keyword):
@@ -132,7 +135,7 @@ def _check_datasource(filepath):
     Then the dict can also contain a catalog key with a dict of catalogs for each of those types of inputs ("s3" or "local")
     In general, the issue we'll run into with multiple files is going to be merging during the read in,
     so it could be beneficial to not hide this too much and mandate users handle this intentionally outside the read in itself.
-    
+
     this function was derived with some of the following resources, based on echopype
     https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py
 
@@ -157,9 +160,9 @@ def _validate_source(source):
     # acceptable inputs (for now) are a single file or directory
     # would ultimately like to make a Path (from pathlib import Path; isinstance(source, Path)) an option
     # see https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py#L82
-    assert type(source) == str, "You must enter your input as a string."
+    assert isinstance(source, str), "You must enter your input as a string."
     assert (
-        os.path.isdir(source) == True or os.path.isfile(source) == True
+        os.path.isdir(source) is True or os.path.isfile(source) is True
     ), "Your data source string is not a valid data source."
     return True
 
@@ -258,37 +261,58 @@ def _pattern_to_glob(pattern):
     return glob_path
 
 
+def _confirm_proceed():
+    """
+    Ask the user if they wish to proceed with processing. If 'y', or 'yes', then continue. Any
+    other user input will abort the process.
+    """
+    answer = input("Do you wish to proceed (not recommended) y/[n]?")
+    if answer.lower() in ["y", "yes"]:
+        pass
+    else:
+        warnings.warn("Aborting", stacklevel=2)
+        sys.exit(0)
+
+
 # To do: test this class and functions therein
-class Read:
+class Read(EarthdataAuthMixin):
     """
     Data object to read ICESat-2 data into the specified formats.
     Provides flexiblity for reading nested hdf5 files into common analysis formats.
 
     Parameters
     ----------
-    data_source : string
-        A string with a full file path or full directory path to ICESat-2 hdf5 (.h5) format files.
-        Files within a directory must have a consistent filename pattern that includes the "ATL??" data product name.
-        Files must all be within a single directory.
+    data_source : string, List
+        A string or list which specifies the files to be read.
+        The string can be either:
+        1) the path of a single file
+        2) the path to a directory or
+        3) a [glob string](https://docs.python.org/3/library/glob.html).
+        The List must be a list of strings, each of which is the path of a single file.
 
-    product : string
-        ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
-        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
-
-    filename_pattern : string, default 'ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5'
-        String that shows the filename pattern as required for Intake's path_as_pattern argument.
-        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
-        The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-
-    catalog : string, default None
-        Full path to an Intake catalog for reading in data.
-        If you still need to create a catalog, leave as default.
-        **Deprecation warning:** This argument has been depreciated. Please use the data_source argument to pass in valid data.
+    glob_kwargs : dict, default {}
+        Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
         Currently, only xarray.Dataset objects (default) are available.
         Please ask us how to help enable usage of other data objects!
+
+    product : string
+        ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
+        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
+        **Deprecation warning:** This argument is no longer required and has been deprecated.
+        The dataset product is read from the file metadata.
+
+    filename_pattern : string, default None
+        String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
+        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
+        The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
+        **Deprecation warning:** This argument is no longer required and has been deprecated.
+    catalog : string, default None
+        Full path to an Intake catalog for reading in data.
+        If you still need to create a catalog, leave as default.
+        **Deprecation warning:** This argument has been deprecated. Please use the data_source argument to pass in valid data.
 
     Returns
     -------
@@ -296,6 +320,21 @@ class Read:
 
     Examples
     --------
+    Reading a single file
+    >>> ipx.Read('/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5') # doctest: +SKIP
+
+    Reading all files in a directory
+    >>> ipx.Read('/path/to/data/') # doctest: +SKIP
+
+    Reading files that match a particular pattern (here, all .h5 files that start with `processed_ATL06_`).
+    >>> ipx.Read('/path/to/data/processed_ATL06_*.h5') # doctest: +SKIP
+
+    Reading a specific list of files
+    >>> list_of_files = [
+    ... '/path/to/data/processed_ATL06_20190226005526_09100205_006_02.h5',
+    ... '/path/to/more/data/processed_ATL06_20191202102922_10160505_006_01.h5',
+    ... ]
+    >>> ipx.Read(list_of_files) # doctest: +SKIP
 
     """
 
@@ -304,57 +343,102 @@ class Read:
 
     def __init__(
         self,
-        data_source=None,
-        product=None,
-        filename_pattern="ATL{product:2}_{datetime:%Y%m%d%H%M%S}_{rgt:4}{cycle:2}{orbitsegment:2}_{version:3}_{revision:2}.h5",
-        catalog=None,
+        data_source,
+        glob_kwargs={},
         out_obj_type=None,  # xr.Dataset,
+        # deprecated arguments
+        product=None,
+        filename_pattern=None,
+        catalog=None,
     ):
-        # Raise error for depreciated argument
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
+
+        # Raise errors for deprecated arguments
+        if filename_pattern:
+            raise DeprecationError(
+                "The `filename_pattern` argument is deprecated. Instead please provide a "
+                "string, list, or glob string to the `data_source` argument."
+            )
+
+        if product:
+            raise DeprecationError("The `product` argument is no longer required.")
+
         if catalog:
             raise DeprecationError(
                 "The `catalog` argument has been deprecated and intake is no longer supported. "
                 "Please use the `data_source` argument to specify your dataset instead."
             )
 
-        if data_source is None:
-            raise ValueError("Please provide a data source.")
+        if isinstance(data_source, list):
+            # if data_source is a list pass that directly to _filelist
+            self._filelist = data_source
+        elif os.path.isdir(data_source):
+            # if data_source is a directory glob search the directory and assign to _filelist
+            data_source = os.path.join(data_source, "*")
+            self._filelist = glob.glob(data_source, **glob_kwargs)
+        elif isinstance(data_source, str):
+            if data_source.startswith("s3"):
+                # if the string is an s3 path put it in the _filelist without globbing
+                self._filelist = [data_source]
+            else:
+                # data_source is a globable string
+                self._filelist = glob.glob(data_source, **glob_kwargs)
         else:
-            self._source_type = _check_datasource(data_source)
-            self.data_source = data_source
-
-        if product is None:
-            raise ValueError(
-                "Please provide the ICESat-2 data product of your file(s)."
+            raise TypeError(
+                "data_source should be a list of files, a directory, the path to a file, "
+                "or a glob string."
             )
-        else:
-            self._prod = is2ref._validate_product(product)
-        pattern_ck, filelist = Read._check_source_for_pattern(
-            data_source, filename_pattern
-        )
-        assert pattern_ck
-        # Note: need to check if this works for subset and non-subset NSIDC files (processed_ prepends the former)
-        self._pattern = filename_pattern
 
-        # this is a first pass at getting rid of mixed product types and warning the user.
-        # it takes an approach assuming the product name is in the filename, but needs reworking if we let multiple products be loaded
-        # one way to handle this would be bring in the product info during the loading step and fill in product there instead of requiring it from the user
-        filtered_filelist = [file for file in filelist if self._prod in file]
-        if len(filtered_filelist) == 0:
+        # Remove any directories from the list (these get generated during recursive
+        # glob search)
+        self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
+
+        # Create a dictionary of the products as read from the metadata
+        product_dict = {}
+        self.is_s3 = [False] * len(self._filelist)
+        for i, file_ in enumerate(self._filelist):
+            # If the path is an s3 path set the respective element of self.is_s3 to True
+            if file_.startswith("s3"):
+                self.is_s3[i] = True
+                auth = self.auth
+            else:
+                auth = None
+            product_dict[file_] = is2ref.extract_product(file_, auth=auth)
+
+        # Raise an error if there are both s3 and non-s3 paths present
+        if len(set(self.is_s3)) > 1:
+            raise TypeError(
+                "Mixed local and s3 paths is not supported. data_source must contain "
+                "only s3 paths or only local paths"
+            )
+        self.is_s3 = self.is_s3[0]  # Change is_s3 into one boolean value for _filelist
+        # Raise warning if more than 2 s3 files are given
+        if self.is_s3 is True and len(self._filelist) > 2:
             warnings.warn(
-                "Your filenames do not contain a product identifier (e.g. ATL06). "
-                "You will likely need to manually merge your dataframes."
+                "Processing more than two s3 files can take a prohibitively long time. "
+                "Approximate access time (using `.load()`) can exceed 6 minutes per data "
+                "variable.",
+                stacklevel=2,
             )
-            self._filelist = filelist
-        elif len(filtered_filelist) < len(filelist):
-            warnings.warn(
-                "Some files matching your filename pattern were removed as they were not the specified product."
-            )
-            self._filelist = filtered_filelist
-        else:
-            self._filelist = filelist
+            _confirm_proceed()
 
-        # after validation, use the notebook code and code outline to start implementing the rest of the class
+        # Raise warnings or errors for multiple products or products not matching the user-specified product
+        all_products = list(set(product_dict.values()))
+        if len(all_products) > 1:
+            raise TypeError(
+                f"Multiple product types were found in the file list: {product_dict}."
+                "Please provide a valid `data_source` parameter indicating files of a single "
+                "product"
+            )
+        elif len(all_products) == 0:
+            raise TypeError(
+                "No files found matching the specified `data_source`. Check your glob "
+                "string or file list."
+            )
+        else:
+            # Assign the identified product to the property
+            self._product = all_products[0]
 
         if out_obj_type is not None:
             print(
@@ -365,8 +449,6 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Properties
-
-    # I cut and pasted this directly out of the Query class - going to need to reconcile the _source/file stuff there
 
     @property
     def vars(self):
@@ -386,44 +468,25 @@ class Read:
         """
 
         if not hasattr(self, "_read_vars"):
-            self._read_vars = Variables(
-                "file", path=self._filelist[0], product=self._prod
-            )
-
+            self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars
+
+    @property
+    def filelist(self):
+        """
+        Return the list of files represented by this Read object.
+        """
+        return self._filelist
+
+    @property
+    def product(self):
+        """
+        Return the product associated with the Read object.
+        """
+        return self._product
 
     # ----------------------------------------------------------------------
     # Methods
-
-    @staticmethod
-    def _check_source_for_pattern(source, filename_pattern):
-        """
-        Check that the entered data source contains files that match the input filename_pattern
-        """
-        glob_pattern = _pattern_to_glob(filename_pattern)
-
-        if os.path.isdir(source):
-            _, filelist = _run_fast_scandir(source, glob_pattern)
-            assert (
-                len(filelist) > 0
-            ), "None of your filenames match the specified pattern."
-            print(
-                f"You have {len(filelist)} files matching the filename pattern to be read in."
-            )
-            return True, filelist
-        elif os.path.isfile(source):
-            assert fnmatch.fnmatch(
-                os.path.basename(source), glob_pattern
-            ), "Your input filename does not match the filename pattern."
-            return True, [source]
-        elif isinstance(source, str):
-            if source.startswith("s3://"):
-                return True, [source]
-        elif isinstance(source, list):
-            if all(source.startswith("s3://")):
-                return True, source
-
-        return False, None
 
     @staticmethod
     def _add_vars_to_ds(is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict):
@@ -512,13 +575,11 @@ class Read:
                 .assign_coords(
                     {
                         spot_dim_name: (spot_dim_name, [spot]),
-                        "delta_time": ("delta_time", photon_ids),
+                        "photon_idx": ("delta_time", photon_ids),
                     }
                 )
                 .assign({spot_var_name: (("gran_idx", spot_dim_name), [[track_str]])})
-                .rename_dims({"delta_time": "photon_idx"})
-                .rename({"delta_time": "photon_idx"})
-                # .set_index("photon_idx")
+                .swap_dims({"delta_time": "photon_idx"})
             )
 
             # handle cases where the delta time is 2d due to multiple cycles in that group
@@ -526,8 +587,6 @@ class Read:
                 ds = ds.assign_coords(
                     {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
                 )
-            else:
-                ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
 
             # for ATL11
             if "ref_pt" in ds.coords:
@@ -636,25 +695,66 @@ class Read:
         # add a check that wanted variables exists, and create them with defaults if possible (and let the user know)
         # write tests for the functions!
 
-        # Notes: intake wants an entire group, not an individual variable (which makes sense if we're using its smarts to set up lat, lon, etc)
-        # so to get a combined dataset, we need to keep track of spots under the hood, open each group, and then combine them into one xarray where the spots are IDed somehow (or only the strong ones are returned)
-        # this means we need to get/track from each dataset we open some of the metadata, which we include as mandatory variables when constructing the wanted list
+        # Notes: intake wants an entire group, not an individual variable
+        # (which makes sense if we're using its smarts to set up lat, lon, etc)
+        # so to get a combined dataset, we need to keep track of spots under the hood,
+        # open each group, and then combine them into one xarray where the spots are IDed somehow
+        # (or only the strong ones are returned)
+        # this means we need to get/track from each dataset we open some of the metadata,
+        # which we include as mandatory variables when constructing the wanted list
+
+        if not self.vars.wanted:
+            raise AttributeError(
+                "No variables listed in self.vars.wanted. Please use the Variables class "
+                "via self.vars to search for desired variables to read and self.vars.append(...) "
+                "to add variables to the wanted variables list."
+            )
+
+        if self.is_s3 is True and len(self.vars.wanted) > 3:
+            warnings.warn(
+                "Loading more than 3 variables from an s3 object can be prohibitively slow"
+                "Approximate access time (using `.load()`) can exceed 6 minutes per data "
+                "variable."
+            )
+            _confirm_proceed()
+
+        # Append the minimum variables needed for icepyx to merge the datasets
+        # Skip products which do not contain required variables
+        if self.product not in ["ATL14", "ATL15", "ATL23"]:
+            var_list = [
+                "sc_orient",
+                "atlas_sdp_gps_epoch",
+                "cycle_number",
+                "rgt",
+                "data_start_utc",
+                "data_end_utc",
+            ]
+
+            # Adjust the nec_varlist for individual products
+            if self.product == "ATL11":
+                var_list.remove("sc_orient")
+
+            self.vars.append(defaults=False, var_list=var_list)
 
         try:
-            groups_list = list_of_dict_vals(self._read_vars.wanted)
+            groups_list = list_of_dict_vals(self.vars.wanted)
         except AttributeError:
             pass
 
         all_dss = []
-        # DevNote: I'd originally hoped to rely on intake-xarray in order to not have to iterate through the files myself,
-        # by providing a generalized url/source in building the catalog.
-        # However, this led to errors when I tried to combine two identical datasets because the single dimension was equal.
-        # In these situations, xarray recommends manually controlling the merge/concat process yourself.
-        # While unlikely to be a broad issue, I've heard of multiple matching timestamps causing issues for combining multiple IS2 datasets.
-        for file in self._filelist:
+
+        for file in self.filelist:
+            if file.startswith("s3"):
+                # If path is an s3 path create an s3fs filesystem to reference the file
+                # TODO would it be better to be able to generate an s3fs session from the Mixin?
+                s3 = earthaccess.get_s3fs_session(daac="NSIDC")
+                file = s3.open(file, "rb")
+
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
+            if isinstance(file, S3File):
+                file.close()
 
         if len(all_dss) == 1:
             return all_dss[0]
@@ -686,7 +786,7 @@ class Read:
                 gran_idx=[np.uint64(999999)],
                 source_file=(["gran_idx"], [file]),
             ),
-            attrs=dict(data_product=self._prod),
+            attrs=dict(data_product=self.product),
         )
         return is2ds
 
@@ -734,20 +834,11 @@ class Read:
         -------
         Xarray Dataset
         """
-        file_product = self._read_single_grp(file, "/").attrs["identifier_product_type"]
-        assert (
-            file_product == self._prod
-        ), "Your product specification does not match the product specification within your files."
-        # I think the below method might NOT read the file into memory as the above might?
-        # import h5py
-        # with h5py.File(filepath,'r') as h5pt:
-        #     prod_id = h5pt.attrs["identifier_product_type"]
-
         # DEVNOTE: if and elif does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
         # if a gridded product
         # TODO: all products need to be tested, and quicklook products added or explicitly excluded
         # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
-        if self._prod in [
+        if self.product in [
             "ATL14",
             "ATL15",
             "ATL16",
@@ -761,7 +852,7 @@ class Read:
             is2ds = xr.open_dataset(file)
 
         # Level 3b, hdf5: ATL11
-        elif self._prod in ["ATL11"]:
+        elif self.product in ["ATL11"]:
             is2ds = self._build_dataset_template(file)
 
             # returns the wanted groups as a single list of full group path strings

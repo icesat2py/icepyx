@@ -1,0 +1,102 @@
+What's new in 1.0.0 (5 January 2024)
+-----------------------------------
+
+These are the changes in icepyx 1.0.0 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New (and Updated) Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- update Read input arguments (#444)
+    
+    - add filelist and product properties to Read object
+    - deprecate filename_pattern and product class Read inputs
+    - transition to data_source input as a string (including glob string) or list
+    - update tutorial with changes and user guidance for using glob
+
+- enable QUEST kwarg handling (#452)
+    
+    - add kwarg acceptance for data queries and download_all in quest
+    - Add QUEST dataset page to RTD
+
+- Variables as an independent class (#451)
+    
+    - Refactor Variables class to be user facing functionality
+
+- Expand Variables class to read s3 urls (#464)
+    
+    - expand extract_product and extract_version to check for s3 url
+    - add cloud notes to variables notebook
+
+- add argo functionality to QUEST (#427)
+    
+    - add argo.py dataset functionality and implementation through QUEST
+    - demonstrate QUEST usage via example notebook
+    - add save to QUEST DataSet class template
+
+- Expand icepyx to read s3 data (#468)
+
+
+Bug fixes
+~~~~~~~~~
+
+-  temporarily disable OpenAltimetry API tests (#459)
+
+    - add OA API warning
+    - comment out tests that use OA API
+
+- fix spot number calculation (#458)
+- Update read module coordinate dimension manipulations to use new xarray index (#473)
+- Fix behind EDL tests (#480)
+- fix permissions for publishing to pypi (#487) 
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- deprecate filename_pattern and product class Read inputs (#444)
+- remove `file` input arg and `_source` property from query (and improve some formatting) (#479)
+
+
+Maintenance
+^^^^^^^^^^^
+
+- update QUEST and GenQuery classes for argo integration (#441)
+- format all code files using black (#476)
+- update tests to data version 006 and resolve flake8 errors on edited files (#478)
+- update github actions and add black linter for PRs (#475)
+
+    - update pypi action to use OIDC trusted publisher mgmt
+    - generalize the flake8 action to a general linting action and add black
+    - put flake8 config parameters into a separate file (.flake8)
+    - update versions of actions/pre-commit hooks
+    - specify uml updates only need to run on PRs to development
+    - do not run uml updates on PRs into main #449)
+    - update docs config files to be compliant
+    - temporarily ignore many flake8 error codes until legacy files are updated
+
+- Convert deprecation warnings to errors and remove associated checks #482 
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- Fix a broken link in IS2_data_access.ipynb (#456)
+- docs: add rwegener2 as a contributor for bug, code, and 6 more (#460)
+- docs: add jpswinski as a contributor for review (#461)
+- docs: add whyjz as a contributor for tutorial (#462)
+- add newest icepyx citations (#455)
+- traffic updates Aug-Dec 2023 (#477)
+- docs: add lheagy as a contributor for mentoring, and review (#481)
+- docs: add rtilling as a contributor for ideas (#484)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.8.1..v1.0.0|HEAD
+
+- Kelsey Bisson
+- Zach Fair
+- Romina Piunno

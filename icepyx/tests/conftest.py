@@ -2,6 +2,7 @@ import os
 import pytest
 from unittest import mock
 
+
 # PURPOSE: mock environmental variables
 @pytest.fixture(scope="session", autouse=True)
 def mock_settings_env_vars():

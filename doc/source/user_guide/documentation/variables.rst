@@ -1,4 +1,4 @@
-Read Class
+Variables Class
 =================
 
 .. currentmodule:: icepyx
@@ -10,18 +10,7 @@ Constructor
 .. autosummary::
    :toctree: ../../_icepyx/
 
-   Read
-
-
-Attributes
-----------
-
-.. autosummary::
-   :toctree: ../../_icepyx/
-
-   Read.filelist
-   Read.product
-   Read.vars
+   Variables
 
 
 Methods
@@ -30,4 +19,7 @@ Methods
 .. autosummary::
    :toctree: ../../_icepyx/
 
-   Read.load
+   Variables.avail
+   Variables.parse_var_list
+   Variables.append
+   Variables.remove

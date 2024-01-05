@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
-import subprocess
 
 cwd = os.getcwd()
 
@@ -52,5 +51,6 @@ views.sort_values("_date").plot(
 
 fig.savefig(trafficpath + "plots.svg")
 
-# removing the files should not be necessary here since they're not included in the git commit
+# removing the files should not be necessary here
+# since they're not included in the git commit
 # subprocess.run(["rm -rf " + defaultpath[:-1]], shell=True)

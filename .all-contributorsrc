@@ -439,15 +439,6 @@
         "test",
         "tutorial"
       ]
-    },
-    {
-      "login": "whyjz",
-      "name": "Whyjay Zheng",
-      "avatar_url": "https://avatars.githubusercontent.com/u/19339926?v=4",
-      "profile": "https://whyjz.github.io/",
-      "contributions": [
-        "tutorial"
-      ]
     }
   ],
   "contributorsPerLine": 7,

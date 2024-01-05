@@ -128,7 +128,6 @@ ICESat-2 datasets to enable scientific discovery.
    example_notebooks/IS2_data_visualization
    example_notebooks/IS2_data_read-in
    example_notebooks/IS2_cloud_data_access
-   example_notebooks/QUEST_argo_data_access
 
 .. toctree::
    :maxdepth: 2
@@ -146,9 +145,9 @@ ICESat-2 datasets to enable scientific discovery.
    contributing/contributors_link
    contributing/contribution_guidelines
    contributing/how_to_contribute
-   contributing/attribution_link
    contributing/icepyx_internals
    contributing/quest-available-datasets
+   contributing/attribution_link
    contributing/development_plan
    contributing/release_guide
    contributing/code_of_conduct_link

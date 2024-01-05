@@ -351,8 +351,6 @@ class Read(EarthdataAuthMixin):
         filename_pattern=None,
         catalog=None,
     ):
-        if data_source is None:
-            raise ValueError("data_source is a required argument")
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)

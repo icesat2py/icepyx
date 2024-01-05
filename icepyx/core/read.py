@@ -320,7 +320,7 @@ class Read:
 
     # ----------------------------------------------------------------------
     # Constructors
-
+    
     def __init__(
         self,
         data_source=None,  # DevNote: Make this a required arg when catalog is removed
@@ -336,7 +336,7 @@ class Read:
                 "The `catalog` argument has been deprecated and intake is no longer supported. "
                 "Please use the `data_source` argument to specify your dataset instead."
             )
-
+            
         if data_source is None:
             raise ValueError("data_source is a required arguemnt")
         # Raise warnings for deprecated arguments
@@ -457,7 +457,7 @@ class Read:
         if not hasattr(self, "_read_vars"):
             self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars
-
+    
     @property
     def filelist(self):
         """
@@ -591,11 +591,13 @@ class Read:
                 .assign_coords(
                     {
                         spot_dim_name: (spot_dim_name, [spot]),
-                        "photon_idx": ("delta_time", photon_ids),
+                        "delta_time": ("delta_time", photon_ids),
                     }
                 )
                 .assign({spot_var_name: (("gran_idx", spot_dim_name), [[track_str]])})
-                .swap_dims({"delta_time": "photon_idx"})
+                .rename_dims({"delta_time": "photon_idx"})
+                .rename({"delta_time": "photon_idx"})
+                # .set_index("photon_idx")
             )
 
             # handle cases where the delta time is 2d due to multiple cycles in that group
@@ -603,6 +605,8 @@ class Read:
                 ds = ds.assign_coords(
                     {"delta_time": (("photon_idx", "cycle_number"), hold_delta_times)}
                 )
+            else:
+                ds = ds.assign_coords({"delta_time": ("photon_idx", hold_delta_times)})
 
             # for ATL11
             if "ref_pt" in ds.coords:
@@ -717,15 +721,15 @@ class Read:
 
         if not self.vars.wanted:
             raise AttributeError(
-                "No variables listed in self.vars.wanted. Please use the Variables class "
-                "via self.vars to search for desired variables to read and self.vars.append(...) "
-                "to add variables to the wanted variables list."
+                'No variables listed in self.vars.wanted. Please use the Variables class '
+                'via self.vars to search for desired variables to read and self.vars.append(...) '
+                'to add variables to the wanted variables list.'
             )
-
+        
         # Append the minimum variables needed for icepyx to merge the datasets
         # Skip products which do not contain required variables
-        if self.product not in ["ATL14", "ATL15", "ATL23"]:
-            var_list = [
+        if self.product not in ['ATL14', 'ATL15', 'ATL23']:
+            var_list=[
                 "sc_orient",
                 "atlas_sdp_gps_epoch",
                 "cycle_number",
@@ -739,7 +743,7 @@ class Read:
                 var_list.remove("sc_orient")
 
             self.vars.append(defaults=False, var_list=var_list)
-
+        
         try:
             groups_list = list_of_dict_vals(self.vars.wanted)
         except AttributeError:

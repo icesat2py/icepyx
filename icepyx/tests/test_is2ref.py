@@ -556,12 +556,12 @@ def test_unsupported_default_varlist():
 def test_gt2spot_sc_orient_1():
     # gt1l
     obs = is2ref.gt2spot("gt1l", 1)
-    expected = 6
+    expected = 2
     assert obs == expected
 
     # gt1r
     obs = is2ref.gt2spot("gt1r", 1)
-    expected = 5
+    expected = 1
     assert obs == expected
 
     # gt2l
@@ -576,24 +576,24 @@ def test_gt2spot_sc_orient_1():
 
     # gt3l
     obs = is2ref.gt2spot("gt3l", 1)
-    expected = 2
+    expected = 6
     assert obs == expected
 
     # gt3r
     obs = is2ref.gt2spot("gt3r", 1)
-    expected = 1
+    expected = 5
     assert obs == expected
 
 
 def test_gt2spot_sc_orient_0():
     # gt1l
     obs = is2ref.gt2spot("gt1l", 0)
-    expected = 1
+    expected = 5
     assert obs == expected
 
     # gt1r
     obs = is2ref.gt2spot("gt1r", 0)
-    expected = 2
+    expected = 6
     assert obs == expected
 
     # gt2l
@@ -608,10 +608,10 @@ def test_gt2spot_sc_orient_0():
 
     # gt3l
     obs = is2ref.gt2spot("gt3l", 0)
-    expected = 5
+    expected = 1
     assert obs == expected
 
     # gt3r
     obs = is2ref.gt2spot("gt3r", 0)
-    expected = 6
+    expected = 2
     assert obs == expected

@@ -201,14 +201,13 @@
 <!-- icepyx.core.read.Read -->
 <g id="node11" class="node">
 <title>icepyx.core.read.Read</title>
-<polygon fill="none" stroke="black" points="1701.5,-391.5 1701.5,-490.5 1773.5,-490.5 1773.5,-391.5 1701.5,-391.5"/>
-<text text-anchor="start" x="1719" y="-475.3" font-family="Times,serif" font-size="14.00">Read</text>
-<polyline fill="none" stroke="black" points="1701.5,-467.5 1773.5,-467.5 "/>
-<text text-anchor="start" x="1709.5" y="-452.3" font-family="Times,serif" font-size="14.00">filelist</text>
-<text text-anchor="start" x="1709.5" y="-437.3" font-family="Times,serif" font-size="14.00">product</text>
-<text text-anchor="start" x="1709.5" y="-422.3" font-family="Times,serif" font-size="14.00">vars</text>
-<polyline fill="none" stroke="black" points="1701.5,-414.5 1773.5,-414.5 "/>
-<text text-anchor="start" x="1717" y="-399.3" font-family="Times,serif" font-size="14.00">load()</text>
+<polygon fill="none" stroke="black" points="1701.5,-399 1701.5,-483 1803.5,-483 1803.5,-399 1701.5,-399"/>
+<text text-anchor="start" x="1734" y="-467.8" font-family="Times,serif" font-size="14.00">Read</text>
+<polyline fill="none" stroke="black" points="1701.5,-460 1803.5,-460 "/>
+<text text-anchor="start" x="1709.5" y="-444.8" font-family="Times,serif" font-size="14.00">data_source</text>
+<text text-anchor="start" x="1709.5" y="-429.8" font-family="Times,serif" font-size="14.00">vars</text>
+<polyline fill="none" stroke="black" points="1701.5,-422 1803.5,-422 "/>
+<text text-anchor="start" x="1732" y="-406.8" font-family="Times,serif" font-size="14.00">load()</text>
 </g>
 <!-- icepyx.core.spatial.Spatial -->
 <g id="node12" class="node">
@@ -301,9 +300,9 @@
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read -->
 <g id="edge17" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.read.Read</title>
-<path fill="none" stroke="black" d="M1653.23,-182.27C1666,-199.65 1678.34,-218.79 1687.5,-238 1708.9,-282.87 1721.74,-337.86 1729.04,-379.13"/>
-<polygon fill="black" stroke="black" points="1729.08,-379.37 1734.02,-384.61 1731.08,-391.2 1726.14,-385.95 1729.08,-379.37"/>
-<text text-anchor="middle" x="1731" y="-241.8" font-family="Times,serif" font-size="14.00" fill="green">_read_vars</text>
+<path fill="none" stroke="black" d="M1651.78,-182.07C1664.76,-199.61 1677.56,-218.87 1687.5,-238 1712.39,-285.9 1730.09,-345.15 1740.67,-387.06"/>
+<polygon fill="black" stroke="black" points="1740.72,-387.28 1746.04,-392.15 1743.59,-398.94 1738.27,-394.07 1740.72,-387.28"/>
+<text text-anchor="middle" x="1732" y="-241.8" font-family="Times,serif" font-size="14.00" fill="green">_read_vars</text>
 </g>
 <!-- icepyx.core.visualization.Visualize -->
 <g id="node15" class="node">

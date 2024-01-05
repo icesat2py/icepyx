@@ -8,14 +8,14 @@ import icepyx.core.is2ref as is2ref
 
 def test_num_product():
     dsnum = 6
-    ermsg = "A valid product string was not provided. Check user input, if given, or file metadata."
+    ermsg = "Please enter a product string"
     with pytest.raises(TypeError, match=ermsg):
         is2ref._validate_product(dsnum)
 
 
 def test_bad_product():
     wrngds = "atl-6"
-    ermsg = "A valid product string was not provided. Check user input, if given, or file metadata."
+    ermsg = "Please enter a valid product"
     with pytest.raises(AssertionError, match=ermsg):
         is2ref._validate_product(wrngds)
 

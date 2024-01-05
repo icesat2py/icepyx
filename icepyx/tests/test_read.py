@@ -15,8 +15,7 @@ def test_check_datasource_type():
     [
         ("./", "is2_local"),
         (
-            """s3://nsidc-cumulus-prod-protected/ATLAS/
-            ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5""",
+            "s3://nsidc-cumulus-prod-protected/ATLAS/ATL03/004/2019/11/30/ATL03_20191130221008_09930503_004_01.h5",
             "is2_s3",
         ),
     ],
@@ -116,8 +115,7 @@ def test_get_track_type_str(
     )
 
 
-# Best way to test this may be by including a small sample file with the repo
-# (which can be used for testing some of the catalog/read-in functions as well)
+# Best way to test this may be by including a small sample file with the repo (which can be used for testing some of the catalog/read-in functions as well)
 # def test_invalid_filename_pattern_in_file():
 #     ermesg = "Your input filename does not match the specified pattern."
 # default_pattern = Read("/path/to/valid/source/file")._filename_pattern

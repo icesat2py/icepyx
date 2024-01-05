@@ -1,6 +1,8 @@
 import pytest
 import re
+import requests
 import responses
+import warnings
 
 import icepyx as ipx
 from icepyx.core import granules as granules
@@ -20,8 +22,7 @@ from icepyx.core.exceptions import NsidcQueryError
 # check that agent key is added in event of no subsetting
 
 
-# add test for granules info for ATL11 and ATL13
-# (and all datasets? or at least ones that don't have the same filename structure)
+# add test for granules info for ATL11 and ATL13 (and all datasets? or at least ones that don't have the same filename structure)
 # this example failed in version 0.6.4,  leading to a fix in 0.6.5
 # short_name = 'ATL11'
 # spatial_extent = [-38.65,72.5,-38.40,72.7]
@@ -30,8 +31,7 @@ from icepyx.core.exceptions import NsidcQueryError
 # region_a.avail_granules(ids=True)
 
 
-# DevNote: clearly there's a better way that doesn't make the function so long...
-# what is it?
+# DevNote: clearly there's a better way that doesn't make the function so long... what is it?
 def test_granules_info():
     # reg_a = ipx.Query('ATL06', [-55, 68, -48, 71], ['2019-02-20','2019-02-24'], version='3')
     # granules = reg_a.granules.avail
@@ -609,15 +609,15 @@ def test_correct_granule_list_returned():
         "ATL06",
         [-55, 68, -48, 71],
         ["2019-02-20", "2019-02-28"],
-        version="6",
+        version="5",
     )
 
     (obs_grans,) = reg_a.avail_granules(ids=True)
     exp_grans = [
-        "ATL06_20190221121851_08410203_006_02.h5",
-        "ATL06_20190222010344_08490205_006_02.h5",
-        "ATL06_20190225121032_09020203_006_02.h5",
-        "ATL06_20190226005526_09100205_006_02.h5",
+        "ATL06_20190221121851_08410203_005_01.h5",
+        "ATL06_20190222010344_08490205_005_01.h5",
+        "ATL06_20190225121032_09020203_005_01.h5",
+        "ATL06_20190226005526_09100205_005_01.h5",
     ]
     assert set(obs_grans) == set(exp_grans)
 

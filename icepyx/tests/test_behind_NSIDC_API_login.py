@@ -1,21 +1,18 @@
-import json
-import pytest
-
 import icepyx as ipx
-import icepyx.core.is2ref as is2ref
+import os
+import pytest
+import warnings
 
 
 # Misc notes and needed tests
-# test avail data and subsetting success for each input type
-# (kml, shp, list of coords, bbox)
-# check that downloaded data is subset?
-# or is this an NSIDC level test so long as we verify the right info is submitted?
+# test avail data and subsetting success for each input type (kml, shp, list of coords, bbox)
+# check that downloaded data is subset? or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
 @pytest.fixture(scope="module")
 def reg():
     live_reg = ipx.Query(
-        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="006"
+        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="005"
     )
     yield live_reg
     del live_reg
@@ -29,6 +26,8 @@ def session(reg):
 
 
 ########## is2ref module ##########
+import icepyx.core.is2ref as is2ref
+import json
 
 
 def test_get_custom_options_output(session):

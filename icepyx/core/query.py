@@ -341,7 +341,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : string, default most recent version
         Product version, given as a 3 digit string. If no version is given, the current
-        version is used. Example: "006"
+        version is used. Example: "004"
     cycles : string or a list of strings, default all available orbital cycles
         Product cycle, given as a 2 digit string. If no cycle is given, all available
         cycles are used. Example: "04"

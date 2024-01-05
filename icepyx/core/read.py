@@ -351,20 +351,13 @@ class Read(EarthdataAuthMixin):
         filename_pattern=None,
         catalog=None,
     ):
-        # Raise error for deprecated argument
-        if catalog:
-            raise DeprecationError(
-                "The `catalog` argument has been deprecated and intake is no longer supported. "
-                "Please use the `data_source` argument to specify your dataset instead."
-            )
-
         if data_source is None:
-            raise ValueError("data_source is a required arguemnt")
+            raise ValueError("data_source is a required argument")
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
 
-        # Raise warnings for deprecated arguments
+        # Raise errors for deprecated arguments
         if filename_pattern:
             raise DeprecationError(
                 "The `filename_pattern` argument is deprecated. Instead please provide a "
@@ -373,6 +366,12 @@ class Read(EarthdataAuthMixin):
 
         if product:
             raise DeprecationError("The `product` argument is no longer required.")
+        
+        if catalog:
+            raise DeprecationError(
+                "The `catalog` argument has been deprecated and intake is no longer supported. "
+                "Please use the `data_source` argument to specify your dataset instead."
+            )
 
         if isinstance(data_source, list):
             # if data_source is a list pass that directly to _filelist

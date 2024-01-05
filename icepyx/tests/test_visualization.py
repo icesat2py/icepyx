@@ -62,6 +62,7 @@ def test_files_in_latest_cycles(n, exp):
     ],
 )
 def test_gran_paras(filename, expect):
+
     para_list = vis.gran_paras(filename)
 
     assert para_list == expect

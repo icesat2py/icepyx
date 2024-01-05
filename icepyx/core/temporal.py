@@ -51,6 +51,7 @@ def convert_string_to_date(date):
 
 
 def check_valid_date_range(start, end):
+
     """
     Helper function for checking if a date range is valid.
 
@@ -88,6 +89,7 @@ def check_valid_date_range(start, end):
 
 
 def validate_times(start_time, end_time):
+
     """
     Validates the start and end times passed into __init__ and returns them as datetime.time objects.
 
@@ -143,6 +145,7 @@ def validate_times(start_time, end_time):
 
 
 def validate_date_range_datestr(date_range, start_time=None, end_time=None):
+
     """
     Validates a date range provided in the form of a list of strings.
 
@@ -187,6 +190,7 @@ def validate_date_range_datestr(date_range, start_time=None, end_time=None):
 
 
 def validate_date_range_datetime(date_range, start_time=None, end_time=None):
+
     """
     Validates a date range provided in the form of a list of datetimes.
 
@@ -226,6 +230,7 @@ def validate_date_range_datetime(date_range, start_time=None, end_time=None):
 
 
 def validate_date_range_date(date_range, start_time=None, end_time=None):
+
     """
     Validates a date range provided in the form of a list of datetime.date objects.
 
@@ -263,6 +268,7 @@ def validate_date_range_date(date_range, start_time=None, end_time=None):
 
 
 def validate_date_range_dict(date_range, start_time=None, end_time=None):
+
     """
     Validates a date range provided in the form of a dict with the following keys:
 
@@ -324,6 +330,7 @@ def validate_date_range_dict(date_range, start_time=None, end_time=None):
 
     # if is string date
     elif isinstance(_start_date, str):
+
         _start_date = convert_string_to_date(_start_date)
         _start_date = dt.datetime.combine(_start_date, start_time)
 
@@ -404,6 +411,7 @@ class Temporal:
         """
 
         if len(date_range) == 2:
+
             # date range is provided as dict of strings, dates, or datetimes
             if isinstance(date_range, dict):
                 self._start, self._end = validate_date_range_dict(

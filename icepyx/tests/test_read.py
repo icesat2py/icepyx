@@ -21,6 +21,7 @@ def test_check_datasource_type():
     ],
 )
 def test_check_datasource(filepath, expect):
+
     source_type = read._check_datasource(filepath)
     assert source_type == expect
 
@@ -89,6 +90,7 @@ def test_validate_source_str_not_a_dir_or_file():
     ],
 )
 def test_check_run_fast_scandir(dir, fn_glob, expect):
+
     (subfolders, files) = read._run_fast_scandir(dir, fn_glob)
     assert (sorted(subfolders), sorted(files)) == expect
 

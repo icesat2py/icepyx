@@ -11,7 +11,6 @@ import icepyx.core.APIformatting as apifmt
 
 # CMR temporal and spatial formats --> what's the best way to compare formatted text? character by character comparison of strings?
 
-
 ########## _fmt_temporal ##########
 def test_time_fmt():
     obs = apifmt._fmt_temporal(

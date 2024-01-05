@@ -290,6 +290,14 @@ class Read(EarthdataAuthMixin):
         3) a [glob string](https://docs.python.org/3/library/glob.html).
         The List must be a list of strings, each of which is the path of a single file.
 
+    glob_kwargs : dict, default {}
+        Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
+
+    out_obj_type : object, default xarray.Dataset
+        The desired format for the data to be read in.
+        Currently, only xarray.Dataset objects (default) are available.
+        Please ask us how to help enable usage of other data objects!
+    
     product : string
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
@@ -305,14 +313,6 @@ class Read(EarthdataAuthMixin):
         Full path to an Intake catalog for reading in data.
         If you still need to create a catalog, leave as default.
         **Deprecation warning:** This argument has been deprecated. Please use the data_source argument to pass in valid data.
-
-    glob_kwargs : dict, default {}
-        Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
-
-    out_obj_type : object, default xarray.Dataset
-        The desired format for the data to be read in.
-        Currently, only xarray.Dataset objects (default) are available.
-        Please ask us how to help enable usage of other data objects!
 
     Returns
     -------
@@ -344,11 +344,12 @@ class Read(EarthdataAuthMixin):
     def __init__(
         self,
         data_source,
+        glob_kwargs={},
+        out_obj_type=None,  # xr.Dataset,
+        # deprecated arguments
         product=None,
         filename_pattern=None,
         catalog=None,
-        glob_kwargs={},
-        out_obj_type=None,  # xr.Dataset,
     ):
         # Raise error for deprecated argument
         if catalog:

@@ -96,3 +96,7 @@ Contributors
 ~~~~~~~~~~~~
 
 .. contributors:: v0.8.1..v1.0.0|HEAD
+
+- Kelsey Bisson
+- Zach Fair
+- Romina Piunno

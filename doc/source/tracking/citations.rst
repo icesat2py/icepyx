@@ -33,7 +33,7 @@ icepyx in the open-source landscape
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
 
-
+    Bednar2023
 
 Presentations and Materials Featuring icepyx
 --------------------------------------------
@@ -42,7 +42,7 @@ Presentations that feature or explain icepyx
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
     
-    quest2024agu
+    quest2023agu
     js2022agu
     2022_IS2-HW-tutorials
     js2021agu

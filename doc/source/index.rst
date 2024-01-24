@@ -61,7 +61,7 @@ ICESat-2 datasets to enable scientific discovery.
         :classes: stretched-link btn-outline-primary btn-block
 
     ---
-    :img-top: https://cdn-icons-png.flaticon.com/512/4230/4230997.png
+    :img-top: https://cdn-icons-png.flaticon.com/256/9585/9585915.png
 
     **QUEST**
     ^^^^^^^^^^^^^^
@@ -75,7 +75,7 @@ ICESat-2 datasets to enable scientific discovery.
         :classes: stretched-link btn-outline-primary btn-block
 
     ---
-    :img-top: https://cdn-icons-png.flaticon.com/256/9585/9585915.png
+    :img-top: https://cdn-icons-png.flaticon.com/512/4230/4230997.png
     
     **Development Guide**
     ^^^^^^^^^^^^^^^^^^^^^

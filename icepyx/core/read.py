@@ -100,55 +100,6 @@ def _get_track_type_str(grp_path) -> (str, str, str):
     return track_str, spot_dim_name, spot_var_name
 
 
-# Dev note: function fully tested (except else, which don't know how to get to)
-def _check_datasource(filepath):
-    """
-    Determine if the input is from a local system or is an s3 bucket.
-    Then, validate the inputs (for those on the local system; s3 sources are not validated currently)
-    """
-
-    from pathlib import Path
-
-    import fsspec
-    from fsspec.implementations.local import LocalFileSystem
-
-    source_types = ["is2_local", "is2_s3"]
-
-    if not isinstance(filepath, Path) and not isinstance(filepath, str):
-        raise TypeError("filepath must be a string or Path")
-
-    fsmap = fsspec.get_mapper(str(filepath))
-    output_fs = fsmap.fs
-
-    if "s3" in output_fs.protocol:
-        return source_types[1]
-    elif isinstance(output_fs, LocalFileSystem):
-        assert _validate_source(filepath)
-        return source_types[0]
-    else:
-        raise ValueError("Could not confirm the datasource type.")
-
-    """
-    Could also use: os.path.splitext(f.name)[1].lower() to get file extension
-
-    If ultimately want to handle mixed types, save the valid paths in a dict with "s3" or "local" as the keys and the list of the files as the values.
-    Then the dict can also contain a catalog key with a dict of catalogs for each of those types of inputs ("s3" or "local")
-    In general, the issue we'll run into with multiple files is going to be merging during the read in,
-    so it could be beneficial to not hide this too much and mandate users handle this intentionally outside the read in itself.
-
-    this function was derived with some of the following resources, based on echopype
-    https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py
-
-    https://filesystem-spec.readthedocs.io/en/latest/api.html?highlight=get_map#fsspec.spec.AbstractFileSystem.glob
-
-    https://filesystem-spec.readthedocs.io/en/latest/_modules/fsspec/implementations/local.html
-
-    https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/convert/api.py#L380
-
-    https://echopype.readthedocs.io/en/stable/convert.html
-    """
-
-
 def _parse_source(data_source, glob_kwargs) -> list:
     """
     Parse the data_source input based on type.
@@ -186,22 +137,6 @@ def _parse_source(data_source, glob_kwargs) -> list:
     filelist = [f for f in filelist if not os.path.isdir(f)]
 
     return filelist
-
-    """
-    
-    Check that the entered data source paths on the local file system are valid
-
-    Currently, s3 data source paths are not validated.
-    """
-
-    # acceptable inputs (for now) are a single file or directory
-    # would ultimately like to make a Path (from pathlib import Path; isinstance(source, Path)) an option
-    # see https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py#L82
-    assert isinstance(source, str), "You must enter your input as a string."
-    assert (
-        os.path.isdir(source) is True or os.path.isfile(source) is True
-    ), "Your data source string is not a valid data source."
-    return True
 
 
 # Need to post on intake's page to see if this would be a useful contribution...

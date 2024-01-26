@@ -159,6 +159,8 @@ def _parse_source(data_source, glob_kwargs) -> list:
         List of granule (filenames) to be read in
     """
 
+    from pathlib import Path
+
     if isinstance(data_source, list):
         # if data_source is a list pass that directly to _filelist
         filelist = data_source
@@ -166,7 +168,7 @@ def _parse_source(data_source, glob_kwargs) -> list:
         # if data_source is a directory glob search the directory and assign to _filelist
         data_source = os.path.join(data_source, "*")
         filelist = glob.glob(data_source, **glob_kwargs)
-    elif isinstance(data_source, str):
+    elif isinstance(data_source, str) or isinstance(data_source, Path):
         if data_source.startswith("s3"):
             # if the string is an s3 path put it in the _filelist without globbing
             filelist = [data_source]
@@ -274,8 +276,8 @@ class Read(EarthdataAuthMixin):
 
     Parameters
     ----------
-    data_source : string, List
-        A string or list which specifies the files to be read.
+    data_source : string, Path, List
+        A string, pathlib.Path object, or list which specifies the files to be read.
         The string can be either:
         1) the path of a single file
         2) the path to a directory or

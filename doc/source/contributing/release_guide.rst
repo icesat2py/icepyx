@@ -70,7 +70,8 @@ This will involve submitting a new PR to development with whatever debugging cha
 Once merged into development, any changes will automatically be reflected in this step's PR, and the tests will rerun automatically.
 
 With an approving review and passed tests in hand, you're ready to push the new release!
-Unlike when you merge new features into ``development`` with a squash merge, for this step you'll want to use a plain old merge.
+Unlike when you merge new features into ``development`` with a squash merge,
+for this step you'll want to use a plain old merg (the button says "Create a Merge Commit").
 This makes it easy to keep ``development`` and ``main`` even instead of diverging due to a series of merge commits.
 `This website <https://goiabada.blog/git-tricks-keeping-branches-even-7ddc8647d1f3>`_ does a great job explaining the how and why of not using a squash merge here.
 

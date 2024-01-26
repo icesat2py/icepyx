@@ -2,8 +2,6 @@
 Interactive visualization of spatial extent and ICESat-2 elevations
 """
 import concurrent.futures
-import datetime
-import re
 import warnings
 
 import backoff

@@ -149,9 +149,44 @@ def _check_datasource(filepath):
     """
 
 
-# Dev note: function fully tested as currently written
-def _validate_source(source):
+def _parse_source(data_source, glob_kwargs) -> list:
     """
+    Parse the data_source input based on type.
+
+    Returns
+    -------
+    filelist : list of str
+        List of granule (filenames) to be read in
+    """
+
+    if isinstance(data_source, list):
+        # if data_source is a list pass that directly to _filelist
+        filelist = data_source
+    elif os.path.isdir(data_source):
+        # if data_source is a directory glob search the directory and assign to _filelist
+        data_source = os.path.join(data_source, "*")
+        filelist = glob.glob(data_source, **glob_kwargs)
+    elif isinstance(data_source, str):
+        if data_source.startswith("s3"):
+            # if the string is an s3 path put it in the _filelist without globbing
+            filelist = [data_source]
+        else:
+            # data_source is a globable string
+            filelist = glob.glob(data_source, **glob_kwargs)
+    else:
+        raise TypeError(
+            "data_source should be a list of files, a directory, the path to a file, "
+            "or a glob string."
+        )
+
+    # Remove any directories from the list (these get generated during recursive
+    # glob search)
+    filelist = [f for f in filelist if not os.path.isdir(f)]
+
+    return filelist
+
+    """
+    
     Check that the entered data source paths on the local file system are valid
 
     Currently, s3 data source paths are not validated.
@@ -165,49 +200,6 @@ def _validate_source(source):
         os.path.isdir(source) is True or os.path.isfile(source) is True
     ), "Your data source string is not a valid data source."
     return True
-
-
-# Dev Note: function is tested (at least loosely)
-def _run_fast_scandir(dir, fn_glob):
-    """
-    Quickly scan nested directories to get a list of filenames that match the fn_glob string.
-    Modified from https://stackoverflow.com/a/59803793/2441026
-    (faster than os.walk or glob methods, and allows filename matching in subdirectories).
-
-    Parameters
-    ----------
-    dir : str
-        full path to the input directory
-
-    fn_glob : str
-        glob-style filename pattern
-
-    Outputs
-    -------
-    subfolders : list
-        list of strings of all nested subdirectories
-
-    files : list
-        list of strings containing full paths to each file matching the filename pattern
-    """
-
-    subfolders, files = [], []
-
-    for f in os.scandir(dir):
-        if any(f.name.startswith(s) for s in ["__", "."]):
-            continue
-        if f.is_dir():
-            subfolders.append(f.path)
-        if f.is_file():
-            if fnmatch.fnmatch(f.name, fn_glob):
-                files.append(f.path)
-
-    for dir in list(subfolders):
-        sf, f = _run_fast_scandir(dir, fn_glob)
-        subfolders.extend(sf)
-        files.extend(f)
-
-    return subfolders, files
 
 
 # Need to post on intake's page to see if this would be a useful contribution...
@@ -370,29 +362,7 @@ class Read(EarthdataAuthMixin):
                 "Please use the `data_source` argument to specify your dataset instead."
             )
 
-        if isinstance(data_source, list):
-            # if data_source is a list pass that directly to _filelist
-            self._filelist = data_source
-        elif os.path.isdir(data_source):
-            # if data_source is a directory glob search the directory and assign to _filelist
-            data_source = os.path.join(data_source, "*")
-            self._filelist = glob.glob(data_source, **glob_kwargs)
-        elif isinstance(data_source, str):
-            if data_source.startswith("s3"):
-                # if the string is an s3 path put it in the _filelist without globbing
-                self._filelist = [data_source]
-            else:
-                # data_source is a globable string
-                self._filelist = glob.glob(data_source, **glob_kwargs)
-        else:
-            raise TypeError(
-                "data_source should be a list of files, a directory, the path to a file, "
-                "or a glob string."
-            )
-
-        # Remove any directories from the list (these get generated during recursive
-        # glob search)
-        self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
+        self._filelist = _parse_source(data_source, glob_kwargs)
 
         # Create a dictionary of the products as read from the metadata
         product_dict = {}

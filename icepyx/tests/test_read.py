@@ -1,6 +1,5 @@
 import pytest
 
-from icepyx.core.read import Read
 import icepyx.core.read as read
 
 

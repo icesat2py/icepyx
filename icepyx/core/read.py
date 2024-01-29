@@ -635,8 +635,6 @@ class Read(EarthdataAuthMixin):
 
         It may be possible to expand this function to provide multiple templates.
         """
-        # NOTE: use the hdf5 library to grab the attr for the product specifier
-        # can ultimately then use it to check against user specified one or merge strategies (or to return a list of ds)
 
         is2ds = xr.Dataset(
             coords=dict(

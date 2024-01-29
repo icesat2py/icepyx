@@ -44,8 +44,6 @@ def test_validate_source_str_not_a_dir_or_file():
 )
 def test_parse_source(dir, fn_glob, expect):
     filelist = read._parse_source(dir + fn_glob, glob_kwargs={"recursive": True})
-    print(filelist)
-    print(expect)
     assert (sorted(filelist)) == expect
 
 

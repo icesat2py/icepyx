@@ -139,57 +139,6 @@ def _parse_source(data_source, glob_kwargs) -> list:
     return filelist
 
 
-# Need to post on intake's page to see if this would be a useful contribution...
-# https://github.com/intake/intake/blob/0.6.4/intake/source/utils.py#L216
-def _pattern_to_glob(pattern):
-    """
-    Adapted from intake.source.utils.path_to_glob to convert a path as pattern into a glob style path
-    that uses the pattern's indicated number of '?' instead of '*' where an int was specified.
-
-    Returns pattern if pattern is not a string.
-
-    Parameters
-    ----------
-    pattern : str
-        Path as pattern optionally containing format_strings
-
-    Returns
-    -------
-    glob_path : str
-        Path with int format strings replaced with the proper number of '?' and '*' otherwise.
-
-    Examples
-    --------
-    >>> _pattern_to_glob('{year}/{month}/{day}.csv')
-    '*/*/*.csv'
-    >>> _pattern_to_glob('{year:4}/{month:2}/{day:2}.csv')
-    '????/??/??.csv'
-    >>> _pattern_to_glob('data/{year:4}{month:02}{day:02}.csv')
-    'data/????????.csv'
-    >>> _pattern_to_glob('data/*.csv')
-    'data/*.csv'
-    """
-    from string import Formatter
-
-    if not isinstance(pattern, str):
-        return pattern
-
-    fmt = Formatter()
-    glob_path = ""
-    # prev_field_name = None
-    for literal_text, field_name, format_specs, _ in fmt.parse(format_string=pattern):
-        glob_path += literal_text
-        if field_name and (glob_path != "*"):
-            try:
-                glob_path += "?" * int(format_specs)
-            except ValueError:
-                glob_path += "*"
-                # alternatively, you could use bits=utils._get_parts_of_format_string(resolved_string, literal_texts, format_specs)
-                # and then use len(bits[i]) to get the length of each format_spec
-    # print(glob_path)
-    return glob_path
-
-
 def _confirm_proceed():
     """
     Ask the user if they wish to proceed with processing. If 'y', or 'yes', then continue. Any

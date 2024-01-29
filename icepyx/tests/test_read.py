@@ -18,11 +18,13 @@ def test_validate_source_str_not_a_dir_or_file():
 
 
 @pytest.mark.parametrize(
-    "dir, fn_glob, expect",
+    "source, expect",
     [
-        (
-            "./icepyx/**/",
-            "is2*.py",
+        (  # check list input
+            [
+                "./icepyx/core/is2ref.py",
+                "./icepyx/tests/is2class_query.py",
+            ],
             sorted(
                 [
                     "./icepyx/core/is2ref.py",
@@ -30,20 +32,51 @@ def test_validate_source_str_not_a_dir_or_file():
                 ]
             ),
         ),
-        (
-            "./icepyx/core/",
-            "is2*.py",
-            ["./icepyx/core/is2ref.py"],
+        (  # check dir input
+            "./examples",
+            [
+                "./examples/README.md",
+            ],
+        ),
+        (  # check filename string with glob pattern input
+            "./icepyx/**/is2*.py",
+            sorted(
+                [
+                    "./icepyx/core/is2ref.py",
+                    "./icepyx/tests/is2class_query.py",
+                ]
+            ),
+        ),
+        (  # check filename string without glob pattern input
+            "./icepyx/core/is2ref.py",
+            [
+                "./icepyx/core/is2ref.py",
+            ],
+        ),
+        (  # check s3 filename string
+            (
+                "s3://nsidc-cumulus-prod-protected/ATLAS/"
+                "ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5"
+            ),
+            [
+                (
+                    "s3://nsidc-cumulus-prod-protected/ATLAS/"
+                    "ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5"
+                ),
+            ],
         ),
         (
-            "./icepyx/",
-            "bogus_glob",
+            "./icepyx/core/is2*.py",
+            ["./icepyx/core/is2ref.py"],
+        ),
+        (  # check bad input
+            "./icepyx/bogus_glob",
             [],
         ),
     ],
 )
-def test_parse_source(dir, fn_glob, expect):
-    filelist = read._parse_source(dir + fn_glob, glob_kwargs={"recursive": True})
+def test_parse_source(source, expect):
+    filelist = read._parse_source(source, glob_kwargs={"recursive": True})
     assert (sorted(filelist)) == expect
 
 

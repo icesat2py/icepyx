@@ -4,17 +4,15 @@ from icepyx.core.read import Read
 import icepyx.core.read as read
 
 
-def test_validate_source_str_given_as_list():
-    ermesg = "You must enter your input as a string."
-    with pytest.raises(AssertionError, match=ermesg):
-        read._validate_source(["/path/to/valid/ATL06_file.py"])
-
-
-def test_validate_source_str_not_a_dir_or_file():
-    ermesg = "Your data source string is not a valid data source."
-    with pytest.raises(AssertionError, match=ermesg):
-        read._validate_source("./fake/dirpath")
-        read._validate_source("./fake_file.h5")
+# note isdir will issue a TypeError if a tuple is passed
+def test_parse_source_bad_input_type():
+    ermesg = (
+        "data_source should be a list of files, a directory, the path to a file, "
+        "or a glob string."
+    )
+    with pytest.raises(TypeError, match=ermesg):
+        read._parse_source(150)
+        read._parse_source({"myfiles": "./my_valid_path/file.h5"})
 
 
 @pytest.mark.parametrize(

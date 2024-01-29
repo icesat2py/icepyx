@@ -100,9 +100,9 @@ def _get_track_type_str(grp_path) -> (str, str, str):
     return track_str, spot_dim_name, spot_var_name
 
 
-def _parse_source(data_source, glob_kwargs) -> list:
+def _parse_source(data_source, glob_kwargs=None) -> list:
     """
-    Parse the data_source input based on type.
+    Parse the user's data_source input based on type.
 
     Returns
     -------
@@ -113,6 +113,7 @@ def _parse_source(data_source, glob_kwargs) -> list:
     from pathlib import Path
 
     if isinstance(data_source, list):
+        assert [isinstance(f, (str, Path)) for f in data_source]
         # if data_source is a list pass that directly to _filelist
         filelist = data_source
     elif os.path.isdir(data_source):

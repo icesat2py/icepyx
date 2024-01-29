@@ -100,18 +100,3 @@ def test_get_track_type_str(
         exp_spot_dim_name,
         exp_spot_var_name,
     )
-
-
-# Best way to test this may be by including a small sample file with the repo
-# (which can be used for testing some of the catalog/read-in functions as well)
-# def test_invalid_filename_pattern_in_file():
-#     ermesg = "Your input filename does not match the specified pattern."
-# default_pattern = Read("/path/to/valid/source/file")._filename_pattern
-#     with pytest.raises(AssertionError, match=ermesg):
-#         read._validate_source('/valid/filepath/with/non-default/filename/pattern.h5', default_pattern)
-
-# def test_invalid_filename_pattern_in_dir():
-#     ermesg = "None of your filenames match the specified pattern."
-#     default_pattern = Read("/path/to/valid/dir/")._filename_pattern
-#     with pytest.raises(AssertionError, match=ermesg):
-#         read._validate_source('/valid/dirpath/with/non-default/filename/pattern.h5', default_pattern)

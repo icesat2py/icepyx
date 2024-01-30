@@ -37,7 +37,7 @@ def _make_np_datetime(df, keyword):
     Example
     -------
     >>> ds = xr.Dataset({"time": ("time_idx", [b'2019-01-11T05:26:31.323722Z'])},
-    >>>                  coords={"time_idx": [0]})
+    ...                  coords={"time_idx": [0]})
     >>> _make_np_datetime(ds, "time")
     <xarray.Dataset>
     Dimensions:   (time_idx: 1)

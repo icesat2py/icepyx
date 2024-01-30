@@ -36,7 +36,8 @@ def _make_np_datetime(df, keyword):
 
     Example
     -------
-    >>> ds = xr.Dataset({"time": ("time_idx", [b'2019-01-11T05:26:31.323722Z'])}, coords={"time_idx": [0]})
+    >>> ds = xr.Dataset({"time": ("time_idx", [b'2019-01-11T05:26:31.323722Z'])},
+    >>>                  coords={"time_idx": [0]})
     >>> _make_np_datetime(ds, "time")
     <xarray.Dataset>
     Dimensions:   (time_idx: 1)
@@ -48,7 +49,8 @@ def _make_np_datetime(df, keyword):
     """
 
     if df[keyword].str.endswith("Z"):
-        # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
+        # manually remove 'Z' from datetime to allow conversion to np.datetime64 object
+        # (support for timezones is deprecated and causes a seg fault)
         df.update({keyword: df[keyword].str[:-1].astype(np.datetime64)})
 
     else:
@@ -170,7 +172,8 @@ class Read(EarthdataAuthMixin):
         The List must be a list of strings, each of which is the path of a single file.
 
     glob_kwargs : dict, default {}
-        Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
+        Additional arguments to be passed into the
+        [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
@@ -311,7 +314,8 @@ class Read(EarthdataAuthMixin):
     def vars(self):
         """
         Return the variables object associated with the data being read in.
-        This instance is generated from the source file or first file in a list of input files (when source is a directory).
+        This instance is generated from the source file or first file in a list of input files
+        (when source is a directory).
 
         See Also
         --------

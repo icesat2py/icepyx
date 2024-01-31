@@ -7,7 +7,7 @@
 
 
 icepyx     |version badge|  |JOSS|
-==========================
+==================================
 
 **Python tools for obtaining and working with ICESat-2 data**
 

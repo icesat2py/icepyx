@@ -10,7 +10,7 @@ repos:
     - id: check-added-large-files
       args: ["--maxkb=5000"]
     - id: end-of-file-fixer
-    # - id: trailing-whitespace
-    #   args: [--markdown-linebreak-ext=md]
+    - id: trailing-whitespace
+      args: [--markdown-linebreak-ext=md]
 
 # you can run `pre-commit autoupdate` to automatically update to the latest version of hooks!

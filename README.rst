@@ -12,7 +12,7 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/version.svg 
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/version.svg
     :target: https://anaconda.org/conda-forge/icepyx
 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
@@ -43,7 +43,7 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 
 .. |Code Coverage dev| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx
-    
+
 
 Origin and Purpose
 ------------------
@@ -51,9 +51,9 @@ icepyx is both a software library and a community composed of ICESat-2 data user
 
 icepyx aims to provide a clearinghouse for code, functionality to improve interoperability, documentation, examples, and educational resources that tackle disciplinary research questions while minimizing the amount of repeated effort across groups utilizing similar datasets. icepyx also hopes to foster collaboration, open-science, and reproducible workflows by integrating and sharing resources.
 
-Many of the underlying tools from which icepyx was developed began as Jupyter Notebooks developed for and during the cryosphere-themed ICESat-2 Hackweek at the University of Washington in June 2019 or as scripts written and used by the ICESat-2 Science Team members. 
-Originally called icesat2py, the project combined and generalized these scripts into a unified framework, adding examples, documentation, and testing where necessary and making them accessible for everyone. 
-icepyx is now a domain-agnostic, standalone software package and community (under the broader `icesat2py GitHub organization <https://github.com/icesat2py>`_) that continues to build functionality for obtaining and working with ICESat-2 data products locally and in the cloud. 
+Many of the underlying tools from which icepyx was developed began as Jupyter Notebooks developed for and during the cryosphere-themed ICESat-2 Hackweek at the University of Washington in June 2019 or as scripts written and used by the ICESat-2 Science Team members.
+Originally called icesat2py, the project combined and generalized these scripts into a unified framework, adding examples, documentation, and testing where necessary and making them accessible for everyone.
+icepyx is now a domain-agnostic, standalone software package and community (under the broader `icesat2py GitHub organization <https://github.com/icesat2py>`_) that continues to build functionality for obtaining and working with ICESat-2 data products locally and in the cloud.
 It also improves interoperability for ICESat-2 datasets with other open-source tools.
 
 .. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
@@ -65,7 +65,7 @@ Installation
 The simplest way to install icepyx is by using the
 `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/index.html>`__
 package manager. |Conda install|
-    
+
     conda install icepyx
 
 Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__. |Pypi install|
@@ -120,7 +120,7 @@ Please note that this project is released with a Contributor Code of Conduct. By
 
 .. |Contributor Covenant| image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
    :target: code_of_conduct.md
-   
+
 Research notice
 ~~~~~~~~~~~~~~~
 

@@ -15,7 +15,7 @@ New Features
 
     - add earthaccess (formerly earthdata) as dependency
     - remove Earthdata module
-    - update earthdata_login function to use earthaccess 
+    - update earthdata_login function to use earthaccess
     - update data access and other example notebooks
     - update earthdata  and NSIDC login tests
     - simplify cloud access example auth handling using earthaccess
@@ -38,7 +38,7 @@ Bug fixes
     - reactivate atl10 and atl12 viz tests and update sizes
     - disable ATL13 viz tests
 
-- manual solution for getting ATL15 s3 urls via icepyx (#413) 
+- manual solution for getting ATL15 s3 urls via icepyx (#413)
 
 - fix NSIDC login tests (#418)
 

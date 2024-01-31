@@ -1,5 +1,5 @@
-Query Components
-======================
+Components
+==========
 
 
 
@@ -10,19 +10,11 @@ APIformatting
    :members:
    :undoc-members:
    :show-inheritance:
+   
+EarthdataAuthMixin
+------------------
 
-Earthdata
----------
-
-.. automodule:: icepyx.core.Earthdata
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-geospatial
-----------
-
-.. automodule:: icepyx.core.geospatial
+.. automodule:: icepyx.core.auth
    :members:
    :undoc-members:
    :show-inheritance:
@@ -35,10 +27,34 @@ granules
    :undoc-members:
    :show-inheritance:
 
+is2cat
+------
+
+.. automodule:: icepyx.core.is2cat
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
 is2ref
 ------
 
 .. automodule:: icepyx.core.is2ref
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+spatial
+----------
+
+.. automodule:: icepyx.core.spatial
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+temporal
+----------
+
+.. automodule:: icepyx.core.temporal
    :members:
    :undoc-members:
    :show-inheritance:
@@ -51,10 +67,10 @@ validate\_inputs
    :undoc-members:
    :show-inheritance:
 
-variables
+visualize
 ---------
 
-.. automodule:: icepyx.core.variables
+.. automodule:: icepyx.core.visualization
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,0 +1,64 @@
+.. _whatsnew_050:
+
+What's new in 0.5.0 (8 December 2021)
+-------------------------------------
+
+These are the changes in icepyx 0.5.0 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- Add ICESat-2 data read-in functionality (#222)
+  * includes read module and is2cat (catalog) module, example notebook, and docs
+  * basic tests file for read module validation functions
+  * add basic build catalog function to read data object
+  * add ability to get list of variables from a file
+  * add variables example notebook; trim variables module details out of subsetting example
+  * update examples from 2020 Hackweek tutorials
+- preliminary AWS access (#213)
+  * add basic cloud data access capabilities
+  * add weak check for AWS instance
+
+Bug fixes
+~~~~~~~~~
+
+- Fix failing test_visualization_date_range check for ATL07 (#241)
+- remove extra cell causing errors in example notebook
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+^^^^^^^^^^^
+
+- add github action to add binder badge to PRs (#229 and #233)
+- update links for travis badge (#234)
+- changed pytest to run in verbose mode so that it is more clear which parametrized test is failing.
+- By default, no email status updates to users when ordering granules (#240)
+- Set default page size for orders to 2000 per NSIDC recommendation (#239)
+- update add and commit GitHub Action version (#244)
+- update citation list and traffic/download data (#245)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- GitHub action UML generation auto-update (#244)
+
+
+Other
+^^^^^
+
+- None
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.4.1..v0.5.0|HEAD

@@ -6,8 +6,11 @@ with open("README.rst", "r") as f:
 with open("requirements.txt") as f:
     INSTALL_REQUIRES = f.read().strip().split("\n")
 
-EXTRAS_REQUIRE = {"viz": ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"]}
+EXTRAS_REQUIRE = {
+    "viz": ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"],
+}
 EXTRAS_REQUIRE["complete"] = sorted(set(sum(EXTRAS_REQUIRE.values(), [])))
+# install with `pip install "icepyx[complete]"` There is no way to use this functionality with conda.
 
 setuptools.setup(
     name="icepyx",
@@ -24,11 +27,22 @@ setuptools.setup(
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRE,
     python_requires=">=3",
+    # classifiers are a set of standard descriptions. Possible list: https://pypi.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Science/Research",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
-        "Development Status :: 1 - Planning",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: GIS",
+        "Topic :: Software Development :: Libraries",
     ],
     py_modules=["_icepyx_version"],
     use_scm_version={

@@ -1,0 +1,51 @@
+.. _whatsnew_041:
+
+What's new in 0.4.1 (01 December 2021)
+--------------------------------------
+
+These are the changes in icepyx 0.4.1 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- GitHub action to automatically update uml diagrams (#208)
+
+Bug fixes
+~~~~~~~~~
+
+- check errors raised by empty query object from bounding box split in openaltimetry visualization (#220)
+- updated product_summary_info function to latest fields returned by CMR (product_id --> title)
+
+Deprecations
+~~~~~~~~~~~~
+
+- `query.dataset` is now deprecated in favor of `query.product`.
+
+
+Maintenance
+^^^^^^^^^^^
+
+- improved variable naming for clarity and in line with common usage (#211)
+- add tests that require an active NSIDC Earthdata session (#209)
+- update tracking metrics and limit traffic action to parent repo (#221)
+- remove extra code block from example notebook (#225)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- improve query docstrings (#212)
+
+
+Other
+^^^^^
+
+- add research notice to readme (#206)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.4.0..v0.4.1|HEAD

@@ -1,0 +1,97 @@
+.. _resource_IS2HW_2020:
+
+Second [Virtual] ICESat-2 Cryospheric Hackweek Facilitated by the University of Washington
+------------------------------------------------------------------------------------------
+The `2020 ICESat-2 Cryospheric Science Hackweek <https://icesat-2hackweek.github.io/learning-resources/>`_ was the 
+first virtual Hackweek held by the University of Washington. 
+While originally planned as a five-day, in-person workshop, the event was shifted to a fully virtual/remote setting in light of 
+stay-at-home orders and travel restrictions in place to curb the spread of COVID-19. 
+
+To accomodate multiple time zones and limit the daily duration of online tutorial sessions, the event was spread out over the course of ten days. 
+The first week had three half-days of interactive tutorials/lectures. 
+The second week had four days that included some interactive tutorials/lectures and scheduled times where instructors were 
+available to help participants with a facilitated exploration of datasets and hands-on software development.
+
+
+This June 2020 event resulted in the production of a series of `tutorials <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_, 
+developed by volunteer instructors and presented during the event.
+During the actual Hackweek, teams of researchers and data scientists developed a series of interesting 
+`projects <https://github.com/ICESAT-2HackWeek/projects_2020>`_ related to their interests/research.
+
+.. |Zenodo badge| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3966463.svg
+    :target: https://doi.org/10.5281/zenodo.3966463
+
+Tutorials |Zenodo badge|
+^^^^^^^^^^^^^^^^^^^^^^^^
+The tutorials from this event live within a dedicated `GitHub repository <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_
+and are published on `Zenodo <https://doi.org/10.5281/zenodo.3966463>`_.
+You can run the tutorials by following the instructions `here <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials#re-create-the-icesat-2-hackweek-jupyterlab-environment-with-binder>`_.
+The published tutorial repo also includes links to presentation slides and videos of the recorded presentations.
+
+Tutorial Topics:
+
+1. Introductory Session 
+1. ICESat-2 Mission: Satellite, Sensor, and Data
+1. Git and GitHub 
+1. Jupyter and iPython
+1. Geospatial Analysis with Python
+1. Introduction to ICESat-2 Sea Ice and Land Ice Products and Data Access 
+1. Programmatic ICESat-2 data access 
+1. Introduction to HDF5 and ICESat-2 data files
+1. Land ice applications
+1. Sea ice applications
+1. Science data generation
+1. Machine learning
+
+Projects
+^^^^^^^^
+Though in many cases preliminary, these `project repositories <https://github.com/ICESAT-2HackWeek/projects_2020>`_
+can provide useful starting points to develop effective cryospheric workflows where more formal examples and functionality have not yet been developed.
+
+- `icepyx <https://github.com/ICESAT-2HackWeek/icepyx_team>`_
+
+  - Contributions to icepyx included new example notebooks, packaging on Python Package Index, installation instructions, and automated code coverage reports.
+
+*Sea Ice*
+
+- `leading to phytoplankton <https://github.com/ICESAT-2HackWeek/leading_to_phytoplankton>`_
+
+  - Obtain and visualize coincident ICESat-2, Sentinal-2, and Argo Float data
+  - Many members of this group still meet regularly (2 years out!) and are creating a template to add new coincident datasets to icepyx.
+  - Group members (including newer members) contribute to icepyx as collaborative developers and code reviewers.
+
+- `overcast <https://github.com/ICESAT-2HackWeek/overcast>`_
+
+  - Build tools to merge data and explore the effects of sea ice leads on clouds in the Arctic
+
+*Glaciers and Ice Sheets*
+
+- `Seasonal Snow <https://github.com/ICESAT-2HackWeek/SeasonalSnow>`_
+
+  - Compare ICESat-2 data with high resolution DEMs over complex (mountainous) terrain
+
+- `unsupervised <https://github.com/ICESAT-2HackWeek/surface_classification>`_
+
+  - unsupervised surface classification of ATL03 photons
+
+- `FirnAndMelt <https://github.com/ICESAT-2HackWeek/FirnAndMelt>`_
+
+- `CloudMask <https://github.com/ICESAT-2HackWeek/CloudMask>`_
+
+  - Fetch, classify, and label ICESat-2 data
+  - Still an ongoing collaboration??
+
+- `crossovers <https://github.com/ICESAT-2HackWeek/crossovers>`_
+
+  - processing of non-overlapping ICESat-2 tracks
+
+- `surface_velocity <https://github.com/ICESAT-2HackWeek/surface_velocity>`_
+
+  - Infer surface ice velocity from repeat passes and across beams.
+  - Continued work resulted in a poster at AGU Fall Meeting 2020
+
+- `Assimilation <https://github.com/ICESAT-2HackWeek/Assimilation>`_
+
+  - Compare ICESat-2 elevations with multiple DEM raster data types.
+  - Quantify errors and compare results regionally
+  - Contributed additional authentication methods to icepyx and provided initial code for what eventually became the Visualization module.

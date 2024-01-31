@@ -1,13 +1,15 @@
 backoff
 datashader
+earthaccess>=0.5.1
 fiona
 geopandas
+h5netcdf
 h5py
 holoviews
 hvplot
-intake
 matplotlib
 numpy
 requests
+s3fs
 shapely
 xarray

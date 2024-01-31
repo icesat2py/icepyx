@@ -1,13 +1,8 @@
 # Generate and format information for submitting to API (CMR and NSIDC)
 
 import datetime as dt
-import geopandas as gpd
 import pprint
-from shapely.geometry import Polygon
-from shapely.geometry.polygon import orient
-import fiona
 
-fiona.drvsupport.supported_drivers["LIBKML"] = "rw"
 
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
@@ -55,59 +50,6 @@ def _fmt_temporal(start, end, key):
         )
 
     return {key: fmt_timerange}
-
-
-def _fmt_spatial(ext_type, extent):
-    """
-    Format the spatial extent input into a spatial CMR search or subsetting key value.
-
-    Parameters
-    ----------
-    ext_type : string
-        Spatial extent type. Must be one of ['bounding_box', 'polygon'] for data searching
-        or one of ['bbox, 'Boundingshape'] for subsetting.
-    extent : list
-        Spatial extent, with input format dependent on the extent type and search.
-        Bounding box (bounding_box, bbox) coordinates should be provided in decimal degrees as
-        [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-        Polygon (polygon, Boundingshape) coordinates should be provided in decimal degrees as
-        [longitude, latitude, longitude2, latitude2... longituden, latituden].
-
-    Returns
-    -------
-    dictionary with properly formatted spatial parameter for CMR search or subsetting
-
-    """
-
-    # CMR keywords: ['bounding_box', 'polygon']
-    # subsetting keywords: ['bbox','Boundingshape']
-    assert ext_type in ["bounding_box", "polygon"] or ext_type in [
-        "bbox",
-        "Boundingshape",
-    ], "Invalid spatial extent type."
-
-    if ext_type in ["bounding_box", "bbox"]:
-        fmt_extent = ",".join(map(str, extent))
-
-    elif ext_type == "polygon":
-        # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
-        poly = extent.simplify(0.05, preserve_topology=False)
-        poly = orient(poly, sign=1.0)
-
-        # Format dictionary to polygon coordinate pairs for API submission
-        polygon = (
-            ",".join([str(c) for xy in zip(*poly.exterior.coords.xy) for c in xy])
-        ).split(",")
-        extent = [float(i) for i in polygon]
-        fmt_extent = ",".join(map(str, extent))
-
-    # DevNote: this elif currently does not have a test (seems like it would just be testing geopandas?)
-    elif ext_type == "Boundingshape":
-        poly = orient(extent, sign=1.0)
-        fmt_extent = gpd.GeoSeries(poly).to_json()
-        fmt_extent = fmt_extent.replace(" ", "")  # remove spaces for API call
-
-    return {ext_type: fmt_extent}
 
 
 def _fmt_readable_granules(dset, **kwds):
@@ -193,13 +135,13 @@ def combine_params(*param_dicts):
     Examples
     --------
     >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
-    >>> reqparams = {'page_size': 10, 'page_num': 1}
-    >>> icepyx.core.APIformatting.combine_params(CMRparams, reqparams)
+    >>> reqparams = {'page_size': 2000, 'page_num': 1}
+    >>> ipx.core.APIformatting.combine_params(CMRparams, reqparams)
     {'short_name': 'ATL06',
     'version': '002',
     'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
     'bounding_box': '-55,68,-48,71',
-    'page_size': 10,
+    'page_size': 2000,
     'page_num': 1}
     """
     params = {}
@@ -223,10 +165,10 @@ def to_string(params):
     Examples
     --------
     >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
-    >>> reqparams = {'page_size': 10, 'page_num': 1}
-    >>> params = icepyx.core.APIformatting.combine_params(CMRparams, reqparams)
-    >>> icepyx.core.APIformatting.to_string(params)
-    'short_name=ATL06&version=002&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=10&page_num=1'
+    >>> reqparams = {'page_size': 2000, 'page_num': 1}
+    >>> params = ipx.core.APIformatting.combine_params(CMRparams, reqparams)
+    >>> ipx.core.APIformatting.to_string(params)
+    'short_name=ATL06&version=002&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=2000&page_num=1'
     """
     param_list = []
     for k, v in params.items():
@@ -263,7 +205,6 @@ class Parameters:
     """
 
     def __init__(self, partype, values=None, reqtype=None):
-
         assert partype in [
             "CMR",
             "required",
@@ -325,7 +266,7 @@ class Parameters:
             }
         elif self.partype == "required":
             self._poss_keys = {
-                "search": ["page_size", "page_num"],
+                "search": ["page_size"],
                 "download": [
                     "page_size",
                     "page_num",
@@ -424,7 +365,7 @@ class Parameters:
             May include optional keyword arguments to be passed to the subsetter. Valid keywords
             are time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
 
-            Keyword argument inputs for 'CMR' may include: dataset, version, start, end, extent_type, spatial_extent
+            Keyword argument inputs for 'CMR' may include: dataset (data product), version, start, end, extent_type, spatial_extent
             Keyword argument inputs for 'required' may include: page_size, page_num, request_mode, include_meta, client_string
             Keyword argument inputs for 'subset' may include: geom_filepath, start, end, extent_type, spatial_extent
 
@@ -441,8 +382,8 @@ class Parameters:
             else:
                 reqkeys = self.poss_keys[self._reqtype]
                 defaults = {
-                    "page_size": 10,
-                    "page_num": 1,
+                    "page_size": 2000,
+                    "page_num": 0,
                     "request_mode": "async",
                     "include_meta": "Y",
                     "client_string": "icepyx",
@@ -450,19 +391,10 @@ class Parameters:
                 for key in reqkeys:
                     if key in kwargs:
                         self._fmted_keys.update({key: kwargs[key]})
-                    #                 elif key in defaults:
-                    #                     if key is 'page_num':
-                    #                         pnum = math.ceil(len(is2obj.granules)/reqparams['page_size'])
-                    #                         if pnum > 0:
-                    #                             reqparams.update({key:pnum})
-                    #                         else:
-                    #                             reqparams.update({key:defaults[key]})
                     elif key in defaults:
                         self._fmted_keys.update({key: defaults[key]})
                     else:
                         pass
-
-                self._fmted_keys["page_num"] = 1
 
         else:
             if self.check_values == True and kwargs == None:
@@ -477,13 +409,13 @@ class Parameters:
                         assert self._fmted_keys[key]
                     else:
                         if key == "short_name":
-                            self._fmted_keys.update({key: kwargs["dataset"]})
+                            self._fmted_keys.update({key: kwargs["product"]})
                         elif key == "version":
                             self._fmted_keys.update({key: kwargs["version"]})
 
                 for key in opt_keys:
                     if key == "Coverage" and key in kwargs.keys():
-                        # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that dataset without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+                        # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that product without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
                         self._fmted_keys.update(
                             {key: _fmt_var_subset_list(kwargs[key])}
                         )
@@ -509,4 +441,4 @@ class Parameters:
                         elif kwargs["extent_type"] == "polygon":
                             k = "Boundingshape"
 
-                    self._fmted_keys.update(_fmt_spatial(k, kwargs["spatial_extent"]))
+                    self._fmted_keys.update({k: kwargs["spatial_extent"]})

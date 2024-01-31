@@ -10,22 +10,21 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import datetime
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../sphinxext"))
-import datetime
 
 import icepyx
-import recommonmark
 
 
 # -- Project information -----------------------------------------------------
 
 project = "icepyx"
 year = datetime.date.today().year
-copyright = "2019-{}, The icepyx Developers".format(year)
+copyright = "2019-{}, The icepyx Development Team".format(year)
 
 # -- General configuration ---------------------------------------------------
 
@@ -36,16 +35,23 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
     "numpydoc",
-    "nbsphinx",
-    "recommonmark",
+    # "sphinx.ext.autosummary",
+    "myst_nb",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
+    "sphinx_panels",
+    # "sphinx.ext.imgconverter", # this extension should help the latex svg warning, but results in an error instead
+]
+myst_enable_extensions = [
+    "linkify",
 ]
 
 source_suffix = {
+    # Note, put .rst first so that API docs are linked properly
     ".rst": "restructuredtext",
-    ".txt": "markdown",
-    ".md": "markdown",
+    ".ipynb": "myst-nb",
+    ".txt": "myst-nb",
+    ".md": "myst-nb",
 }
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -53,7 +59,11 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["**.ipynb_checkpoints"]
+exclude_patterns = [
+    "**.ipynb_checkpoints",
+    "example_notebooks/supporting_files/*",
+    "user_guide/changelog/template.rst",
+]
 
 # location of master document (by default sphinx looks for contents.rst)
 master_doc = "index"
@@ -62,9 +72,13 @@ master_doc = "index"
 bibtex_bibfiles = ["tracking/icepyx_pubs.bib"]
 
 # -- Configuration options ---------------------------------------------------
+# Prefix document path to section labels, to use:
+# `path/to/file:heading` instead of just `heading`
+autosectionlabel_prefix_document = True
 autosummary_generate = True
 numpydoc_show_class_members = False
-
+jupyter_execute_notebooks = "off"
+suppress_warnings = ["myst.header"]  # suppress non-consecutive header warning
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -107,7 +121,8 @@ def setup(app):
 # this should possibly be moved to the sphinxext directory as a standalone .py file
 # -- custom style for pybtex output -------------------------------------------
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle
-from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
+
+# from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
 from pybtex.plugin import register_plugin
 
 # I seem to be unable to figure out how to control what is used for the label. It would

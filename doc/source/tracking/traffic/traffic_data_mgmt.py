@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
-import subprocess
 
 cwd = os.getcwd()
 
@@ -18,6 +17,11 @@ def update_csv(string):
         )
     except FileNotFoundError:
         updated = pd.read_csv(defaultpath + string)
+
+    # remove duplicate dates; sort default is ascending
+    updated = updated.sort_values(f"total_{string}", ignore_index=True).drop_duplicates(
+        subset="_date", keep="last"
+    )
 
     updated.sort_values("_date", ignore_index=True).to_csv(
         trafficpath + f"{string}.csv", index=False
@@ -47,5 +51,6 @@ views.sort_values("_date").plot(
 
 fig.savefig(trafficpath + "plots.svg")
 
-# removing the files should not be necessary here since they're not included in the git commit
-#subprocess.run(["rm -rf " + defaultpath[:-1]], shell=True)
+# removing the files should not be necessary here
+# since they're not included in the git commit
+# subprocess.run(["rm -rf " + defaultpath[:-1]], shell=True)

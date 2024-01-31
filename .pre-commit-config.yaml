@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/psf/black
-    rev: stable
+    rev: 23.12.0
     hooks:
     - id: black
 
@@ -10,5 +10,7 @@ repos:
     - id: check-added-large-files
       args: ["--maxkb=5000"]
     - id: end-of-file-fixer
-    - id: trailing-whitespace
-      args: [--markdown-linebreak-ext=md]
+    # - id: trailing-whitespace
+    #   args: [--markdown-linebreak-ext=md]
+
+# you can run `pre-commit autoupdate` to automatically update to the latest version of hooks!

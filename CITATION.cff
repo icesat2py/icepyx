@@ -1,0 +1,35 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: icepyx
+message: >-
+  If you use this software, please cite the software version
+  you used by its version-specific DOI.
+  The DOI for each version is available on Zenodo (link below).
+type: software
+authors:
+  - name: The icepyx Developers
+repository-code: 'https://github.com/icesat2py/icepyx'
+url: 'https://icepyx.readthedocs.io/en/latest/'
+repository: 'https://zenodo.org/record/7729175'
+repository-artifact: 'https://anaconda.org/conda-forge/icepyx'
+abstract: >-
+  icepyx is both a software library and a community composed
+  of ICESat-2 data users, developers, and the scientific
+  community. We are working together to develop a shared
+  library of resources - including existing resources, new
+  code, tutorials, and use-cases/examples - that simplify
+  the process of querying, obtaining, analyzing, and
+  manipulating ICESat-2 datasets to enable scientific
+  discovery.
+keywords:
+  - ICESat-2
+  - Python
+  - open science
+  - NASA
+license: BSD-3-Clause
+identifiers:
+  - description: "All archived versions of icepyx."
+    type: doi
+    value: 10.5281/zenodo.7729175

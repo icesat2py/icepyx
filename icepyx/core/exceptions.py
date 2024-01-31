@@ -1,3 +1,11 @@
+class DeprecationError(Exception):
+    """
+    Class raised for use of functionality that is no longer supported by icepyx.
+    """
+
+    pass
+
+
 class QueryError(Exception):
     """
     Base class for Query object exceptions

@@ -1,7 +1,7 @@
 [run]
 branch = True
 source = icepyx
-omit = 
+omit =
     setup.py
     test/*
     doc/*

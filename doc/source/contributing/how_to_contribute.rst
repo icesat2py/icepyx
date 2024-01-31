@@ -103,9 +103,9 @@ reformatting the files if necessary.
 You can tell files were reformatted if you get a message showing one of the checks failed.
 In this case, you will need to re-commit your changes until all pre-commit hooks pass
 (i.e. a failed pre-commit check results in no git commit).
-If you do not use the pre-commit hooks locally,
-the reformatting will be applied when you open a PR (or push to an existing one).
-In this case, you want to make sure you pull the changes back to your local version before making new commits.
+Pre-commit will also run on icepyx PRs using the pre-commit CI (continuous integration).
+As with other automations happening in PRs,  
+you want to make sure you pull the changes back to your local version before making new commits.
 
 
 Considerations with Jupyter Notebook

@@ -27,4 +27,3 @@ Methods
 
 .. autosummary::
    :toctree: ../../_icepyx/
-

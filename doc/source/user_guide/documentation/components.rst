@@ -26,14 +26,6 @@ granules
    :members:
    :undoc-members:
    :show-inheritance:
-
-is2cat
-------
-
-.. automodule:: icepyx.core.is2cat
-   :members:
-   :undoc-members:
-   :show-inheritance:
    
 is2ref
 ------

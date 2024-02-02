@@ -23,7 +23,7 @@ Bug fixes
 Deprecations
 ~~~~~~~~~~~~
 
-- in `ipx.Query.avail_granules` and `ipx.core.granules.gran_IDs`, 
+- in `ipx.Query.avail_granules` and `ipx.core.granules.gran_IDs`,
   the `s3urls` keyword has been changed to `cloud`.
 
 

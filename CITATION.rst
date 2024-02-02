@@ -7,7 +7,7 @@ icepyx
 ------
 
 This community and software is developed with the goal of supporting science applications.
-Thus, our contributors (including those who have developed the packages used within icepyx) 
+Thus, our contributors (including those who have developed the packages used within icepyx)
 and maintainers justify their efforts and demonstrate the impact of their work through citations.
 
 If you have used icepyx in your work, please consider citing our library.
@@ -30,16 +30,16 @@ A bibtex version for users working in Latex::
   publisher = {Zenodo},
   url = "https://github.com/icesat2py/icepyx",
   }
-    
+
 For more information on the "icepyx Developers", please see our `Attribution Guidelines <https://icepyx.readthedocs.io/en/latest/contributing/attribution_link.html>`_.
 See our docs for a `full list of contributors <https://icepyx.readthedocs.io/en/latest/contributing/contributors_link.html>`_ and their contribution types.
 
 icepyx Dependencies
 -------------------
-If you have used one of the included packages to extend your data analysis capabilities within icepyx, 
-please consider additionally citing that work, because it represents an independent software contribution to the open-source community. 
-`SciPy <https://www.scipy.org/index.html>`_ provides a `helpful resource <https://www.scipy.org/citing.html>`_ for citing 
-packages within the SciPy ecosystem (including Matplotlib, NumPy, pandas, and SciPy). 
+If you have used one of the included packages to extend your data analysis capabilities within icepyx,
+please consider additionally citing that work, because it represents an independent software contribution to the open-source community.
+`SciPy <https://www.scipy.org/index.html>`_ provides a `helpful resource <https://www.scipy.org/citing.html>`_ for citing
+packages within the SciPy ecosystem (including Matplotlib, NumPy, pandas, and SciPy).
 Links to citation information for other commonly used packages are below.
 
 - `fiona <https://github.com/Toblerity/Fiona/blob/master/CITATION.txt>`_

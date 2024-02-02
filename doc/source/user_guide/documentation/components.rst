@@ -10,7 +10,7 @@ APIformatting
    :members:
    :undoc-members:
    :show-inheritance:
-   
+
 EarthdataAuthMixin
 ------------------
 
@@ -26,7 +26,7 @@ granules
    :members:
    :undoc-members:
    :show-inheritance:
-   
+
 is2ref
 ------
 

@@ -1,4 +1,4 @@
-.. _dev_guide_label: 
+.. _dev_guide_label:
 
 How to Contribute
 =================
@@ -12,20 +12,20 @@ Contributing for the first time
 -------------------------------
 1. If you don't have one, sign up for a GitHub account (visit https://github.com/ and ‘sign up for GitHub account’).
 
-2. Clone the icepyx repo: Open a terminal window. 
-Navigate to the folder on your computer where you want to store icepyx. 
-For example, 
+2. Clone the icepyx repo: Open a terminal window.
+Navigate to the folder on your computer where you want to store icepyx.
+For example,
 
 .. code-block:: shell
 
     cd /Users/YOURNAMEHERE/documents/ICESat-2
-    
-Within this folder, clone the icepyx repo by executing 
+
+Within this folder, clone the icepyx repo by executing
 
 .. code-block:: shell
 
     git clone https://github.com/icesat2py/icepyx.git
-    
+
 You should receive confirmation in terminal of the files loading into your workspace.
 For help navigating git and GitHub, see this `guide <https://the-turing-way.netlify.app/collaboration/github-novice/github-novice-firststeps.html?highlight=github%20account>`__.
 `GitHub <https://docs.github.com/en>`_ also provides a lot of great how-to materials for navigating and contributing.
@@ -36,10 +36,10 @@ Every time you contribute
 
 1. To add new content, you need to create a new branch.
 You can do this on GitHub by clicking the down arrow next to ‘development’ and making a new branch
-(you can give it whatever name you want - the naming doesn't matter much as it will only be a temporary branch). 
+(you can give it whatever name you want - the naming doesn't matter much as it will only be a temporary branch).
 
 2. Navigate to the new branch you created.
-Make any edits or additions on this branch (this can be done locally or on GitHub directly). 
+Make any edits or additions on this branch (this can be done locally or on GitHub directly).
 After you do this, commit your changes and add a descriptive commit message.
 
 3. After committing the changes, push them to GitHub if you were working locally.
@@ -60,7 +60,7 @@ The bot will open a separate PR to add the contributor or new contribution types
 5. Repeat these steps, creating a new branch and ultimately a pull request for each change.
 More, smaller pull requests are easier to debug and merge than fewer large ones, so create pull requests regularly!
 
-    
+
 Steps for working with icepyx locally
 -------------------------------------
 
@@ -70,7 +70,7 @@ update your local copy of icepyx with
 .. code-block:: shell
 
     git pull https://github.com/icesat2py/icepyx.git
-    
+
 to ensure you have the most up to date version of icepyx in your library.
 
 
@@ -87,7 +87,7 @@ Setting up a Development Work Environment
 -----------------------------------------
 
 icepyx uses a few tools to ensure that files have consistent formatting and run tests.
-You can easily install the ones most frequently used by creating a new mamba (or conda) 
+You can easily install the ones most frequently used by creating a new mamba (or conda)
 environment (from the home level of your local copy of the icepyx repo) with
 
 .. code-block:: shell
@@ -107,9 +107,9 @@ If you are working in Jupyter Notebook, in addition to manually installing your 
     pip install -e.
 
 you will need to dynamically reload icepyx within your notebook by executing
-   
+
 .. code-block:: python
-    
+
     %load_ext autoreload
     import icepyx as ipx
     %autoreload 2

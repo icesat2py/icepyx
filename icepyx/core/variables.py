@@ -429,7 +429,8 @@ class Variables(EarthdataAuthMixin):
         return req_vars
 
     # DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
-    def append(self, defaults=False, var_list=None, beam_list=None, keyword_list=None):
+    def append(self, defaults=False, var_list=None, beam_list=None, keyword_list=None,
+               path_list=None):
         """
         Add to the list of desired variables using user specified beams and variable list.
         A pregenerated default variable list can be used by setting defaults to True.
@@ -456,6 +457,17 @@ class Variables(EarthdataAuthMixin):
             A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
             the product that include that keyword in their path. A list of availble keywords can be obtained by
             entering `keyword_list=['']` into the function.
+
+        path_list : list of strings, default None
+            A list of variable path names given as a the full path from the H5 root path.
+            For example: 
+
+            path_list = ['gt1l/heights/delta_time',
+                         'gt1l/heights/dist_ph_across',
+                         'gt1l/heights/dist_ph_along',
+                         'gt1l/heights/h_ph',
+                         'gt1l/heights/lat_ph',
+                         'gt1l/heights/lon_ph']
 
         Notes
         -----
@@ -489,6 +501,7 @@ class Variables(EarthdataAuthMixin):
             and var_list == None
             and beam_list == None
             and keyword_list == None
+            and path_list is None
         ), "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
 
         final_vars = {}

@@ -28,13 +28,21 @@ Peer-reviewed publications about icepyx software
 
     joss2023
 
+icepyx in the open-source landscape
+
+.. bibliography:: icepyx_pubs.bib
+    :style: mystyle
+
+    Bednar2023
+
 Presentations and Materials Featuring icepyx
 --------------------------------------------
 Presentations that feature or explain icepyx
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
-
+    
+    quest2023agu
     js2022agu
     2022_IS2-HW-tutorials
     js2021agu
@@ -43,7 +51,7 @@ Presentations that feature or explain icepyx
     js2019agu
 
 Publications Utilizing icepyx
-------------------------------
+-----------------------------
 Research that utilizes icepyx for ICESat-2 data
 
 .. bibliography:: icepyx_pubs.bib
@@ -51,7 +59,9 @@ Research that utilizes icepyx for ICESat-2 data
 
     Freer2023
     Idestrom2023
+    Mallinis2023
     Shean2023
+    Snellink2023
     Eidam2022
     Leeuwen:2022
     Musthafa2022

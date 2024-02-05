@@ -3,7 +3,7 @@ Who is using icepyx?
 
 How is icepyx being used by the ICESat-2 data user community?
 
-Is your team or project using icepyx but not listed below? 
+Is your team or project using icepyx but not listed below?
 Please add your organization to the appropriate list with a link to your project/product (or :ref:`get in touch<contact_ref_label>` and we'll add it)!
 
 
@@ -25,7 +25,7 @@ Peer-reviewed publications about icepyx software
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
-    
+
     joss2023
 
 icepyx in the open-source landscape
@@ -56,7 +56,7 @@ Research that utilizes icepyx for ICESat-2 data
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
-    
+
     Freer2023
     Idestrom2023
     Mallinis2023

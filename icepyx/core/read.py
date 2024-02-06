@@ -1,4 +1,3 @@
-import fnmatch
 import glob
 import os
 import sys
@@ -208,7 +207,8 @@ class Read(EarthdataAuthMixin):
     Reading all files in a directory
     >>> ipx.Read('/path/to/data/') # doctest: +SKIP
 
-    Reading files that match a particular pattern (here, all .h5 files that start with `processed_ATL06_`).
+    Reading files that match a particular pattern
+    (here, all .h5 files that start with `processed_ATL06_`).
     >>> ipx.Read('/path/to/data/processed_ATL06_*.h5') # doctest: +SKIP
 
     Reading a specific list of files
@@ -368,7 +368,8 @@ class Read(EarthdataAuthMixin):
             the second list contains the second portion of the group name, etc.
             "none" is used to fill in where paths are shorter than the longest path.
         wanted_dict : dict
-            Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
+            Dictionary with variable names as keys and a list of group +
+            variable paths containing those variables as values.
 
         Returns
         -------
@@ -461,7 +462,8 @@ class Read(EarthdataAuthMixin):
                     )
                 )
 
-                # for the subgoups where there is 1d delta time data, make sure that the cycle number is still a coordinate for merging
+                # for the subgoups where there is 1d delta time data,
+                # make sure that the cycle number is still a coordinate for merging
                 try:
                     ds = ds.assign_coords(
                         {
@@ -504,14 +506,16 @@ class Read(EarthdataAuthMixin):
         grp_path : str
             hdf5 group path read into ds
         wanted_dict : dict
-            Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
+            Dictionary with variable names as keys and a list of group +
+            variable paths containing those variables as values.
 
         Returns
         -------
         Xarray Dataset with variables from the ds variable group added.
         """
 
-        # Dev Goal: improve this type of iterating to minimize amount of looping required. Would a path handling library be useful here?
+        # Dev Goal: improve this type of iterating to minimize amount of looping required.
+        # Would a path handling library be useful here?
         grp_spec_vars = [
             k for k, v in wanted_dict.items() if any(f"{grp_path}/{k}" in x for x in v)
         ]
@@ -543,7 +547,8 @@ class Read(EarthdataAuthMixin):
 
     def load(self):
         """
-        Create a single Xarray Dataset containing the data from one or more files and/or ground tracks.
+        Create a single Xarray Dataset containing the data from one or more
+        files and/or ground tracks.
         Uses icepyx's ICESat-2 data product awareness and Xarray's `combine_by_coords` function.
 
         All items in the wanted variables list will be loaded from the files into memory.
@@ -657,7 +662,8 @@ class Read(EarthdataAuthMixin):
         ----------
         file : str
             Full path to ICESat-2 data file.
-            Currently tested for locally downloaded files; untested but hopefully works for s3 stored cloud files.
+            Currently tested for locally downloaded files;
+            untested but hopefully works for s3 stored cloud files.
         grp_path : str
             Full string to a variable group.
             E.g. 'gt1l/land_ice_segments'
@@ -677,23 +683,27 @@ class Read(EarthdataAuthMixin):
 
     def _build_single_file_dataset(self, file, groups_list):
         """
-        Create a single xarray dataset with all of the wanted variables/groups from the wanted var list for a single data file/url.
+        Create a single xarray dataset with all of the wanted variables/groups
+        from the wanted var list for a single data file/url.
 
         Parameters
         ----------
         file : str
             Full path to ICESat-2 data file.
-            Currently tested for locally downloaded files; untested but hopefully works for s3 stored cloud files.
+            Currently tested for locally downloaded files;
+            untested but hopefully works for s3 stored cloud files.
 
         groups_list : list of strings
             List of full paths to data variables within the file.
-            e.g. ['orbit_info/sc_orient', 'gt1l/land_ice_segments/h_li', 'gt1l/land_ice_segments/latitude', 'gt1l/land_ice_segments/longitude']
+            e.g. ['orbit_info/sc_orient', 'gt1l/land_ice_segments/h_li',
+            'gt1l/land_ice_segments/latitude', 'gt1l/land_ice_segments/longitude']
 
         Returns
         -------
         Xarray Dataset
         """
-        # DEVNOTE: if and elif does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
+        # DEVNOTE: if and elif does not actually apply wanted variable list,
+        # and has not been tested for merging multiple files into one ds
         # if a gridded product
         # TODO: all products need to be tested, and quicklook products added or explicitly excluded
         # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
@@ -720,13 +730,14 @@ class Read(EarthdataAuthMixin):
             )
             wanted_groups_set = set(wanted_groups)
 
-            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            # orbit_info is used automatically as the first group path
+            # so the info is available for the rest of the groups
             # wanted_groups_set.remove("orbit_info")
             wanted_groups_set.remove("ancillary_data")
             # Note: the sorting is critical for datasets with highly nested groups
             wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
 
-            # returns the wanted groups as a list of lists with group path string elements separated
+            # returns wanted groups as a list of lists with group path string elements separated
             _, wanted_groups_tiered = Variables.parse_var_list(
                 groups_list, tiered=True, tiered_vars=True
             )
@@ -751,14 +762,15 @@ class Read(EarthdataAuthMixin):
                 groups_list, tiered=False
             )
             wanted_groups_set = set(wanted_groups)
-            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            # orbit_info is used automatically as the first group path
+            # so the info is available for the rest of the groups
             wanted_groups_set.remove("orbit_info")
             wanted_groups_set.remove("ancillary_data")
             # Note: the sorting is critical for datasets with highly nested groups
             wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
                 wanted_groups_set
             )
-            # returns the wanted groups as a list of lists with group path string elements separated
+            # returns wanted groups as a list of lists with group path string elements separated
             _, wanted_groups_tiered = Variables.parse_var_list(
                 groups_list, tiered=True, tiered_vars=True
             )
@@ -771,7 +783,8 @@ class Read(EarthdataAuthMixin):
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )
 
-                # if there are any deeper nested variables, get those so they have actual coordinates and add them
+                # if there are any deeper nested variables,
+                # get those so they have actual coordinates and add them
                 # this may apply to (at a minimum): ATL08
                 if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
                     for grp_path2 in wanted_groups_list:

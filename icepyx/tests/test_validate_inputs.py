@@ -1,7 +1,4 @@
 import pytest
-import warnings
-import datetime as dt
-import numpy as np
 
 import icepyx.core.validate_inputs as val
 

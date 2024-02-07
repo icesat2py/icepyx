@@ -506,18 +506,24 @@ class Variables(EarthdataAuthMixin):
 
         final_vars = {}
 
+        if path_list:
+            _, (beams, keywords, variables) = self.parse_var_list(path_list, tiered_vars=True)
+            var_list = list(set(variables))
+            beam_list = list(set(beams))
+            keyword_list = list(set(keywords))
+
         vgrp, allpaths = self.avail(options=True, internal=True)
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
-        # Instantiate self.wanted to an empty dictionary if it doesn't exist
+        # Instantiate self.wanted to an empty dictionaryto an  if it doesn't exist
         if not hasattr(self, "wanted") or self.wanted == None:
             self.wanted = {}
 
-            # DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
+        # DEVGOAL: add a secondary var list to include uncertainty/error information for lower level data if specific data variables have been specified...
 
         # generate a list of variable names to include, depending on user input
         sum_varlist = self._get_sum_varlist(var_list, vgrp.keys(), defaults)
-
+        
         # Case only variables (but not keywords or beams) are specified
         if beam_list == None and keyword_list == None:
             final_vars.update(self._iter_vars(sum_varlist, final_vars, vgrp))

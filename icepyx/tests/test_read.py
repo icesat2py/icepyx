@@ -14,6 +14,15 @@ def test_parse_source_bad_input_type():
         read._parse_source({"myfiles": "./my_valid_path/file.h5"})
 
 
+def test_parse_source_no_files():
+    ermesg = (
+        "No files found matching the specified `data_source`. Check your glob "
+        "string or file list."
+    )
+    with pytest.raises(KeyError, match=ermesg):
+        read._parse_source("./icepyx/bogus_glob")
+
+
 @pytest.mark.parametrize(
     "source, expect",
     [
@@ -65,10 +74,6 @@ def test_parse_source_bad_input_type():
         (
             "./icepyx/core/is2*.py",
             ["./icepyx/core/is2ref.py"],
-        ),
-        (  # check bad input
-            "./icepyx/bogus_glob",
-            [],
         ),
     ],
 )

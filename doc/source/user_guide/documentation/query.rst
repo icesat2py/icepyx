@@ -23,7 +23,6 @@ Attributes
    Query.cycles
    Query.dates
    Query.end_time
-   Query.file_vars
    Query.granules
    Query.order_vars
    Query.product

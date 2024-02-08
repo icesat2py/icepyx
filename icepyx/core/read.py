@@ -268,8 +268,6 @@ class Read(EarthdataAuthMixin):
             # If the path is an s3 path set the respective element of self.is_s3 to True
             if file_.startswith("s3"):
                 self.is_s3[i] = True
-            # set up 
-            if True in self.is_s3:
                 auth = self.auth
             else:
                 auth = None

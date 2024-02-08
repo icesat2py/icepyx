@@ -496,13 +496,21 @@ class Variables(EarthdataAuthMixin):
         >>> reg_a.order_vars.append(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
-        assert not (
-            defaults == False
-            and var_list == None
-            and beam_list == None
-            and keyword_list == None
-            and path_list is None
-        ), "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
+        # Check that at least one allowable combination of keywords are set
+        if (not defaults and
+            not (var_list or beam_list or keyword_list) and
+            not path_list):
+            raise ValueError("Either default or path_list, or at least one of var_list, "
+                             "beam_list or keyword_list must be set\n"
+                             "If you do not want to subset by variable, "
+                             "ensure your is2.subsetparams dictionary does "
+                             "not contain the key 'Coverage'.")
+
+        # Check that only path_list, or only var_list, beam_list or keyword_list
+        # are set.
+        if (var_list or beam_list or keyword_list) and path_list:
+            raise ValueError("path_list cannot be set if var_list or "
+                             "beam_list or keyword_list are set")
 
         final_vars = {}
 

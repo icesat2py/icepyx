@@ -74,7 +74,9 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
         if cloud == True:
             try:
                 for link in gran["links"]:
-                    if link["href"].startswith("s3") and link["href"].endswith(".h5"):
+                    if link["href"].startswith("s3") and link["href"].endswith(
+                        (".h5", "nc")
+                    ):
                         gran_s3urls.append(link["href"])
             except KeyError:
                 pass

@@ -7,7 +7,6 @@ import json
 import numpy as np
 import os
 import pprint
-import warnings
 from xml.etree import ElementTree as ET
 import zipfile
 
@@ -37,7 +36,8 @@ def info(grans):
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
 def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=False):
     """
-    Returns a list of granule information for each granule dictionary in the input list of granule dictionaries.
+    Returns a list of granule information for each granule dictionary
+    in the input list of granule dictionaries.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
     or a list of granules present on the file system.
 
@@ -71,7 +71,7 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
 
-        if cloud == True:
+        if cloud is True:
             try:
                 for link in gran["links"]:
                     if link["href"].startswith("s3") and link["href"].endswith(
@@ -81,7 +81,7 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
             except KeyError:
                 pass
 
-        if any([param == True for param in [cycles, tracks, dates]]):
+        if any([param is True for param in [cycles, tracks, dates]]):
             # PRD: ICESat-2 product
             # HEM: Sea Ice Hemisphere flag
             # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
@@ -202,7 +202,8 @@ class Granules:
         granule_search_url = "https://cmr.earthdata.nasa.gov/search/granules"
 
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
-        # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
+        # note we should also check for errors whenever we ping NSIDC-API -
+        # make a function to check for errors
 
         params = apifmt.combine_params(
             CMRparams,
@@ -253,7 +254,8 @@ class Granules:
             len(self.avail) > 0
         ), "Your search returned no results; try different search parameters"
 
-    # DevNote: currently, default subsetting DOES NOT include variable subsetting, only spatial and temporal
+    # DevNote: currently, default subsetting DOES NOT include variable subsetting,
+    # only spatial and temporal
     # DevGoal: add kwargs to allow subsetting and more control over request options.
     def place_order(
         self,
@@ -286,12 +288,15 @@ class Granules:
             Progress information is automatically printed regardless of the value of verbose.
         subset : boolean, default True
             Apply subsetting to the data order from the NSIDC, returning only data that meets the
-            subset parameters. Spatial and temporal subsetting based on the input parameters happens
+            subset parameters.
+            Spatial and temporal subsetting based on the input parameters happens
             by default when subset=True, but additional subsetting options are available.
-            Spatial subsetting returns all data that are within the area of interest (but not complete
-            granules. This eliminates false-positive granules returned by the metadata-level search)
+            Spatial subsetting returns all data that are within the area of interest
+            (but not complete granules.
+            This eliminates false-positive granules returned by the metadata-level search)
         session : requests.session object
-            A session object authenticating the user to order data using their Earthdata login information.
+            A session object authenticating the user to order data using their
+            Earthdata login information.
             The session object will automatically be passed from the query object if you
             have successfully logged in there.
         geom_filepath : string, default None
@@ -454,10 +459,10 @@ class Granules:
             else:
                 print("Request failed.")
 
-            # DevGoal: save orderIDs more frequently than just at the end for large orders (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
+            # DevGoal: save orderIDs more frequently than just at the end for large orders
+            # (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
             # Save orderIDs to file to avoid resubmitting order in case kernel breaks down.
             # save orderIDs for every 5 orders when more than 10 orders are submitted.
-            # DevNote: These numbers are hard coded for now. Consider to allow user to set them in future?
             if reqparams["page_num"] >= 10:
                 with open(order_fn, "w") as fid:
                     json.dump({"orderIDs": self.orderIDs}, fid)
@@ -485,8 +490,9 @@ class Granules:
             The session object will automatically be passed from the query object if you
             have successfully logged in there.
         restart : boolean, default False
-            Restart your download if it has been interrupted. If the kernel has been restarted, but you successfully
-            completed your order, you will need to re-initialize your query class object and log in to Earthdata
+            Restart your download if it has been interrupted.
+            If the kernel has been restarted, but you successfully
+            completed your order, you will need to re-initialize your query class object
             and can then skip immediately to the download_granules method with restart=True.
 
         Notes
@@ -510,7 +516,8 @@ class Granules:
             )
             # DevGoal: make this a more robust check for an active session
 
-        # DevNote: this will replace any existing orderIDs with the saved list (could create confusion depending on whether download was interrupted or kernel restarted)
+        # DevNote: this will replace any existing orderIDs with the saved list
+        # (could create confusion depending on whether download was interrupted or kernel restarted)
         order_fn = ".order_restart"
         if os.path.exists(order_fn):
             with open(order_fn, "r") as fid:

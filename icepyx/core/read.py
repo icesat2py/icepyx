@@ -137,6 +137,13 @@ def _parse_source(data_source, glob_kwargs=None) -> list:
     # Remove any directories from the list (these get generated during recursive
     # glob search)
     filelist = [f for f in filelist if not os.path.isdir(f)]
+    
+    # Make sure a non-zero number of files were found
+    if len(filelist) == 0:
+        raise KeyError(
+                "No files found matching the specified `data_source`. Check your glob "
+                "string or file list."
+            )
 
     return filelist
 
@@ -261,6 +268,8 @@ class Read(EarthdataAuthMixin):
             # If the path is an s3 path set the respective element of self.is_s3 to True
             if file_.startswith("s3"):
                 self.is_s3[i] = True
+            # set up 
+            if True in self.is_s3:
                 auth = self.auth
             else:
                 auth = None
@@ -283,7 +292,7 @@ class Read(EarthdataAuthMixin):
             )
             _confirm_proceed()
 
-        # Raise warnings or errors for multiple products or products not matching the user-specified product
+        # Raise error if multiple products given
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
             raise TypeError(
@@ -291,14 +300,9 @@ class Read(EarthdataAuthMixin):
                 "Please provide a valid `data_source` parameter indicating files of a single "
                 "product"
             )
-        elif len(all_products) == 0:
-            raise TypeError(
-                "No files found matching the specified `data_source`. Check your glob "
-                "string or file list."
-            )
-        else:
-            # Assign the identified product to the property
-            self._product = all_products[0]
+        
+        # Assign the identified product to the property
+        self._product = all_products[0]
 
         if out_obj_type is not None:
             print(

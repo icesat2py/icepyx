@@ -101,7 +101,7 @@ def _get_track_type_str(grp_path) -> (str, str, str):
     return track_str, spot_dim_name, spot_var_name
 
 
-def _parse_source(data_source, glob_kwargs=None) -> list:
+def _parse_source(data_source, glob_kwargs={}) -> list:
     """
     Parse the user's data_source input based on type.
 

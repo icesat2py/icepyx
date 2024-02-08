@@ -330,6 +330,11 @@ class Read(EarthdataAuthMixin):
         <icepyx.core.variables.Variables at [location]>
         """
 
+        if self._product == "ATL15" and not hasattr(self, "_read_vars"):
+            self._read_vars = Variables(
+                product=self._product, version=is2ref.latest_version(self._product)
+            )
+
         if not hasattr(self, "_read_vars"):
             self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars

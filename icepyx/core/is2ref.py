@@ -428,6 +428,17 @@ def extract_version(filepath, auth=None):
             "Unable to parse the version from file metadata"
         ).with_traceback(e.__traceback__)
 
+    # validate the version information
+    # ATL15 had a VersionID of "SET_BY_PGE", causing issues for further processing
+    try:
+        float(version)
+    except ValueError:
+        raise Exception(
+            "There is an underlying issue with the version information"
+            "provided in the metadata of this file."
+            "Consider setting the version manually for further processing."
+        )
+
     # Close the file reader
     f.close()
     return version

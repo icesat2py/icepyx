@@ -429,8 +429,14 @@ class Variables(EarthdataAuthMixin):
         return req_vars
 
     # DevGoal: we can ultimately add an "interactive" trigger that will open the not-yet-made widget. Otherwise, it will use the var_list passed by the user/defaults
-    def append(self, defaults=False, var_list=None, beam_list=None, keyword_list=None,
-               path_list=None):
+    def append(
+        self,
+        defaults=False,
+        var_list=None,
+        beam_list=None,
+        keyword_list=None,
+        path_list=None,
+    ):
         """
         Add to the list of desired variables using user specified beams and variable list.
         A pregenerated default variable list can be used by setting defaults to True.
@@ -500,25 +506,33 @@ class Variables(EarthdataAuthMixin):
         """
 
         # Check that at least one allowable combination of keywords are set
-        if (not defaults and
-            not (var_list or beam_list or keyword_list) and
-            not path_list):
-            raise ValueError("Either default or path_list, or at least one of var_list, "
-                             "beam_list or keyword_list must be set\n"
-                             "If you do not want to subset by variable, "
-                             "ensure your is2.subsetparams dictionary does "
-                             "not contain the key 'Coverage'.")
+        if (
+            not defaults
+            and not (var_list or beam_list or keyword_list)
+            and not path_list
+        ):
+            raise ValueError(
+                "Either default or path_list, or at least one of var_list, "
+                "beam_list or keyword_list must be set\n"
+                "If you do not want to subset by variable, "
+                "ensure your is2.subsetparams dictionary does "
+                "not contain the key 'Coverage'."
+            )
 
         # Check that only path_list, or only var_list, beam_list or keyword_list
         # are set.
         if (var_list or beam_list or keyword_list) and path_list:
-            raise ValueError("path_list cannot be set if var_list or "
-                             "beam_list or keyword_list are set")
+            raise ValueError(
+                "path_list cannot be set if var_list or "
+                "beam_list or keyword_list are set"
+            )
 
         final_vars = {}
 
         if path_list:
-            _, (beams, keywords, variables) = self.parse_var_list(path_list, tiered_vars=True)
+            _, (beams, keywords, variables) = self.parse_var_list(
+                path_list, tiered_vars=True
+            )
             var_list = list(set(variables))
             beam_list = list(set(beams))
             keyword_list = list(set(keywords))
@@ -534,7 +548,7 @@ class Variables(EarthdataAuthMixin):
 
         # generate a list of variable names to include, depending on user input
         sum_varlist = self._get_sum_varlist(var_list, vgrp.keys(), defaults)
-        
+
         # Case only variables (but not keywords or beams) are specified
         if beam_list == None and keyword_list == None:
             final_vars.update(self._iter_vars(sum_varlist, final_vars, vgrp))

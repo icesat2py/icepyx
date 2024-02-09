@@ -330,6 +330,7 @@ class Read(EarthdataAuthMixin):
         <icepyx.core.variables.Variables at [location]>
         """
 
+        # fix to handle fact that ATL15 VersionID metadata is wrong
         if self._product == "ATL15" and not hasattr(self, "_read_vars"):
             self._read_vars = Variables(
                 product=self._product, version=is2ref.latest_version(self._product)

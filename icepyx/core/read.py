@@ -710,9 +710,16 @@ class Read(EarthdataAuthMixin):
         -------
         Xarray Dataset
         """
-        # DEVNOTE: if and elif does not actually apply wanted variable list,
+        # returns wanted groups as a list of lists with group path string elements separated
+        _, wanted_groups_tiered = Variables.parse_var_list(
+            groups_list, tiered=True, tiered_vars=True
+        )
+
+        # DEVNOTE: elif does not actually apply wanted variable list,
         # and has not been tested for merging multiple files into one ds
-        # if a gridded product
+        # of a gridded product
+        # if has only been run on ATL15, and not for different user var/beam/keyword list inputs
+        # it also will get the entire group but ignore any variable requests
         # TODO: all products need to be tested, and quicklook products added or explicitly excluded
         # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
         if self.product in [
@@ -726,7 +733,10 @@ class Read(EarthdataAuthMixin):
             "ATL21",
             "ATL23",
         ]:
-            is2ds = xr.open_dataset(file)
+            wanted_grouponly_set = set(wanted_groups_tiered[0])
+            if len(wanted_grouponly_set) == 1:
+                is2ds = xr.open_dataset(file, group=list(wanted_grouponly_set)[0])
+            # TODO: handle the more than one group case
 
         # Level 3b, hdf5: ATL11
         elif self.product in ["ATL11"]:
@@ -745,10 +755,10 @@ class Read(EarthdataAuthMixin):
             # Note: the sorting is critical for datasets with highly nested groups
             wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
 
-            # returns wanted groups as a list of lists with group path string elements separated
-            _, wanted_groups_tiered = Variables.parse_var_list(
-                groups_list, tiered=True, tiered_vars=True
-            )
+            # # returns wanted groups as a list of lists with group path string elements separated
+            # _, wanted_groups_tiered = Variables.parse_var_list(
+            #     groups_list, tiered=True, tiered_vars=True
+            # )
 
             while wanted_groups_list:
                 # print(wanted_groups_list)
@@ -778,10 +788,10 @@ class Read(EarthdataAuthMixin):
             wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
                 wanted_groups_set
             )
-            # returns wanted groups as a list of lists with group path string elements separated
-            _, wanted_groups_tiered = Variables.parse_var_list(
-                groups_list, tiered=True, tiered_vars=True
-            )
+            # # returns wanted groups as a list of lists with group path string elements separated
+            # _, wanted_groups_tiered = Variables.parse_var_list(
+            #     groups_list, tiered=True, tiered_vars=True
+            # )
 
             while wanted_groups_list:
                 grp_path = wanted_groups_list[0]

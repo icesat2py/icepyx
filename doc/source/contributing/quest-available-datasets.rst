@@ -13,7 +13,7 @@ List of Datasets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The Argo mission involves a series of floats that are designed to capture vertical ocean profiles of temperature, salinity, and pressure down to ~2000 m. Some floats are in support of BGC-Argo, which also includes data relevant for biogeochemical applications: oxygen, nitrate, chlorophyll, backscatter, and solar irradiance.
 
-A paper outlining QUEST and its application to Argo data access is currently under review at AGU Earth and Space Science. Interested readers may find the citable preprint here: <doi.org/10.22541/au.170258908.81399744/v1>.
+A paper outlining QUEST and its application to Argo data access is currently under review at AGU Earth and Space Science. Interested readers may find the citable preprint here: <https://doi.org/10.22541/au.170258908.81399744/v1>
 
 `Argo Workflow Example <https://icepyx.readthedocs.io/en/latest/example_notebooks/QUEST_argo_data_access.html>`_
 

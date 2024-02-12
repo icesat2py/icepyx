@@ -15,7 +15,7 @@ The Argo mission involves a series of floats that are designed to capture vertic
 
 A paper outlining the Argo extension to QUEST is currently in preparation, with a citable preprint available in the near future.
 
-:ref:`Argo Workflow Example<quest_workbook_label>`
+Argo Workflow Example:ref:`quest_workbook_label`
 
 
 Adding a Dataset to QUEST

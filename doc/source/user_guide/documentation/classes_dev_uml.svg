@@ -335,7 +335,7 @@
 <text text-anchor="start" x="1357" y="-98.3" font-family="Times,serif" font-size="14.00">_get_sum_varlist(var_list, all_vars, defaults)</text>
 <text text-anchor="start" x="1357" y="-83.3" font-family="Times,serif" font-size="14.00">_iter_paths(sum_varlist, req_vars, vgrp, beam_list, keyword_list)</text>
 <text text-anchor="start" x="1357" y="-68.3" font-family="Times,serif" font-size="14.00">_iter_vars(sum_varlist, req_vars, vgrp)</text>
-<text text-anchor="start" x="1357" y="-53.3" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list)</text>
+<text text-anchor="start" x="1357" y="-53.3" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list, path_list)</text>
 <text text-anchor="start" x="1357" y="-38.3" font-family="Times,serif" font-size="14.00">avail(options, internal)</text>
 <text text-anchor="start" x="1357" y="-23.3" font-family="Times,serif" font-size="14.00">parse_var_list(varlist, tiered, tiered_vars)</text>
 <text text-anchor="start" x="1357" y="-8.3" font-family="Times,serif" font-size="14.00">remove(all, var_list, beam_list, keyword_list)</text>

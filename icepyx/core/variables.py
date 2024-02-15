@@ -465,7 +465,7 @@ class Variables(EarthdataAuthMixin):
             entering `keyword_list=['']` into the function.
 
         path_list : list of strings, default None
-            A list of variable path names given as a the full path from the H5 root path.
+            A list of variable path names given as the full path from the H5 root path.
 
         Notes
         -----

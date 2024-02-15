@@ -496,11 +496,11 @@ class Variables(EarthdataAuthMixin):
         To add variables as a list of explicit paths
 
         >>> path_list = ['gt1l/heights/delta_time',
-                         'gt1l/heights/dist_ph_across',
-                         'gt1l/heights/dist_ph_along',
-                         'gt1l/heights/h_ph',
-                         'gt1l/heights/lat_ph',
-                         'gt1l/heights/lon_ph']
+        ...              'gt1l/heights/dist_ph_across',
+        ...              'gt1l/heights/dist_ph_along',
+        ...              'gt1l/heights/h_ph',
+        ...              'gt1l/heights/lat_ph',
+        ...              'gt1l/heights/lon_ph']
         >>> region_a.order_vars.append(path_list=path_list)  # doctest: +SKIP
 
         """

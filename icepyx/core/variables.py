@@ -540,7 +540,7 @@ class Variables(EarthdataAuthMixin):
         vgrp, allpaths = self.avail(options=True, internal=True)
         self._check_valid_lists(vgrp, allpaths, var_list, beam_list, keyword_list)
 
-        # Instantiate self.wanted to an empty dictionaryto an  if it doesn't exist
+        # Instantiate self.wanted to an empty dictionary if it doesn't exist
         if not hasattr(self, "wanted") or self.wanted == None:
             self.wanted = {}
 

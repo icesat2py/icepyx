@@ -46,7 +46,7 @@ jobs:
 
     - name: Build source and wheel distributions
       run: |
-        python setup.py sdist bdist_wheel
+        python -m build
         echo ""
         echo "Generated files:"
         ls -lh dist/

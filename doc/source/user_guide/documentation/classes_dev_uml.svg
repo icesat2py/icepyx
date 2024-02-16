@@ -235,7 +235,7 @@
 <polygon fill="none" stroke="black" points="1655.5,-496.5 1655.5,-760.5 2271.5,-760.5 2271.5,-496.5 1655.5,-496.5"/>
 <text text-anchor="start" x="1945" y="-745.3" font-family="Times,serif" font-size="14.00">Read</text>
 <polyline fill="none" stroke="black" points="1655.5,-737.5 2271.5,-737.5 "/>
-<text text-anchor="start" x="1899.5" y="-722.3" font-family="Times,serif" font-size="14.00">_filelist : list</text>
+<text text-anchor="start" x="1899.5" y="-722.3" font-family="Times,serif" font-size="14.00">_filelist</text>
 <text text-anchor="start" x="1899.5" y="-707.3" font-family="Times,serif" font-size="14.00">_out_obj : Dataset</text>
 <text text-anchor="start" x="1899.5" y="-692.3" font-family="Times,serif" font-size="14.00">_product</text>
 <text text-anchor="start" x="1899.5" y="-677.3" font-family="Times,serif" font-size="14.00">_read_vars</text>

@@ -22,7 +22,7 @@ Version 0.8.1
    :maxdepth: 2
 
    v0.8.1
-   
+
 Version 0.8.0
 -------------
 
@@ -30,7 +30,7 @@ Version 0.8.0
    :maxdepth: 2
 
    v0.8.0
-   
+
 Version 0.7.0
 -------------
 
@@ -46,7 +46,7 @@ Version 0.6.4
    :maxdepth: 2
 
    v0.6.4
-      
+
 Version 0.6.3
 -------------
 
@@ -54,7 +54,7 @@ Version 0.6.3
    :maxdepth: 2
 
    v0.6.3
-      
+
 Version 0.6.2
 -------------
 
@@ -62,7 +62,7 @@ Version 0.6.2
    :maxdepth: 2
 
    v0.6.2
-   
+
 Version 0.6.0 + 0.6.1
 ---------------------
 
@@ -70,7 +70,7 @@ Version 0.6.0 + 0.6.1
    :maxdepth: 2
 
    v0.6.0
-   
+
 Version 0.5.0
 -------------
 
@@ -78,7 +78,7 @@ Version 0.5.0
    :maxdepth: 2
 
    v0.5.0
-   
+
 Version 0.4.1
 -------------
 .. toctree::

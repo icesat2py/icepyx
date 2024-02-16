@@ -378,8 +378,10 @@ def extract_product(filepath, auth=None):
             # ATL14 saves the short_name as an array ['ATL14']
             product = product[0]
         product = _validate_product(product)
-    except KeyError:
-        raise "Unable to parse the product name from file metadata"
+    except KeyError as e:
+        raise Exception(
+            "Unable to parse the product name from file metadata"
+        ).with_traceback(e.__traceback__)
 
     # Close the file reader
     f.close()
@@ -421,8 +423,10 @@ def extract_version(filepath, auth=None):
         if isinstance(version, bytes):
             version = version.decode()
 
-    except KeyError:
-        raise "Unable to parse the version from file metadata"
+    except KeyError as e:
+        raise Exception(
+            "Unable to parse the version from file metadata"
+        ).with_traceback(e.__traceback__)
 
     # Close the file reader
     f.close()

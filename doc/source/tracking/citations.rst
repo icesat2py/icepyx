@@ -43,6 +43,7 @@ Presentations that feature or explain icepyx
     :style: mystyle
     
     quest2023agu
+    selper2023
     js2022agu
     2022_IS2-HW-tutorials
     js2021agu

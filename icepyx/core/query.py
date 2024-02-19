@@ -564,8 +564,8 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
-                product=self.product,
-                version=self._version,
+                # product=self.product,
+                # version=self._version,
                 extent_type=self._spatial._ext_type,
                 spatial_extent=self._spatial.fmt_for_CMR(),
                 **kwargs,
@@ -591,9 +591,10 @@ class Query(GenQuery, EarthdataAuthMixin):
         {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
+        # I think this could be fixed (so product isn't thrown out) simply by changing the kwarg to "short_name"
         if not hasattr(self, "_reqparams"):
             self._reqparams = apifmt.Parameters("required", reqtype="search")
-            self._reqparams.build_params()
+            self._reqparams.build_params(product=self.product, version=self._version)
 
         return self._reqparams.fmted_keys
 
@@ -994,6 +995,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         Retry request status is: complete
         """
 
+        # per issue on GH, both spatial parameters are being passed
+        # the reason is that the product and version are treated as CMR params,
+        # and ALL CMR (including the non-needed spatial and temporal ones) are passed into the order
         if not hasattr(self, "reqparams"):
             self.reqparams
 

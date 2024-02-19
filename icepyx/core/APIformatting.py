@@ -253,9 +253,10 @@ class Parameters:
         Use the parameter type to get a list of possible parameter keys.
         """
 
+        # what happens if we get rid of default, since it's empty in both cases?
         if self.partype == "CMR":
             self._poss_keys = {
-                "default": ["short_name", "version"],
+                "default": [],
                 "spatial": ["bounding_box", "polygon"],
                 "optional": [
                     "temporal",
@@ -266,8 +267,10 @@ class Parameters:
             }
         elif self.partype == "required":
             self._poss_keys = {
-                "search": ["page_size"],
+                "search": ["short_name", "version", "page_size"],
                 "download": [
+                    "short_name",
+                    "version",
                     "page_size",
                     "page_num",
                     "request_mode",
@@ -393,6 +396,8 @@ class Parameters:
                         self._fmted_keys.update({key: kwargs[key]})
                     elif key in defaults:
                         self._fmted_keys.update({key: defaults[key]})
+                    # This should somehow complain if all the required keys are not present at the end of this
+                    # e.g. when product is passed instead of "short_name"
                     else:
                         pass
 

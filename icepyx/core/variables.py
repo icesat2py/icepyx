@@ -507,17 +507,12 @@ class Variables(EarthdataAuthMixin):
 
         # Check that at least one allowable combination of keywords are set
         if (
-            not defaults
-            and not (var_list or beam_list or keyword_list)
-            and not path_list
+                not defaults
+                and not (var_list or beam_list or keyword_list)
+                and not path_list
         ):
-            raise ValueError(
-                "Either default or path_list, or at least one of var_list, "
-                "beam_list or keyword_list must be set\n"
-                "If you do not want to subset by variable, "
-                "ensure your is2.subsetparams dictionary does "
-                "not contain the key 'Coverage'."
-            )
+            raise ValueError("Either default or path_list, or at least one of var_list, "
+                             "beam_list or keyword_list must be set.")
 
         # Check that only path_list, or only var_list, beam_list or keyword_list
         # are set.

@@ -1046,6 +1046,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                     geom_filepath=self._spatial._geom_file,
                 )
 
+        # I think the next step is to just take out CMR params here...
         else:
             self._granules.place_order(
                 self.CMRparams,

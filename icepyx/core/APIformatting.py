@@ -256,7 +256,6 @@ class Parameters:
         # what happens if we get rid of default, since it's empty in both cases?
         if self.partype == "CMR":
             self._poss_keys = {
-                "default": [],
                 "spatial": ["bounding_box", "polygon"],
                 "optional": [
                     "temporal",
@@ -282,7 +281,6 @@ class Parameters:
             }
         elif self.partype == "subset":
             self._poss_keys = {
-                "default": [],
                 "spatial": ["bbox", "Boundingshape"],
                 "optional": [
                     "time",
@@ -319,6 +317,8 @@ class Parameters:
         ), "You cannot call this function for your parameter type"
         reqkeys = self.poss_keys[self._reqtype]
 
+        # add a check here that all the required keys are present
+
         if all(keys in self.fmted_keys.keys() for keys in reqkeys):
             assert all(
                 self.fmted_keys.get(key, -9999) != -9999 for key in reqkeys
@@ -336,22 +336,14 @@ class Parameters:
             self.partype != "required"
         ), "You cannot call this function for your parameter type"
 
-        default_keys = self.poss_keys["default"]
         spatial_keys = self.poss_keys["spatial"]
 
-        if all(keys in self._fmted_keys.keys() for keys in default_keys):
-            assert all(
-                self.fmted_keys.get(key, -9999) != -9999 for key in default_keys
+        # not the most robust check, but better than nothing...
+        if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
+            assert any(
+                self.fmted_keys.get(key, -9999) != -9999 for key in spatial_keys
             ), "One of your formated parameters is missing a value"
-
-            # not the most robust check, but better than nothing...
-            if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
-                assert any(
-                    self.fmted_keys.get(key, -9999) != -9999 for key in default_keys
-                ), "One of your formated parameters is missing a value"
-                return True
-            else:
-                return False
+            return True
         else:
             return False
 
@@ -392,7 +384,15 @@ class Parameters:
                     "client_string": "icepyx",
                 }
                 for key in reqkeys:
-                    if key in kwargs:
+                    # update docstring!!
+                    if key == "short_name":
+                        try:
+                            self._fmted_keys.update({key: kwargs[key]})
+                        except KeyError:
+                            self._fmted_keys.update({key: kwargs["product"]})
+                    elif key == "version":
+                        self._fmted_keys.update({key: kwargs["version"]})
+                    elif key in kwargs:
                         self._fmted_keys.update({key: kwargs[key]})
                     elif key in defaults:
                         self._fmted_keys.update({key: defaults[key]})
@@ -405,18 +405,8 @@ class Parameters:
             if self.check_values == True and kwargs == None:
                 pass
             else:
-                default_keys = self.poss_keys["default"]
                 spatial_keys = self.poss_keys["spatial"]
                 opt_keys = self.poss_keys["optional"]
-
-                for key in default_keys:
-                    if key in self._fmted_keys.values():
-                        assert self._fmted_keys[key]
-                    else:
-                        if key == "short_name":
-                            self._fmted_keys.update({key: kwargs["product"]})
-                        elif key == "version":
-                            self._fmted_keys.update({key: kwargs["version"]})
 
                 for key in opt_keys:
                     if key == "Coverage" and key in kwargs.keys():

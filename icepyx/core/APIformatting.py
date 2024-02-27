@@ -1,7 +1,6 @@
 # Generate and format information for submitting to API (CMR and NSIDC)
 
 import datetime as dt
-import pprint
 
 
 # ----------------------------------------------------------------------
@@ -173,8 +172,8 @@ def to_string(params):
     param_list = []
     for k, v in params.items():
         if isinstance(v, list):
-            for l in v:
-                param_list.append(k + "=" + l)
+            for i in v:
+                param_list.append(k + "=" + i)
         else:
             param_list.append(k + "=" + str(v))
     # return the parameter string
@@ -253,7 +252,6 @@ class Parameters:
         Use the parameter type to get a list of possible parameter keys.
         """
 
-        # what happens if we get rid of default, since it's empty in both cases?
         if self.partype == "CMR":
             self._poss_keys = {
                 "spatial": ["bounding_box", "polygon"],
@@ -317,8 +315,6 @@ class Parameters:
         ), "You cannot call this function for your parameter type"
         reqkeys = self.poss_keys[self._reqtype]
 
-        # add a check here that all the required keys are present
-
         if all(keys in self.fmted_keys.keys() for keys in reqkeys):
             assert all(
                 self.fmted_keys.get(key, -9999) != -9999 for key in reqkeys
@@ -355,14 +351,19 @@ class Parameters:
         Parameters
         ----------
         **kwargs
-            Keyword inputs containing the needed information to build the parameter list, depending on
-            parameter type, if the already formatted key:value is not submitted as a kwarg.
-            May include optional keyword arguments to be passed to the subsetter. Valid keywords
-            are time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
+            Keyword inputs containing the needed information to build the parameter list, depending
+            on parameter type, if the already formatted key:value is not submitted as a kwarg.
+            May include optional keyword arguments to be passed to the subsetter.
+            Valid keywords are time, bbox OR Boundingshape, format, projection,
+            projection_parameters, and Coverage.
 
-            Keyword argument inputs for 'CMR' may include: dataset (data product), version, start, end, extent_type, spatial_extent
-            Keyword argument inputs for 'required' may include: page_size, page_num, request_mode, include_meta, client_string
-            Keyword argument inputs for 'subset' may include: geom_filepath, start, end, extent_type, spatial_extent
+            Keyword argument inputs for 'CMR' may include:
+            start, end, extent_type, spatial_extent
+            Keyword argument inputs for 'required' may include:
+            product or short_name, version, page_size, page_num,
+            request_mode, include_meta, client_string
+            Keyword argument inputs for 'subset' may include:
+            geom_filepath, start, end, extent_type, spatial_extent
 
         """
 
@@ -383,6 +384,7 @@ class Parameters:
                     "include_meta": "Y",
                     "client_string": "icepyx",
                 }
+
                 for key in reqkeys:
                     # update docstring!!
                     if key == "short_name":
@@ -396,13 +398,11 @@ class Parameters:
                         self._fmted_keys.update({key: kwargs[key]})
                     elif key in defaults:
                         self._fmted_keys.update({key: defaults[key]})
-                    # This should somehow complain if all the required keys are not present at the end of this
-                    # e.g. when product is passed instead of "short_name"
                     else:
                         pass
 
         else:
-            if self.check_values == True and kwargs == None:
+            if self.check_values is True and kwargs is None:
                 pass
             else:
                 spatial_keys = self.poss_keys["spatial"]

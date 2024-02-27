@@ -133,13 +133,13 @@ def combine_params(*param_dicts):
 
     Examples
     --------
-    >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
-    >>> reqparams = {'page_size': 2000, 'page_num': 1}
+    >>> CMRparams = {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
+    >>> reqparams = {'short_name': 'ATL06', 'version': '002', 'page_size': 2000, 'page_num': 1}
     >>> ipx.core.APIformatting.combine_params(CMRparams, reqparams)
-    {'short_name': 'ATL06',
-    'version': '002',
-    'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+    {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
     'bounding_box': '-55,68,-48,71',
+    'short_name': 'ATL06',
+    'version': '002',
     'page_size': 2000,
     'page_num': 1}
     """
@@ -163,11 +163,12 @@ def to_string(params):
 
     Examples
     --------
-    >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
-    >>> reqparams = {'page_size': 2000, 'page_num': 1}
+    >>> CMRparams = {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+    ...             'bounding_box': '-55,68,-48,71'}
+    >>> reqparams = {'short_name': 'ATL06', 'version': '002', 'page_size': 2000, 'page_num': 1}
     >>> params = ipx.core.APIformatting.combine_params(CMRparams, reqparams)
     >>> ipx.core.APIformatting.to_string(params)
-    'short_name=ATL06&version=002&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=2000&page_num=1'
+    'temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&short_name=ATL06&version=002&page_size=2000&page_num=1'
     """
     param_list = []
     for k, v in params.items():

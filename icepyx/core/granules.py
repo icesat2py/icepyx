@@ -11,6 +11,7 @@ from xml.etree import ElementTree as ET
 import zipfile
 
 import icepyx.core.APIformatting as apifmt
+from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.exceptions
 
 
@@ -139,7 +140,7 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
 # DevGoal: this will be a great way/place to manage data from the local file system
 # where the user already has downloaded data!
 # DevNote: currently this class is not tested
-class Granules:
+class Granules(EarthdataAuthMixin):
     """
     Interact with ICESat-2 data granules. This includes finding,
     ordering, and downloading them as well as (not yet implemented) getting already
@@ -157,7 +158,9 @@ class Granules:
         # files=[],
         # session=None
     ):
-        pass
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
+
         # self.avail = avail
         # self.orderIDs = orderIDs
         # self.files = files
@@ -207,7 +210,7 @@ class Granules:
 
         params = apifmt.combine_params(
             CMRparams,
-            {k: reqparams[k] for k in ["page_size"]},
+            {k: reqparams[k] for k in ["short_name", "version", "page_size"]},
             {"provider": "NSIDC_CPRD"},
         )
 
@@ -264,7 +267,6 @@ class Granules:
         subsetparams,
         verbose,
         subset=True,
-        session=None,
         geom_filepath=None,
     ):  # , **kwargs):
         """
@@ -294,11 +296,6 @@ class Granules:
             Spatial subsetting returns all data that are within the area of interest
             (but not complete granules.
             This eliminates false-positive granules returned by the metadata-level search)
-        session : requests.session object
-            A session object authenticating the user to order data using their
-            Earthdata login information.
-            The session object will automatically be passed from the query object if you
-            have successfully logged in there.
         geom_filepath : string, default None
             String of the full filename and path when the spatial input is a file.
 
@@ -312,11 +309,6 @@ class Granules:
         query.Query.order_granules
         """
 
-        if session is None:
-            raise ValueError(
-                "Don't forget to log in to Earthdata using query.earthdata_login()"
-            )
-
         base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
 
         self.get_avail(CMRparams, reqparams)
@@ -326,7 +318,12 @@ class Granules:
                 CMRparams, reqparams, {"agent": "NO"}
             )
         else:
-            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+            request_params = apifmt.combine_params(reqparams, subsetparams)
+
+        if "readable_granule_name[]" in CMRparams.keys():
+            request_params["readable_granule_name[]"] = CMRparams[
+                "readable_granule_name[]"
+            ]
 
         order_fn = ".order_restart"
 
@@ -352,15 +349,12 @@ class Granules:
                 total_pages,
                 " is submitting to NSIDC",
             )
-            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
             request_params.update({"page_num": page_num})
 
-            # DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
-            # into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general
-            # solution does, so the geospatial parameters are included in the parameter dictionaries.
-            request = session.get(base_url, params=request_params)
+            request = self.session.get(base_url, params=request_params)
 
-            # DevGoal: use the request response/number to do some error handling/give the user better messaging for failures
+            # DevGoal: use the request response/number to do some error handling/
+            # give the user better messaging for failures
             # print(request.content)
             root = ET.fromstring(request.content)
             # print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
@@ -394,7 +388,7 @@ class Granules:
                 print("status URL: ", statusURL)
 
             # Find order status
-            request_response = session.get(statusURL)
+            request_response = self.session.get(statusURL)
             if verbose is True:
                 print(
                     "HTTP response from order response URL: ",
@@ -419,7 +413,7 @@ class Granules:
                 )
                 # print('Status is not complete. Trying again')
                 time.sleep(10)
-                loop_response = session.get(statusURL)
+                loop_response = self.session.get(statusURL)
 
                 # Raise bad request: Loop will stop for bad response code.
                 loop_response.raise_for_status()
@@ -473,7 +467,7 @@ class Granules:
 
         return self.orderIDs
 
-    def download(self, verbose, path, session=None, restart=False):
+    def download(self, verbose, path, restart=False):
         """
         Downloads the data for the object's orderIDs, which are generated by ordering data
         from the NSIDC.
@@ -485,10 +479,6 @@ class Granules:
             Progress information is automatically printed regardless of the value of verbose.
         path : string
             String with complete path to desired download directory and location.
-        session : requests.session object
-            A session object authenticating the user to download data using their Earthdata login information.
-            The session object will automatically be passed from the query object if you
-            have successfully logged in there.
         restart : boolean, default False
             Restart your download if it has been interrupted.
             If the kernel has been restarted, but you successfully
@@ -509,13 +499,6 @@ class Granules:
             Unzip the downloaded granules.
         """
 
-        # Note: need to test these checks still
-        if session is None:
-            raise ValueError(
-                "Don't forget to log in to Earthdata using query.earthdata_login()"
-            )
-            # DevGoal: make this a more robust check for an active session
-
         # DevNote: this will replace any existing orderIDs with the saved list
         # (could create confusion depending on whether download was interrupted or kernel restarted)
         order_fn = ".order_restart"
@@ -529,7 +512,8 @@ class Granules:
                 "Please confirm that you have submitted a valid order and it has successfully completed."
             )
 
-        # DevNote: Temporary. Hard code the orderID info files here. order_fn should be consistent with place_order.
+        # DevNote: Temporary. Hard code the orderID info files here.
+        # order_fn should be consistent with place_order.
 
         downid_fn = ".download_ID"
 
@@ -552,7 +536,7 @@ class Granules:
             print("Beginning download of zipped output...")
 
             try:
-                zip_response = session.get(downloadURL)
+                zip_response = self.session.get(downloadURL)
                 # Raise bad request: Loop will stop for bad response code.
                 zip_response.raise_for_status()
                 print(
@@ -566,7 +550,8 @@ class Granules:
                 print(
                     "Unable to download ", order, ". Check granule order for messages."
                 )
-            # DevGoal: move this option back out to the is2class level and implement it in an alternate way?
+            # DevGoal: move this option back out to the is2class level
+            # and implement it in an alternate way?
             #         #Note: extract the data to save it locally
             else:
                 with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:

@@ -318,12 +318,7 @@ class Granules(EarthdataAuthMixin):
                 CMRparams, reqparams, {"agent": "NO"}
             )
         else:
-            request_params = apifmt.combine_params(reqparams, subsetparams)
-
-        if "readable_granule_name[]" in CMRparams.keys():
-            request_params["readable_granule_name[]"] = CMRparams[
-                "readable_granule_name[]"
-            ]
+            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
 
         order_fn = ".order_restart"
 

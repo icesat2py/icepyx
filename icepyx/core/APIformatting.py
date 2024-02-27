@@ -386,7 +386,6 @@ class Parameters:
                 }
 
                 for key in reqkeys:
-                    # update docstring!!
                     if key == "short_name":
                         try:
                             self._fmted_keys.update({key: kwargs[key]})

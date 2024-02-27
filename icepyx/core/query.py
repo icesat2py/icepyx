@@ -592,8 +592,9 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         if not hasattr(self, "_reqparams"):
             self._reqparams = apifmt.Parameters("required", reqtype="search")
+            print("completed the apifmt call")
             self._reqparams.build_params(product=self.product, version=self._version)
-
+            # print(self._reqparams._poss_keys)
         return self._reqparams.fmted_keys
 
     # @property
@@ -994,9 +995,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         Retry request status is: complete
         """
 
-        # per issue on GH, both spatial parameters are being passed
-        # the reason is that the product and version are treated as CMR params,
-        # and ALL CMR (including the non-needed spatial and temporal ones) are passed into the order
         if not hasattr(self, "reqparams"):
             self.reqparams
 
@@ -1041,7 +1039,6 @@ class Query(GenQuery, EarthdataAuthMixin):
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
-                    session=self.session,
                     geom_filepath=self._spatial._geom_file,
                 )
 
@@ -1052,7 +1049,6 @@ class Query(GenQuery, EarthdataAuthMixin):
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,
-                session=self.session,
                 geom_filepath=self._spatial._geom_file,
             )
 

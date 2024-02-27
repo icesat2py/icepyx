@@ -539,9 +539,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.CMRparams
-        {'short_name': 'ATL06',
-        'version': '006',
-        'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+        {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
         'bounding_box': '-55.0,68.0,-48.0,71.0'}
         """
 
@@ -582,19 +580,18 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.reqparams
-        {'page_size': 2000}
+        {'short_name': 'ATL06', 'version': '006', 'page_size': 2000}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         >>> reg_a.reqparams # doctest: +SKIP
-        {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
+        {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
         if not hasattr(self, "_reqparams"):
             self._reqparams = apifmt.Parameters("required", reqtype="search")
-            print("completed the apifmt call")
             self._reqparams.build_params(product=self.product, version=self._version)
-            # print(self._reqparams._poss_keys)
+
         return self._reqparams.fmted_keys
 
     # @property

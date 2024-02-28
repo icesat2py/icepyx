@@ -4,11 +4,10 @@ on:
     types: [submitted]
     branches: development
   workflow_dispatch:
-  push:
 
 jobs:
   diagrams:
-    # if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'approved'
     name: Update UML diagrams
     runs-on: ubuntu-latest
     steps:

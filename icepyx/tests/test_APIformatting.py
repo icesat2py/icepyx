@@ -175,10 +175,7 @@ def test_CMRparams_no_other_inputs():
     assert CMRparams.fmted_keys == {}
     assert CMRparams._check_valid_keys
     # Note: this test must be done before the next one
-    if CMRparams.partype == "required":
-        assert CMRparams.check_req_values() is False
-    else:
-        assert CMRparams.check_values() is False
+    assert CMRparams.check_values() is False
 
     CMRparams.build_params(
         start=dt.datetime(2019, 2, 20, 0, 0),

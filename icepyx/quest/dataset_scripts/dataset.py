@@ -1,11 +1,9 @@
 import warnings
-from icepyx.core.query import GenQuery
 
 warnings.filterwarnings("ignore")
 
 
 class DataSet:
-
     """
     Template parent class for all QUEST supported datasets (i.e. ICESat-2, Argo BGC, Argo, MODIS, etc.).
     All sub-classes must support the following methods for use via the QUEST class.

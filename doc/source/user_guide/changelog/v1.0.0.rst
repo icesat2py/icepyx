@@ -9,28 +9,28 @@ New (and Updated) Features
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - update Read input arguments (#444)
-    
+
     - add filelist and product properties to Read object
     - deprecate filename_pattern and product class Read inputs
     - transition to data_source input as a string (including glob string) or list
     - update tutorial with changes and user guidance for using glob
 
 - enable QUEST kwarg handling (#452)
-    
+
     - add kwarg acceptance for data queries and download_all in quest
     - Add QUEST dataset page to RTD
 
 - Variables as an independent class (#451)
-    
+
     - Refactor Variables class to be user facing functionality
 
 - Expand Variables class to read s3 urls (#464)
-    
+
     - expand extract_product and extract_version to check for s3 url
     - add cloud notes to variables notebook
 
 - add argo functionality to QUEST (#427)
-    
+
     - add argo.py dataset functionality and implementation through QUEST
     - demonstrate QUEST usage via example notebook
     - add save to QUEST DataSet class template
@@ -49,7 +49,7 @@ Bug fixes
 - fix spot number calculation (#458)
 - Update read module coordinate dimension manipulations to use new xarray index (#473)
 - Fix behind EDL tests (#480)
-- fix permissions for publishing to pypi (#487) 
+- fix permissions for publishing to pypi (#487)
 
 
 Deprecations
@@ -76,7 +76,7 @@ Maintenance
     - update docs config files to be compliant
     - temporarily ignore many flake8 error codes until legacy files are updated
 
-- Convert deprecation warnings to errors and remove associated checks #482 
+- Convert deprecation warnings to errors and remove associated checks #482
 
 
 Documentation

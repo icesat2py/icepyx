@@ -7,7 +7,7 @@ icepyx
 
 Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
 
-Current development version (development branch): |Docs Status dev| |Travis dev Build Status| |Code Coverage dev|
+Current development version (development branch): |Docs Status dev| |Travis dev Build Status| |Code Coverage dev| |Pre-commit dev|
 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
@@ -43,6 +43,10 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 
 .. |Code Coverage dev| image:: https://codecov.io/gh/icesat2py/icepyx/branch/development/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx
+
+.. |Pre-commit dev| image:: https://results.pre-commit.ci/badge/github/icesat2py/icepyx/development.svg
+   :target: https://results.pre-commit.ci/latest/github/icesat2py/icepyx/development
+   :alt: pre-commit.ci status
 
 
 Origin and Purpose

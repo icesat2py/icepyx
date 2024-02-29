@@ -58,7 +58,9 @@ By having a *development* branch for daily work, we enable the *main* branch to 
 
 First Steps
 ^^^^^^^^^^^
-Before you begin writing code, please first check out our issues page. Someone may already be working on the same problem, and you may be able to contribute directly to their efforts. If not, create a new issue to describe what you plan to do.
+Before you begin writing code, please first check out our issues page.
+Someone may already be working on the same problem, and you may be able to contribute directly to their efforts.
+If not, create a new issue to describe what you plan to do.
 
 General Guidelines
 ^^^^^^^^^^^^^^^^^^
@@ -73,7 +75,8 @@ General Guidelines
 
 Basic Steps to Contribute
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_. For more detailed steps, please see :ref:`How to Contribute<dev_guide_label>`.
+We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_.
+For more detailed steps, please see :ref:`How to Contribute<dev_guide_label>`.
 
 Licensing
 ^^^^^^^^^

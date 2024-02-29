@@ -33,7 +33,7 @@ jobs:
         python-version: 3.9
 
     - name: Install dependencies
-      run: python -m pip install setuptools wheel
+      run: python -m pip install build setuptools wheel
 
     # This step is only necessary for testing purposes and for TestPyPI
     - name: Fix up version string for TestPyPI
@@ -46,7 +46,7 @@ jobs:
 
     - name: Build source and wheel distributions
       run: |
-        python setup.py sdist bdist_wheel
+        python -m build
         echo ""
         echo "Generated files:"
         ls -lh dist/

@@ -16,4 +16,3 @@ jobs:
       # note linter arguments are supplied via the .flake8 config file
       - name: Annotate PR after running flake8
         uses: TrueBrain/actions-flake8@v2
-

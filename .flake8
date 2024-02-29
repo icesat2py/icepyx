@@ -12,7 +12,7 @@ per-file-ignores =
     doc/source/conf.py:E402
 
 # GOAL: remove these ignores
-; ignore = 
+; ignore =
 ;     # line too long
 ;     E501
 ;     # comparison syntax

@@ -630,6 +630,7 @@ class Read(EarthdataAuthMixin):
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
+
             if isinstance(file, S3File):
                 file.close()
 
@@ -737,8 +738,26 @@ class Read(EarthdataAuthMixin):
             "ATL23",
         ]:
             wanted_grouponly_set = set(wanted_groups_tiered[0])
-            if len(wanted_grouponly_set) == 1:
-                is2ds = xr.open_dataset(file, group=list(wanted_grouponly_set)[0])
+            wanted_groups_list = list(sorted(wanted_grouponly_set))
+            if len(wanted_groups_list) == 1:
+                is2ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
+            else:
+                # NOTE Debugging this section
+                # Test for multiple groups and also multiple files (currently only one file is being tested)
+                # This seems to work as expected on the cloud, but not locally.
+                is2ds = self._build_dataset_template(file)
+                while wanted_groups_list:
+                    ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
+                    wanted_groups_list = wanted_groups_list[1:]
+                    is2ds = is2ds.merge(
+                        ds, join="outer", combine_attrs="drop_conflicts"
+                    )
+                    if hasattr(is2ds.attrs, "description"):
+                        is2ds.attrs["description"] = (
+                            "Group-level data descriptions were removed during Dataset creation."
+                        )
+
+                # xr.open_dataset(file, group=list(wanted_grouponly_set)[0])
             # TODO: handle the more than one group case
 
         # Level 3b, hdf5: ATL11

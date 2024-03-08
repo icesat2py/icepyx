@@ -1,10 +1,10 @@
 .. _api_doc_ref_q:
 
-icepyx-QUEST Documentation (API Reference)
-==========================================
+icepyx-QUEST Documentation (API)
+================================
 
 QUEST and icepyx share the top-level GenQuery class.
-The documentation for GenQuery are within icepyx.Query (<icepyx.GenQuery>).
+The documentation for GenQuery are within `icepyx.Query <icepyx.GenQuery>`_.
 
 .. image:: classes_quest_user_uml.svg
   :width: 600
@@ -12,10 +12,11 @@ The documentation for GenQuery are within icepyx.Query (<icepyx.GenQuery>).
 
 Class diagram illustrating the QUEST component's of icepyx's
 public-facing classes, their attributes and methods, and their relationships.
-A more detailed, developer UML class diagram showing hidden parameters is available on GitHub in the ``icepyx/doc/source/user_guide/documentation/`` directory.
+Additional UML diagrams, including a more detailed, developer UML class diagram showing hidden parameters,
+are available on `GitHub in the icepyx/doc/source/user_guide/documentation/ directory <https://github.com/icesat2py/icepyx/tree/development/doc/source/user_guide/documentation>`_.
 Diagrams are updated automatically after a pull request (PR) is approved and before it is merged to the development branch.
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: -1
 
    quest

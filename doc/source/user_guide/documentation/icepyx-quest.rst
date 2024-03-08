@@ -4,7 +4,7 @@ icepyx-QUEST Documentation (API)
 ================================
 
 QUEST and icepyx share the top-level GenQuery class.
-The documentation for GenQuery are within `icepyx.Query <icepyx.GenQuery>`_.
+The documentation for GenQuery are within `icepyx.Query <query>`_.
 
 .. image:: classes_quest_user_uml.svg
   :width: 600
@@ -17,6 +17,6 @@ are available on `GitHub in the icepyx/doc/source/user_guide/documentation/ dire
 Diagrams are updated automatically after a pull request (PR) is approved and before it is merged to the development branch.
 
 .. toctree::
-    :maxdepth: -1
+  :maxdepth: 1
 
    quest

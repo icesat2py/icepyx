@@ -1,5 +1,5 @@
 What's new in 0.8.0 (12 September 2023)
------------------------------------
+---------------------------------------
 
 These are the changes in icepyx 0.8.0 See :ref:`release` for a full changelog
 including other versions of icepyx.

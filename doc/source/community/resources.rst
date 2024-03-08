@@ -14,7 +14,7 @@ We reserve the right to reject suggested resources that fall outside the scope o
 Other Ways to Access ICESat-2 Data
 ----------------------------------
 icepyx aims to provide intuitive, object-based methods for finding, obtaining, visualizing, and analyzing ICESat-2 data as part of an open,
-reproducible workflow that leverages existing tools wherever possible (see :ref:`Complementary GitHub Repos<complementary_GH_repos_label>`)
+reproducible workflow that leverages existing tools wherever possible (see :ref:`Complementary GitHub Repositories`)
 and can be run locally, using high performance computing, or in the cloud using Pangeo.
 A few other options available for querying, visualizing, and downloading ICESat-2 data files are:
 

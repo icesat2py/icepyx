@@ -19,6 +19,7 @@ A more detailed, developer UML class diagram showing hidden parameters is availa
 Diagrams are updated automatically after a pull request (PR) is approved and before it is merged to the development branch.
 
 .. toctree::
+    :maxdepth: 1
 
    query
    read

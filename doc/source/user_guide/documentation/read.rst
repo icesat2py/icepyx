@@ -17,7 +17,7 @@ Attributes
 ----------
 
 .. autosummary::
-   :toctree:
+   :toctree: ./
 
    Read.filelist
    Read.product

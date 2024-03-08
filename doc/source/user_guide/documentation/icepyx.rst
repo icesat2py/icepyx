@@ -13,7 +13,6 @@ are available on `GitHub in the icepyx/doc/source/user_guide/documentation/ dire
 Diagrams are updated automatically after a pull request (PR) is approved and before it is merged to the development branch.
 
 .. toctree::
-  :maxdepth: 2
 
    query
    read

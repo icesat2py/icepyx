@@ -15,14 +15,6 @@ Constructors
    Quest
 
 
-Attributes
-----------
-
-.. autosummary::
-   :toctree: ../../_icepyx/
-
-   Quest.datasets
-
 Methods
 -------
 

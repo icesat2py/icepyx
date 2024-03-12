@@ -26,6 +26,8 @@ Most of these packages are callable through Python, though others may require ac
   - Users may also convert processed data to .las, .csv, and .kml file formats.
 
 
+.. _complementary_GH_repos_label:
+
 Complementary GitHub Repositories
 ---------------------------------
 Here we describe a selection of publicly available Python code posted on GitHub with applicability for working with ICESat-2 data.

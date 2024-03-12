@@ -17,7 +17,7 @@ Attributes
 ----------
 
 .. autosummary::
-   :toctree: ./
+   :toctree: ../../_icepyx/
 
    Read.filelist
    Read.product

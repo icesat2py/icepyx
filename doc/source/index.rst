@@ -69,7 +69,7 @@ ICESat-2 datasets to enable scientific discovery.
     Query, Unify, Explore SpatioTemporal (QUEST) is a module that extends icepyx functionality to other
     datasets.
 
-    .. link-button:: `<https://icepyx.readthedocs.io/en/latest/example_notebooks/QUEST_argo_data_access.html>`_
+    .. link-button:: _api_quest_ref
         :type: ref
         :text: Start your QUEST!
         :classes: stretched-link btn-outline-primary btn-block

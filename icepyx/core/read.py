@@ -333,6 +333,8 @@ class Read(EarthdataAuthMixin):
         # fix to handle fact that some VersionID metadata is wrong
         # see: https://forum.earthdata.nasa.gov/viewtopic.php?t=5154
         # (v006, v003, v003, respectively)
+        # Note that this results in a login being required even for a local file
+        # because otherwise Variables tries to get the version from the file (ln99).
         bad_metadata = ["ATL11", "ATL14", "ATL15"]
         if self._product in bad_metadata and not hasattr(self, "_read_vars"):
             self._read_vars = Variables(

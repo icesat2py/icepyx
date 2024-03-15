@@ -16,7 +16,7 @@ def _validate_product(product):
     Confirm a valid ICESat-2 product was specified
     """
     error_msg = (
-        "A valid product string was not provided."
+        "A valid product string was not provided. "
         "Check user input, if given, or file metadata."
     )
     if isinstance(product, str):

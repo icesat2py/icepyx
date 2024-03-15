@@ -744,9 +744,6 @@ class Read(EarthdataAuthMixin):
             if len(wanted_groups_list) == 1:
                 is2ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
             else:
-                # NOTE Debugging this section
-                # Test for multiple groups and also multiple files (currently only one file is being tested)
-                # This seems to work as expected on the cloud, but not locally.
                 is2ds = self._build_dataset_template(file)
                 while wanted_groups_list:
                     ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
@@ -758,9 +755,6 @@ class Read(EarthdataAuthMixin):
                         is2ds.attrs["description"] = (
                             "Group-level data descriptions were removed during Dataset creation."
                         )
-
-                # xr.open_dataset(file, group=list(wanted_grouponly_set)[0])
-            # TODO: handle the more than one group case
 
         # Level 3b, hdf5: ATL11
         elif self.product in ["ATL11"]:
@@ -778,11 +772,6 @@ class Read(EarthdataAuthMixin):
             wanted_groups_set.remove("ancillary_data")
             # Note: the sorting is critical for datasets with highly nested groups
             wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
-
-            # # returns wanted groups as a list of lists with group path string elements separated
-            # _, wanted_groups_tiered = Variables.parse_var_list(
-            #     groups_list, tiered=True, tiered_vars=True
-            # )
 
             while wanted_groups_list:
                 # print(wanted_groups_list)
@@ -812,10 +801,6 @@ class Read(EarthdataAuthMixin):
             wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
                 wanted_groups_set
             )
-            # # returns wanted groups as a list of lists with group path string elements separated
-            # _, wanted_groups_tiered = Variables.parse_var_list(
-            #     groups_list, tiered=True, tiered_vars=True
-            # )
 
             while wanted_groups_list:
                 grp_path = wanted_groups_list[0]

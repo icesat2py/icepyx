@@ -633,8 +633,9 @@ class Read(EarthdataAuthMixin):
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
 
-            if isinstance(file, S3File):
-                file.close()
+            # Closing the file prevents further operations on the dataset
+            # if isinstance(file, S3File):
+            #     file.close()
 
         if len(all_dss) == 1:
             return all_dss[0]
@@ -753,7 +754,7 @@ class Read(EarthdataAuthMixin):
                     is2ds = is2ds.merge(
                         ds, join="outer", combine_attrs="drop_conflicts"
                     )
-                    if hasattr(is2ds.attrs, "description"):
+                    if hasattr(is2ds, "description"):
                         is2ds.attrs["description"] = (
                             "Group-level data descriptions were removed during Dataset creation."
                         )

@@ -724,9 +724,8 @@ class Read(EarthdataAuthMixin):
         # DEVNOTE: elif does not actually apply wanted variable list,
         # and has not been tested for merging multiple files into one ds
         # of a gridded product
-        # if has only been run on ATL15, and not for different user var/beam/keyword list inputs
-        # it also will get the entire group but ignore any variable requests
         # TODO: all products need to be tested, and quicklook products added or explicitly excluded
+        # consider looking for netcdf file extension instead of using product
         # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
         if self.product in [
             "ATL14",

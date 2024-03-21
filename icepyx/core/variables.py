@@ -80,7 +80,7 @@ class Variables(EarthdataAuthMixin):
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self, auth=auth)
-
+        """
         # Set the product and version from either the input args or the file
         if path:
             self._path = val.check_s3bucket(path)
@@ -105,6 +105,8 @@ class Variables(EarthdataAuthMixin):
             raise TypeError(
                 "Either a path or a product need to be given as input arguments."
             )
+        """
+        self._path = path
 
         self._avail = avail
         self.wanted = wanted

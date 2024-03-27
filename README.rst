@@ -95,7 +95,7 @@ Listed below are example Jupyter notebooks for working with ICESat-2 (IS2).
 
 `IS2_data_read-in <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_read-in.html>`_
 
-`IS2_cloud_data_access (BETA ONLY) <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_cloud_data_access.html>`_
+`IS2_cloud_data_access <https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_cloud_data_access.html>`_
 
 
 Citing icepyx

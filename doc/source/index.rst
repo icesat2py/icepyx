@@ -24,6 +24,7 @@ We are working together to develop a shared library of resources -
 including existing resources, new code, tutorials, and use-cases/examples -
 that simplify the process of querying, obtaining, analyzing, and manipulating
 ICESat-2 datasets to enable scientific discovery.
+To further enhance data discovery, we have developed the QUEST module to facilitate querying of ICESat-2 data and complimentary Argo oceanographic data, with additional dataset support expected in the future.
 
 
 .. panels::

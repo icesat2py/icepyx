@@ -78,6 +78,8 @@ Basic Steps to Contribute
 We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_.
 For more detailed steps, please see :ref:`How to Contribute<dev_guide_label>`.
 
+For users that would like to add a dataset to the QUEST module, we are currently developing a Jupyter notebook to guide users through the necessary steps.
+
 Licensing
 ^^^^^^^^^
 icepyx is licensed under the `BSD-3 license <https://opensource.org/licenses/BSD-3-Clause>`_. Contributed code will also be licensed under BSD-3. If you did not write the code yourself, it is your responsibility to ensure that the existing license is compatible and included in the contributed files or you have documented permission from the original author to relicense the code.

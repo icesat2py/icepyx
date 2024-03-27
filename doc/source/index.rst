@@ -136,6 +136,7 @@ ICESat-2 datasets to enable scientific discovery.
    :caption: User Guide
 
    user_guide/documentation/icepyx
+   user_guide/documentation/icepyx-quest
    user_guide/changelog/index
 
 .. toctree::

@@ -137,6 +137,7 @@ To further enhance data discovery, we have developed the QUEST module to facilit
    :caption: User Guide
 
    user_guide/documentation/icepyx
+   user_guide/documentation/icepyx-quest
    user_guide/changelog/index
 
 .. toctree::

@@ -340,6 +340,25 @@
 <!-- icepyx.core.spatial.Spatial -->
 <g id="node15" class="node">
 <title>icepyx.core.spatial.Spatial</title>
+<<<<<<< HEAD
+<polygon fill="none" stroke="black" points="51,-549 51,-783 346,-783 346,-549 51,-549"/>
+<text text-anchor="start" x="173" y="-767.8" font-family="Times,serif" font-size="14.00">Spatial</text>
+<polyline fill="none" stroke="black" points="51,-760 346,-760 "/>
+<text text-anchor="start" x="59" y="-744.8" font-family="Times,serif" font-size="14.00">_ext_type : str</text>
+<text text-anchor="start" x="59" y="-729.8" font-family="Times,serif" font-size="14.00">_gdf_spat : GeoDataFrame, DataFrame</text>
+<text text-anchor="start" x="59" y="-714.8" font-family="Times,serif" font-size="14.00">_geom_file : NoneType</text>
+<text text-anchor="start" x="59" y="-699.8" font-family="Times,serif" font-size="14.00">_spatial_ext</text>
+<text text-anchor="start" x="59" y="-684.8" font-family="Times,serif" font-size="14.00">_xdateln</text>
+<text text-anchor="start" x="59" y="-669.8" font-family="Times,serif" font-size="14.00">extent</text>
+<text text-anchor="start" x="59" y="-654.8" font-family="Times,serif" font-size="14.00">extent_as_gdf</text>
+<text text-anchor="start" x="59" y="-639.8" font-family="Times,serif" font-size="14.00">extent_file</text>
+<text text-anchor="start" x="59" y="-624.8" font-family="Times,serif" font-size="14.00">extent_type</text>
+<polyline fill="none" stroke="black" points="51,-617 346,-617 "/>
+<text text-anchor="start" x="117" y="-601.8" font-family="Times,serif" font-size="14.00">__init__(spatial_extent)</text>
+<text text-anchor="start" x="117" y="-586.8" font-family="Times,serif" font-size="14.00">__str__()</text>
+<text text-anchor="start" x="117" y="-571.8" font-family="Times,serif" font-size="14.00">fmt_for_CMR()</text>
+<text text-anchor="start" x="117" y="-556.8" font-family="Times,serif" font-size="14.00">fmt_for_EGI()</text>
+=======
 <polygon fill="none" stroke="black" points="1050,-526.5 1050,-760.5 1256,-760.5 1256,-526.5 1050,-526.5"/>
 <text text-anchor="start" x="1127.5" y="-745.3" font-family="Times,serif" font-size="14.00">Spatial</text>
 <polyline fill="none" stroke="black" points="1050,-737.5 1256,-737.5 "/>
@@ -357,6 +376,7 @@
 <text text-anchor="start" x="1071.5" y="-564.3" font-family="Times,serif" font-size="14.00">__str__()</text>
 <text text-anchor="start" x="1071.5" y="-549.3" font-family="Times,serif" font-size="14.00">fmt_for_CMR()</text>
 <text text-anchor="start" x="1071.5" y="-534.3" font-family="Times,serif" font-size="14.00">fmt_for_EGI()</text>
+>>>>>>> development
 </g>
 <!-- icepyx.core.spatial.Spatial&#45;&gt;icepyx.core.query.GenQuery -->
 <g id="edge14" class="edge">

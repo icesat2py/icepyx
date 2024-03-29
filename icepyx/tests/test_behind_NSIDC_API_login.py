@@ -13,13 +13,25 @@ import icepyx.core.is2ref as is2ref
 # or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
-@pytest.fixture(scope="module")
-def reg():
-    live_reg = ipx.Query(
-        "ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"], version="006"
-    )
-    yield live_reg
-    del live_reg
+@pytest.fixture(
+    scope="module",
+    params=[
+        dict(
+            product="ATL14",
+            spatial_extent=[20, 79, 28, 80],
+            date_range=["2019-03-29", "2022-03-22"],
+            version="002",
+        ),
+        dict(
+            product="ATL06",
+            spatial_extent=[-55, 68, -48, 71],
+            date_range=["2019-02-22", "2019-02-28"],
+            version="006",
+        ),
+    ],
+)
+def reg(request):
+    return ipx.Query(**request.param)
 
 
 @pytest.fixture(scope="module")
@@ -37,8 +49,9 @@ def test_get_custom_options_output(session):
     obs = is2ref._get_custom_options(session, "ATL06", "006")
     with open("./icepyx/tests/ATL06v06_options.json") as exp_json:
         exp = json.load(exp_json)
-        assert all(keys in obs.keys() for keys in exp.keys())
-        assert all(obs[key] == exp[key] for key in exp.keys())
+        for key in exp.keys():
+            assert key in obs.keys()
+            assert exp[key] == obs[key]
 
 
 ########## query module ##########

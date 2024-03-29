@@ -6,23 +6,23 @@
     :target: https://doi.org/10.21105/joss.04912
 
 
-icepyx     |version badge|  |JOSS|  
-==========================
+icepyx     |version badge|  |JOSS|
+==================================
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-Quick Links: 
+Quick Links:
 :ref:`Installation<install_ref>` |
 :ref:`Citation<citation>` |
 `Examples <example_notebooks/IS2_data_access.html>`_ |
 `Source Code <https://github.com/icesat2py/icepyx>`_ |
 :ref:`Contact<contact_ref_label>`
 
-icepyx is both a software library and a community composed of ICESat-2 data users, 
-developers, and the scientific community. 
-We are working together to develop a shared library of resources - 
-including existing resources, new code, tutorials, and use-cases/examples - 
-that simplify the process of querying, obtaining, analyzing, and manipulating 
+icepyx is both a software library and a community composed of ICESat-2 data users,
+developers, and the scientific community.
+We are working together to develop a shared library of resources -
+including existing resources, new code, tutorials, and use-cases/examples -
+that simplify the process of querying, obtaining, analyzing, and manipulating
 ICESat-2 datasets to enable scientific discovery.
 
 
@@ -62,11 +62,11 @@ ICESat-2 datasets to enable scientific discovery.
 
     ---
     :img-top: https://cdn-icons-png.flaticon.com/512/4230/4230997.png
-    
+
     **Development Guide**
     ^^^^^^^^^^^^^^^^^^^^^
 
-    Have an idea or an ancillary dataset to contribute to icepyx? Go here for information on best practices 
+    Have an idea or an ancillary dataset to contribute to icepyx? Go here for information on best practices
     for developing and contributing to icepyx.
 
     .. link-button:: dev_guide_label
@@ -128,6 +128,7 @@ ICESat-2 datasets to enable scientific discovery.
    example_notebooks/IS2_data_visualization
    example_notebooks/IS2_data_read-in
    example_notebooks/IS2_cloud_data_access
+   example_notebooks/QUEST_argo_data_access
 
 .. toctree::
    :maxdepth: 2
@@ -135,6 +136,7 @@ ICESat-2 datasets to enable scientific discovery.
    :caption: User Guide
 
    user_guide/documentation/icepyx
+   user_guide/documentation/icepyx-quest
    user_guide/changelog/index
 
 .. toctree::
@@ -145,8 +147,9 @@ ICESat-2 datasets to enable scientific discovery.
    contributing/contributors_link
    contributing/contribution_guidelines
    contributing/how_to_contribute
-   contributing/icepyx_internals
    contributing/attribution_link
+   contributing/icepyx_internals
+   contributing/quest-available-datasets
    contributing/development_plan
    contributing/release_guide
    contributing/code_of_conduct_link
@@ -161,5 +164,5 @@ ICESat-2 datasets to enable scientific discovery.
    tracking/citations
    tracking/downloads
 
-Icon images from `Flaticon <https://flaticon.com>`_ (by Freepik, Pixel perfect, and Eucalyp) 
+Icon images from `Flaticon <https://flaticon.com>`_ (by Freepik, Pixel perfect, and Eucalyp)
 and `NASA <https://www.nasa.gov/>`_.

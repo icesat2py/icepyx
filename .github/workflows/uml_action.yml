@@ -2,6 +2,8 @@ name: Update UML diagrams
 on:
   pull_request_review:
     types: [submitted]
+    branches: development
+  workflow_dispatch:
 
 jobs:
   diagrams:
@@ -17,12 +19,13 @@ jobs:
         run: |
           pip install -U pip
           pip install -r requirements.txt
-          pip install icepyx pylint 
+          pip install icepyx pylint
           sudo apt-get install graphviz
       - name: run pyreverse
         run: |
           pyreverse ./icepyx/core -p user_uml -o svg
-          pyreverse ./icepyx/core -f ALL -p dev_uml -o svg
+          pyreverse ./icepyx/quest -p quest_user_uml -o svg
+          pyreverse ./icepyx/core ./icepyx/quest -f ALL -p dev_uml -o svg
           rm ./packages_dev_uml.svg
           mv ./*.svg ./doc/source/user_guide/documentation/
       - name: Commit changes

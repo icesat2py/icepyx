@@ -1,9 +1,9 @@
 """
 Interactive visualization of spatial extent and ICESat-2 elevations
 """
+
 import concurrent.futures
-import datetime
-import re
+import warnings
 
 import backoff
 import dask.array as da
@@ -141,7 +141,6 @@ class Visualize:
         cycles=None,
         tracks=None,
     ):
-
         if query_obj:
             pass
         else:
@@ -240,7 +239,6 @@ class Visualize:
         is2_file_list = []
 
         for bbox_i in bbox_list:
-
             try:
                 region = ipx.Query(
                     self.product,
@@ -332,7 +330,13 @@ class Visualize:
             A dask array containing the ICESat-2 elevation data.
         """
 
-        base_url = "https://openaltimetry.org/data/api/icesat2/level3a"
+        warnings.warn(
+            "NOTICE: visualizations requiring the OpenAltimetry API are currently (October 2023) "
+            "unavailable while hosting of OpenAltimetry transitions from UCSD to NSIDC."
+            "A ticket has been issued to restore programmatic API access."
+        )
+
+        base_url = "http://openaltimetry.earthdatacloud.nasa.gov/data/api/icesat2"
         trackId, Date, cycle, bbox, product = paras
 
         # Generate API
@@ -357,7 +361,6 @@ class Visualize:
 
         # get data we need (with the correct date)
         try:
-
             df_series = df.query(expr="date == @Date").iloc[0]
             beam_data = df_series.beams
 
@@ -476,7 +479,6 @@ class Visualize:
             return (None,) * 2
 
         else:
-
             cols = (
                 ["lat", "lon", "elevation", "canopy", "rgt", "cycle"]
                 if self.product == "ATL08"

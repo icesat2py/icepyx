@@ -1,4 +1,5 @@
 backoff
+dask[dataframe]
 datashader
 earthaccess>=0.5.1
 fiona
@@ -7,8 +8,6 @@ h5netcdf
 h5py
 holoviews
 hvplot
-intake
-intake-xarray
 matplotlib
 numpy
 requests

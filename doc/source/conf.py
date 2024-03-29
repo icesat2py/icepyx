@@ -10,12 +10,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import datetime
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../sphinxext"))
-import datetime
 
 import icepyx
 
@@ -77,7 +77,7 @@ bibtex_bibfiles = ["tracking/icepyx_pubs.bib"]
 autosectionlabel_prefix_document = True
 autosummary_generate = True
 numpydoc_show_class_members = False
-jupyter_execute_notebooks = "off"
+nb_execution_mode = "off"
 suppress_warnings = ["myst.header"]  # suppress non-consecutive header warning
 
 # -- Options for HTML output -------------------------------------------------
@@ -90,7 +90,7 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "logo_only": True,
     "display_version": False,
-    "prev_next_buttons_location": None,
+    "prev_next_buttons_location": "bottom",
     "navigation_depth": 4,
     "collapse_navigation": True,
 }
@@ -121,7 +121,8 @@ def setup(app):
 # this should possibly be moved to the sphinxext directory as a standalone .py file
 # -- custom style for pybtex output -------------------------------------------
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle
-from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
+
+# from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
 from pybtex.plugin import register_plugin
 
 # I seem to be unable to figure out how to control what is used for the label. It would

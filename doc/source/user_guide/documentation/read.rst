@@ -19,7 +19,8 @@ Attributes
 .. autosummary::
    :toctree: ../../_icepyx/
 
-   Read.is2catalog
+   Read.filelist
+   Read.product
    Read.vars
 
 

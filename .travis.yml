@@ -27,10 +27,18 @@ stages:
 jobs:
   include:
     - stage: basic tests
-      script: pytest --verbose icepyx/ --cov app --ignore icepyx/tests/test_behind_NSIDC_API_login.py
-      after_success: codecov/codecov-action@v3
-
+      script: pytest icepyx/ --verbose --cov app --ignore icepyx/tests/test_behind_NSIDC_API_login.py
+      # includes an integrity check of the uploader as recommended by CodeCov
+      after_success:
+        - curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+        - curl -Os https://uploader.codecov.io/latest/linux/codecov
+        - curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+        - curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+        - gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+        - shasum -a 256 -c codecov.SHA256SUM
+        - chmod +x codecov
+        - ./codecov -t ${CODECOV_TOKEN}
     - stage: behind Earthdata
       script:
-        - export NSIDC_LOGIN=$NSIDC_LOGIN
+        - export EARTHDATA_PASSWORD=$NSIDC_LOGIN
         - pytest --verbose icepyx/tests/test_behind_NSIDC_API_login.py

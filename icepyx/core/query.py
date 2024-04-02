@@ -1110,7 +1110,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
 
-        self._granules.download(verbose, path, session=self.session, restart=restart)
+        self._granules.download(verbose, path, restart=restart)
 
     # DevGoal: add testing? What do we test, and how, given this is a visualization.
     # DevGoal(long term): modify this to accept additional inputs, etc.

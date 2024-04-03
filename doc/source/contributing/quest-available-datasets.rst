@@ -18,7 +18,7 @@ For interested readers, a preprint outlining the QUEST module and its applicatio
 `Argo Workflow Example <https://icepyx.readthedocs.io/en/latest/example_notebooks/QUEST_argo_data_access.html>`_
 
 QUEST uses the Argovis API to access Argo data, so users are encouraged to use the following citation:
-
+.. container:: custom
 
   Tucker, T., D. Giglio, M. Scanderbeg, and S.S.P. Shen, 2020.
   Argovis: A Web Applications for Fast Delivery, Visualization, and Analysis of Argo data.

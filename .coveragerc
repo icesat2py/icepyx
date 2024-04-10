@@ -3,5 +3,4 @@ branch = True
 source = icepyx
 omit =
     setup.py
-    test/*
     doc/*

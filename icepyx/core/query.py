@@ -532,15 +532,14 @@ class Query(GenQuery, EarthdataAuthMixin):
     @property
     def CMRparams(self):
         """
-        Display the CMR key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
+        Display the CMR key:value pairs that will be submitted.
+        It generates the dictionary if it does not already exist.
 
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.CMRparams
-        {'short_name': 'ATL06',
-        'version': '006',
-        'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+        {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
         'bounding_box': '-55.0,68.0,-48.0,71.0'}
         """
 
@@ -552,7 +551,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         # dictionary of optional CMR parameters
         kwargs = {}
         # temporal CMR parameters
-        if hasattr(self, "_temporal"):
+        if hasattr(self, "_temporal") and self.product != "ATL11":
             kwargs["start"] = self._temporal._start
             kwargs["end"] = self._temporal._end
         # granule name CMR parameters (orbital or file name)
@@ -564,8 +563,6 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
-                product=self.product,
-                version=self._version,
                 extent_type=self._spatial._ext_type,
                 spatial_extent=self._spatial.fmt_for_CMR(),
                 **kwargs,
@@ -583,22 +580,23 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.reqparams
-        {'page_size': 2000}
+        {'short_name': 'ATL06', 'version': '006', 'page_size': 2000}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         >>> reg_a.reqparams # doctest: +SKIP
-        {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
+        {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
         if not hasattr(self, "_reqparams"):
             self._reqparams = apifmt.Parameters("required", reqtype="search")
-            self._reqparams.build_params()
+            self._reqparams.build_params(product=self.product, version=self._version)
 
         return self._reqparams.fmted_keys
 
     # @property
-    # DevQuestion: if I make this a property, I get a "dict" object is not callable when I try to give input kwargs... what approach should I be taking?
+    # DevQuestion: if I make this a property, I get a "dict" object is not callable
+    # when I try to give input kwargs... what approach should I be taking?
     def subsetparams(self, **kwargs):
         """
         Display the subsetting key:value pairs that will be submitted.
@@ -629,7 +627,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             self._subsetparams = apifmt.Parameters("subset")
 
         # temporal subsetting parameters
-        if hasattr(self, "temporal"):
+        if hasattr(self, "_temporal") and self.product != "ATL11":
             kwargs["start"] = self._temporal._start
             kwargs["end"] = self._temporal._end
 
@@ -1031,14 +1029,13 @@ class Query(GenQuery, EarthdataAuthMixin):
                     "NSIDC only allows ordering of one granule by name at a time; your orders will be placed accordingly."
                 )
             for gran in gran_name_list:
-                tempCMRparams.update({"readable_granule_name[]": gran})
+                tempCMRparams["readable_granule_name[]"] = gran
                 self._granules.place_order(
                     tempCMRparams,
                     self.reqparams,
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
-                    session=self.session,
                     geom_filepath=self._spatial._geom_file,
                 )
 
@@ -1049,7 +1046,6 @@ class Query(GenQuery, EarthdataAuthMixin):
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,
-                session=self.session,
                 geom_filepath=self._spatial._geom_file,
             )
 
@@ -1114,7 +1110,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
 
-        self._granules.download(verbose, path, session=self.session, restart=restart)
+        self._granules.download(verbose, path, restart=restart)
 
     # DevGoal: add testing? What do we test, and how, given this is a visualization.
     # DevGoal(long term): modify this to accept additional inputs, etc.

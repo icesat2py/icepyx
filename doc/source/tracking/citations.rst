@@ -43,6 +43,7 @@ Presentations that feature or explain icepyx
     :style: mystyle
 
     quest2023agu
+    selper2023
     js2022agu
     2022_IS2-HW-tutorials
     js2021agu
@@ -57,6 +58,7 @@ Research that utilizes icepyx for ICESat-2 data
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
 
+    Tian2024
     Freer2023
     Idestrom2023
     Mallinis2023

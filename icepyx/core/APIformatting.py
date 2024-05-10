@@ -1,7 +1,6 @@
 # Generate and format information for submitting to API (CMR and NSIDC)
 
 import datetime as dt
-import pprint
 
 
 # ----------------------------------------------------------------------
@@ -134,13 +133,13 @@ def combine_params(*param_dicts):
 
     Examples
     --------
-    >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
-    >>> reqparams = {'page_size': 2000, 'page_num': 1}
+    >>> CMRparams = {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
+    >>> reqparams = {'short_name': 'ATL06', 'version': '002', 'page_size': 2000, 'page_num': 1}
     >>> ipx.core.APIformatting.combine_params(CMRparams, reqparams)
-    {'short_name': 'ATL06',
-    'version': '002',
-    'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+    {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
     'bounding_box': '-55,68,-48,71',
+    'short_name': 'ATL06',
+    'version': '002',
     'page_size': 2000,
     'page_num': 1}
     """
@@ -164,17 +163,18 @@ def to_string(params):
 
     Examples
     --------
-    >>> CMRparams = {'short_name': 'ATL06', 'version': '002', 'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z', 'bounding_box': '-55,68,-48,71'}
-    >>> reqparams = {'page_size': 2000, 'page_num': 1}
+    >>> CMRparams = {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+    ...             'bounding_box': '-55,68,-48,71'}
+    >>> reqparams = {'short_name': 'ATL06', 'version': '002', 'page_size': 2000, 'page_num': 1}
     >>> params = ipx.core.APIformatting.combine_params(CMRparams, reqparams)
     >>> ipx.core.APIformatting.to_string(params)
-    'short_name=ATL06&version=002&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&page_size=2000&page_num=1'
+    'temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z&bounding_box=-55,68,-48,71&short_name=ATL06&version=002&page_size=2000&page_num=1'
     """
     param_list = []
     for k, v in params.items():
         if isinstance(v, list):
-            for l in v:
-                param_list.append(k + "=" + l)
+            for i in v:
+                param_list.append(k + "=" + i)
         else:
             param_list.append(k + "=" + str(v))
     # return the parameter string
@@ -255,7 +255,6 @@ class Parameters:
 
         if self.partype == "CMR":
             self._poss_keys = {
-                "default": ["short_name", "version"],
                 "spatial": ["bounding_box", "polygon"],
                 "optional": [
                     "temporal",
@@ -266,8 +265,10 @@ class Parameters:
             }
         elif self.partype == "required":
             self._poss_keys = {
-                "search": ["page_size"],
+                "search": ["short_name", "version", "page_size"],
                 "download": [
+                    "short_name",
+                    "version",
                     "page_size",
                     "page_num",
                     "request_mode",
@@ -279,7 +280,6 @@ class Parameters:
             }
         elif self.partype == "subset":
             self._poss_keys = {
-                "default": [],
                 "spatial": ["bbox", "Boundingshape"],
                 "optional": [
                     "time",
@@ -305,6 +305,7 @@ class Parameters:
                 "An invalid key (" + key + ") was passed. Please remove it using `del`"
             )
 
+    # DevNote: can check_req_values and check_values be combined?
     def check_req_values(self):
         """
         Check that all of the required keys have values, if the key was passed in with
@@ -333,22 +334,14 @@ class Parameters:
             self.partype != "required"
         ), "You cannot call this function for your parameter type"
 
-        default_keys = self.poss_keys["default"]
         spatial_keys = self.poss_keys["spatial"]
 
-        if all(keys in self._fmted_keys.keys() for keys in default_keys):
-            assert all(
-                self.fmted_keys.get(key, -9999) != -9999 for key in default_keys
+        # not the most robust check, but better than nothing...
+        if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
+            assert any(
+                self.fmted_keys.get(key, -9999) != -9999 for key in spatial_keys
             ), "One of your formated parameters is missing a value"
-
-            # not the most robust check, but better than nothing...
-            if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
-                assert any(
-                    self.fmted_keys.get(key, -9999) != -9999 for key in default_keys
-                ), "One of your formated parameters is missing a value"
-                return True
-            else:
-                return False
+            return True
         else:
             return False
 
@@ -360,14 +353,19 @@ class Parameters:
         Parameters
         ----------
         **kwargs
-            Keyword inputs containing the needed information to build the parameter list, depending on
-            parameter type, if the already formatted key:value is not submitted as a kwarg.
-            May include optional keyword arguments to be passed to the subsetter. Valid keywords
-            are time, bbox OR Boundingshape, format, projection, projection_parameters, and Coverage.
+            Keyword inputs containing the needed information to build the parameter list, depending
+            on parameter type, if the already formatted key:value is not submitted as a kwarg.
+            May include optional keyword arguments to be passed to the subsetter.
+            Valid keywords are time, bbox OR Boundingshape, format, projection,
+            projection_parameters, and Coverage.
 
-            Keyword argument inputs for 'CMR' may include: dataset (data product), version, start, end, extent_type, spatial_extent
-            Keyword argument inputs for 'required' may include: page_size, page_num, request_mode, include_meta, client_string
-            Keyword argument inputs for 'subset' may include: geom_filepath, start, end, extent_type, spatial_extent
+            Keyword argument inputs for 'CMR' may include:
+            start, end, extent_type, spatial_extent
+            Keyword argument inputs for 'required' may include:
+            product or short_name, version, page_size, page_num,
+            request_mode, include_meta, client_string
+            Keyword argument inputs for 'subset' may include:
+            geom_filepath, start, end, extent_type, spatial_extent
 
         """
 
@@ -388,8 +386,16 @@ class Parameters:
                     "include_meta": "Y",
                     "client_string": "icepyx",
                 }
+
                 for key in reqkeys:
-                    if key in kwargs:
+                    if key == "short_name":
+                        try:
+                            self._fmted_keys.update({key: kwargs[key]})
+                        except KeyError:
+                            self._fmted_keys.update({key: kwargs["product"]})
+                    elif key == "version":
+                        self._fmted_keys.update({key: kwargs["version"]})
+                    elif key in kwargs:
                         self._fmted_keys.update({key: kwargs[key]})
                     elif key in defaults:
                         self._fmted_keys.update({key: defaults[key]})
@@ -397,21 +403,11 @@ class Parameters:
                         pass
 
         else:
-            if self.check_values == True and kwargs == None:
+            if self.check_values is True and kwargs is None:
                 pass
             else:
-                default_keys = self.poss_keys["default"]
                 spatial_keys = self.poss_keys["spatial"]
                 opt_keys = self.poss_keys["optional"]
-
-                for key in default_keys:
-                    if key in self._fmted_keys.values():
-                        assert self._fmted_keys[key]
-                    else:
-                        if key == "short_name":
-                            self._fmted_keys.update({key: kwargs["product"]})
-                        elif key == "version":
-                            self._fmted_keys.update({key: kwargs["version"]})
 
                 for key in opt_keys:
                     if key == "Coverage" and key in kwargs.keys():

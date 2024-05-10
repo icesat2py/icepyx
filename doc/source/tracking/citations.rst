@@ -58,6 +58,7 @@ Research that utilizes icepyx for ICESat-2 data
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
 
+    Tian2024
     Freer2023
     Idestrom2023
     Mallinis2023

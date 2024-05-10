@@ -41,7 +41,7 @@ Presentations that feature or explain icepyx
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
-    
+
     quest2023agu
     selper2023
     js2022agu

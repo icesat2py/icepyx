@@ -256,13 +256,9 @@ with_mirrors,2021-03-08,6
 with_mirrors,2021-03-09,14
 with_mirrors,2021-03-10,7
 with_mirrors,2021-03-11,41
-with_mirrors,2021-03-12,41
 with_mirrors,2021-03-12,100
-with_mirrors,2021-03-13,29
 with_mirrors,2021-03-13,36
-with_mirrors,2021-03-14,21
 with_mirrors,2021-03-14,24
-with_mirrors,2021-03-15,7
 with_mirrors,2021-03-15,18
 with_mirrors,2021-03-16,46
 with_mirrors,2021-03-17,36
@@ -512,9 +508,7 @@ with_mirrors,2021-11-19,15
 with_mirrors,2021-11-20,41
 with_mirrors,2021-11-21,7
 with_mirrors,2021-11-22,39
-with_mirrors,2021-11-23,13
 with_mirrors,2021-11-23,26
-with_mirrors,2021-11-24,3
 with_mirrors,2021-11-24,34
 with_mirrors,2021-11-25,20
 with_mirrors,2021-11-26,3
@@ -1590,7 +1584,6 @@ without_mirrors,2021-03-08,1
 without_mirrors,2021-03-09,2
 without_mirrors,2021-03-10,3
 without_mirrors,2021-03-11,11
-without_mirrors,2021-03-12,8
 without_mirrors,2021-03-12,30
 without_mirrors,2021-03-13,1
 without_mirrors,2021-03-15,2
@@ -1828,9 +1821,7 @@ without_mirrors,2021-11-19,9
 without_mirrors,2021-11-20,11
 without_mirrors,2021-11-21,7
 without_mirrors,2021-11-22,14
-without_mirrors,2021-11-23,7
 without_mirrors,2021-11-23,11
-without_mirrors,2021-11-24,3
 without_mirrors,2021-11-24,7
 without_mirrors,2021-11-25,14
 without_mirrors,2021-11-26,3

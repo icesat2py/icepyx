@@ -4,7 +4,7 @@ icepyx Internals
 Authentication
 --------------
 Authentication in icepyx is handled using a Mixin class. A Mixin class is a class
-which defines functionality that may be desired by multiple other classes within 
+which defines functionality that may be desired by multiple other classes within
 a library.
 For example, at this time the Query, Variables, and Read classes need
 to be able to authenticate. Instead of defining the same properties and

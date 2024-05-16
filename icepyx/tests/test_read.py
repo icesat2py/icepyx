@@ -1,96 +1,85 @@
 import pytest
 
-from icepyx.core.read import Read
 import icepyx.core.read as read
 
 
-def test_check_datasource_type():
-    ermesg = "filepath must be a string or Path"
+# note isdir will issue a TypeError if a tuple is passed
+def test_parse_source_bad_input_type():
+    ermesg = (
+        "data_source should be a list of files, a directory, the path to a file, "
+        "or a glob string."
+    )
     with pytest.raises(TypeError, match=ermesg):
-        read._check_datasource(246)
+        read._parse_source(150)
+        read._parse_source({"myfiles": "./my_valid_path/file.h5"})
+
+
+def test_parse_source_no_files():
+    ermesg = (
+        "No files found matching the specified `data_source`. Check your glob "
+        "string or file list."
+    )
+    with pytest.raises(KeyError, match=ermesg):
+        read._parse_source("./icepyx/bogus_glob")
 
 
 @pytest.mark.parametrize(
-    "filepath, expect",
+    "source, expect",
     [
-        ("./", "is2_local"),
-        (
-            "s3://nsidc-cumulus-prod-protected/ATLAS/ATL03/004/2019/11/30/ATL03_20191130221008_09930503_004_01.h5",
-            "is2_s3",
-        ),
-    ],
-)
-def test_check_datasource(filepath, expect):
-    source_type = read._check_datasource(filepath)
-    assert source_type == expect
-
-
-# not sure what I could enter here would get to the else...
-# def test_unknown_datasource_type():
-#     ermesg = "Could not confirm the datasource type."
-#     with pytest.raises(ValueError, match=ermesg):
-#         read._check_datasource("")
-
-
-def test_validate_source_str_given_as_list():
-    ermesg = "You must enter your input as a string."
-    with pytest.raises(AssertionError, match=ermesg):
-        read._validate_source(["/path/to/valid/ATL06_file.py"])
-
-
-def test_validate_source_str_not_a_dir_or_file():
-    ermesg = "Your data source string is not a valid data source."
-    with pytest.raises(AssertionError, match=ermesg):
-        read._validate_source("./fake/dirpath")
-        read._validate_source("./fake_file.h5")
-
-
-@pytest.mark.parametrize(
-    "dir, fn_glob, expect",
-    [
-        (
-            "./icepyx/",
-            "is2*.py",
-            (
-                sorted(
-                    [
-                        "./icepyx/core",
-                        "./icepyx/quest",
-                        "./icepyx/quest/dataset_scripts",
-                        "./icepyx/tests",
-                    ]
-                ),
-                sorted(
-                    [
-                        "./icepyx/core/is2ref.py",
-                        "./icepyx/tests/is2class_query.py",
-                    ]
-                ),
-            ),
-        ),
-        (
-            "./icepyx/core",
-            "is2*.py",
-            ([], ["./icepyx/core/is2ref.py"]),
-        ),
-        (
-            "./icepyx",
-            "bogus_glob",
-            (
+        (  # check list input
+            [
+                "./icepyx/core/is2ref.py",
+                "./icepyx/tests/is2class_query.py",
+            ],
+            sorted(
                 [
-                    "./icepyx/core",
-                    "./icepyx/quest",
-                    "./icepyx/quest/dataset_scripts",
-                    "./icepyx/tests",
-                ],
-                [],
+                    "./icepyx/core/is2ref.py",
+                    "./icepyx/tests/is2class_query.py",
+                ]
             ),
+        ),
+        (  # check dir input
+            "./examples",
+            [
+                "./examples/README.md",
+            ],
+        ),
+        (  # check filename string with glob pattern input
+            "./icepyx/**/is2*.py",
+            sorted(
+                [
+                    "./icepyx/core/is2ref.py",
+                    "./icepyx/tests/is2class_query.py",
+                ]
+            ),
+        ),
+        (  # check filename string without glob pattern input
+            "./icepyx/core/is2ref.py",
+            [
+                "./icepyx/core/is2ref.py",
+            ],
+        ),
+        (  # check s3 filename string
+            (
+                "s3://nsidc-cumulus-prod-protected/ATLAS/"
+                "ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5"
+            ),
+            [
+                (
+                    "s3://nsidc-cumulus-prod-protected/ATLAS/"
+                    "ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5"
+                ),
+            ],
+        ),
+        (
+            "./icepyx/core/is2*.py",
+            ["./icepyx/core/is2ref.py"],
         ),
     ],
 )
-def test_check_run_fast_scandir(dir, fn_glob, expect):
-    (subfolders, files) = read._run_fast_scandir(dir, fn_glob)
-    assert (sorted(subfolders), sorted(files)) == expect
+def test_parse_source(source, expect):
+    filelist = read._parse_source(source, glob_kwargs={"recursive": True})
+    assert (sorted(filelist)) == expect
 
 
 @pytest.mark.parametrize(
@@ -113,17 +102,3 @@ def test_get_track_type_str(
         exp_spot_dim_name,
         exp_spot_var_name,
     )
-
-
-# Best way to test this may be by including a small sample file with the repo (which can be used for testing some of the catalog/read-in functions as well)
-# def test_invalid_filename_pattern_in_file():
-#     ermesg = "Your input filename does not match the specified pattern."
-# default_pattern = Read("/path/to/valid/source/file")._filename_pattern
-#     with pytest.raises(AssertionError, match=ermesg):
-#         read._validate_source('/valid/filepath/with/non-default/filename/pattern.h5', default_pattern)
-
-# def test_invalid_filename_pattern_in_dir():
-#     ermesg = "None of your filenames match the specified pattern."
-#     default_pattern = Read("/path/to/valid/dir/")._filename_pattern
-#     with pytest.raises(AssertionError, match=ermesg):
-#         read._validate_source('/valid/dirpath/with/non-default/filename/pattern.h5', default_pattern)

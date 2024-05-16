@@ -1,33 +1,73 @@
 % #########  materials about icepyx ################
-@article{joss2023, 
-doi = {10.21105/joss.04912}, 
-url = {https://doi.org/10.21105/joss.04912}, 
-year = {2023}, 
-publisher = {The Open Journal}, 
-volume = {8}, 
-number = {84}, 
-pages = {4912}, 
-author = {Jessica Scheick and 
-          Wei Ji Leong and 
-          Kelsey Bisson and 
-          Anthony Arendt and 
-          Shashank Bhushan and 
-          Zachary Fair and 
-          Norland Raphael Hagen and 
-          Scott Henderson and 
-          Friedrich Knuth and 
-          Tian Li and 
-          Zheng Liu and 
-          Romina Piunno and 
-          Nitin Ravinder and 
-          Landung "Don" Setiawan and 
-          Tyler Sutterley and 
-          {JP} Swinski and 
-          Anubhav}, 
-title = {{icepyx}: querying, obtaining, analyzing, and manipulating {ICESat-2} datasets}, 
-journal = {Journal of Open Source Software} 
-} 
 
+@misc{quest2023agu,
+author       = {Scheick, Jessica and
+                Bisson, Kelsey and
+                Fair, Zachary and
+                Piunno, Romina and
+                Abib, Nicole and
+                {Di Bella}, Alessandro and
+                Tilling, Rachel},
+title        = {On a {QUEST (Query, Unify, Explore SpatioTemporal)}
+                  to Accelerate {ICESat-2} Applications in Ocean
+                  Science via {icepyx}},
+month        = jan,
+year         = 2024,
+publisher    = {Zenodo},
+version      = {v1.1},
+doi          = {10.5281/zenodo.10563003},
+url          = {https://doi.org/10.5281/zenodo.10563003}
+}
+
+
+@misc{selper2023,
+author       = {Tilling, Rachel and
+                Lopez, Luis and
+                Steiker, Amy and
+                Scheick, Jessica
+                },
+title        = {Using {icepyx} to access {ICESat-2 data}},
+note         = {{GEDI/ICESat-2} Workshop,
+                2023 Space and Sustainability Colloquium
+                (Espacio y Sostenibilidad).
+                Sociedad Latinoamericana en Percepci\'{o}n Remota y
+                Sistemas de Informaci\'{o}n Espacial {(SELPER)},
+                Guadalajara, Mexico, 15-16 November 2023.
+                },
+month        = Nov,
+year         = 2023,
+url          = {https://nasa-openscapes.github.io/2023-ssc/},
+comment      = {https://espacioysostenibilidad.com},
+}
+
+@article{joss2023,
+doi = {10.21105/joss.04912},
+url = {https://doi.org/10.21105/joss.04912},
+year = {2023},
+publisher = {The Open Journal},
+volume = {8},
+number = {84},
+pages = {4912},
+author = {Jessica Scheick and
+          Wei Ji Leong and
+          Kelsey Bisson and
+          Anthony Arendt and
+          Shashank Bhushan and
+          Zachary Fair and
+          Norland Raphael Hagen and
+          Scott Henderson and
+          Friedrich Knuth and
+          Tian Li and
+          Zheng Liu and
+          Romina Piunno and
+          Nitin Ravinder and
+          Landung "Don" Setiawan and
+          Tyler Sutterley and
+          {JP} Swinski and
+          Anubhav},
+title = {{icepyx}: querying, obtaining, analyzing, and manipulating {ICESat-2} datasets},
+journal = {Journal of Open Source Software}
+}
 
 @unpublished{js2022agu,
 author = {Scheick, J and Bisson, K and Fair, Z and Piunno, R and Leong, WJ and Lopez, L and Hall, S},
@@ -140,6 +180,19 @@ doi = {10.1002/essoar.10501423.1},
 % #########  Articles/Proceedings citing icepyx ################
 
 
+@INPROCEEDINGS{Bednar2023,
+author={Bednar, James A. and Durant, Martin},
+booktitle={Proceedings of the 22nd {Python} in Science Conference (SciPy 2023)},
+title={The {Pandata} Scalable Open-Source Analysis Stack},
+year={2023},
+volume={},
+number={},
+pages={85-92},
+doi={},
+url={https://conference.scipy.org/proceedings/scipy2023/pdfs/james_bednar.pdf}
+}
+
+
 @article{Bisson:2021,
 author = {Bisson, K. M. and Cael, B. B.},
 title = {How Are Under Ice Phytoplankton Related to Sea Ice in the {Southern Ocean}?},
@@ -154,11 +207,11 @@ year = {2021}
 
 
 @INPROCEEDINGS{Eidam2022,
-author={Eidam, Emily and Walker, Catherine and 
-        Bisson, Kelsey and Paris, Matthew and 
+author={Eidam, Emily and Walker, Catherine and
+        Bisson, Kelsey and Paris, Matthew and
         Cooper, Lillian},
-booktitle={OCEANS 2022, Hampton Roads}, 
-title={Novel application of {ICESat-2 ATLAS} data to determine coastal light attenuation as a proxy for suspended particulate matter}, 
+booktitle={OCEANS 2022, Hampton Roads},
+title={Novel application of {ICESat-2 ATLAS} data to determine coastal light attenuation as a proxy for suspended particulate matter},
 year={2022},
 volume={},
 number={},
@@ -229,6 +282,21 @@ DOI = {10.5194/tc-14-3629-2020}
 }
 
 
+@Article{Mallinis2023,
+AUTHOR = {Mallinis, Giorgos and Verde, Natalia and Siachalou, Sofia and Latinopoulos, Dionisis and Akratos, Christos and Kagalou, Ifigenia},
+TITLE = {Evaluation of Multiple Classifier Systems for Mapping Different Hierarchical Levels of Forest Ecosystems in the Mediterranean Region Using {Sentinel-2, Sentinel-1, and ICESat-2} Data},
+JOURNAL = {Forests},
+VOLUME = {14},
+YEAR = {2023},
+NUMBER = {11},
+ARTICLE-NUMBER = {2224},
+URL = {https://www.mdpi.com/1999-4907/14/11/2224},
+ISSN = {1999-4907},
+ABSTRACT = {The conservation and management of forest areas require knowledge about their extent and attributes on multiple scales. The combination of multiple classifiers has been proposed as an attractive classification approach for improved accuracy and robustness that can efficiently exploit the complementary nature of diverse remote sensing data and the merits of individual classifiers. The aim of this study was to develop and evaluate multiple classifier systems (MCSs) within a cloud-based computing environment for multi-scale forest mapping in Northeastern Greece using passive and active remote sensing data. Five individual machine learning base classifiers were used for class discrimination across the three different hierarchy levels, and five ensemble approaches were used for combining them. In the case of the binary classification scheme in the upper level of the hierarchy for separating woody vegetation (forest and shrubs) from other land, the overall accuracy (OA) slightly increased with the use of the MCS approach, reaching 94\%. At the lower hierarchical levels, when using the support vector machine (SVM) base classifier, OA reached 84.13\% and 74.89\% for forest type and species mapping, respectively, slightly outperforming the MCS approach. Yet, two MCS approaches demonstrated robust performance in terms of per-class accuracy, presenting the highest average F1 score across all classification experiments, indicating balanced misclassification errors across all classes. Since the competence of individual classifiers is dependent on individual scene settings and data characteristics, we suggest that the adoption of MCS systems in efficient computing environments (i.e., cloud) could alleviate the need for algorithm benchmarking for Earth's surface cover mapping.},
+DOI = {10.3390/f14112224}
+}
+
+
 @article{Musthafa2022,
 abstract = {Forests absorb atmospheric carbon and hence play a vital role in carbon sequestration and climate regulation. Recent research emphasizes developing technology and methods to understand the carbon sequestration potential in various forest ecosystems. Forest stand height estimation is one of the crucial parameters in allometry that estimates forest biomass. An attempt is made in this study to map forest stand height in tropical and sub-tropical forests in India using recently launched spaceborne LiDAR platforms Ice Cloud and Elevation Satellite (ICESat-2) and Global Ecosystem Dynamics Investigation (GEDI). A geostatistical kriging approach is used to interpolate the forest stand height, and the generated stand height surface is validated using ground truth samples. The results showed that GEDI data performed better with an RMSE of 3.99 m and 2.62 m in tropical forests than the ICESat-2 data, which showed an RMSE of 5.71 m and 5.08 m, respectively. A similar pattern was observed in sub-tropical forests where GEDI modelled stand height outperformed ICESat-2 modelled stand height. This analysis demonstrates the potential of existing spaceborne LiDAR platforms in interpolating forest stand height at different forest types. Also, the research emphasizes the necessity of a high density of LiDAR footprints spread in both across- and along-track directions for accurate interpolation of forest stand height.},
 author = {Musthafa, Mohamed and Singh, Gulab and Kumar, Praveen},
@@ -244,24 +312,15 @@ year = {2022}
 }
 
 
-% #########  Articles about ICESat-2 ################
-
-@article{is2,
-title = {The {Ice, Cloud, and land Elevation Satellite-2 (ICESat-2)}: Science requirements, concept, and implementation},
-journal = {Remote Sensing of Environment},
-volume = {190},
-pages = {260-273},
-year = {2017},
-issn = {0034-4257},
-doi = {10.1016/j.rse.2016.12.029},
-url = {https://www.sciencedirect.com/science/article/pii/S0034425716305089},
-author = {Thorsten Markus and Tom Neumann and Anthony Martino and Waleed Abdalati and Kelly Brunt and Beata Csatho and Sinead Farrell and Helen Fricker and Alex Gardner and David Harding and Michael Jasinski and Ron Kwok and Lori Magruder and Dan Lubin and Scott Luthcke and James Morison and Ross Nelson and Amy Neuenschwander and Stephen Palm and Sorin Popescu and CK Shum and Bob E. Schutz and Benjamin Smith and Yuekui Yang and Jay Zwally},
-keywords = {ICESat-2, Land ice, Sea ice, Vegetation, Climate change, Satellite mission},
-abstract = {The Ice, Cloud, and land Elevation Satellite (ICESat) mission used laser altimetry measurements to determine changes in elevations of glaciers and ice sheets, as well as sea ice thickness distribution. These measurements have provided important information on the response of the cryopshere (Earth's frozen surfaces) to changes in atmosphere and ocean condition. ICESat operated from 2003 to 2009 and provided repeat altimetry measurements not only to the cryosphere scientific community but also to the ocean, terrestrial and atmospheric scientific communities. The conclusive assessment of significant ongoing rapid changes in the Earth's ice cover, in part supported by ICESat observations, has strengthened the need for sustained, high accuracy, repeat observations similar to what was provided by the ICESat mission. Following recommendations from the National Research Council for an ICESat follow-on mission, the ICESat-2 mission is now under development for planned launch in 2018. The primary scientific aims of the ICESat-2 mission are to continue measurements of sea ice freeboard and ice sheet elevation to determine their changes at scales from outlet glaciers to the entire ice sheet, and from 10s of meters to the entire polar oceans for sea ice freeboard. ICESat carried a single beam profiling laser altimeter that produced ~70m diameter footprints on the surface of the Earth at ~150m along-track intervals. In contrast, ICESat-2 will operate with three pairs of beams, each pair separated by about 3km cross-track with a pair spacing of 90m. Each of the beams will have a nominal 17m diameter footprint with an along-track sampling interval of 0.7m. The differences in the ICESat-2 measurement concept are a result of overcoming some limitations associated with the approach used in the ICESat mission. The beam pair configuration of ICESat-2 allows for the determination of local cross-track slope, a significant factor in measuring elevation change for the outlet glaciers surrounding the Greenland and Antarctica coasts. The multiple beam pairs also provide improved spatial coverage. The dense spatial sampling eliminates along-track measurement gaps, and the small footprint diameter is especially useful for sea surface height measurements in the often narrow leads needed for sea ice freeboard and ice thickness retrievals. The ICESat-2 instrumentation concept uses a low energy 532nm (green) laser in conjunction with single-photon sensitive detectors to measure range. Combining ICESat-2 data with altimetry data collected since the start of the ICESat mission in 2003, such as Operation IceBridge and ESA's CryoSat-2, will yield a 15+ year record of changes in ice sheet elevation and sea ice thickness. ICESat-2 will also provide information of mountain glacier and ice cap elevations changes, land and vegetation heights, inland water elevations, sea surface heights, and cloud layering and optical thickness.}
+@misc{Snellink2023,
+author  = {Kamil Snellink},
+title   = {Assessing Land Ice Height Decrease of the {Fleming Glacier} using {ICESat-2} Satellite Data: A 2019-2022 Analysis},
+school  = {Delft University of Technology},
+year    = {2023},
+month   = {July},
+note    = {Bachelor Thesis. Applied Earth Sciences, Department of Geoscience and Remote Sensing},
+url     = {https://repository.tudelft.nl/islandora/object/uuid:909190a5-b91d-4f67-8134-3f19756ed817?collection=education}
 }
-
-
-% #########  Research/Articles using (but not citing) icepyx ################
 
 
 @article{Sothe:2022,
@@ -281,24 +340,53 @@ note={Attribution to icepyx from 15 Oct 2022 Twitter post, https://twitter.com/r
 }
 
 
+@ARTICLE{Tian2024,
+  author={Tian, Xiangxi and Shan, Jie},
+  journal={IEEE Transactions on Geoscience and Remote Sensing},
+  title={{ICESat-2} Controlled Integration of {GEDI and SRTM} Data for Large-Scale Digital Elevation Model Generation},
+  year={2024},
+  volume={62},
+  number={},
+  pages={1-14},
+  keywords={Orbits;Laser radar;Earth;Soft sensors;Extraterrestrial measurements;Altimetry;Spaceborne radar;Digital elevation model (DEM);global ecosystem dynamics investigation (GEDI);ice;cloud;and land elevation satellite-2 (ICESat-2);kernel ridge regression (KRR);machine learning;random forest (RF);shuttle radar topography mission (SRTM);support vector regression (SVR)},
+  doi={10.1109/TGRS.2024.3389821}}
+
+
+% #########  Articles about ICESat-2 ################
+
+@article{is2,
+title = {The {Ice, Cloud, and land Elevation Satellite-2 (ICESat-2)}: Science requirements, concept, and implementation},
+journal = {Remote Sensing of Environment},
+volume = {190},
+pages = {260-273},
+year = {2017},
+issn = {0034-4257},
+doi = {10.1016/j.rse.2016.12.029},
+url = {https://www.sciencedirect.com/science/article/pii/S0034425716305089},
+author = {Thorsten Markus and Tom Neumann and Anthony Martino and Waleed Abdalati and Kelly Brunt and Beata Csatho and Sinead Farrell and Helen Fricker and Alex Gardner and David Harding and Michael Jasinski and Ron Kwok and Lori Magruder and Dan Lubin and Scott Luthcke and James Morison and Ross Nelson and Amy Neuenschwander and Stephen Palm and Sorin Popescu and CK Shum and Bob E. Schutz and Benjamin Smith and Yuekui Yang and Jay Zwally},
+keywords = {ICESat-2, Land ice, Sea ice, Vegetation, Climate change, Satellite mission},
+abstract = {The Ice, Cloud, and land Elevation Satellite (ICESat) mission used laser altimetry measurements to determine changes in elevations of glaciers and ice sheets, as well as sea ice thickness distribution. These measurements have provided important information on the response of the cryopshere (Earth's frozen surfaces) to changes in atmosphere and ocean condition. ICESat operated from 2003 to 2009 and provided repeat altimetry measurements not only to the cryosphere scientific community but also to the ocean, terrestrial and atmospheric scientific communities. The conclusive assessment of significant ongoing rapid changes in the Earth's ice cover, in part supported by ICESat observations, has strengthened the need for sustained, high accuracy, repeat observations similar to what was provided by the ICESat mission. Following recommendations from the National Research Council for an ICESat follow-on mission, the ICESat-2 mission is now under development for planned launch in 2018. The primary scientific aims of the ICESat-2 mission are to continue measurements of sea ice freeboard and ice sheet elevation to determine their changes at scales from outlet glaciers to the entire ice sheet, and from 10s of meters to the entire polar oceans for sea ice freeboard. ICESat carried a single beam profiling laser altimeter that produced ~70m diameter footprints on the surface of the Earth at ~150m along-track intervals. In contrast, ICESat-2 will operate with three pairs of beams, each pair separated by about 3km cross-track with a pair spacing of 90m. Each of the beams will have a nominal 17m diameter footprint with an along-track sampling interval of 0.7m. The differences in the ICESat-2 measurement concept are a result of overcoming some limitations associated with the approach used in the ICESat mission. The beam pair configuration of ICESat-2 allows for the determination of local cross-track slope, a significant factor in measuring elevation change for the outlet glaciers surrounding the Greenland and Antarctica coasts. The multiple beam pairs also provide improved spatial coverage. The dense spatial sampling eliminates along-track measurement gaps, and the small footprint diameter is especially useful for sea surface height measurements in the often narrow leads needed for sea ice freeboard and ice thickness retrievals. The ICESat-2 instrumentation concept uses a low energy 532nm (green) laser in conjunction with single-photon sensitive detectors to measure range. Combining ICESat-2 data with altimetry data collected since the start of the ICESat mission in 2003, such as Operation IceBridge and ESA's CryoSat-2, will yield a 15+ year record of changes in ice sheet elevation and sea ice thickness. ICESat-2 will also provide information of mountain glacier and ice cap elevations changes, land and vegetation heights, inland water elevations, sea surface heights, and cloud layering and optical thickness.}
+}
+
+
 % #########  Related Software ################
 
 
-@article{Shean2023, 
-doi = {10.21105/joss.04982}, 
-url = {https://doi.org/10.21105/joss.04982}, 
-year = {2023}, 
-publisher = {The Open Journal}, 
-volume = {8}, 
-number = {81}, 
-pages = {4982}, 
-author = {David Shean and J.p. Swinski and 
-          Ben Smith and Tyler Sutterley and 
-          Scott Henderson and Carlos Ugarte and 
-          Eric Lidwa and Thomas Neumann}, 
-title = {{SlideRule}: Enabling rapid, scalable, open science for the {NASA ICESat-2} mission and beyond}, 
-journal = {Journal of Open Source Software} 
-} 
+@article{Shean2023,
+doi = {10.21105/joss.04982},
+url = {https://doi.org/10.21105/joss.04982},
+year = {2023},
+publisher = {The Open Journal},
+volume = {8},
+number = {81},
+pages = {4982},
+author = {David Shean and J.p. Swinski and
+          Ben Smith and Tyler Sutterley and
+          Scott Henderson and Carlos Ugarte and
+          Eric Lidwa and Thomas Neumann},
+title = {{SlideRule}: Enabling rapid, scalable, open science for the {NASA ICESat-2} mission and beyond},
+journal = {Journal of Open Source Software}
+}
 
 
 @misc{SR,

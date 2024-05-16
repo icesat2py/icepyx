@@ -1,7 +1,6 @@
 import numpy as np
 import os
 import pprint
-import warnings
 
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.is2ref as is2ref
@@ -85,6 +84,7 @@ class Variables(EarthdataAuthMixin):
         # Set the product and version from either the input args or the file
         if path:
             self._path = val.check_s3bucket(path)
+
             # Set up auth
             if self._path.startswith("s3"):
                 auth = self.auth

@@ -29,4 +29,3 @@ For Analysis_ID 528486, the appropriate citation is
   HAI, Gang (submitter); HAI, Gang; LI, Rongxing; Tian, Yixiang; Xie, Huan (analyst(s)), 2018.
   GLIMS Glacier Database. Boulder, CO.
   National Snow and Ice Data Center.  http://dx.doi.org/10.7265/N5V98602
-

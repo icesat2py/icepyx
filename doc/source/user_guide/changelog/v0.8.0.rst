@@ -1,5 +1,5 @@
 What's new in 0.8.0 (12 September 2023)
------------------------------------
+---------------------------------------
 
 These are the changes in icepyx 0.8.0 See :ref:`release` for a full changelog
 including other versions of icepyx.
@@ -9,7 +9,7 @@ New Features
 ~~~~~~~~~~~~
 
 - create temporal module and add input types and testing (#327)
-    
+
     - create temporal module
     - create temporal testing module
     - add support for more temporal input types (datetime objects) and formats (dict)
@@ -19,7 +19,7 @@ New Features
     - GitHub action UML generation auto-update
 
 - Refactor authentication (#435)
-    
+
     - modularize authentication using a mixin class
     - add docstrings and update example notebooks
     - add tests
@@ -31,7 +31,7 @@ Deprecations
 ~~~~~~~~~~~~
 
 - Remove intake catalog from Read module (#438)
-    
+
     - delete is2cat.py and references
     - remove intake and related modules
 
@@ -46,7 +46,7 @@ Maintenance
 - is2ref tests for product formatting and default var lists (#424)
 
 - get s3urls for all data products and update doctests to v006 (#426)
-    
+
     - Always send CMR query to provider NSIDC_CPRD to make sure s3 urls are returned.
 
 - Traffic updates 2023 Feb-Aug (#442)
@@ -55,14 +55,14 @@ Documentation
 ^^^^^^^^^^^^^
 
 - update install instructions (#409)
-    
+
     - add s3fs as requirement to make cloud access default
     - transition to recommending mamba over conda
 
 - add release guide to docs (#255)
 
 - docs maintenance and pubs/citations update (#422)
-    
+
     - add JOSS to bib and badges
     - switch zenodo links to nonversioned icepyx
 
@@ -71,11 +71,11 @@ Other
 ^^^^^
 
 - JOSS submission (#361)
-    
+
     Matches Release v0.6.4_JOSS per #420 plus a few editorial edits available via the pubs/joss branch.
 
 - update and clarify authorship, citation, and attribution policies (#419)
-    
+
     - add CITATION.cff file
     - update citation docs with Zenodo doi and 'icepyx Developers' as author
 

@@ -338,6 +338,7 @@ def latest_version(product):
     '006'
     """
     _about_product = about_product(product)
+
     return max([entry["version_id"] for entry in _about_product["feed"]["entry"]])
 
 
@@ -361,7 +362,7 @@ def extract_product(filepath, auth=None):
                 "Must provide credentials to `auth` if accessing s3 data"
             )
         # Read the s3 file
-        s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC")
         f = h5py.File(s3.open(filepath, "rb"))
     else:
         # Otherwise assume a local filepath. Read with h5py.
@@ -377,8 +378,11 @@ def extract_product(filepath, auth=None):
             # ATL14 saves the short_name as an array ['ATL14']
             product = product[0]
         product = _validate_product(product)
-    except KeyError:
-        raise "Unable to parse the product name from file metadata"
+    except KeyError as e:
+        raise Exception(
+            "Unable to parse the product name from file metadata"
+        ).with_traceback(e.__traceback__)
+
     # Close the file reader
     f.close()
     return product
@@ -404,7 +408,7 @@ def extract_version(filepath, auth=None):
                 "Must provide credentials to `auth` if accessing s3 data"
             )
         # Read the s3 file
-        s3 = earthaccess.get_s3fs_session(daac="NSIDC", provider=auth)
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC")
         f = h5py.File(s3.open(filepath, "rb"))
     else:
         # Otherwise assume a local filepath. Read with h5py.
@@ -416,8 +420,14 @@ def extract_version(filepath, auth=None):
         if isinstance(version, np.ndarray):
             # ATL14 stores the version as an array ['00x']
             version = version[0]
-    except KeyError:
-        raise "Unable to parse the version from file metadata"
+        if isinstance(version, bytes):
+            version = version.decode()
+
+    except KeyError as e:
+        raise Exception(
+            "Unable to parse the version from file metadata"
+        ).with_traceback(e.__traceback__)
+
     # Close the file reader
     f.close()
     return version

@@ -1,19 +1,12 @@
-import datetime as dt
 import geopandas as gpd
-import json
 import matplotlib.pyplot as plt
-import numpy as np
-import os
-from pathlib import Path
+from pathlib import Path  # used in docstring tests
 import pprint
-import time
-import warnings
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
+from icepyx.core.exceptions import DeprecationError
 import icepyx.core.granules as granules
-
-# QUESTION: why doesn't from granules import Granules work, since granules=icepyx.core.granules?
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
@@ -34,14 +27,17 @@ class GenQuery:
     Parameters
     ----------
     spatial_extent : list of coordinates or string (i.e. file name)
-        Spatial extent of interest, provided as a bounding box, list of polygon coordinates, or
+        Spatial extent of interest, provided as a bounding box,
+        list of polygon coordinates, or
         geospatial polygon file.
         NOTE: Longitude values are assumed to be in the range -180 to +180,
-        with 0 being the Prime Meridian (Greenwich). See xdateline for regions crossing the date line.
+        with 0 being the Prime Meridian (Greenwich).
+        See xdateline for regions crossing the date line.
         You can submit at most one bounding box or list of polygon coordinates.
         Per NSIDC requirements, geospatial polygon files may only contain one feature (polygon).
         Bounding box coordinates should be provided in decimal degrees as
-        [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+        [lower-left-longitude, lower-left-latitute,
+        upper-right-longitude, upper-right-latitude].
         Polygon coordinates should be provided as coordinate pairs in decimal degrees as
         [(longitude1, latitude1), (longitude2, latitude2), ... (longitude_n,latitude_n), (longitude1,latitude1)]
         or
@@ -73,7 +69,8 @@ class GenQuery:
         where HH = hours, mm = minutes, ss = seconds.
         If None is given (and a datetime.datetime object is not supplied for `date_range`),
         a default of 23:59:59 is applied.
-        If a datetime.datetime object was created without times, the datetime package defaults will apply over those of icepyx
+        If a datetime.datetime object was created without times,
+        the datetime package defaults will apply over those of icepyx
     xdateline : boolean, default None
         Keyword argument to enforce spatial inputs that cross the International Date Line.
         Internally, this will translate your longitudes to 0 to 360 to construct the
@@ -211,7 +208,8 @@ class GenQuery:
         Return an array showing the spatial extent of the query object.
         Spatial extent is returned as an input type (which depends on how
         you initially entered your spatial data) followed by the geometry data.
-        Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
+        Bounding box data is [lower-left-longitude, lower-left-latitute,
+                            ... upper-right-longitude, upper-right-latitude].
         Polygon data is [longitude1, latitude1, longitude2, latitude2,
                         ... longitude_n,latitude_n, longitude1,latitude1].
 
@@ -250,7 +248,8 @@ class GenQuery:
     def dates(self):
         """
         Return an array showing the date range of the query object.
-        Dates are returned as an array containing the start and end datetime objects, inclusive, in that order.
+        Dates are returned as an array containing the start and end datetime
+        objects, inclusive, in that order.
 
         Examples
         --------
@@ -320,7 +319,6 @@ class GenQuery:
 
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
-# Note: add files to docstring once implemented
 # DevNote: currently this class is not tested
 class Query(GenQuery, EarthdataAuthMixin):
     """
@@ -340,16 +338,15 @@ class Query(GenQuery, EarthdataAuthMixin):
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : string, default most recent version
-        Product version, given as a 3 digit string. If no version is given, the current
-        version is used. Example: "004"
+        Product version, given as a 3 digit string.
+        If no version is given, the current version is used. Example: "006"
     cycles : string or a list of strings, default all available orbital cycles
-        Product cycle, given as a 2 digit string. If no cycle is given, all available
-        cycles are used. Example: "04"
+        Product cycle, given as a 2 digit string.
+        If no cycle is given, all available cycles are used. Example: "04"
     tracks : string or a list of strings, default all available reference ground tracks (RGTs)
-        Product track, given as a 4 digit string. If no track is given, all available
-        reference ground tracks are used. Example: "0594"
-    files : string, default None
-        A placeholder for future development. Not used for any purposes yet.
+        Product track, given as a 4 digit string.
+        If no track is given, all available reference ground tracks are used.
+        Example: "0594"
     auth : earthaccess.auth.Auth, default None
         An earthaccess authentication object. Available as an argument so an existing
         earthaccess.auth.Auth object can be used for authentication. If not given, a new auth
@@ -407,30 +404,17 @@ class Query(GenQuery, EarthdataAuthMixin):
         version=None,
         cycles=None,
         tracks=None,
-        files=None,  # NOTE: if you end up implemeting this feature here, use a better variable name than "files"
         auth=None,
         **kwargs,
     ):
         # Check necessary combination of input has been specified
-        if (
-            (product is None or spatial_extent is None)
-            or (
-                (date_range is None and cycles is None and tracks is None)
-                and int(product[-2:]) <= 13
-            )
-            and files is None
+        if (product is None or spatial_extent is None) or (
+            (date_range is None and cycles is None and tracks is None)
+            and int(product[-2:]) <= 13
         ):
             raise ValueError(
                 "Please provide the required inputs. Use help([function]) to view the function's documentation"
             )
-
-        if files is not None:
-            self._source = "files"
-            # self.file_vars = Variables(self._source)
-        else:
-            self._source = "order"
-            # self.order_vars = Variables(self._source)
-        # self.variables = Variables(self._source)
 
         self._prod = is2ref._validate_product(product)
 
@@ -471,10 +455,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         product
         """
-        warnings.filterwarnings("always")
-        warnings.warn(
+        DeprecationError(
             "In line with most common usage, 'dataset' has been replaced by 'product'.",
-            DeprecationWarning,
         )
 
     @property
@@ -550,15 +532,14 @@ class Query(GenQuery, EarthdataAuthMixin):
     @property
     def CMRparams(self):
         """
-        Display the CMR key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
+        Display the CMR key:value pairs that will be submitted.
+        It generates the dictionary if it does not already exist.
 
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.CMRparams
-        {'short_name': 'ATL06',
-        'version': '006',
-        'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+        {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
         'bounding_box': '-55.0,68.0,-48.0,71.0'}
         """
 
@@ -570,7 +551,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         # dictionary of optional CMR parameters
         kwargs = {}
         # temporal CMR parameters
-        if hasattr(self, "_temporal"):
+        if hasattr(self, "_temporal") and self.product != "ATL11":
             kwargs["start"] = self._temporal._start
             kwargs["end"] = self._temporal._end
         # granule name CMR parameters (orbital or file name)
@@ -582,8 +563,6 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         if self._CMRparams.fmted_keys == {}:
             self._CMRparams.build_params(
-                product=self.product,
-                version=self._version,
                 extent_type=self._spatial._ext_type,
                 spatial_extent=self._spatial.fmt_for_CMR(),
                 **kwargs,
@@ -594,31 +573,34 @@ class Query(GenQuery, EarthdataAuthMixin):
     @property
     def reqparams(self):
         """
-        Display the required key:value pairs that will be submitted. It generates the dictionary if it does not already exist.
+        Display the required key:value pairs that will be submitted.
+        It generates the dictionary if it does not already exist.
 
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.reqparams
-        {'page_size': 2000}
+        {'short_name': 'ATL06', 'version': '006', 'page_size': 2000}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
         >>> reg_a.reqparams # doctest: +SKIP
-        {'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
+        {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
 
         if not hasattr(self, "_reqparams"):
             self._reqparams = apifmt.Parameters("required", reqtype="search")
-            self._reqparams.build_params()
+            self._reqparams.build_params(product=self.product, version=self._version)
 
         return self._reqparams.fmted_keys
 
     # @property
-    # DevQuestion: if I make this a property, I get a "dict" object is not callable when I try to give input kwargs... what approach should I be taking?
+    # DevQuestion: if I make this a property, I get a "dict" object is not callable
+    # when I try to give input kwargs... what approach should I be taking?
     def subsetparams(self, **kwargs):
         """
-        Display the subsetting key:value pairs that will be submitted. It generates the dictionary if it does not already exist
+        Display the subsetting key:value pairs that will be submitted.
+        It generates the dictionary if it does not already exist
         and returns an empty dictionary if subsetting is set to False during ordering.
 
         Parameters
@@ -626,7 +608,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
-            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
+            Acceptable key values are
+            ['format','projection','projection_parameters','Coverage'].
             At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
 
         See Also
@@ -644,11 +627,11 @@ class Query(GenQuery, EarthdataAuthMixin):
             self._subsetparams = apifmt.Parameters("subset")
 
         # temporal subsetting parameters
-        if hasattr(self, "temporal"):
+        if hasattr(self, "_temporal") and self.product != "ATL11":
             kwargs["start"] = self._temporal._start
             kwargs["end"] = self._temporal._end
 
-        if self._subsetparams == None and not kwargs:
+        if self._subsetparams is None and not kwargs:
             return {}
         else:
             # If the user has supplied a subset list of variables, append the
@@ -672,7 +655,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                     if var not in kwargs["Coverage"].keys():
                         kwargs["Coverage"][var.split("/")[-1]] = [var]
 
-            if self._subsetparams == None:
+            if self._subsetparams is None:
                 self._subsetparams = apifmt.Parameters("subset")
             if self._spatial._geom_file is not None:
                 self._subsetparams.build_params(
@@ -710,24 +693,25 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
 
         if not hasattr(self, "_order_vars"):
-            if self._source == "order":
-                # DevGoal: check for active session here
-                if hasattr(self, "_cust_options"):
-                    self._order_vars = Variables(
-                        product=self.product,
-                        version=self._version,
-                        avail=self._cust_options["variables"],
-                        auth=self.auth,
-                    )
-                else:
-                    self._order_vars = Variables(
-                        product=self.product,
-                        version=self._version,
-                        auth=self.auth,
-                    )
+            # DevGoal: check for active session here
+            if hasattr(self, "_cust_options"):
+                self._order_vars = Variables(
+                    product=self.product,
+                    version=self._version,
+                    avail=self._cust_options["variables"],
+                    auth=self.auth,
+                )
+            else:
+                self._order_vars = Variables(
+                    product=self.product,
+                    version=self._version,
+                    auth=self.auth,
+                )
 
-        # I think this is where property setters come in, and one should be used here? Right now order_vars.avail is only filled in
-        # if _cust_options exists when the class is initialized, but not if _cust_options is filled in prior to another call to order_vars
+        # I think this is where property setters come in, and one should be used here?
+        # Right now order_vars.avail is only filled in
+        # if _cust_options exists when the class is initialized,
+        # but not if _cust_options is filled in prior to another call to order_vars
         # if self._order_vars.avail == None and hasattr(self, '_cust_options'):
         #     print('got into the loop')
         #     self._order_vars.avail = self._cust_options['variables']
@@ -735,38 +719,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._order_vars
 
     @property
-    def file_vars(self):
-        """
-        Return the file variables object.
-        This instance is generated when files are used to create the data object (not yet implemented).
-
-        See Also
-        --------
-        variables.Variables
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-
-        >>> reg_a.file_vars # doctest: +SKIP
-        <icepyx.core.variables.Variables at [location]>
-        """
-
-        if not hasattr(self, "_file_vars"):
-            if self._source == "file":
-                self._file_vars = Variables(
-                    auth=self.auth,
-                    product=self.product,
-                    version=self._version,
-                )
-
-        return self._file_vars
-
-    @property
     def granules(self):
         """
         Return the granules object, which provides the underlying funtionality for searching, ordering,
-        and downloading granules for the specified product. Users are encouraged to use the built in wrappers
+        and downloading granules for the specified product.
+        Users are encouraged to use the built-in wrappers
         rather than trying to access the granules object themselves.
 
         See Also
@@ -785,7 +742,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         if not hasattr(self, "_granules"):
             self._granules = Granules()
-        elif self._granules == None:
+        elif self._granules is None:
             self._granules = Granules()
 
         return self._granules
@@ -1041,9 +998,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         if self._reqparams._reqtype == "search":
             self._reqparams._reqtype = "download"
 
-        if "email" in self._reqparams.fmted_keys.keys() or email == False:
+        if "email" in self._reqparams.fmted_keys.keys() or email is False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
-        elif email == True:
+        elif email is True:
             user_profile = self.auth.get_user_profile()
             self._reqparams.build_params(
                 **self._reqparams.fmted_keys, email=user_profile["email_address"]
@@ -1052,9 +1009,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         if subset is False:
             self._subsetparams = None
         elif (
-            subset == True
+            subset is True
             and hasattr(self, "_subsetparams")
-            and self._subsetparams == None
+            and self._subsetparams is None
         ):
             del self._subsetparams
 
@@ -1072,14 +1029,13 @@ class Query(GenQuery, EarthdataAuthMixin):
                     "NSIDC only allows ordering of one granule by name at a time; your orders will be placed accordingly."
                 )
             for gran in gran_name_list:
-                tempCMRparams.update({"readable_granule_name[]": gran})
+                tempCMRparams["readable_granule_name[]"] = gran
                 self._granules.place_order(
                     tempCMRparams,
                     self.reqparams,
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
-                    session=self.session,
                     geom_filepath=self._spatial._geom_file,
                 )
 
@@ -1090,7 +1046,6 @@ class Query(GenQuery, EarthdataAuthMixin):
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,
-                session=self.session,
                 geom_filepath=self._spatial._geom_file,
             )
 
@@ -1146,7 +1101,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         if not hasattr(self, "_granules"):
             self.granules
 
-        if restart == True:
+        if restart is True:
             pass
         else:
             if (
@@ -1155,7 +1110,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
 
-        self._granules.download(verbose, path, session=self.session, restart=restart)
+        self._granules.download(verbose, path, restart=restart)
 
     # DevGoal: add testing? What do we test, and how, given this is a visualization.
     # DevGoal(long term): modify this to accept additional inputs, etc.

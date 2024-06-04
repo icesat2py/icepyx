@@ -330,6 +330,17 @@ class Read(EarthdataAuthMixin):
         <icepyx.core.variables.Variables at [location]>
         """
 
+        # fix to handle fact that some VersionID metadata is wrong
+        # see: https://forum.earthdata.nasa.gov/viewtopic.php?t=5154
+        # (v006, v003, v003, respectively)
+        # Note that this results in a login being required even for a local file
+        # because otherwise Variables (variables.py) tries to get the version from the file (ln99).
+        bad_metadata = ["ATL11", "ATL14", "ATL15"]
+        if self._product in bad_metadata and not hasattr(self, "_read_vars"):
+            self._read_vars = Variables(
+                product=self._product, version=is2ref.latest_version(self._product)
+            )
+
         if not hasattr(self, "_read_vars"):
             self._read_vars = Variables(path=self.filelist[0])
         return self._read_vars
@@ -621,8 +632,10 @@ class Read(EarthdataAuthMixin):
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
-            if isinstance(file, S3File):
-                file.close()
+
+            # Closing the file prevents further operations on the dataset
+            # if isinstance(file, S3File):
+            #     file.close()
 
         if len(all_dss) == 1:
             return all_dss[0]
@@ -704,10 +717,16 @@ class Read(EarthdataAuthMixin):
         -------
         Xarray Dataset
         """
-        # DEVNOTE: if and elif does not actually apply wanted variable list,
+        # returns wanted groups as a list of lists with group path string elements separated
+        _, wanted_groups_tiered = Variables.parse_var_list(
+            groups_list, tiered=True, tiered_vars=True
+        )
+
+        # DEVNOTE: elif does not actually apply wanted variable list,
         # and has not been tested for merging multiple files into one ds
-        # if a gridded product
+        # of a gridded product
         # TODO: all products need to be tested, and quicklook products added or explicitly excluded
+        # consider looking for netcdf file extension instead of using product
         # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
         if self.product in [
             "ATL14",
@@ -720,7 +739,22 @@ class Read(EarthdataAuthMixin):
             "ATL21",
             "ATL23",
         ]:
-            is2ds = xr.open_dataset(file)
+            wanted_grouponly_set = set(wanted_groups_tiered[0])
+            wanted_groups_list = list(sorted(wanted_grouponly_set))
+            if len(wanted_groups_list) == 1:
+                is2ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
+            else:
+                is2ds = self._build_dataset_template(file)
+                while wanted_groups_list:
+                    ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
+                    wanted_groups_list = wanted_groups_list[1:]
+                    is2ds = is2ds.merge(
+                        ds, join="outer", combine_attrs="drop_conflicts"
+                    )
+                    if hasattr(is2ds, "description"):
+                        is2ds.attrs["description"] = (
+                            "Group-level data descriptions were removed during Dataset creation."
+                        )
 
         # Level 3b, hdf5: ATL11
         elif self.product in ["ATL11"]:
@@ -738,11 +772,6 @@ class Read(EarthdataAuthMixin):
             wanted_groups_set.remove("ancillary_data")
             # Note: the sorting is critical for datasets with highly nested groups
             wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
-
-            # returns wanted groups as a list of lists with group path string elements separated
-            _, wanted_groups_tiered = Variables.parse_var_list(
-                groups_list, tiered=True, tiered_vars=True
-            )
 
             while wanted_groups_list:
                 # print(wanted_groups_list)
@@ -771,10 +800,6 @@ class Read(EarthdataAuthMixin):
             # Note: the sorting is critical for datasets with highly nested groups
             wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
                 wanted_groups_set
-            )
-            # returns wanted groups as a list of lists with group path string elements separated
-            _, wanted_groups_tiered = Variables.parse_var_list(
-                groups_list, tiered=True, tiered_vars=True
             )
 
             while wanted_groups_list:

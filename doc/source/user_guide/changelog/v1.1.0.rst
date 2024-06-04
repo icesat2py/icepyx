@@ -1,5 +1,5 @@
-What's new in 1.1.0 (DD May 2024)
------------------------------------
+What's new in 1.1.0 (5 June 2024)
+---------------------------------
 
 These are the changes in icepyx 1.1.0 See :ref:`release` for a full changelog
 including other versions of icepyx.
@@ -31,6 +31,10 @@ Bug fixes
 
 - update doctest for newest xarray repr (fix failing test) (#513)
 - add dask[dataframe] to requirements (#519)
+-  improve netcdf multi-group reading and handle metadata QC issue (#516)
+
+    - ATL11 v006, ATL14 v003, and ATL15 v003 have a meaningless string set as the version. A temporary fix gets the most recent version number from CMR to use instead for those products.
+    - adds handling to read in multiple variable groups from a netcdf
 
 
 Deprecations

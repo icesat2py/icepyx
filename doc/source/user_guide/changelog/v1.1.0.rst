@@ -1,0 +1,92 @@
+What's new in 1.1.0 (5 June 2024)
+---------------------------------
+
+These are the changes in icepyx 1.1.0 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- fix s3url grabbing for .nc files (#507)
+
+    - reformat some long-lines as well
+
+- clean up the read module after adding cloud-read capabilities (#502)
+
+    - update tests to match new parse_source function
+
+- pre-commit check for files over 5MB (#143)
+- Clean up APIformatting module and fix ATL11 temporal kwarg submission (#515)
+
+    - add atl11 exception for cmr and required temporal parameters
+    - remove unused "default" key in _get_possible_keys
+    - move "short_name" and "version" keys from the CMR list to the required list
+    - utilize EarthdataAuthMixin for Granules (was still explicitly passing session)
+    - Touched files were also cleaned up for linting.
+
+
+Bug fixes
+~~~~~~~~~
+
+- update doctest for newest xarray repr (fix failing test) (#513)
+- add dask[dataframe] to requirements (#519)
+-  improve netcdf multi-group reading and handle metadata QC issue (#516)
+
+    - ATL11 v006, ATL14 v003, and ATL15 v003 have a meaningless string set as the version. A temporary fix gets the most recent version number from CMR to use instead for those products.
+    - adds handling to read in multiple variable groups from a netcdf
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+^^^^^^^^^^^
+
+- update codecov uploader to start getting coverage reports (#496)
+- fix black linter failures resulting from psf/black action update (#501)
+- reformat all code using the pre-commit ci (#503)
+- [pre-commit.ci] pre-commit autoupdate (#506, #520, #524)
+- pkg_resources deprecation: stop calling setup.py directly (#500)
+- add dependency needed to build packages (#511)
+- [pre-commit.ci] pre-commit autoupdate of black (#510)
+- minor edits to language and badges (#494)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- update 2023 icepyx citations (#499)
+- Updating the "QUEST Available Datasets" page (#509)
+
+    - Updated links and information relating to Argo and the QUEST example notebook.
+
+- add quest to pyreverse uml generation + separate in API docs (#498)
+
+    - generate umls for quest module
+    - make separate API docs pages for icepyx and quest
+    - add manual trigger for uml creation to allow updates after post-approval changes
+    - simplify highest level API TOC to show only class levels
+    - add previous/next navigation buttons to API docs
+
+- docs: add whyjz as a contributor for bug, code, and review (#522)
+- Added a brief mention to QUEST in icepyx docs intro. (#514)
+- [docs] update icepyx citations through Apr 2024 (#525)
+- [docs] traffic updates Jan-May 2024 (#526)
+
+    - removes a few outstanding duplicates in 2021 data
+
+
+Other
+^^^^^
+
+- None
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v0.4.0..v0.4.1|HEAD

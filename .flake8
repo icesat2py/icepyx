@@ -1,7 +1,7 @@
 [flake8]
 #GOAL: max_line_length = 79 or 99
 max_line_length = 99
-per-file-ignores = 
+per-file-ignores =
     # too many leading '#' for block comment
     */tests/*:E266
     # line too long (several test strs)
@@ -12,7 +12,7 @@ per-file-ignores =
     doc/source/conf.py:E402
 
 # GOAL: remove these ignores
-ignore = 
+ignore =
     # line too long
     E501
     # comparison syntax

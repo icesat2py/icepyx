@@ -15,7 +15,10 @@ def _validate_product(product):
     """
     Confirm a valid ICESat-2 product was specified
     """
-    error_msg = "A valid product string was not provided. Check user input, if given, or file metadata."
+    error_msg = (
+        "A valid product string was not provided. "
+        "Check user input, if given, or file metadata."
+    )
     if isinstance(product, str):
         product = str.upper(product)
         assert product in [
@@ -378,8 +381,10 @@ def extract_product(filepath, auth=None):
             # ATL14 saves the short_name as an array ['ATL14']
             product = product[0]
         product = _validate_product(product)
-    except KeyError:
-        raise "Unable to parse the product name from file metadata"
+    except KeyError as e:
+        raise Exception(
+            "Unable to parse the product name from file metadata"
+        ).with_traceback(e.__traceback__)
 
     # Close the file reader
     f.close()
@@ -421,8 +426,21 @@ def extract_version(filepath, auth=None):
         if isinstance(version, bytes):
             version = version.decode()
 
-    except KeyError:
-        raise "Unable to parse the version from file metadata"
+    except KeyError as e:
+        raise Exception(
+            "Unable to parse the version from file metadata"
+        ).with_traceback(e.__traceback__)
+
+    # catch cases where the version number is an invalid string
+    # e.g. a VersionID of "SET_BY_PGE", causing issues where version needs to be a valid number
+    try:
+        float(version)
+    except ValueError:
+        raise Exception(
+            "There is an underlying issue with the version information"
+            "provided in the metadata of this file."
+            "Consider setting the version manually for further processing."
+        )
 
     # Close the file reader
     f.close()

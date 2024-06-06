@@ -1,4 +1,3 @@
-import fnmatch
 import glob
 import os
 import sys
@@ -36,19 +35,21 @@ def _make_np_datetime(df, keyword):
 
     Example
     -------
-    >>> ds = xr.Dataset({"time": ("time_idx", [b'2019-01-11T05:26:31.323722Z'])}, coords={"time_idx": [0]})
+    >>> ds = xr.Dataset({"time": ("time_idx", [b'2019-01-11T05:26:31.323722Z'])},
+    ...                  coords={"time_idx": [0]})
     >>> _make_np_datetime(ds, "time")
-    <xarray.Dataset>
+    <xarray.Dataset> Size: 16B
     Dimensions:   (time_idx: 1)
     Coordinates:
-      * time_idx  (time_idx) int64 0
+      * time_idx  (time_idx) int64 8B 0
     Data variables:
-        time      (time_idx) datetime64[ns] 2019-01-11T05:26:31.323722
+        time      (time_idx) datetime64[ns] 8B 2019-01-11T05:26:31.323722
 
     """
 
     if df[keyword].str.endswith("Z"):
-        # manually remove 'Z' from datetime to allow conversion to np.datetime64 object (support for timezones is deprecated and causes a seg fault)
+        # manually remove 'Z' from datetime to allow conversion to np.datetime64 object
+        # (support for timezones is deprecated and causes a seg fault)
         df.update({keyword: df[keyword].str[:-1].astype(np.datetime64)})
 
     else:
@@ -100,165 +101,51 @@ def _get_track_type_str(grp_path) -> (str, str, str):
     return track_str, spot_dim_name, spot_var_name
 
 
-# Dev note: function fully tested (except else, which don't know how to get to)
-def _check_datasource(filepath):
+def _parse_source(data_source, glob_kwargs={}) -> list:
     """
-    Determine if the input is from a local system or is an s3 bucket.
-    Then, validate the inputs (for those on the local system; s3 sources are not validated currently)
+    Parse the user's data_source input based on type.
+
+    Returns
+    -------
+    filelist : list of str
+        List of granule (filenames) to be read in
     """
 
     from pathlib import Path
 
-    import fsspec
-    from fsspec.implementations.local import LocalFileSystem
-
-    source_types = ["is2_local", "is2_s3"]
-
-    if not isinstance(filepath, Path) and not isinstance(filepath, str):
-        raise TypeError("filepath must be a string or Path")
-
-    fsmap = fsspec.get_mapper(str(filepath))
-    output_fs = fsmap.fs
-
-    if "s3" in output_fs.protocol:
-        return source_types[1]
-    elif isinstance(output_fs, LocalFileSystem):
-        assert _validate_source(filepath)
-        return source_types[0]
+    if isinstance(data_source, list):
+        assert [isinstance(f, (str, Path)) for f in data_source]
+        # if data_source is a list pass that directly to _filelist
+        filelist = data_source
+    elif os.path.isdir(data_source):
+        # if data_source is a directory glob search the directory and assign to _filelist
+        data_source = os.path.join(data_source, "*")
+        filelist = glob.glob(data_source, **glob_kwargs)
+    elif isinstance(data_source, str) or isinstance(data_source, Path):
+        if data_source.startswith("s3"):
+            # if the string is an s3 path put it in the _filelist without globbing
+            filelist = [data_source]
+        else:
+            # data_source is a globable string
+            filelist = glob.glob(data_source, **glob_kwargs)
     else:
-        raise ValueError("Could not confirm the datasource type.")
+        raise TypeError(
+            "data_source should be a list of files, a directory, the path to a file, "
+            "or a glob string."
+        )
 
-    """
-    Could also use: os.path.splitext(f.name)[1].lower() to get file extension
+    # Remove any directories from the list (these get generated during recursive
+    # glob search)
+    filelist = [f for f in filelist if not os.path.isdir(f)]
 
-    If ultimately want to handle mixed types, save the valid paths in a dict with "s3" or "local" as the keys and the list of the files as the values.
-    Then the dict can also contain a catalog key with a dict of catalogs for each of those types of inputs ("s3" or "local")
-    In general, the issue we'll run into with multiple files is going to be merging during the read in,
-    so it could be beneficial to not hide this too much and mandate users handle this intentionally outside the read in itself.
+    # Make sure a non-zero number of files were found
+    if len(filelist) == 0:
+        raise KeyError(
+            "No files found matching the specified `data_source`. Check your glob "
+            "string or file list."
+        )
 
-    this function was derived with some of the following resources, based on echopype
-    https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py
-
-    https://filesystem-spec.readthedocs.io/en/latest/api.html?highlight=get_map#fsspec.spec.AbstractFileSystem.glob
-
-    https://filesystem-spec.readthedocs.io/en/latest/_modules/fsspec/implementations/local.html
-
-    https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/convert/api.py#L380
-
-    https://echopype.readthedocs.io/en/stable/convert.html
-    """
-
-
-# Dev note: function fully tested as currently written
-def _validate_source(source):
-    """
-    Check that the entered data source paths on the local file system are valid
-
-    Currently, s3 data source paths are not validated.
-    """
-
-    # acceptable inputs (for now) are a single file or directory
-    # would ultimately like to make a Path (from pathlib import Path; isinstance(source, Path)) an option
-    # see https://github.com/OSOceanAcoustics/echopype/blob/ab5128fb8580f135d875580f0469e5fba3193b84/echopype/utils/io.py#L82
-    assert isinstance(source, str), "You must enter your input as a string."
-    assert (
-        os.path.isdir(source) is True or os.path.isfile(source) is True
-    ), "Your data source string is not a valid data source."
-    return True
-
-
-# Dev Note: function is tested (at least loosely)
-def _run_fast_scandir(dir, fn_glob):
-    """
-    Quickly scan nested directories to get a list of filenames that match the fn_glob string.
-    Modified from https://stackoverflow.com/a/59803793/2441026
-    (faster than os.walk or glob methods, and allows filename matching in subdirectories).
-
-    Parameters
-    ----------
-    dir : str
-        full path to the input directory
-
-    fn_glob : str
-        glob-style filename pattern
-
-    Outputs
-    -------
-    subfolders : list
-        list of strings of all nested subdirectories
-
-    files : list
-        list of strings containing full paths to each file matching the filename pattern
-    """
-
-    subfolders, files = [], []
-
-    for f in os.scandir(dir):
-        if any(f.name.startswith(s) for s in ["__", "."]):
-            continue
-        if f.is_dir():
-            subfolders.append(f.path)
-        if f.is_file():
-            if fnmatch.fnmatch(f.name, fn_glob):
-                files.append(f.path)
-
-    for dir in list(subfolders):
-        sf, f = _run_fast_scandir(dir, fn_glob)
-        subfolders.extend(sf)
-        files.extend(f)
-
-    return subfolders, files
-
-
-# Need to post on intake's page to see if this would be a useful contribution...
-# https://github.com/intake/intake/blob/0.6.4/intake/source/utils.py#L216
-def _pattern_to_glob(pattern):
-    """
-    Adapted from intake.source.utils.path_to_glob to convert a path as pattern into a glob style path
-    that uses the pattern's indicated number of '?' instead of '*' where an int was specified.
-
-    Returns pattern if pattern is not a string.
-
-    Parameters
-    ----------
-    pattern : str
-        Path as pattern optionally containing format_strings
-
-    Returns
-    -------
-    glob_path : str
-        Path with int format strings replaced with the proper number of '?' and '*' otherwise.
-
-    Examples
-    --------
-    >>> _pattern_to_glob('{year}/{month}/{day}.csv')
-    '*/*/*.csv'
-    >>> _pattern_to_glob('{year:4}/{month:2}/{day:2}.csv')
-    '????/??/??.csv'
-    >>> _pattern_to_glob('data/{year:4}{month:02}{day:02}.csv')
-    'data/????????.csv'
-    >>> _pattern_to_glob('data/*.csv')
-    'data/*.csv'
-    """
-    from string import Formatter
-
-    if not isinstance(pattern, str):
-        return pattern
-
-    fmt = Formatter()
-    glob_path = ""
-    # prev_field_name = None
-    for literal_text, field_name, format_specs, _ in fmt.parse(format_string=pattern):
-        glob_path += literal_text
-        if field_name and (glob_path != "*"):
-            try:
-                glob_path += "?" * int(format_specs)
-            except ValueError:
-                glob_path += "*"
-                # alternatively, you could use bits=utils._get_parts_of_format_string(resolved_string, literal_texts, format_specs)
-                # and then use len(bits[i]) to get the length of each format_spec
-    # print(glob_path)
-    return glob_path
+    return filelist
 
 
 def _confirm_proceed():
@@ -282,8 +169,8 @@ class Read(EarthdataAuthMixin):
 
     Parameters
     ----------
-    data_source : string, List
-        A string or list which specifies the files to be read.
+    data_source : string, Path, List
+        A string, pathlib.Path object, or list which specifies the files to be read.
         The string can be either:
         1) the path of a single file
         2) the path to a directory or
@@ -291,7 +178,8 @@ class Read(EarthdataAuthMixin):
         The List must be a list of strings, each of which is the path of a single file.
 
     glob_kwargs : dict, default {}
-        Additional arguments to be passed into the [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
+        Additional arguments to be passed into the
+        [glob.glob()](https://docs.python.org/3/library/glob.html#glob.glob)function
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
@@ -326,7 +214,8 @@ class Read(EarthdataAuthMixin):
     Reading all files in a directory
     >>> ipx.Read('/path/to/data/') # doctest: +SKIP
 
-    Reading files that match a particular pattern (here, all .h5 files that start with `processed_ATL06_`).
+    Reading files that match a particular pattern
+    (here, all .h5 files that start with `processed_ATL06_`).
     >>> ipx.Read('/path/to/data/processed_ATL06_*.h5') # doctest: +SKIP
 
     Reading a specific list of files
@@ -370,29 +259,7 @@ class Read(EarthdataAuthMixin):
                 "Please use the `data_source` argument to specify your dataset instead."
             )
 
-        if isinstance(data_source, list):
-            # if data_source is a list pass that directly to _filelist
-            self._filelist = data_source
-        elif os.path.isdir(data_source):
-            # if data_source is a directory glob search the directory and assign to _filelist
-            data_source = os.path.join(data_source, "*")
-            self._filelist = glob.glob(data_source, **glob_kwargs)
-        elif isinstance(data_source, str):
-            if data_source.startswith("s3"):
-                # if the string is an s3 path put it in the _filelist without globbing
-                self._filelist = [data_source]
-            else:
-                # data_source is a globable string
-                self._filelist = glob.glob(data_source, **glob_kwargs)
-        else:
-            raise TypeError(
-                "data_source should be a list of files, a directory, the path to a file, "
-                "or a glob string."
-            )
-
-        # Remove any directories from the list (these get generated during recursive
-        # glob search)
-        self._filelist = [f for f in self._filelist if not os.path.isdir(f)]
+        self._filelist = _parse_source(data_source, glob_kwargs)
 
         # Create a dictionary of the products as read from the metadata
         product_dict = {}
@@ -423,7 +290,7 @@ class Read(EarthdataAuthMixin):
             )
             _confirm_proceed()
 
-        # Raise warnings or errors for multiple products or products not matching the user-specified product
+        # Raise error if multiple products given
         all_products = list(set(product_dict.values()))
         if len(all_products) > 1:
             raise TypeError(
@@ -431,14 +298,9 @@ class Read(EarthdataAuthMixin):
                 "Please provide a valid `data_source` parameter indicating files of a single "
                 "product"
             )
-        elif len(all_products) == 0:
-            raise TypeError(
-                "No files found matching the specified `data_source`. Check your glob "
-                "string or file list."
-            )
-        else:
-            # Assign the identified product to the property
-            self._product = all_products[0]
+
+        # Assign the identified product to the property
+        self._product = all_products[0]
 
         if out_obj_type is not None:
             print(
@@ -454,7 +316,8 @@ class Read(EarthdataAuthMixin):
     def vars(self):
         """
         Return the variables object associated with the data being read in.
-        This instance is generated from the source file or first file in a list of input files (when source is a directory).
+        This instance is generated from the source file or first file in a list of input files
+        (when source is a directory).
 
         See Also
         --------
@@ -466,6 +329,17 @@ class Read(EarthdataAuthMixin):
         >>> reader.vars  # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
+
+        # fix to handle fact that some VersionID metadata is wrong
+        # see: https://forum.earthdata.nasa.gov/viewtopic.php?t=5154
+        # (v006, v003, v003, respectively)
+        # Note that this results in a login being required even for a local file
+        # because otherwise Variables (variables.py) tries to get the version from the file (ln99).
+        bad_metadata = ["ATL11", "ATL14", "ATL15"]
+        if self._product in bad_metadata and not hasattr(self, "_read_vars"):
+            self._read_vars = Variables(
+                product=self._product, version=is2ref.latest_version(self._product)
+            )
 
         if not hasattr(self, "_read_vars"):
             self._read_vars = Variables(path=self.filelist[0])
@@ -507,7 +381,8 @@ class Read(EarthdataAuthMixin):
             the second list contains the second portion of the group name, etc.
             "none" is used to fill in where paths are shorter than the longest path.
         wanted_dict : dict
-            Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
+            Dictionary with variable names as keys and a list of group +
+            variable paths containing those variables as values.
 
         Returns
         -------
@@ -600,7 +475,8 @@ class Read(EarthdataAuthMixin):
                     )
                 )
 
-                # for the subgoups where there is 1d delta time data, make sure that the cycle number is still a coordinate for merging
+                # for the subgoups where there is 1d delta time data,
+                # make sure that the cycle number is still a coordinate for merging
                 try:
                     ds = ds.assign_coords(
                         {
@@ -643,14 +519,16 @@ class Read(EarthdataAuthMixin):
         grp_path : str
             hdf5 group path read into ds
         wanted_dict : dict
-            Dictionary with variable names as keys and a list of group + variable paths containing those variables as values.
+            Dictionary with variable names as keys and a list of group +
+            variable paths containing those variables as values.
 
         Returns
         -------
         Xarray Dataset with variables from the ds variable group added.
         """
 
-        # Dev Goal: improve this type of iterating to minimize amount of looping required. Would a path handling library be useful here?
+        # Dev Goal: improve this type of iterating to minimize amount of looping required.
+        # Would a path handling library be useful here?
         grp_spec_vars = [
             k for k, v in wanted_dict.items() if any(f"{grp_path}/{k}" in x for x in v)
         ]
@@ -682,7 +560,8 @@ class Read(EarthdataAuthMixin):
 
     def load(self):
         """
-        Create a single Xarray Dataset containing the data from one or more files and/or ground tracks.
+        Create a single Xarray Dataset containing the data from one or more
+        files and/or ground tracks.
         Uses icepyx's ICESat-2 data product awareness and Xarray's `combine_by_coords` function.
 
         All items in the wanted variables list will be loaded from the files into memory.
@@ -753,8 +632,10 @@ class Read(EarthdataAuthMixin):
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
             )  # wanted_groups, vgrp.keys()))
-            if isinstance(file, S3File):
-                file.close()
+
+            # Closing the file prevents further operations on the dataset
+            # if isinstance(file, S3File):
+            #     file.close()
 
         if len(all_dss) == 1:
             return all_dss[0]
@@ -778,8 +659,6 @@ class Read(EarthdataAuthMixin):
 
         It may be possible to expand this function to provide multiple templates.
         """
-        # NOTE: use the hdf5 library to grab the attr for the product specifier
-        # can ultimately then use it to check against user specified one or merge strategies (or to return a list of ds)
 
         is2ds = xr.Dataset(
             coords=dict(
@@ -798,7 +677,8 @@ class Read(EarthdataAuthMixin):
         ----------
         file : str
             Full path to ICESat-2 data file.
-            Currently tested for locally downloaded files; untested but hopefully works for s3 stored cloud files.
+            Currently tested for locally downloaded files;
+            untested but hopefully works for s3 stored cloud files.
         grp_path : str
             Full string to a variable group.
             E.g. 'gt1l/land_ice_segments'
@@ -818,25 +698,35 @@ class Read(EarthdataAuthMixin):
 
     def _build_single_file_dataset(self, file, groups_list):
         """
-        Create a single xarray dataset with all of the wanted variables/groups from the wanted var list for a single data file/url.
+        Create a single xarray dataset with all of the wanted variables/groups
+        from the wanted var list for a single data file/url.
 
         Parameters
         ----------
         file : str
             Full path to ICESat-2 data file.
-            Currently tested for locally downloaded files; untested but hopefully works for s3 stored cloud files.
+            Currently tested for locally downloaded files;
+            untested but hopefully works for s3 stored cloud files.
 
         groups_list : list of strings
             List of full paths to data variables within the file.
-            e.g. ['orbit_info/sc_orient', 'gt1l/land_ice_segments/h_li', 'gt1l/land_ice_segments/latitude', 'gt1l/land_ice_segments/longitude']
+            e.g. ['orbit_info/sc_orient', 'gt1l/land_ice_segments/h_li',
+            'gt1l/land_ice_segments/latitude', 'gt1l/land_ice_segments/longitude']
 
         Returns
         -------
         Xarray Dataset
         """
-        # DEVNOTE: if and elif does not actually apply wanted variable list, and has not been tested for merging multiple files into one ds
-        # if a gridded product
+        # returns wanted groups as a list of lists with group path string elements separated
+        _, wanted_groups_tiered = Variables.parse_var_list(
+            groups_list, tiered=True, tiered_vars=True
+        )
+
+        # DEVNOTE: elif does not actually apply wanted variable list,
+        # and has not been tested for merging multiple files into one ds
+        # of a gridded product
         # TODO: all products need to be tested, and quicklook products added or explicitly excluded
+        # consider looking for netcdf file extension instead of using product
         # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
         if self.product in [
             "ATL14",
@@ -849,7 +739,22 @@ class Read(EarthdataAuthMixin):
             "ATL21",
             "ATL23",
         ]:
-            is2ds = xr.open_dataset(file)
+            wanted_grouponly_set = set(wanted_groups_tiered[0])
+            wanted_groups_list = list(sorted(wanted_grouponly_set))
+            if len(wanted_groups_list) == 1:
+                is2ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
+            else:
+                is2ds = self._build_dataset_template(file)
+                while wanted_groups_list:
+                    ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
+                    wanted_groups_list = wanted_groups_list[1:]
+                    is2ds = is2ds.merge(
+                        ds, join="outer", combine_attrs="drop_conflicts"
+                    )
+                    if hasattr(is2ds, "description"):
+                        is2ds.attrs["description"] = (
+                            "Group-level data descriptions were removed during Dataset creation."
+                        )
 
         # Level 3b, hdf5: ATL11
         elif self.product in ["ATL11"]:
@@ -861,16 +766,12 @@ class Read(EarthdataAuthMixin):
             )
             wanted_groups_set = set(wanted_groups)
 
-            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            # orbit_info is used automatically as the first group path
+            # so the info is available for the rest of the groups
             # wanted_groups_set.remove("orbit_info")
             wanted_groups_set.remove("ancillary_data")
             # Note: the sorting is critical for datasets with highly nested groups
             wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
-
-            # returns the wanted groups as a list of lists with group path string elements separated
-            _, wanted_groups_tiered = Variables.parse_var_list(
-                groups_list, tiered=True, tiered_vars=True
-            )
 
             while wanted_groups_list:
                 # print(wanted_groups_list)
@@ -892,16 +793,13 @@ class Read(EarthdataAuthMixin):
                 groups_list, tiered=False
             )
             wanted_groups_set = set(wanted_groups)
-            # orbit_info is used automatically as the first group path so the info is available for the rest of the groups
+            # orbit_info is used automatically as the first group path
+            # so the info is available for the rest of the groups
             wanted_groups_set.remove("orbit_info")
             wanted_groups_set.remove("ancillary_data")
             # Note: the sorting is critical for datasets with highly nested groups
             wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
                 wanted_groups_set
-            )
-            # returns the wanted groups as a list of lists with group path string elements separated
-            _, wanted_groups_tiered = Variables.parse_var_list(
-                groups_list, tiered=True, tiered_vars=True
             )
 
             while wanted_groups_list:
@@ -912,7 +810,8 @@ class Read(EarthdataAuthMixin):
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )
 
-                # if there are any deeper nested variables, get those so they have actual coordinates and add them
+                # if there are any deeper nested variables,
+                # get those so they have actual coordinates and add them
                 # this may apply to (at a minimum): ATL08
                 if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
                     for grp_path2 in wanted_groups_list:

@@ -77,7 +77,7 @@ bibtex_bibfiles = ["tracking/icepyx_pubs.bib"]
 autosectionlabel_prefix_document = True
 autosummary_generate = True
 numpydoc_show_class_members = False
-jupyter_execute_notebooks = "off"
+nb_execution_mode = "off"
 suppress_warnings = ["myst.header"]  # suppress non-consecutive header warning
 
 # -- Options for HTML output -------------------------------------------------
@@ -90,7 +90,7 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "logo_only": True,
     "display_version": False,
-    "prev_next_buttons_location": None,
+    "prev_next_buttons_location": "bottom",
     "navigation_depth": 4,
     "collapse_navigation": True,
 }

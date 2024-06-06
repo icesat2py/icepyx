@@ -19,7 +19,7 @@ enabling easy end-to-end data visualization and providing a simple, community-ba
 Open Science Example Use Cases
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Research is the primary driver for development of icepyx functionality.
-We encourage you to use icepyx as a framework for finding and processing your ICESat-2 data, 
+We encourage you to use icepyx as a framework for finding and processing your ICESat-2 data,
 from designing your analysis to writing code to analyze your data to generating presentation-quality figures.
 We welcome example use cases from all disciplines.
 Some topics currently being investigated using ICESat-2 data:
@@ -46,8 +46,8 @@ Workflows showcasing complex analyses to answer pressing science questions provi
 
 Validation and Integration with Other Products
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The complexity of multiple data access systems, often with different metadata formats and API access types, 
-presents a challenge for finding and integrating diverse datasets. 
+The complexity of multiple data access systems, often with different metadata formats and API access types,
+presents a challenge for finding and integrating diverse datasets.
 Driven by researcher use cases, icepyx contains a consistent framework for adding a new product/sensor to an existing data analysis pipeline,
 improving researcher ability to easily compare diverse datasets across varying sensor types and spatial and temporal scales.
 

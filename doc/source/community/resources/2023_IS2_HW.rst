@@ -1,10 +1,11 @@
-.. _resource_IS2HW_2022:
+.. _resource_IS2HW_2023:
 
-Third ICESat-2 Cloud Computing Hackweek Facilitated by the University of Washington eScience Institute
+Fourth ICESat-2 Cloud Computing Hackweek Facilitated by the University of Washington eScience Institute
 ------------------------------------------------------------------------------------------------------
-This March 2022 event produced a series of `tutorials <>`_,
+This August 2024 event produced a series of `tutorials <>`_,
 developed by volunteer instructors and presented during the event.
-A key focus of the event was on transitioning to cloud-based environments and
+A continuing focus of the event was considerations for cloud-native workflows
+(such as cloud-optimized data) and
 building skills around accessing ICESat-2 data in the cloud.
 During the Hackweek, teams of attendees worked on
 `projects <>`_
@@ -15,7 +16,7 @@ related to their domain interests and learning goals.
 
 Tutorials |Zenodo badge|
 ^^^^^^^^^^^^^^^^^^^^^^^^
-The tutorials from this event live within a dedicated `GitHub repository <>`_
+The tutorials from this event live within a dedicated `Jupyter Book <>`_
 and are published on `Zenodo <>`_.
 You can run the tutorials by following the instructions
 `here <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials#re-create-the-icesat-2-hackweek-jupyterlab-environment-with-binder>`_.
@@ -32,7 +33,6 @@ Projects
 Though in many cases preliminary, these `project repositories <>`_
 often provide useful starting points to develop effective disciplinary
 workflows.
-
 
 
 - `icepyx <https://github.com/ICESAT-2HackWeek/icepyx_team>`_

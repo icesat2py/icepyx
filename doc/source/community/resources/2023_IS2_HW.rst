@@ -8,7 +8,7 @@ A continuing focus of the event was considerations for cloud-native workflows
 (such as cloud-optimized data) and
 building skills around accessing ICESat-2 data in the cloud.
 During the Hackweek, teams of attendees worked on
-`projects <https://github.com/ICESAT-2HackWeek/ICESat-2-Hackweek-2023/blob/main/book/projects/list_of_projects.md>`_
+`projects <https://github.com/ICESAT-2HackWeek/ICESat-2-Hackweek-2023/tree/main/book/projects/project_readmes>`_
 related to their domain interests and learning goals.
 
 .. |Zenodo badge| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10519966.svg

@@ -2,7 +2,7 @@
 
 Fourth ICESat-2 Cloud Computing Hackweek at the University of Washington eScience Institute
 -------------------------------------------------------------------------------------------
-This August 2024 event produced a series of `tutorials <https://icesat-2-2023.hackweek.io/tutorials/index.html>`_,
+This August 2023 event produced a series of `tutorials <https://icesat-2-2023.hackweek.io/tutorials/index.html>`_,
 developed by volunteer instructors and presented during the event.
 A continuing focus of the event was considerations for cloud-native workflows
 (such as cloud-optimized data) and

@@ -8,8 +8,8 @@ Most of these packages are callable through Python, though others may require ac
 
   - collaboration between the ICESat-2 science team and University of Washington
   - A Python client to process ICESat-2 ATL03 data prior to download.
-  - Create customized versions of ATL06 (land ice), ATL08 (vegetation), and ATL24?(bathymetry)
-  products. Ideal for situations where a given algorithm is not run or is too coarse for a particular application.
+  - Create customized versions of ATL06 (land ice), ATL08 (vegetation), and ATL24(bathymetry) products.
+  Ideal for situations where a given algorithm is not run or is too coarse for a particular application.
   - Data may also be subsetted based on spatial bounds and photon classification.
 
 * `PhoREAL <https://github.com/icesat-2UT/PhoREAL>`_

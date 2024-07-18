@@ -22,15 +22,15 @@ The published tutorial repo also includes links to presentation materials and vi
 Tutorial Topics:
 
 1. Open Science Tools
-1. About ICESat-2 Data
-1. ICESat-2 Data Access
-1. Object-oriented Programming
-1. Geospatial Transforms
-1. Data Integration (Part I)
-1. Data Visualization 2D
-1. Cloud Computing Tools
-1. Data Integration (Part II)
-1. Data Integration (Part III)
+2. About ICESat-2 Data
+3. ICESat-2 Data Access
+4. Object-oriented Programming
+5. Geospatial Transforms
+6. Data Integration (Part I)
+7. Data Visualization 2D
+8. Cloud Computing Tools
+9. Data Integration (Part II)
+10. Data Integration (Part III)
 
 Projects
 ^^^^^^^^

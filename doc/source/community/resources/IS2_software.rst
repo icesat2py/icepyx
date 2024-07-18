@@ -4,7 +4,7 @@ ICESat-2 can be tricky to process for the first time, especially if working with
 Here, we highlight some commonly-used software packages developed by the science community. Most of these can be used alongside icepyx to facilitate ICESat-2 data processing.
 Most of these packages are callable through Python, though others may require access to other software. Keep this in mind before attempting to use any package or plugin.
 
-* `SlideRule <https://github.com/ICESat2-SlideRule/sliderule-icesat2>`_
+* `SlideRule <https://slideruleearth.io/>`_
 
   - collaboration between the ICESat-2 science team and University of Washington
   - A Python client to process ICESat-2 ATL03 data prior to download.
@@ -28,6 +28,7 @@ Here we describe a selection of publicly available Python code posted on GitHub 
 This includes repositories that are more broadly designed for working with LiDAR/point cloud datasets in general.
 These repositories represent independent but complimentary projects that we hope to make easily interoperable within icepyx in order to maximize capabilities and minimize duplication of efforts.
 Conversations about how to best accomplish this have been ongoing since the conception of icepyx, and we welcome everyone to join the conversation (please see our :ref:`contact page<contact_ref_label>`).
+Some of these repositories may not be actively maintained.
 
 *Note: This list is a compilation of publicly available GitHub repositories and includes some annotations to reflect how they relate to icepyx.
 Please check each repository's licensing information before using or modifying their code.*
@@ -53,9 +54,10 @@ Please check each repository's licensing information before using or modifying t
   - Command line tool
   - Download data and convert it into a georeferenced format (e.g. geojson, kml, or shapefile)
 
-* `ice tools <>`_
+* `read-ICESat-2 <https://github.com/tsutterley/read-ICESat-2>`_
 
   - by Tyler Sutterley
+  - Read selected ICESat-2 products into memory.
 
 
 * `pointCollection <https://github.com/SmithB/pointCollection>`_

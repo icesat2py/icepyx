@@ -18,7 +18,7 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx
 
-.. |Contributors| image:: https://img.shields.io/badge/all_contributors-40-orange.svg?style=flat-square
+.. |Contributors| image:: https://img.shields.io/github/all-contributors/icesat2py/icepyx?color=ee8449&style=flat-square(#contributors)
     :alt: All Contributors
     :target: https://github.com/icesat2py/icepyx/blob/main/CONTRIBUTORS.rst
 

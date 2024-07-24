@@ -914,7 +914,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.avail_granules()
         {'Number of available granules': 4,
-        'Average size of granules (MB)': 55.166646003723145,
+        'Average size of granules (MB)': np.float64(55.166646003723145),
         'Total size of all granules (MB)': 220.66658401489258}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-23'])

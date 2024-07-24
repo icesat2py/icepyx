@@ -271,6 +271,10 @@ def _default_varlists(product):
         return common_list
 
 
+# Currently this function is used one-off, but if it needs to be done for a series of values,
+# a faster version using pandas map (instead of apply) is available in SlideRule:
+# https://github.com/SlideRuleEarth/sliderule/issues/388
+# https://github.com/SlideRuleEarth/sliderule/commit/46cceac0e5f6d0a580933d399a6239bc911757f3
 def gt2spot(gt, sc_orient):
     warnings.warn(
         "icepyx versions 0.8.0 and earlier used an incorrect spot number calculation."

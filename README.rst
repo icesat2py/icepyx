@@ -3,7 +3,7 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|GitHub license| |Conda install| |Pypi install| |Contributors| |JOSS|
+|GitHub license| |Conda install| |Pypi install| |Contributors| |JOSS| |Zenodo-all|
 
 Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
 
@@ -25,6 +25,10 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.04912/status.svg
     :alt: JOSS publication link and DOI
     :target: https://doi.org/10.21105/joss.04912
+
+.. |Zenodo-all| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.7729175.svg
+    :alt: Zenodo all-versions DOI for icepyx
+    :target: https://doi.org/10.5281/zenodo.7729175
 
 .. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest

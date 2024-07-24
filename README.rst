@@ -4,6 +4,7 @@ icepyx
 **Python tools for obtaining and working with ICESat-2 data**
 
 |Contributors| |GitHub license| |Conda install| |Pypi install|
+
 |JOSS| |Zenodo-all|
 
 Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|

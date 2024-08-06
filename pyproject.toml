@@ -1,0 +1,63 @@
+[project]
+name = "icepyx"
+description = "Python tools for obtaining and working with ICESat-2 data"
+license = {file = "LICENSE"}
+readme = "README.rst"
+
+requires-python = "~=3.7"
+dynamic = ["version", "dependencies"]
+
+authors = [
+  {name = "The icepyx Developers", email = "jbscheick@gmail.com"},
+]
+maintainers = [
+  {name = "The icepyx Developers", email = "jbscheick@gmail.com"},
+]
+
+classifiers=[
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Software Development :: Libraries",
+]
+
+[project.urls]
+Homepage = "https://icepyx.readthedocs.io"
+Documentation = "https://icepyx.readthedocs.io"
+Repository = "https://github.com/icesat2py/icepyx.git"
+Issues = "https://github.com/icesat2py/icepyx/issues"
+Changelog = "https://icepyx.readthedocs.io/en/latest/user_guide/changelog/index.html"
+
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=66", "wheel", "setuptools_scm"]
+
+[tool.setuptools]
+py-modules = ["_icepyx_version"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.optional-dependencies]
+viz = ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"]
+complete = ["icepyx[viz]"]
+
+[tool.setuptools.packages.find]
+exclude = ["*tests"]
+
+[tool.setuptools_scm]
+version_file = "_icepyx_version.py"
+version_file_template = 'version = "{version}"'
+local_scheme = "node-and-date"
+fallback_version = "unknown"

@@ -75,7 +75,7 @@ To further enhance data discovery, we have developed the QUEST module to facilit
     datasets.
 
     .. link-button:: `/example_notebooks/QUEST_argo_data_access`
-        :type: doc
+        :type: ref
         :text: Start your QUEST!
         :classes: stretched-link btn-outline-primary btn-block
 

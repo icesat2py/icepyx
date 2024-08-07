@@ -34,7 +34,7 @@ classifiers=[
 [project.urls]
 Homepage = "https://icepyx.readthedocs.io"
 Documentation = "https://icepyx.readthedocs.io"
-Repository = "https://github.com/icesat2py/icepyx.git"
+Repository = "https://github.com/icesat2py/icepyx"
 Issues = "https://github.com/icesat2py/icepyx/issues"
 Changelog = "https://icepyx.readthedocs.io/en/latest/user_guide/changelog/index.html"
 

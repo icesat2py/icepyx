@@ -29,6 +29,9 @@ from icepyx.core.exceptions import NsidcQueryError
 # region_a = ipx.Query(short_name, spatial_extent, date_range)
 # region_a.avail_granules(ids=True)
 
+# add test that s3urls are gotten for ALL products (e.g. ATL15 was failing
+# due to .nc extention instead of .h5))
+
 
 # DevNote: clearly there's a better way that doesn't make the function so long...
 # what is it?
@@ -636,6 +639,6 @@ def test_avail_granule_CMR_error():
 
     ermsg = "An error was returned from NSIDC in regards to your query: temporal start datetime is invalid: [badinput] is not a valid datetime."
     with pytest.raises(NsidcQueryError, match=re.escape(ermsg)):
-        CMRparams = {"version": "003", "temporal": "badinput", "short_name": "ATL08"}
-        reqparams = {"page_size": 1}
+        CMRparams = {"temporal": "badinput"}
+        reqparams = {"version": "003", "short_name": "ATL08", "page_size": 1}
         Granules().get_avail(CMRparams=CMRparams, reqparams=reqparams)

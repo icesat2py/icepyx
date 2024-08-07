@@ -1,17 +1,51 @@
 .. _resource_IS2HW_2022:
 
-Third ICESat-2 Hackweek Facilitated by the University of Washington eScience Institute
---------------------------------------------------------------------------------------
-This event is currently being planned, and will take place 21-25 March 2022.
-Please see the `event website <https://icesat-2.hackweek.io/>`_ for more information.
+Third [Virtual] ICESat-2 Cloud Computing Hackweek Facilitated by the University of Washington eScience Institute
+----------------------------------------------------------------------------------------------------------------
+This March 2022 event produced a series of `tutorials <https://icesat-2-2022.hackweek.io/tutorials/index.html>`_,
+developed by volunteer instructors and presented during the event.
+A key focus of the event was on transitioning to cloud-based environments and
+building skills around accessing ICESat-2 data in the cloud.
+During the Hackweek, teams of attendees worked on
+`projects <https://icesat-2-2022.hackweek.io/projects/list_of_projects.html>`_
+related to their domain interests and learning goals.
 
+.. |Zenodo badge| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.6462479.svg
+  :target: https://doi.org/10.5281/zenodo.6462479
 
-Tutorials
-^^^^^^^^^
-The tutorials for this event will be available to download for interactive use as well as pre-rendered on the event's website.
-The website will be linked here once it is live, and final information posted here after the event.
+Tutorials |Zenodo badge|
+^^^^^^^^^^^^^^^^^^^^^^^^
+The tutorials from this event live within a dedicated `GitHub repository <https://github.com/ICESAT-2HackWeek/website2022>`_
+and are published on `Zenodo <https://doi.org/10.5281/zenodo.6462479>`_.
+The published tutorial repo also includes links to presentation materials and videos of the recorded presentations.
 
+Tutorial Topics:
+
+1. Open Science Tools
+2. About ICESat-2 Data
+3. ICESat-2 Data Access
+4. Object-oriented Programming
+5. Geospatial Transforms
+6. Data Integration (Part I)
+7. Data Visualization 2D
+8. Cloud Computing Tools
+9. Data Integration (Part II)
+10. Data Integration (Part III)
 
 Projects
 ^^^^^^^^
-Projects will be listed here after the event.
+These `project repositories <https://icesat-2-2022.hackweek.io/projects/list_of_projects.html>`_
+often provide useful starting points to develop effective disciplinary
+workflows.
+Links to project GitHub repositories and presentation videos are at the above link.
+
+Project Names:
+
+- Polynyas
+- Icebergs
+- Coastal
+- Sea ice floes
+- Antarctic Ripples
+- Snow DEM
+- Ice discharge
+- Strong Beams

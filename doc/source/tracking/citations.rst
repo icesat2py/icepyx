@@ -3,7 +3,7 @@ Who is using icepyx?
 
 How is icepyx being used by the ICESat-2 data user community?
 
-Is your team or project using icepyx but not listed below? 
+Is your team or project using icepyx but not listed below?
 Please add your organization to the appropriate list with a link to your project/product (or :ref:`get in touch<contact_ref_label>` and we'll add it)!
 
 
@@ -25,8 +25,15 @@ Peer-reviewed publications about icepyx software
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
-    
+
     joss2023
+
+icepyx in the open-source landscape
+
+.. bibliography:: icepyx_pubs.bib
+    :style: mystyle
+
+    Bednar2023
 
 Presentations and Materials Featuring icepyx
 --------------------------------------------
@@ -34,7 +41,9 @@ Presentations that feature or explain icepyx
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
-    
+
+    quest2023agu
+    selper2023
     js2022agu
     2022_IS2-HW-tutorials
     js2021agu
@@ -43,15 +52,18 @@ Presentations that feature or explain icepyx
     js2019agu
 
 Publications Utilizing icepyx
-------------------------------
+-----------------------------
 Research that utilizes icepyx for ICESat-2 data
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
-    
+
+    Tian2024
     Freer2023
     Idestrom2023
+    Mallinis2023
     Shean2023
+    Snellink2023
     Eidam2022
     Leeuwen:2022
     Musthafa2022

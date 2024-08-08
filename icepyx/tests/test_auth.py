@@ -1,7 +1,6 @@
+import earthaccess
 import pytest
 import requests
-
-import earthaccess
 
 from icepyx.core.auth import EarthdataAuthMixin
 

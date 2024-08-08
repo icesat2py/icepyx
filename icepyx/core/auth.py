@@ -2,6 +2,7 @@ import copy
 import datetime
 
 import earthaccess
+
 from icepyx.core.exceptions import DeprecationError
 
 
@@ -9,8 +10,6 @@ class AuthenticationError(Exception):
     """
     Raised when an error is encountered while authenticating Earthdata credentials
     """
-
-    pass
 
 
 class EarthdataAuthMixin:

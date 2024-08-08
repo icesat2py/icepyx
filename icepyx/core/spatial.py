@@ -1,10 +1,10 @@
-import geopandas as gpd
-import numpy as np
 import os
-from shapely.geometry import box, Polygon
-from shapely.geometry.polygon import orient
 import warnings
 
+import geopandas as gpd
+import numpy as np
+from shapely.geometry import Polygon, box
+from shapely.geometry.polygon import orient
 
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 

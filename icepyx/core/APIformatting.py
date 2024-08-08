@@ -2,7 +2,6 @@
 
 import datetime as dt
 
-
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
 # or input to a set of API parameters (CMR or NSIDC)

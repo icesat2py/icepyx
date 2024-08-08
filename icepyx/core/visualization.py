@@ -17,8 +17,8 @@ from holoviews.operation.datashader import rasterize
 from tqdm import tqdm
 
 import icepyx as ipx
-import icepyx.core.is2ref as is2ref
 import icepyx.core.granules as granules
+import icepyx.core.is2ref as is2ref
 
 hv.extension("bokeh")
 

@@ -1,12 +1,12 @@
-#!/usr/bin/env python
 """
 test icepyx.core.query.Query.earthdata_login function
 """
 
 import netrc
 import os
-import pytest
 import shutil
+
+import pytest
 
 
 # PURPOSE: test different authentication methods

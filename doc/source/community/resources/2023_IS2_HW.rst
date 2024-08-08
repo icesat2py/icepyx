@@ -1,0 +1,54 @@
+.. _resource_IS2HW_2023:
+
+Fourth ICESat-2 Cloud Computing Hackweek at the University of Washington eScience Institute
+-------------------------------------------------------------------------------------------
+This August 2023 event produced a series of `tutorials <https://icesat-2-2023.hackweek.io/tutorials/index.html>`_,
+developed by volunteer instructors and presented during the event.
+A continuing focus of the event was considerations for cloud-native workflows
+(such as cloud-optimized data) and
+building skills around accessing ICESat-2 data in the cloud.
+During the Hackweek, teams of attendees worked on
+`projects <https://github.com/ICESAT-2HackWeek/ICESat-2-Hackweek-2023/tree/main/book/projects/project_readmes>`_
+related to their domain interests and learning goals.
+
+.. |Zenodo badge| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10519966.svg
+  :target: https://doi.org/10.5281/zenodo.10519966
+
+Tutorials |Zenodo badge|
+^^^^^^^^^^^^^^^^^^^^^^^^
+The tutorials from this event live within a dedicated `Jupyter Book <https://icesat-2-2023.hackweek.io/intro.html>`_
+and are published on `Zenodo <https://zenodo.org/records/10519966>`_.
+You can run the tutorials by following the instructions
+`here <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials#re-create-the-icesat-2-hackweek-jupyterlab-environment-with-binder>`_.
+The published tutorial repo also includes links to presentation slides and videos of the recorded presentations.
+
+Tutorial Topics:
+
+1. CryoCloud
+2. ICESat-2 Mission Overview and Data
+3. Open source development/Object Oriented Programming
+4. Cloud data access and data formats
+5. Best Practices for Collaborative development
+6. Application: snow depth
+7. Application: bathymetry
+8. Application: Visualization and Integration
+9. Application: inland hydrology
+10. Application: sea ice
+11. Application: ICESat-2 integration with GrIMP data
+
+Projects
+^^^^^^^^
+In an effort to improve learning outcomes, we asked participants
+to summarize their accomplishments in a structured
+`project readme <https://github.com/ICESAT-2HackWeek/ICESat-2-Hackweek-2023/blob/main/book/projects/list_of_projects.md>`_,
+some of which are drafts, and did not record the final presentations.
+
+Project titles:
+
+- 3D Lakes
+- surfit
+- dzdt
+- grounding zones
+- h5cloud
+- Everything Anywhere All At Once
+- seabath

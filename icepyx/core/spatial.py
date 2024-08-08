@@ -49,7 +49,7 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
     >>> gdf = geodataframe(reg_a.spatial.extent_type, reg_a.spatial.extent)
     >>> gdf.geometry
-    0    POLYGON ((-48.00000 68.00000, -48.00000 71.000...
+    0    POLYGON ((-48 68, -48 71, -55 71, -55 68, -48 ...
     Name: geometry, dtype: geometry
     """
 

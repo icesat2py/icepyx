@@ -312,7 +312,13 @@ class Visualize:
         --------
         request_OA_data
         """
-        return requests.get(base_url, params=payload)
+        response = requests.get(base_url, params=payload)
+        if not response.ok:
+            raise RuntimeError(
+                f"Status {response.status_code} requesting url {response.request.url}"
+            )
+
+        return response
 
     def request_OA_data(self, paras) -> da.array:
         """
@@ -331,9 +337,10 @@ class Visualize:
         """
 
         warnings.warn(
-            "NOTICE: visualizations requiring the OpenAltimetry API are currently (October 2023) "
-            "unavailable while hosting of OpenAltimetry transitions from UCSD to NSIDC."
-            "A ticket has been issued to restore programmatic API access."
+            "NOTICE: visualizations requiring the OpenAltimetry API are currently"
+            " (August 2024) unavailable while hosting of OpenAltimetry transitions from"
+            " UCSD to NSIDC. A ticket has been issued to restore programmatic API"
+            " access."
         )
 
         base_url = "http://openaltimetry.earthdatacloud.nasa.gov/data/api/icesat2"

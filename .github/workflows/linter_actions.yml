@@ -3,6 +3,7 @@ name: Run linters on PRs
 on:
   pull_request:
     branches:
+      - v2  # TODO: Remove!
       - development
       - main
 jobs:

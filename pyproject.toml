@@ -64,9 +64,30 @@ fallback_version = "unknown"
 
 
 [tool.ruff.lint]
-select = [
-  "E",
-  "F",
+extend-select = [
+  "E",        # pycodestyle
+  "F",        # pyflakes
+  # "B",        # flake8-bugbear IMPORTANT
+  "I",        # isort
+  # "ARG",      # flake8-unused-arguments IMPORTANT
+  # "C4",       # flake8-comprehensions
+  # "EM",       # flake8-errmsg
+  "ICN",      # flake8-import-conventions
+  "G",        # flake8-logging-format
+  "PGH",      # pygrep-hooks
+  "PIE",      # flake8-pie
+  # "PL",       # pylint
+  # "PT",       # flake8-pytest-style
+  # "PTH",      # flake8-use-pathlib
+  # "RET",      # flake8-return
+  # "RUF",      # Ruff-specific
+  # "SIM",      # flake8-simplify
+  # "T20",      # flake8-print
+  # "UP",       # pyupgrade
+  "YTT",      # flake8-2020
+  "EXE",      # flake8-executable
+  "NPY",      # NumPy specific rules
+  # "PD",       # pandas-vet
 ]
 ignore = [
   # Line too long

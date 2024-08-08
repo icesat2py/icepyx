@@ -62,7 +62,7 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     # print("this should cross the dateline:" + str(xdateline))
 
     if extent_type == "bounding_box":
-        if xdateline == True:
+        if xdateline is True:
             cartesian_lons = [i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]]
             cartesian_spatial_extent = [
                 item
@@ -79,14 +79,14 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     # DevGoal: Currently this if/else within this elif are not tested...
     # DevGoal: the crs setting and management needs to be improved
 
-    elif extent_type == "polygon" and file == False:
+    elif extent_type == "polygon" and file is False:
         # if spatial_extent is already a Polygon
         if isinstance(spatial_extent, Polygon):
             spatial_extent_geom = spatial_extent
 
         # else, spatial_extent must be a list of floats (or list of tuples of floats)
         else:
-            if xdateline == True:
+            if xdateline is True:
                 cartesian_lons = [
                     i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]
                 ]
@@ -109,7 +109,7 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
 
     # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
     # DevGoal: Currently this elif isn't tested...
-    elif extent_type == "polygon" and file == True:
+    elif extent_type == "polygon" and file is True:
         gdf = gpd.read_file(spatial_extent)
 
     else:
@@ -643,7 +643,7 @@ class Spatial:
             extent = [float(i) for i in polygon]
 
             # TODO: explore how this will be impacted if the polygon is read in from a shapefile and crosses the dateline
-            if hasattr(self, "_xdateln") and self._xdateln == True:
+            if hasattr(self, "_xdateln") and self._xdateln is True:
                 neg_lons = [i if i < 181.0 else i - 360 for i in extent[0:-1:2]]
                 extent = [item for pair in zip(neg_lons, extent[1::2]) for item in pair]
 

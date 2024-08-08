@@ -79,7 +79,7 @@ To clone the repository:
 
 
 Provided the location of the repo is part of your $PYTHONPATH, you should simply be able to add `import icepyx` to your Python document.
-Alternatively, in a command line or terminal, navigate to the folder in your cloned repository containing setup.py and run
+Alternatively, in a command line or terminal, navigate to the folder in your cloned repository containing `pyproject.toml` and run
 
 .. code-block::
 

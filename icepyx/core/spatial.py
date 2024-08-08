@@ -1,12 +1,10 @@
 import geopandas as gpd
 import numpy as np
 import os
-from pathlib import Path
 from shapely.geometry import box, Polygon
 from shapely.geometry.polygon import orient
 import warnings
 
-import icepyx.core.APIformatting as apifmt
 
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 
@@ -397,37 +395,38 @@ class Spatial:
             Optional keyword argument to let user specify whether the spatial input crosses the dateline or not.
 
 
-         See Also
-         --------
-         icepyx.Query
+        See Also
+        --------
+        icepyx.Query
 
 
-         Examples
-         --------
-         Initializing Spatial with a bounding box.
+        Examples
+        --------
+        Initializing Spatial with a bounding box.
 
-         >>> reg_a_bbox = [-55, 68, -48, 71]
-         >>> reg_a = Spatial(reg_a_bbox)
-         >>> print(reg_a)
-         Extent type: bounding_box
-         Coordinates: [-55.0, 68.0, -48.0, 71.0]
+        >>> reg_a_bbox = [-55, 68, -48, 71]
+        >>> reg_a = Spatial(reg_a_bbox)
+        >>> print(reg_a)
+        Extent type: bounding_box
+        Coordinates: [-55.0, 68.0, -48.0, 71.0]
 
-         Initializing Query with a list of polygon vertex coordinate pairs.
+        Initializing Query with a list of polygon vertex coordinate pairs.
 
-         >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
-         >>> reg_a = Spatial(reg_a_poly)
-         >>> print(reg_a)
-         Extent type: polygon
-         Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
+        >>> reg_a_poly = [(-55, 68), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
+        >>> reg_a = Spatial(reg_a_poly)
+        >>> print(reg_a)
+        Extent type: polygon
+        Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
 
-         Initializing Query with a geospatial polygon file.
+        Initializing Query with a geospatial polygon file.
 
-         >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
-         >>> reg_a = Spatial(aoi)
-         >>> print(reg_a) # doctest: +SKIP
-         Extent Type: polygon
-         Source file: ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
-         Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
+        >>> from pathlib import Path
+        >>> aoi = Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()
+        >>> reg_a = Spatial(str(aoi))
+        >>> print(reg_a) # doctest: +SKIP
+        Extent Type: polygon
+        Source file: ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg
+        Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
         """
 
         scalar_types = (int, float, np.int64)
@@ -590,6 +589,7 @@ class Spatial:
         >>> reg_a.extent_file
 
 
+        >>> from pathlib import Path
         >>> reg_a = Spatial(str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()))
         >>> reg_a.extent_file # doctest: +SKIP
         ./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg

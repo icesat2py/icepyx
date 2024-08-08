@@ -4,7 +4,6 @@ import requests
 import earthaccess
 
 from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.exceptions import DeprecationError
 
 
 @pytest.fixture()

@@ -1,6 +1,5 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from pathlib import Path  # used in docstring tests
 import pprint
 
 import icepyx.core.APIformatting as apifmt
@@ -103,9 +102,10 @@ class GenQuery:
 
     Initializing Query with a geospatial polygon file.
 
-    >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+    >>> from pathlib import Path
+    >>> aoi = Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a = GenQuery(aoi, reg_a_dates)
+    >>> reg_a = GenQuery(str(aoi), reg_a_dates)
     >>> print(reg_a)
     Extent type: polygon
     Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
@@ -378,9 +378,10 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     Initializing Query with a geospatial polygon file.
 
-    >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+    >>> from pathlib import Path
+    >>> aoi = Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a = Query('ATL06', aoi, reg_a_dates)
+    >>> reg_a = Query('ATL06', str(aoi), reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v006
     ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
@@ -1132,7 +1133,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         gdf = self._spatial.extent_as_gdf
 
         try:
-            from shapely.geometry import Polygon
+            from shapely.geometry import Polygon  # noqa: F401
             import geoviews as gv
 
             gv.extension("bokeh")

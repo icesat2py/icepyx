@@ -1,6 +1,5 @@
 import copy
 import datetime
-import warnings
 
 import earthaccess
 from icepyx.core.exceptions import DeprecationError

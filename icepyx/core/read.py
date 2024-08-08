@@ -5,7 +5,6 @@ import warnings
 
 import earthaccess
 import numpy as np
-from s3fs.core import S3File
 import xarray as xr
 
 from icepyx.core.auth import EarthdataAuthMixin

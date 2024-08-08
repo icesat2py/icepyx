@@ -8,14 +8,15 @@ per-file-ignores =
     test_granules.py:E501
     # imported but unused
     __init__.py:F401
-    # import not at top of file
-    doc/source/conf.py:E402
+    # import not at top of file, imported but unused
+    doc/source/conf.py:E402,F401
 
 ignore =
-    # line too long; Black handles long lines of code, but allows inline
-    # comments to be infinitely long (automatically formatting them can have
-    # unintended consequences). In our codebase, we have a lot of overlong
-    # comments.
+    # line too long
+    # NOTE: This is a formatting concern. Black handles long lines of code, but
+    # allows inline comments to be infinitely long (automatically formatting
+    # them can have unintended consequences). In our codebase, we have a lot of
+    # overlong comments.
     # See: https://github.com/psf/black/issues/1713#issuecomment-1357045092
     E501
     # GOAL: remove ignores below this line
@@ -25,13 +26,10 @@ ignore =
     E722
     # ambiguous var name
     E741
-    # imported but unused
-    F401
     # unable to detect undefined names
     F403
-    # assigned and unused (in tests)
-    F841
     # line break before binary operator
+    # NOTE: This is a formatting concern
     W503
 
     # GOAL:

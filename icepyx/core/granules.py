@@ -351,7 +351,7 @@ class Granules(EarthdataAuthMixin):
             # DevGoal: use the request response/number to do some error handling/
             # give the user better messaging for failures
             # print(request.content)
-            root = ET.fromstring(request.content)
+            # root = ET.fromstring(request.content)
             # print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
 
             if verbose is True:

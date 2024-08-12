@@ -338,9 +338,7 @@ class Visualize:
 
         warnings.warn(
             "NOTICE: visualizations requiring the OpenAltimetry API are currently"
-            " (August 2024) unavailable while hosting of OpenAltimetry transitions from"
-            " UCSD to NSIDC. A ticket has been issued to restore programmatic API"
-            " access."
+            " (August 2024) unavailable until we can adapt to API changes."
         )
 
         base_url = "http://openaltimetry.earthdatacloud.nasa.gov/data/api/icesat2"

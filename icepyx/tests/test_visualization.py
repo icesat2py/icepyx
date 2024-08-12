@@ -1,6 +1,5 @@
 import pytest
 
-from icepyx.core.visualization import Visualize
 import icepyx.core.visualization as vis
 
 

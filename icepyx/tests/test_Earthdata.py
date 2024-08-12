@@ -6,7 +6,6 @@ import netrc
 import os
 import pytest
 import shutil
-import warnings
 
 
 # PURPOSE: test different authentication methods

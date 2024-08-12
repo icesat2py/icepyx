@@ -67,8 +67,8 @@ fallback_version = "unknown"
 
 [tool.ruff.lint]
 select = [
-  "E",
-  "F",
+  "E",    # pycodestyle
+  "F",    # pyflakes
 ]
 ignore = [
   # Line too long

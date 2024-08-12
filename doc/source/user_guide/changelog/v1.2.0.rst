@@ -1,0 +1,46 @@
+What's new in 1.2.0 (14 August 2024)
+-----------------------------------
+
+These are the changes in icepyx 1.2.0 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- Replace `setup.py` with equivalent `pyproject.toml` (#539)
+- Fix continuous delivery & docs to account for setup.py -> pyproject.toml change (#541)
+
+
+Bug fixes
+~~~~~~~~~
+
+- None
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+^^^^^^^^^^^
+
+- update docstring tests for numpy 2.0 (#537)
+- Add Zenodo badge and update all-contributors badge (#536)
+- [pre-commit.ci] pre-commit autoupdate (#538)
+- Autofix flake8 ignores E711, E712, E714, F401, F841 with Ruff (#542)
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- fix bib entry (#529)
+- [docs] update is2 resources (#535)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v1.1.0..v1.2.0|HEAD

@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run black linter
-        uses: psf/black@stable
-      # use the flake8 linter to annotate improperly formatted code
-      # note linter arguments are supplied via the .flake8 config file
-      - name: Annotate PR after running flake8
-        uses: TrueBrain/actions-flake8@v2
+
+      # Use the Ruff linter to annotate code style / best-practice issues
+      # NOTE: More config provided in pyproject.toml
+      - name: Lint and annotate PR
+        uses: chartboost/ruff-action@v1
+        with:
+          args: "check . --output-format github"

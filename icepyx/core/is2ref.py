@@ -159,7 +159,7 @@ def _get_custom_options(session, product, version):
 
     get_varlist(root)
     vars_vals = [
-        v.replace(":", "/") if v.startswith("/") == False else v.replace("/:", "")
+        v.replace(":", "/") if v.startswith("/") is False else v.replace("/:", "")
         for v in vars_raw
     ]
     cust_options.update({"variables": vars_vals})

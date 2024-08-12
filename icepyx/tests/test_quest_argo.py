@@ -59,7 +59,7 @@ def test_param_setter(argo_quest_instance):
 
     reg_a.params = ["temperature", "salinity"]
 
-    exp = list(set(["temperature", "salinity"]))
+    exp = ["temperature", "salinity"]
     assert reg_a.params == exp
 
 

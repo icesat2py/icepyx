@@ -85,6 +85,32 @@ Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/st
 More detailed instructions for installing `icepyx` can be found at
 https://icepyx.readthedocs.io/en/latest/getting_started/install.html
 
+Quick start
+-----------
+
+.. code-block:: python
+
+   import icepyx as ipx
+   query = ipx.Query(
+       # Collection short name
+       "ATL06",
+       # Bounding box
+       [-55, 68, -48, 71],
+       # Time bounds
+       ['2019-02-20','2019-02-28'],
+   )
+   query.download_granules('/tmp/icepyx')
+
+.. code-block:: bash
+
+   $ ls -1 /tmp/icepyx/
+   processed_ATL06_20190221121851_08410203_006_02.h5
+   processed_ATL06_20190222010344_08490205_006_02.h5
+   processed_ATL06_20190225121032_09020203_006_02.h5
+   processed_ATL06_20190226005526_09100205_006_02.h5
+
+See the examples below for more things `icepyx` can do!
+
 
 Examples (Jupyter Notebooks)
 ----------------------------

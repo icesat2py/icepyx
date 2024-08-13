@@ -19,9 +19,10 @@ def auth_instance():
 
 # Test that .session creates a session
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS") == "true", "Skipping this test on Travis CI."
+    os.getenv("TRAVIS"), "Skipping this test on Travis CI."
 )
 def test_get_session(auth_instance):
+    print(os.environ)
     assert isinstance(auth_instance.session, requests.sessions.Session)
 
 

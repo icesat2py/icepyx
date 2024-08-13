@@ -56,14 +56,17 @@ def _validate_OA_product(product):
     """
     if isinstance(product, str):
         product = str.upper(product)
-        assert product in [
-            "ATL06",
-            "ATL07",
-            "ATL08",
-            "ATL10",
-            "ATL12",
-            "ATL13",
-        ], "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
+        assert (
+            product
+            in [
+                "ATL06",
+                "ATL07",
+                "ATL08",
+                "ATL10",
+                "ATL12",
+                "ATL13",
+            ]
+        ), "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
     else:
         raise TypeError("Please enter a product string")
     return product

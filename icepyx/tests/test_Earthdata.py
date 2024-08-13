@@ -2,6 +2,7 @@
 """
 test icepyx.core.query.Query.earthdata_login function
 """
+
 import netrc
 import os
 import pytest

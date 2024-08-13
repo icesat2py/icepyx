@@ -102,3 +102,40 @@ ignore = [
 
 # Ignore too many leading '#' for block comment
 "*/tests/*" = ["E266"]
+
+
+[tool.mypy]
+files = "icepyx/."
+mypy_path = ["icepyx"]
+# TODO: Enable ASAP:
+check_untyped_defs = false
+# TODO: Then enable:
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+# TODO: Finally enable (and delete settings above; strict includes them):
+strict = false
+
+[[tool.mypy.overrides]]
+# Help us adopt mypy by skipping some modules entirely
+# GOAL: Remove this whole section!
+module = [
+  "icepyx.core.read",
+  "icepyx.core.query",
+  "icepyx.core.visualization",
+  "icepyx.quest.dataset_scripts.argo",
+  "icepyx.tests.test_Earthdata",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+  "dask.*",
+  "datashader.*",
+  "h5py.*",
+  "holoviews.*",
+  "geopandas.*",
+  "geoviews.*",
+  "pypistats.*",
+  "shapely.*",
+]
+ignore_missing_imports = true

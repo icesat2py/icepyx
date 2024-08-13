@@ -1,0 +1,50 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - v2  # TODO: Remove!
+      - development
+      - main
+  push:
+    branches:
+      - main
+      - development
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+
+      - name: Install package and test dependencies
+        run: |
+          # TODO: Once we have expressed dependencies in a more standard way:
+          # python -m pip install .[test]
+          python -m pip install .
+          python -m pip install -r requirements-dev.txt
+
+      - name: Type-check package
+        run: mypy
+
+      - name: Unit test
+        # TODO: Test behind EDL
+        run: pytest icepyx/ --verbose --cov app --ignore=icepyx/tests/test_behind_NSIDC_API_login.py --ignore=icepyx/tests/test_auth.py
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4.5.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

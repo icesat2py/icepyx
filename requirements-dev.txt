@@ -3,3 +3,8 @@ pypistats
 pytest>=4.6
 pytest-cov
 responses
+mypy
+pandas-stubs
+types-docutils
+types-requests
+types-tqdm

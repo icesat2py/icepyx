@@ -8,7 +8,9 @@ import earthaccess
 from icepyx.core.auth import EarthdataAuthMixin
 
 # Are we running on Travis CI?
-TRAVIS = os.environ.get("TRAVIS") == "true"
+skip_if_travis_ci = pytest.mark.skipif(
+    os.environ.get("TRAVIS") == "true", reason="Skipping this test on Travis CI."
+)
 
 
 @pytest.fixture()
@@ -21,13 +23,13 @@ def auth_instance():
 
 
 # Test that .session creates a session
-@pytest.mark.skipif(TRAVIS, reason="Skipping this test on Travis CI.")
+@skip_if_travis_ci
 def test_get_session(auth_instance):
     assert isinstance(auth_instance.session, requests.sessions.Session)
 
 
 # Test that .s3login_credentials creates a dict with the correct keys
-@pytest.mark.skipif(TRAVIS, reason="Skipping this test on Travis CI.")
+@skip_if_travis_ci
 def test_get_s3login_credentials(auth_instance):
     assert isinstance(auth_instance.s3login_credentials, dict)
     expected_keys = set(
@@ -37,7 +39,7 @@ def test_get_s3login_credentials(auth_instance):
 
 
 # Test that earthdata_login generates an auth object
-@pytest.mark.skipif(TRAVIS, reason="Skipping this test on Travis CI.")
+@skip_if_travis_ci
 def test_login_function(auth_instance):
     assert isinstance(auth_instance.auth, earthaccess.auth.Auth)
     assert auth_instance.auth.authenticated

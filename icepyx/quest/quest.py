@@ -157,7 +157,7 @@ class Quest(GenQuery):
     # error handling? what happens when the user tries to re-query?
     def search_all(self, **kwargs):
         """
-        Searches for requred dataset within platform (i.e. ICESat-2, Argo) of interest.
+        Searches for required dataset within platform (i.e. ICESat-2, Argo) of interest.
 
         Parameters
         ----------

@@ -18,7 +18,7 @@ def auth_instance():
 
 
 # Test that .session creates a session
-@pytest.mark.skipif(os.getenv("TRAVIS"), "Skipping this test on Travis CI.")
+@pytest.mark.skipif(os.getenv("TRAVIS"), reason="Skipping this test on Travis CI.")
 def test_get_session(auth_instance):
     print(os.environ)
     assert isinstance(auth_instance.session, requests.sessions.Session)
@@ -26,7 +26,7 @@ def test_get_session(auth_instance):
 
 # Test that .s3login_credentials creates a dict with the correct keys
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS") == "true", "Skipping this test on Travis CI."
+    os.environ.get("TRAVIS") == "true", reason="Skipping this test on Travis CI."
 )
 def test_get_s3login_credentials(auth_instance):
     assert isinstance(auth_instance.s3login_credentials, dict)
@@ -38,7 +38,7 @@ def test_get_s3login_credentials(auth_instance):
 
 # Test that earthdata_login generates an auth object
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS") == "true", "Skipping this test on Travis CI."
+    os.environ.get("TRAVIS") == "true", reason="Skipping this test on Travis CI."
 )
 def test_login_function(auth_instance):
     assert isinstance(auth_instance.auth, earthaccess.auth.Auth)

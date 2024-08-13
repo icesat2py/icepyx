@@ -24,7 +24,6 @@ Maintenance
 
 - update docstring tests for numpy 2.0 (#537)
 - Add Zenodo badge and update all-contributors badge (#536)
-- [pre-commit.ci] pre-commit autoupdate (#538)
 - Autofix flake8 ignores E711, E712, E714, F401, F841 with Ruff (#542)
 - Switch to ruff (#543)
 

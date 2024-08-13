@@ -15,13 +15,8 @@ New Features
 Bug fixes
 ~~~~~~~~~
 
-- None
+- Switch to set comparison to fix a test dependent on unreliable order (#550)
 
-
-Deprecations
-~~~~~~~~~~~~
-
-- None
 
 
 Maintenance
@@ -31,6 +26,7 @@ Maintenance
 - Add Zenodo badge and update all-contributors badge (#536)
 - [pre-commit.ci] pre-commit autoupdate (#538)
 - Autofix flake8 ignores E711, E712, E714, F401, F841 with Ruff (#542)
+- Switch to ruff (#543)
 
 
 Documentation

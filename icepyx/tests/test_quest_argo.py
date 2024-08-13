@@ -59,8 +59,8 @@ def test_param_setter(argo_quest_instance):
 
     reg_a.params = ["temperature", "salinity"]
 
-    exp = list(set(["temperature", "salinity"]))
-    assert reg_a.params == exp
+    exp = {"temperature", "salinity"}
+    assert set(reg_a.params) == exp
 
 
 def test_param_setter_invalid_inputs(argo_quest_instance):

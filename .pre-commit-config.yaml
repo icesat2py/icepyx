@@ -18,7 +18,6 @@ repos:
         args: [--markdown-linebreak-ext=md]
       - id: requirements-txt-fixer
 
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.7
     hooks:

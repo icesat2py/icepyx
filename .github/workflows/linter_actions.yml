@@ -16,4 +16,4 @@ jobs:
       - name: Lint and annotate PR
         uses: chartboost/ruff-action@v1
         with:
-          args: "check . --format github"
+          args: "check . --output-format github"

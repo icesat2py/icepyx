@@ -120,7 +120,6 @@ strict = false
 # GOAL: Remove this whole section!
 module = [
   "icepyx.core.read",
-  "icepyx.core.query",
   "icepyx.core.visualization",
   "icepyx.quest.dataset_scripts.argo",
   "icepyx.tests.test_Earthdata",

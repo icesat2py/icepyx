@@ -7,7 +7,6 @@ import earthaccess
 
 from icepyx.core.auth import EarthdataAuthMixin
 
-# Are we running on Travis CI?
 skip_if_travis_ci = pytest.mark.skipif(
     os.environ.get("TRAVIS") == "true", reason="Skipping this test on Travis CI."
 )

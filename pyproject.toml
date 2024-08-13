@@ -67,7 +67,7 @@ fallback_version = "unknown"
 
 
 [tool.ruff.lint]
-extend-select = [
+select = [
   "E",        # pycodestyle
   "F",        # pyflakes
   # "B",        # flake8-bugbear IMPORTANT

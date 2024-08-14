@@ -9,4 +9,3 @@ exclude *.ini
 exclude *.txt
 exclude *.yaml
 exclude *.yml
-include requirements.txt

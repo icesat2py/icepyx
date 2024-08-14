@@ -44,11 +44,11 @@ Every time you contribute
    (you can give it whatever name you want - the naming doesn't matter much as it will only be a temporary branch).
 
 2. Navigate to the new branch you created.
-   Make any edits or additions on this branch (this can be done locally or on GitHub directly).
+   Make any edits or additions on this branch (this can be done locally with ``git`` or on GitHub directly).
    After you do this, commit your changes and add a descriptive commit message.
 
-3. After committing the changes, push them to GitHub if you were working locally.
-   Then, open a pull request to merge your branch into the development branch.
+3. Push your new commits to GitHub if you were working locally.
+   Then, open a pull request to merge your branch into the ``development`` branch.
    Members of the icepyx community will review your changes and may ask you to make some more.
 
 4. If this is your first PR, someone on the icepyx team should add you to the contributors list.
@@ -63,7 +63,10 @@ Every time you contribute
    The bot will open a separate PR to add the contributor or new contribution types!
 
 5. Repeat these steps, creating a new branch and ultimately a pull request for each change.
-   More, smaller pull requests are easier to debug and merge than fewer large ones, so create pull requests regularly!
+
+   .. tip::
+
+      More, smaller pull requests are easier to debug and merge than fewer large ones, so please create pull requests regularly!
 
 
 Steps for working with icepyx locally

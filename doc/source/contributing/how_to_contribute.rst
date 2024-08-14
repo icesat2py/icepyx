@@ -34,6 +34,11 @@ For help navigating ``git`` and GitHub, see this `guide <https://the-turing-way.
 Every time you contribute
 -------------------------
 
+.. important::
+
+    If you do not have write permissions on this repository, start with creating a fork by clicking the Fork button in GitHub.
+    All actions from here on should be performed in your fork.
+
 1. To add new content, you need to create a new branch.
    You can do this on GitHub by clicking the down arrow next to ‘development’ and making a new branch
    (you can give it whatever name you want - the naming doesn't matter much as it will only be a temporary branch).

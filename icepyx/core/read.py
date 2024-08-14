@@ -5,7 +5,6 @@ import warnings
 
 import earthaccess
 import numpy as np
-from s3fs.core import S3File
 import xarray as xr
 
 from icepyx.core.auth import EarthdataAuthMixin
@@ -634,6 +633,7 @@ class Read(EarthdataAuthMixin):
             )  # wanted_groups, vgrp.keys()))
 
             # Closing the file prevents further operations on the dataset
+            # from s3fs.core import S3File
             # if isinstance(file, S3File):
             #     file.close()
 

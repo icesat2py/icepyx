@@ -5,9 +5,13 @@
     :alt: JOSS publication link and DOI
     :target: https://doi.org/10.21105/joss.04912
 
+.. |Zenodo-all| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.7729175.svg
+    :alt: Zenodo all-versions DOI for icepyx
+    :target: https://doi.org/10.5281/zenodo.7729175
 
-icepyx     |version badge|  |JOSS|
-==================================
+
+icepyx     |version badge|  |JOSS| |Zenodo-all|
+===============================================
 
 **Python tools for obtaining and working with ICESat-2 data**
 

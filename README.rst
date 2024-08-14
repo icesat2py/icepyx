@@ -3,7 +3,9 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|GitHub license| |Conda install| |Pypi install| |Contributors| |JOSS|
+|Contributors| |GitHub license| |Conda install| |Pypi install|
+
+|JOSS| |Zenodo-all|
 
 Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
 
@@ -18,13 +20,17 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx
 
-.. |Contributors| image:: https://img.shields.io/badge/all_contributors-40-orange.svg?style=flat-square
+.. |Contributors| image:: https://img.shields.io/github/all-contributors/icesat2py/icepyx?color=ee8449&style=flat-square(#contributors)
     :alt: All Contributors
     :target: https://github.com/icesat2py/icepyx/blob/main/CONTRIBUTORS.rst
 
 .. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.04912/status.svg
     :alt: JOSS publication link and DOI
     :target: https://doi.org/10.21105/joss.04912
+
+.. |Zenodo-all| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.7729175.svg
+    :alt: Zenodo all-versions DOI for icepyx
+    :target: https://doi.org/10.5281/zenodo.7729175
 
 .. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest

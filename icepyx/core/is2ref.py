@@ -56,14 +56,17 @@ def _validate_OA_product(product):
     """
     if isinstance(product, str):
         product = str.upper(product)
-        assert product in [
-            "ATL06",
-            "ATL07",
-            "ATL08",
-            "ATL10",
-            "ATL12",
-            "ATL13",
-        ], "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
+        assert (
+            product
+            in [
+                "ATL06",
+                "ATL07",
+                "ATL08",
+                "ATL10",
+                "ATL12",
+                "ATL13",
+            ]
+        ), "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
     else:
         raise TypeError("Please enter a product string")
     return product
@@ -159,7 +162,7 @@ def _get_custom_options(session, product, version):
 
     get_varlist(root)
     vars_vals = [
-        v.replace(":", "/") if v.startswith("/") == False else v.replace("/:", "")
+        v.replace(":", "/") if v.startswith("/") is False else v.replace("/:", "")
         for v in vars_raw
     ]
     cust_options.update({"variables": vars_vals})

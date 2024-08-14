@@ -1,5 +1,4 @@
 import pytest
-import re
 
 import icepyx as ipx
 from icepyx.quest.quest import Quest

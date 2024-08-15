@@ -78,9 +78,9 @@ If you are modifying portions of code, you will need to run
 
 .. code-block:: shell
 
-    pip install -e.
+    pip install --editable .[dev]
 
-within your Python environment to use your real-time edited version of the code during runtime.
+within your Python environment to use your real-time editable version of the code during runtime.
 
 
 Setting up a Development Work Environment
@@ -116,7 +116,7 @@ If you are working in Jupyter Notebook, in addition to manually installing your 
 
 .. code-block:: shell
 
-    pip install -e.
+    pip install --editable .
 
 you will need to dynamically reload icepyx within your notebook by executing
 

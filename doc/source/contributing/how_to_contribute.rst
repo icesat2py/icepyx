@@ -102,10 +102,10 @@ environment (from the home level of your local copy of the icepyx repo) with
 
     mamba env create --name icepyx-env --channel conda-forge -f requirements-dev.txt -f requirements.txt
 
-and then (1) running `pre-commit install` to let git know about pre-commit and
+and then (1) running ``pre-commit install`` to let git know about pre-commit and
 (2) pip installing icepyx as described above and below.
 
-One of the tools installed with "requirements-dev.txt" is called [pre-commit](https://pre-commit.com/).
+One of the tools installed with "requirements-dev.txt" is called `pre-commit <https://pre-commit.com/>`_.
 We have included a set of pre-commit formatting hooks that we strongly encourage all contributors to use.
 These hooks will check the files you are committing for format consistency,
 reformatting the files if necessary.

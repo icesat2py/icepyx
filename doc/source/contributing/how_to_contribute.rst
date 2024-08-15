@@ -3,7 +3,7 @@
 How to Contribute
 =================
 
-On this page we briefly provide basic instructions for contributing to icepyx.
+On this page we provide brief instructions for contributing to icepyx.
 We encourage users to follow the `git pull request workflow <https://www.asmeurer.com/git-workflow/>`_.
 For contribution examples, please see :doc:`contribution guidelines <contribution_guidelines>`.
 

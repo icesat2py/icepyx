@@ -73,18 +73,24 @@ update your local copy of icepyx with
 
 to ensure you have the most up to date version of icepyx in your library.
 
+Setting up a Development Work Environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you are modifying portions of code, you will need to run
+You will need to install icepyx in editable mode, so that when we make changes, they will immediately be testable at runtime.
+You will also need icepyx's dependencies and some dev tooling (for automated checks, tests, and documentaiton).
+
+To set this up, start in the root of your local copy of the icepyx repo.
+Then, create a new environment using mamba (or conda, or a tool of your choice) and activate it.
+Finally, install icepyx and needed dependencies in to it:
 
 .. code-block:: shell
 
-    pip install --editable .[dev]
+    mamba create --name icepyx-dev pip
+    mamba activate icepyx-dev
+    pip install --editable .[dev,docs]
 
-within your Python environment to use your real-time editable version of the code during runtime.
-
-
-Setting up a Development Work Environment
------------------------------------------
+Setting up development tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 icepyx uses a few tools to ensure that files have consistent formatting and run tests.
 You can easily install the ones most frequently used by creating a new mamba (or conda)
@@ -116,7 +122,7 @@ If you are working in Jupyter Notebook, in addition to manually installing your 
 
 .. code-block:: shell
 
-    pip install --editable .
+    pip install --editable .[dev,docs]
 
 you will need to dynamically reload icepyx within your notebook by executing
 

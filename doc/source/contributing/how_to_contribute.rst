@@ -73,38 +73,39 @@ update your local copy of icepyx with
 
 to ensure you have the most up to date version of icepyx in your library.
 
-
-If you are modifying portions of code, you will need to run
-
-.. code-block:: shell
-
-    pip install -e.
-
-within your Python environment to use your real-time edited version of the code during runtime.
-
-
 Setting up a Development Work Environment
------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-icepyx uses a few tools to ensure that files have consistent formatting and run tests.
-You can easily install the ones most frequently used by creating a new mamba (or conda)
-environment (from the home level of your local copy of the icepyx repo) with
+You will need to install icepyx in editable mode, so that when we make changes, they will immediately be testable at runtime.
+You will also need icepyx's dependencies and some dev tooling (for automated checks, tests, and documentaiton).
+
+To set this up, start in the root of your local copy of the icepyx repo.
+Then, create a new environment using mamba (or conda, or a tool of your choice) and activate it.
+Finally, install icepyx and needed dependencies in to it:
 
 .. code-block:: shell
 
-    mamba env create --name icepyx-env --channel conda-forge -f requirements-dev.txt -f requirements.txt
+    mamba create --name icepyx-dev pip
+    mamba activate icepyx-dev
+    pip install --editable .[dev,docs]
 
-and then (1) running `pre-commit install` to let git know about pre-commit and
-(2) pip installing icepyx as described above and below.
+Setting up development tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-One of the tools installed with "requirements-dev.txt" is called [pre-commit](https://pre-commit.com/).
+One of the dev tools we just installed is called `pre-commit <https://pre-commit.com/>`_.
 We have included a set of pre-commit formatting hooks that we strongly encourage all contributors to use.
-These hooks will check the files you are committing for format consistency,
-reformatting the files if necessary.
+Configure those hooks to automatically execute with:
+
+.. code-block:: shell
+
+    pre-commit install
+
+These hooks will check the files you are committing for format consistency and reformat them if necessary.
 You can tell files were reformatted if you get a message showing one of the checks failed.
-In this case, you will need to re-commit your changes until all pre-commit hooks pass
-(i.e. a failed pre-commit check results in no git commit).
-Pre-commit will also run on icepyx PRs using the pre-commit CI (continuous integration).
+In this case, pre-commit has prevented the commit from completing.
+You will need to re-add and the formatted files and try to commit again until all pre-commit hooks pass.
+
+pre-commit will also run on icepyx PRs using the pre-commit CI (continuous integration) service.
 As with other automations happening in PRs,
 you'll want to make sure you pull the changes back to your local version before making new commits.
 
@@ -116,7 +117,7 @@ If you are working in Jupyter Notebook, in addition to manually installing your 
 
 .. code-block:: shell
 
-    pip install -e.
+    pip install --editable .[dev,docs]
 
 you will need to dynamically reload icepyx within your notebook by executing
 

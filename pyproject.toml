@@ -5,7 +5,7 @@ license = {file = "LICENSE"}
 readme = "README.rst"
 
 requires-python = "~=3.7"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
 
 authors = [
   {name = "The icepyx Developers", email = "jbscheick@gmail.com"},
@@ -31,6 +31,49 @@ classifiers=[
   "Topic :: Software Development :: Libraries",
 ]
 
+dependencies = [
+  "backoff",
+  "dask[dataframe]",
+  "datashader",
+  "earthaccess>=0.5.1",
+  "fiona",
+  "geopandas",
+  "h5netcdf",
+  "h5py",
+  "holoviews",
+  "hvplot",
+  "matplotlib",
+  "numpy",
+  "requests",
+  "s3fs",
+  "shapely",
+  "xarray",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pre-commit",
+  "pypistats",
+  "pytest>=4.6",
+  "pytest-cov",
+  "responses",
+]
+docs = [
+  "gitpython",
+  "linkify-it-py",
+  "myst-nb",
+  "nbsphinx",
+  "numpydoc",
+  "pybtex",
+  "pygithub",
+  "sphinx>=4.3",
+  "sphinx-panels",
+  "sphinx_rtd_theme>=1.0",
+  "sphinxcontrib-bibtex",
+]
+viz = ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"]
+complete = ["icepyx[viz]"]
+
 [project.urls]
 Homepage = "https://icepyx.readthedocs.io"
 Documentation = "https://icepyx.readthedocs.io"
@@ -46,13 +89,6 @@ requires = ["setuptools>=66", "wheel", "setuptools_scm"]
 [tool.setuptools]
 py-modules = ["_icepyx_version"]
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
-
-[project.optional-dependencies]
-viz = ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"]
-complete = ["icepyx[viz]"]
-
 [tool.setuptools.packages.find]
 exclude = ["*tests"]
 
@@ -61,6 +97,8 @@ version_file = "_icepyx_version.py"
 version_file_template = 'version = "{version}"'
 local_scheme = "node-and-date"
 fallback_version = "unknown"
+
+
 # [tool.ruff.format]
 # docstring-code-format = true
 # docstring-code-line-length = "dynamic"

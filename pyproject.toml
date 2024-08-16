@@ -61,6 +61,12 @@ version_file = "_icepyx_version.py"
 version_file_template = 'version = "{version}"'
 local_scheme = "node-and-date"
 fallback_version = "unknown"
+
+
+[tool.ruff]
+# DevGoal: Lint and format all Jupyter Notebooks, remove below.
+extend-exclude = ["*.ipynb"]
+
 # [tool.ruff.format]
 # docstring-code-format = true
 # docstring-code-line-length = "dynamic"

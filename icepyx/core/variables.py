@@ -437,7 +437,7 @@ class Variables(EarthdataAuthMixin):
         ----------
         defaults : boolean, default False
             Include the variables in the default variable list. Defaults are defined per-data product.
-            When specified in conjuction with a var_list, default variables not on the user-
+            When specified in conjunction with a var_list, default variables not on the user-
             specified list will be added to the order.
 
         var_list : list of strings, default None
@@ -451,8 +451,8 @@ class Variables(EarthdataAuthMixin):
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
-            A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
-            the product that include that keyword in their path. A list of availble keywords can be obtained by
+            A list of subdirectory names (keywords), from any hierarchy level within the data structure, to select variables within
+            the product that include that keyword in their path. A list of available keywords can be obtained by
             entering `keyword_list=['']` into the function.
 
         Notes
@@ -545,7 +545,7 @@ class Variables(EarthdataAuthMixin):
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
-            A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
+            A list of subdirectory names (keywords), from any hierarchy level within the data structure, to select variables within
             the product that include that keyword in their path.
 
         Notes

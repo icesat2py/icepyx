@@ -164,7 +164,7 @@ def _confirm_proceed():
 class Read(EarthdataAuthMixin):
     """
     Data object to read ICESat-2 data into the specified formats.
-    Provides flexiblity for reading nested hdf5 files into common analysis formats.
+    Provides flexibility for reading nested hdf5 files into common analysis formats.
 
     Parameters
     ----------

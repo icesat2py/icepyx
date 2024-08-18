@@ -15,7 +15,7 @@ def quest_instance(scope="module", autouse=True):
 ########## PER-DATASET ADDITION TESTS ##########
 
 
-# Paramaterize these add_dataset tests once more datasets are added
+# Parameterize these add_dataset tests once more datasets are added
 def test_add_is2(quest_instance):
     # Add ATL06 as a test to QUEST
 

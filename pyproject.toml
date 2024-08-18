@@ -71,6 +71,9 @@ extend-exclude = ["*.ipynb"]
 # docstring-code-format = true
 # docstring-code-line-length = "dynamic"
 
+[tool.codespell]
+ignore-words-list = "aas,socio-economic,toi"
+
 [tool.ruff.lint]
 select = [
   "E",    # pycodestyle

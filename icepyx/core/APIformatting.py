@@ -243,7 +243,7 @@ class Parameters:
     @property
     def fmted_keys(self):
         """
-        Returns the dictionary of formated keys associated with the
+        Returns the dictionary of formatted keys associated with the
         parameter object.
         """
         return self._fmted_keys
@@ -320,7 +320,7 @@ class Parameters:
         if all(keys in self.fmted_keys.keys() for keys in reqkeys):
             assert all(
                 self.fmted_keys.get(key, -9999) != -9999 for key in reqkeys
-            ), "One of your formated parameters is missing a value"
+            ), "One of your formatted parameters is missing a value"
             return True
         else:
             return False
@@ -340,7 +340,7 @@ class Parameters:
         if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
             assert any(
                 self.fmted_keys.get(key, -9999) != -9999 for key in spatial_keys
-            ), "One of your formated parameters is missing a value"
+            ), "One of your formatted parameters is missing a value"
             return True
         else:
             return False

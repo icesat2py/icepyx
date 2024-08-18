@@ -30,7 +30,7 @@ from icepyx.core.exceptions import NsidcQueryError
 # region_a.avail_granules(ids=True)
 
 # add test that s3urls are gotten for ALL products (e.g. ATL15 was failing
-# due to .nc extention instead of .h5))
+# due to .nc extension instead of .h5))
 
 
 # DevNote: clearly there's a better way that doesn't make the function so long...

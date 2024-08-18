@@ -49,7 +49,7 @@ class EarthdataAuthMixin:
 
     def __init__(self, auth=None):
         self._auth = copy.deepcopy(auth)
-        # initializatin of session and s3 creds is not allowed because those are generated
+        # initialization of session and s3 creds is not allowed because those are generated
         # from the auth object
         self._session = None
         self._s3login_credentials = None

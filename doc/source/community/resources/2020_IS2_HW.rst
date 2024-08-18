@@ -7,7 +7,7 @@ first virtual Hackweek held by the University of Washington.
 While originally planned as a five-day, in-person workshop, the event was shifted to a fully virtual/remote setting in light of
 stay-at-home orders and travel restrictions in place to curb the spread of COVID-19.
 
-To accomodate multiple time zones and limit the daily duration of online tutorial sessions, the event was spread out over the course of ten days.
+To accommodate multiple time zones and limit the daily duration of online tutorial sessions, the event was spread out over the course of ten days.
 The first week had three half-days of interactive tutorials/lectures.
 The second week had four days that included some interactive tutorials/lectures and scheduled times where instructors were
 available to help participants with a facilitated exploration of datasets and hands-on software development.

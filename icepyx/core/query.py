@@ -450,7 +450,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     @property
     def dataset(self):
         """
-        Legacy property included to provide depracation warning.
+        Legacy property included to provide deprecation warning.
 
         See Also
         --------
@@ -722,7 +722,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     @property
     def granules(self):
         """
-        Return the granules object, which provides the underlying funtionality for searching, ordering,
+        Return the granules object, which provides the underlying functionality for searching, ordering,
         and downloading granules for the specified product.
         Users are encouraged to use the built-in wrappers
         rather than trying to access the granules object themselves.

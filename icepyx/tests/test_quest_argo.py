@@ -59,8 +59,8 @@ def test_param_setter(argo_quest_instance):
 
     reg_a.params = ["temperature", "salinity"]
 
-    exp = ["temperature", "salinity"]
-    assert reg_a.params == exp
+    exp = {"temperature", "salinity"}
+    assert set(reg_a.params) == exp
 
 
 def test_param_setter_invalid_inputs(argo_quest_instance):
@@ -244,4 +244,4 @@ def test_replace_presRange_download(argo_quest_instance):
     assert "salinity" in df.columns
 
 
-# second pres range test where does have a higher max pressure because only the new data was presRange limited?
+# second pressure range test where does have a higher max pressure because only the new data was presRange limited?

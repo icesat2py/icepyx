@@ -24,6 +24,11 @@ repos:
         args: ["--fix", "--show-fixes"]
       - id: ruff-format
 
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.18
+    hooks:
+      - id: validate-pyproject
+
 ci:
   autoupdate_schedule: monthly
 

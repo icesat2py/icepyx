@@ -76,6 +76,7 @@ ignore-words-list = "aas,socio-economic,toi"
 
 [tool.ruff.lint]
 select = [
+  "C4",   # flake8-comprehensions
   "E",    # pycodestyle
   "F",    # pyflakes
 ]

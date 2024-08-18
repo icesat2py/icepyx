@@ -298,7 +298,7 @@ class Parameters:
         # if self._wanted == None:
         #     raise ValueError("No desired parameter list was passed")
 
-        val_list = list(set(val for lis in self.poss_keys.values() for val in lis))
+        val_list = list({val for lis in self.poss_keys.values() for val in lis})
 
         for key in self.fmted_keys.keys():
             assert key in val_list, (

@@ -661,11 +661,11 @@ class Read(EarthdataAuthMixin):
         """
 
         is2ds = xr.Dataset(
-            coords=dict(
-                gran_idx=[np.uint64(999999)],
-                source_file=(["gran_idx"], [file]),
-            ),
-            attrs=dict(data_product=self.product),
+            coords={
+                "gran_idx": [np.uint64(999999)],
+                "source_file": (["gran_idx"], [file]),
+            },
+            attrs={"data_product": self.product},
         )
         return is2ds
 
@@ -740,7 +740,7 @@ class Read(EarthdataAuthMixin):
             "ATL23",
         ]:
             wanted_grouponly_set = set(wanted_groups_tiered[0])
-            wanted_groups_list = list(sorted(wanted_grouponly_set))
+            wanted_groups_list = sorted(wanted_grouponly_set)
             if len(wanted_groups_list) == 1:
                 is2ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
             else:

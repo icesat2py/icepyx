@@ -62,6 +62,8 @@ version_file_template = 'version = "{version}"'
 local_scheme = "node-and-date"
 fallback_version = "unknown"
 
+[tool.codespell]
+ignore-words-list = "aas,socio-economic,toi"
 
 [tool.ruff]
 # DevGoal: Lint and format all Jupyter Notebooks, remove below.
@@ -70,9 +72,6 @@ extend-exclude = ["*.ipynb"]
 # [tool.ruff.format]
 # docstring-code-format = true
 # docstring-code-line-length = "dynamic"
-
-[tool.codespell]
-ignore-words-list = "aas,socio-economic,toi"
 
 [tool.ruff.lint]
 select = [
@@ -88,13 +87,6 @@ ignore = [
   # overlong comments.
   # See: https://github.com/psf/black/issues/1713#issuecomment-1357045092
   "E501",
-  # TODO: remove ignores below this line
-  # comparison syntax in tests
-  "E721",
-  # bare except
-  "E722",
-  # unable to detect undefined names
-  "F403",
 ]
 
 [tool.ruff.lint.per-file-ignores]

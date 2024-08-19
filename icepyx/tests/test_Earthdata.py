@@ -65,7 +65,7 @@ def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
     try:
         url = "urs.earthdata.nasa.gov"
         mock_uid, _, mock_pwd = netrc.netrc(netrc).authenticators(url)
-    except:
+    except Exception:
         mock_uid = os.environ.get("EARTHDATA_USERNAME")
         mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
 

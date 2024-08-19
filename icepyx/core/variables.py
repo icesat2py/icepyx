@@ -84,10 +84,7 @@ class Variables(EarthdataAuthMixin):
             self._path = val.check_s3bucket(path)
 
             # Set up auth
-            if self._path.startswith("s3"):
-                auth = self.auth
-            else:
-                auth = None
+            auth = self.auth if self._path.startswith("s3") else None
             # Read the product and version from the file
             self._product = is2ref.extract_product(self._path, auth=auth)
             self._version = is2ref.extract_version(self._path, auth=auth)
@@ -111,11 +108,7 @@ class Variables(EarthdataAuthMixin):
 
     @property
     def path(self):
-        if self._path:
-            path = self._path
-        else:
-            path = None
-        return path
+        return self._path or None
 
     @property
     def product(self):
@@ -271,7 +264,7 @@ class Variables(EarthdataAuthMixin):
         for vn in varlist:
             vpath, vkey = os.path.split(vn)
             # print('path '+ vpath + ', key '+vkey)
-            if vkey not in vgrp.keys():
+            if vkey not in vgrp:
                 vgrp[vkey] = [vn]
             else:
                 vgrp[vkey].append(vn)
@@ -321,7 +314,7 @@ class Variables(EarthdataAuthMixin):
         # check if the list of variables, if specified, are available in the product
         if var_list is not None:
             for var_id in var_list:
-                if var_id not in vgrp.keys():
+                if var_id not in vgrp:
                     err_msg_varid = "Invalid variable name: " + var_id + ". "
                     err_msg_varid = err_msg_varid + "Please select from this list: "
                     err_msg_varid = err_msg_varid + ", ".join(vgrp.keys())
@@ -514,9 +507,9 @@ class Variables(EarthdataAuthMixin):
             )
 
         # update the data object variables
-        for vkey in final_vars.keys():
+        for vkey in final_vars:
             # add all matching keys and paths for new variables
-            if vkey not in self.wanted.keys():
+            if vkey not in self.wanted:
                 self.wanted[vkey] = final_vars[vkey]
             else:
                 for vpath in final_vars[vkey]:

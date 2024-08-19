@@ -75,6 +75,7 @@ extend-exclude = ["*.ipynb"]
 
 [tool.ruff.lint]
 select = [
+  "C4",   # flake8-comprehensions
   "E",    # pycodestyle
   "F",    # pyflakes
 ]

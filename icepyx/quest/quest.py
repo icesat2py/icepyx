@@ -65,7 +65,7 @@ class Quest(GenQuery):
         self.datasets = {}
 
     def __str__(self):
-        str = super(Quest, self).__str__()
+        str = super().__str__()
 
         str += "\nData sets: "
 
@@ -73,7 +73,7 @@ class Quest(GenQuery):
             str += "None"
         else:
             for i in self.datasets.keys():
-                str += "{0}, ".format(i)
+                str += f"{i}, "
             str = str[:-2]  # remove last ', '
 
         return str
@@ -189,7 +189,7 @@ class Quest(GenQuery):
 
             except:
                 dataset_name = type(v).__name__
-                print("Error querying data from {0}".format(dataset_name))
+                print(f"Error querying data from {dataset_name}")
 
     # error handling? what happens if the user tries to re-download?
     def download_all(self, path="", **kwargs):
@@ -228,7 +228,7 @@ class Quest(GenQuery):
                     print(msg)
             except:
                 dataset_name = type(v).__name__
-                print("Error downloading data from {0}".format(dataset_name))
+                print(f"Error downloading data from {dataset_name}")
 
     def save_all(self, path):
         """

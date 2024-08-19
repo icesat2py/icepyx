@@ -136,12 +136,7 @@ class GenQuery:
             self._temporal = tp.Temporal(date_range, start_time, end_time)
 
     def __str__(self):
-        str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
-            self._spatial._ext_type,
-            self._spatial._spatial_ext,
-            self._temporal._start,
-            self._temporal._end,
-        )
+        str = f"Extent type: {self._spatial._ext_type} \nCoordinates: {self._spatial._spatial_ext}\nDate range: ({self._temporal._start}, {self._temporal._end})"
         return str
 
     # ----------------------------------------------------------------------
@@ -442,9 +437,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # Properties
 
     def __str__(self):
-        str = "Product {2} v{3}\n{0}\nDate range {1}".format(
-            self.spatial_extent, self.dates, self.product, self.product_version
-        )
+        str = f"Product {self.product} v{self.product_version}\n{self.spatial_extent}\nDate range {self.dates}"
         return str
 
     @property

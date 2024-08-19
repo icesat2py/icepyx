@@ -505,13 +505,9 @@ class Spatial:
 
     def __str__(self):
         if self._geom_file is not None:
-            return "Extent type: {0}\nSource file: {1}\nCoordinates: {2}".format(
-                self._ext_type, self._geom_file, self._spatial_ext
-            )
+            return f"Extent type: {self._ext_type}\nSource file: {self._geom_file}\nCoordinates: {self._spatial_ext}"
         else:
-            return "Extent type: {0}\nCoordinates: {1}".format(
-                self._ext_type, self._spatial_ext
-            )
+            return f"Extent type: {self._ext_type}\nCoordinates: {self._spatial_ext}"
 
     @property
     def extent(self):

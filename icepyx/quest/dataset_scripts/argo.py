@@ -56,9 +56,9 @@ class Argo(DataSet):
             df = "\n" + str(self.argodata.head())
         s = (
             "---Argo---\n"
-            "Parameters: {0}\n"
-            "Pressure range: {1}\n"
-            "Dataframe head: {2}".format(self.params, prange, df)
+            f"Parameters: {self.params}\n"
+            f"Pressure range: {prange}\n"
+            f"Dataframe head: {df}"
         )
 
         return s
@@ -115,7 +115,7 @@ class Argo(DataSet):
         coordinates_array = np.asarray(gdf.geometry[0].exterior.coords)
         x = ""
         for i in coordinates_array:
-            coord = "[{0},{1}]".format(i[0], i[1])
+            coord = f"[{i[0]},{i[1]}]"
             if x == "":
                 x = coord
             else:
@@ -228,9 +228,7 @@ class Argo(DataSet):
             for i in params:
                 assert (
                     i in valid_params
-                ), "Parameter '{0}' is not valid. Valid parameters are {1}".format(
-                    i, valid_params
-                )
+                ), f"Parameter '{i}' is not valid. Valid parameters are {valid_params}"
 
         return list(set(params))
 
@@ -308,7 +306,7 @@ class Argo(DataSet):
                 return msg
 
             else:
-                msg = "Error: Unexpected response {}".format(resp)
+                msg = f"Error: Unexpected response {resp}"
                 print(msg)
                 return msg
 
@@ -319,7 +317,7 @@ class Argo(DataSet):
         # should we be doing a set/duplicates check here??
         self.prof_ids = prof_ids
 
-        msg = "{0} valid profiles have been identified".format(len(prof_ids))
+        msg = f"{len(prof_ids)} valid profiles have been identified"
         print(msg)
         return msg
 
@@ -363,7 +361,7 @@ class Argo(DataSet):
 
         # Consider any status other than 2xx an error
         if not resp.status_code // 100 == 2:
-            return "Error: Unexpected response {}".format(resp)
+            return f"Error: Unexpected response {resp}"
         profile = resp.json()
         return profile
 
@@ -396,9 +394,7 @@ class Argo(DataSet):
             profileDf["lon"] = profile_data["geolocation"]["coordinates"][0]
             profileDf["date"] = profile_data["timestamp"]
         except KeyError as err:
-            msg = "We cannot automatically parse your profile into a dataframe due to {0}".format(
-                err
-            )
+            msg = f"We cannot automatically parse your profile into a dataframe due to {err}"
             print(msg)
             return msg
 
@@ -478,7 +474,7 @@ class Argo(DataSet):
                 profile_df = self._parse_into_df(profile_data[0])
                 merged_df = pd.concat([merged_df, profile_df], sort=False)
             except:
-                print("\tError processing profile {0}. Skipping.".format(i))
+                print(f"\tError processing profile {i}. Skipping.")
 
         # now that we have a df from this round of downloads, we can add it to any existing dataframe
         # note that if a given column has previously been added, update needs to be used to replace nans (merge will not replace the nan values)

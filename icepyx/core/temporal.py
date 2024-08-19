@@ -446,7 +446,7 @@ class Temporal:
             )
 
     def __str__(self):
-        return "Start date and time: {0}\nEnd date and time: {1}".format(
+        return "Start date and time: {}\nEnd date and time: {}".format(
             self._start.strftime("%Y-%m-%d %H:%M:%S"),
             self._end.strftime("%Y-%m-%d %H:%M:%S"),
         )

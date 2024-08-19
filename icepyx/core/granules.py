@@ -498,7 +498,7 @@ class Granules(EarthdataAuthMixin):
         # (could create confusion depending on whether download was interrupted or kernel restarted)
         order_fn = ".order_restart"
         if os.path.exists(order_fn):
-            with open(order_fn, "r") as fid:
+            with open(order_fn) as fid:
                 order_dat = json.load(fid)
                 self.orderIDs = order_dat["orderIDs"]
 

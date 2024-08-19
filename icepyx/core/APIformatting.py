@@ -84,11 +84,11 @@ def _fmt_readable_granules(dset, **kwds):
                 # use single character wildcards "?" for date strings
                 # and ATLAS granule region number
                 if dset in ("ATL07", "ATL10", "ATL20", "ATL21"):
-                    granule_name = "{0}-??_{1}_{2}{3}??_*".format(dset, 14 * "?", t, c)
+                    granule_name = "{}-??_{}_{}{}??_*".format(dset, 14 * "?", t, c)
                 elif dset in ("ATL11",):
-                    granule_name = "{0}_{1}??_*".format(dset, t)
+                    granule_name = f"{dset}_{t}??_*"
                 else:
-                    granule_name = "{0}_{1}_{2}{3}??_*".format(dset, 14 * "?", t, c)
+                    granule_name = "{}_{}_{}{}??_*".format(dset, 14 * "?", t, c)
                 # append the granule
                 readable_granule_list.append(granule_name)
     # extend with explicitly named files (full or partial)

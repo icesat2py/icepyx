@@ -24,7 +24,7 @@ import icepyx
 
 project = "icepyx"
 year = datetime.date.today().year
-copyright = "2019-{}, The icepyx Development Team".format(year)
+copyright = f"2019-{year}, The icepyx Development Team"
 
 # -- General configuration ---------------------------------------------------
 
@@ -140,7 +140,7 @@ class MyStyle(UnsrtStyle):
     default_sorting_style = "author_year_title"  # 'none' or 'author_year_title'
 
     def __init__(self, *args, **kwargs):
-        super(MyStyle, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 #         self.label_style = MyLabel()

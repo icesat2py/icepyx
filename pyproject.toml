@@ -78,6 +78,7 @@ ignore-words-list = "aas,socio-economic,toi"
 select = [
   "E",    # pycodestyle
   "F",    # pyflakes
+  "UP",   # pyupgrade
 ]
 ignore = [
   # Line too long

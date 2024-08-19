@@ -38,7 +38,7 @@ def test_validate_parameters(argo_quest_instance):
     invalid_params = ["temp", "temperature_files"]
 
     ermsg = re.escape(
-        "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+        "Parameter '{}' is not valid. Valid parameters are {}".format(
             "temp", reg_a._valid_params()
         )
     )
@@ -70,7 +70,7 @@ def test_param_setter_invalid_inputs(argo_quest_instance):
     assert reg_a.params == exp
 
     ermsg = re.escape(
-        "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+        "Parameter '{}' is not valid. Valid parameters are {}".format(
             "temp", reg_a._valid_params()
         )
     )

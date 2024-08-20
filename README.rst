@@ -85,7 +85,7 @@ Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/st
 More detailed instructions for installing `icepyx` can be found at
 https://icepyx.readthedocs.io/en/latest/getting_started/install.html
 
-Quick start
+Quick Start
 -----------
 
 .. code-block:: python

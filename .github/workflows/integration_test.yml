@@ -1,0 +1,35 @@
+name: "Integration test"
+# NOTE: We're just running the tests that require earthdata login here; we
+#       don't distinguish yet between unit and integration tests yet.
+
+on:
+  push:
+    branches:
+      - "main"
+      - "development"
+
+
+jobs:
+  test:
+    name: "Test"
+    if: "github.repository == 'icesat2py/icepyx'"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "./.github/actions/install-icepyx"
+        with:
+          python-version: "3.12"
+
+      - name: "Run tests"
+        env:
+          EARTHDATA_USERNAME: "${{ secrets.EARTHDATA_USERNAME }}"
+          EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
+        run: |
+          pytest icepyx/ --verbose --cov app \
+            icepyx/tests/test_behind_NSIDC_API_login.py \
+            icepyx/tests/test_auth.py
+
+      - name: "Upload coverage report"
+        uses: "codecov/codecov-action@v4.5.0"
+        with:
+          token: "${{ secrets.CODECOV_TOKEN }}"

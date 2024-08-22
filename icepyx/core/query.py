@@ -870,7 +870,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         try:
             all(key in self._cust_options.keys() for key in keys)
-        except AttributeError or KeyError:
+        except (AttributeError, KeyError):
             self._cust_options = is2ref._get_custom_options(
                 self.session, self.product, self._version
             )

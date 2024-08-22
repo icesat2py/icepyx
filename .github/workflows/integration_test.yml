@@ -3,7 +3,12 @@ name: "Integration test"
 #       don't distinguish yet between unit and integration tests yet.
 
 on:
-  pull_request:
+  pull_request_target:
+    # WARNING: This is _super dangerous_ without the access check below!!
+    #          See: https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/
+    types:
+      - "open"
+      - "synchronize"
   push:
     branches:
       - "main"
@@ -56,8 +61,8 @@ jobs:
       - uses: "actions/checkout@v4"
         with:
           fetch-depth: 0
-          # IMPORTANT: This is _super dangerous_ without the access check above!!
-          #            See: https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/
+          # WARNING: This is _super dangerous_ without the access check above!!
+          #          See: https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/
           ref: "${{  github.event.pull_request.head.sha }}"
 
       - uses: "./.github/actions/install-icepyx"

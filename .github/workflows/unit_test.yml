@@ -19,6 +19,10 @@ jobs:
         python-version: ["3.9", "3.12"]
 
     steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+
       - uses: "./.github/actions/install-icepyx"
         with:
           python-version: "${{ matrix.python-version }}"

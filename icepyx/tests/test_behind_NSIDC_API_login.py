@@ -65,5 +65,9 @@ def test_download_granules_without_subsetting(reg, session, capsys):
     assert out == ""
     assert err == ""
 
+    assert reg.reqparams == {"short_name": "ATL06", "version": "006", "page_size": 2000}
+    assert len(reg.granules.orderIDs) == 1
+    assert int(reg.granules.orderIDs[0]) >= 5_000_000_000_000
+
     reg.download_granules(path=path)
     # check that the max extent of the downloaded granules isn't subsetted

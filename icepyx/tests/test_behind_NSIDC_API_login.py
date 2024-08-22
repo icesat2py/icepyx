@@ -62,11 +62,22 @@ def test_download_granules_without_subsetting(reg, session, capsys):
 
     reg.order_granules(verbose=False, subset=False, email=False)
     out, err = capsys.readouterr()  # capture stdout and stderr
-    assert out == ""
+    assert out.startswith(
+        "Total number of data order requests is  1  for  3  granules.\n"
+        "Data request  1  of  1  is submitting to NSIDC\n"
+    )
     assert err == ""
 
-    assert reg.reqparams == {"short_name": "ATL06", "version": "006", "page_size": 2000}
-    assert len(reg.granules.orderIDs) == 1
+    assert reg.reqparams == {
+        "client_string": "icepyx",
+        "include_meta": "Y",
+        "page_num": 0,
+        "page_size": 2000,
+        "request_mode": "async",
+        "short_name": "ATL06",
+        "version": "006",
+    }
+    assert len(reg.granules.orderIDs) == 2
     assert int(reg.granules.orderIDs[0]) >= 5_000_000_000_000
 
     reg.download_granules(path=path)

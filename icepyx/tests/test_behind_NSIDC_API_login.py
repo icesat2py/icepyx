@@ -1,3 +1,7 @@
+"""
+Integration tests that require authentication to Earthdata login.
+"""
+
 import json
 import os
 import pytest
@@ -49,8 +53,17 @@ def test_download_granules_with_subsetting(reg, session):
     reg.download_granules(path)
 
 
-# def test_download_granules_without_subsetting(reg_a, session):
-#     path = './downloads'
-#     reg_a.order_granules(session, subset=False)
-#     reg_a.download_granules(session, path)
-#     #check that the max extent of the downloaded granules isn't subsetted
+def test_download_granules_without_subsetting(reg, session, capsys):
+    """
+    Test that granules can be ordered from NSIDC and downloaded with the `subset=False`
+    option.
+    """
+    path = "./downloads"
+
+    reg.order_granules(verbose=False, subset=False, email=False)
+    out, err = capsys.readouterr()  # capture stdout and stderr
+    assert out == ""
+    assert err == ""
+
+    reg.download_granules(path=path)
+    # check that the max extent of the downloaded granules isn't subsetted

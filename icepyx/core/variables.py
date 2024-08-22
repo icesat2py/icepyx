@@ -108,7 +108,7 @@ class Variables(EarthdataAuthMixin):
 
     @property
     def path(self):
-        return self._path or None
+        return self._path if self._path else None
 
     @property
     def product(self):

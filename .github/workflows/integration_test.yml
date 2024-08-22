@@ -18,7 +18,6 @@ on:
 jobs:
   test:
     name: "Test"
-    if: "github.repository == 'icesat2py/icepyx'"
     runs-on: "ubuntu-latest"
 
     steps:

@@ -399,6 +399,11 @@ class Granules(EarthdataAuthMixin):
             status = statuslist[0]
             print("Initial status of your order request at NSIDC is: ", status)
 
+            # If status is already finished without going into pending/processing
+            if status.startswith("complete"):
+                loop_response = self.session.get(statusURL)
+                loop_root = ET.fromstring(loop_response.content)
+
             # Continue loop while request is still processing
             while status == "pending" or status == "processing":
                 print(

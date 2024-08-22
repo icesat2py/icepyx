@@ -33,6 +33,7 @@ jobs:
 
 
       - name: "Notify of permissions issue"
+        if: "steps.checkAccess.outputs.require-result == 'false'"
         uses: "actions/github-script@v7"
         with:
           script: |

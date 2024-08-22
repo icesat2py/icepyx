@@ -470,6 +470,20 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "mfisher87",
+      "name": "Matt Fisher",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3608264?v=4",
+      "profile": "https://mfisher87.github.io/",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "maintenance",
+        "test",
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,

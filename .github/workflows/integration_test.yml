@@ -7,7 +7,7 @@ on:
     # WARNING: This is _super dangerous_ without the access check below!!
     #          See: https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/
     types:
-      - "open"
+      - "opened"
       - "synchronize"
   push:
     branches:

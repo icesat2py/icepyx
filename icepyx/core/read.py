@@ -120,7 +120,7 @@ def _parse_source(data_source, glob_kwargs={}) -> list:
         # if data_source is a directory glob search the directory and assign to _filelist
         data_source = os.path.join(data_source, "*")
         filelist = glob.glob(data_source, **glob_kwargs)
-    elif isinstance(data_source, str) or isinstance(data_source, Path):
+    elif isinstance(data_source, (Path, str)):
         if data_source.startswith("s3"):
             # if the string is an s3 path put it in the _filelist without globbing
             filelist = [data_source]

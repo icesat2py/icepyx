@@ -69,7 +69,4 @@ def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
         mock_uid = os.environ.get("EARTHDATA_USERNAME")
         mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
 
-    if (uid == mock_uid) & (pwd == mock_pwd):
-        return True
-    else:
-        return False
+    return bool((uid == mock_uid) & (pwd == mock_pwd))

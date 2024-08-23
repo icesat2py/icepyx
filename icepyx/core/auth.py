@@ -107,11 +107,9 @@ class EarthdataAuthMixin:
 
         # Only generate s3login_credentials the first time credentials are accessed, or if an hour
         # has passed since the last login
-        if self._s3login_credentials is None:
-            set_s3_creds()
-        elif (datetime.datetime.now() - self._s3_initial_ts) >= datetime.timedelta(
-            hours=1
-        ):
+        if self._s3login_credentials is None or (
+            datetime.datetime.now() - self._s3_initial_ts
+        ) >= datetime.timedelta(hours=1):
             set_s3_creds()
         return self._s3login_credentials
 

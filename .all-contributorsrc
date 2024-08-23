@@ -481,6 +481,16 @@
         "review",
         "tool"
       ]
+    },
+    {
+      "login": "jrenrut",
+      "name": "Jeremy Turner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42989238?v=4",
+      "profile": "https://github.com/jrenrut",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -122,6 +122,9 @@ def combine_params(*param_dicts):
     """
     Combine multiple dictionaries into one.
 
+    Merging is performed in sequence using `dict.update()`; dictionaries later in the
+    list overwrite those earlier.
+
     Parameters
     ----------
     params : dictionaries
@@ -129,7 +132,7 @@ def combine_params(*param_dicts):
 
     Returns
     -------
-    single dictionary of all input dictionaries combined
+    A single dictionary of all input dictionaries combined
 
     Examples
     --------
@@ -411,7 +414,10 @@ class Parameters:
 
                 for key in opt_keys:
                     if key == "Coverage" and key in kwargs:
-                        # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that product without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+                        # DevGoal: make an option along the lines of Coverage=default,
+                        # which will get the default variables for that product without
+                        # the user having to input is2obj.build_wanted_wanted_var_list
+                        # as their input value for using the Coverage kwarg
                         self._fmted_keys.update(
                             {key: _fmt_var_subset_list(kwargs[key])}
                         )

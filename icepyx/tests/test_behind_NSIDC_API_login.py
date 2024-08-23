@@ -2,6 +2,7 @@
 Integration tests that require authentication to Earthdata login.
 """
 
+import glob
 import json
 import os
 import pytest
@@ -81,4 +82,5 @@ def test_download_granules_without_subsetting(reg, session, capsys):
     assert int(reg.granules.orderIDs[0]) >= 5_000_000_000_000
 
     reg.download_granules(path=path)
+    assert len(glob.glob(pathname=f"{path}/processed_ATL06_201902*.h5")) == 3
     # check that the max extent of the downloaded granules isn't subsetted

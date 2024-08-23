@@ -78,6 +78,7 @@ select = [
   "C4",   # flake8-comprehensions
   "E",    # pycodestyle
   "F",    # pyflakes
+  "SIM",  # flake8-simplify
 ]
 ignore = [
   # Line too long
@@ -87,6 +88,7 @@ ignore = [
   # overlong comments.
   # See: https://github.com/psf/black/issues/1713#issuecomment-1357045092
   "E501",
+  "SIM105",  # suppressible-exception
 ]
 
 [tool.ruff.lint.per-file-ignores]

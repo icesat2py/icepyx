@@ -104,6 +104,33 @@ ignore = [
 "*/tests/*" = ["E266"]
 
 
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "standard"
+include = [
+  "icepyx",
+]
+exclude = [
+  "**/__pycache__",
+  "icepyx/tests",
+]
+ignore = [
+  "icepyx/quest/*",
+  "icepyx/core/APIformatting.py",
+  "icepyx/core/auth.py",
+  "icepyx/core/exceptions.py",
+  "icepyx/core/icesat2data.py",
+  "icepyx/core/is2ref.py",
+  "icepyx/core/query.py",
+  "icepyx/core/read.py",
+  "icepyx/core/spatial.py",
+  "icepyx/core/temporal.py",
+  "icepyx/core/validate_inputs.py",
+  "icepyx/core/variables.py",
+  "icepyx/core/visualization.py",
+]
+
+
 [tool.mypy]
 files = "icepyx/."
 mypy_path = ["icepyx"]

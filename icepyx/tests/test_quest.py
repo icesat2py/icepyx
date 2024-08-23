@@ -27,7 +27,7 @@ def test_add_is2(quest_instance):
     obs = quest_instance.datasets
 
     assert type(obs) is dict
-    assert exp_key in obs.keys()
+    assert exp_key in obs
     assert type(obs[exp_key]) is exp_type
     assert quest_instance.datasets[exp_key].product == prod
 
@@ -41,7 +41,7 @@ def test_add_argo(quest_instance):
     obs = quest_instance.datasets
 
     assert type(obs) is dict
-    assert exp_key in obs.keys()
+    assert exp_key in obs
     assert type(obs[exp_key]) is exp_type
     assert set(quest_instance.datasets[exp_key].params) == set(params)
 
@@ -54,7 +54,7 @@ def test_add_multiple_datasets(quest_instance):
     # print(quest_instance.datasets["icesat2"].product)
 
     exp_keys = ["argo", "icesat2"]
-    assert set(exp_keys) == set(quest_instance.datasets.keys())
+    assert set(exp_keys) == set(quest_instance.datasets)
 
 
 ########## ALL DATASET METHODS TESTS ##########

@@ -72,7 +72,7 @@ class Quest(GenQuery):
         if not self.datasets:
             str += "None"
         else:
-            for i in self.datasets.keys():
+            for i in self.datasets:
                 str += "{0}, ".format(i)
             str = str[:-2]  # remove last ', '
 

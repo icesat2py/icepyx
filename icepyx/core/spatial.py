@@ -496,7 +496,7 @@ class Spatial:
             self._spatial_ext = [float(i) for i in arrpoly]
 
         # check for cross dateline keyword submission
-        if "xdateline" in kwarg.keys():
+        if "xdateline" in kwarg:
             self._xdateln = kwarg["xdateline"]
             assert self._xdateln in [
                 True,
@@ -542,10 +542,7 @@ class Spatial:
         """
 
         # TODO: test this
-        if hasattr(self, "_xdateln"):
-            xdateln = self._xdateln
-        else:
-            xdateln = None
+        xdateln = self._xdateln if hasattr(self, "_xdateln") else None
 
         if not hasattr(self, "_gdf_spat"):
             if self._geom_file is not None:

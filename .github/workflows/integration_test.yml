@@ -3,6 +3,7 @@ name: "Integration test"
 #       don't distinguish yet between unit and integration tests yet.
 
 on:
+  pull_request:
   push:
     branches:
       - "main"

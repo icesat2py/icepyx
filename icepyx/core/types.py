@@ -1,10 +1,18 @@
 from __future__ import annotations
 
 from typing import Literal, TypedDict
+from typing_extensions import NotRequired
 
 
-class CMRParamsBase(TypedDict):
-    temporal: str
+CMRParamsBase = TypedDict(
+    "CMRParamsBase",
+    {
+        "temporal": NotRequired[str],
+        "options[readable_granule_name][pattern]": NotRequired[str],
+        "options[spatial][or]": NotRequired[str],
+        "readable_granule_name[]": NotRequired[str],
+    },
+)
 
 
 class CMRParamsWithBbox(CMRParamsBase):
@@ -59,6 +67,13 @@ class EGISpecificParamsDownload(EGISpecificParamsBase):
     request_mode: Literal["sync", "async", "stream"]  # default "async"
     include_meta: Literal["Y", "N"]  # default "Y"
     client_string: Literal["icepyx"]  # default "icepyx"
+    # token, email
 
 
-EGISpecificParams = EGISpecificParamsSearch | EGISpecificParamsDownload
+class EGISpecificParamsSubset(EGISpecificParamsBase):
+    """Parameters for subsetting with EGI."""
+
+
+EGISpecificParams = (
+    EGISpecificParamsSearch | EGISpecificParamsDownload | EGISpecificParamsSubset
+)

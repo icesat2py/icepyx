@@ -121,7 +121,6 @@ ignore = [
   "icepyx/core/exceptions.py",
   "icepyx/core/icesat2data.py",
   "icepyx/core/is2ref.py",
-  "icepyx/core/query.py",
   "icepyx/core/read.py",
   "icepyx/core/spatial.py",
   "icepyx/core/temporal.py",

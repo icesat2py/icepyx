@@ -72,7 +72,7 @@ class Quest(GenQuery):
         if not self.datasets:
             str += "None"
         else:
-            for i in self.datasets.keys():
+            for i in self.datasets:
                 str += "{0}, ".format(i)
             str = str[:-2]  # remove last ', '
 
@@ -187,7 +187,7 @@ class Quest(GenQuery):
                     except KeyError:
                         v.search_data()
 
-            except:
+            except Exception:
                 dataset_name = type(v).__name__
                 print("Error querying data from {0}".format(dataset_name))
 
@@ -226,7 +226,7 @@ class Quest(GenQuery):
                     except KeyError:
                         msg = v.download()
                     print(msg)
-            except:
+            except Exception:
                 dataset_name = type(v).__name__
                 print("Error downloading data from {0}".format(dataset_name))
 

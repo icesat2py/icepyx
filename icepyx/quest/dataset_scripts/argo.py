@@ -45,10 +45,7 @@ class Argo(DataSet):
         self._apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
 
     def __str__(self):
-        if self.presRange is None:
-            prange = "All"
-        else:
-            prange = str(self.presRange)
+        prange = "All" if self.presRange is None else str(self.presRange)
 
         if self.argodata is None:
             df = "No data yet"
@@ -297,7 +294,7 @@ class Argo(DataSet):
         selectionProfiles = resp.json()
 
         # Consider any status other than 2xx an error
-        if not resp.status_code // 100 == 2:
+        if resp.status_code // 100 != 2:
             # check for the existence of profiles from query
             if selectionProfiles == []:
                 msg = (
@@ -362,7 +359,7 @@ class Argo(DataSet):
             print(resp.url)
 
         # Consider any status other than 2xx an error
-        if not resp.status_code // 100 == 2:
+        if resp.status_code // 100 != 2:
             return "Error: Unexpected response {}".format(resp)
         profile = resp.json()
         return profile
@@ -477,7 +474,7 @@ class Argo(DataSet):
                 profile_data = self._download_profile(i)
                 profile_df = self._parse_into_df(profile_data[0])
                 merged_df = pd.concat([merged_df, profile_df], sort=False)
-            except:
+            except Exception:
                 print("\tError processing profile {0}. Skipping.".format(i))
 
         # now that we have a df from this round of downloads, we can add it to any existing dataframe

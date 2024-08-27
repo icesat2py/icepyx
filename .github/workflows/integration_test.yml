@@ -3,18 +3,17 @@ name: "Integration test"
 #       don't distinguish between unit and integration tests yet.
 
 on:
-  pull_request:
-    paths:
-      - ".github/**"
-      - "icepyx/**/*.py"
-      - "pyproject.toml"
-      - "requirements*.txt"
-
   push:
     branches:
-      - "main"
-      - "development"
-    paths:  # IMPORTANT: Keep in sync with pull request paths
+      - "main"  # Releases
+      - "development"  # PR merges
+  pull_request:
+    branches:
+      - "main"  # Release pull requests
+  pull_request_review:
+    types:
+      - "submitted"
+    paths:
       - ".github/**"
       - "icepyx/**/*.py"
       - "pyproject.toml"

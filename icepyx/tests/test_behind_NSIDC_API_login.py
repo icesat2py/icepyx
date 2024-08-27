@@ -1,10 +1,10 @@
 import json
 import os
+
 import pytest
 
 import icepyx as ipx
 import icepyx.core.is2ref as is2ref
-
 
 # Misc notes and needed tests
 # test avail data and subsetting success for each input type

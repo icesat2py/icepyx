@@ -10,15 +10,15 @@ import dask.array as da
 import dask.dataframe as dd
 import datashader as ds
 import holoviews as hv
+from holoviews.operation.datashader import rasterize
 import numpy as np
 import pandas as pd
 import requests
-from holoviews.operation.datashader import rasterize
 from tqdm import tqdm
 
 import icepyx as ipx
-import icepyx.core.is2ref as is2ref
 import icepyx.core.granules as granules
+import icepyx.core.is2ref as is2ref
 
 hv.extension("bokeh")
 

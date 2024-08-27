@@ -27,7 +27,6 @@ jobs:
 
       - name: "Run tests"
         env:
-          EARTHDATA_USERNAME: "${{ secrets.EARTHDATA_USERNAME }}"
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |
           pytest icepyx/ --verbose --cov app \

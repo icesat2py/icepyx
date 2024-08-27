@@ -432,7 +432,7 @@ class Read(EarthdataAuthMixin):
             ]
 
             # handle delta_times with 1 or more dimensions
-            idx_range = range(0, len(ds.delta_time.data))
+            idx_range = range(len(ds.delta_time.data))
             try:
                 photon_ids = (
                     idx_range
@@ -440,7 +440,7 @@ class Read(EarthdataAuthMixin):
                     + 1
                 )
             except AttributeError:
-                photon_ids = range(0, len(ds.delta_time.data))
+                photon_ids = range(len(ds.delta_time.data))
 
             hold_delta_times = ds.delta_time.data
             ds = (

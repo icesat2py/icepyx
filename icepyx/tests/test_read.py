@@ -29,12 +29,12 @@ def test_parse_source_no_files():
         (  # check list input
             [
                 "./icepyx/core/is2ref.py",
-                "./icepyx/tests/is2class_query.py",
+                "./icepyx/tests/test_is2class_query.py",
             ],
             sorted(
                 [
                     "./icepyx/core/is2ref.py",
-                    "./icepyx/tests/is2class_query.py",
+                    "./icepyx/tests/test_is2class_query.py",
                 ]
             ),
         ),
@@ -45,11 +45,12 @@ def test_parse_source_no_files():
             ],
         ),
         (  # check filename string with glob pattern input
-            "./icepyx/**/is2*.py",
+            "./icepyx/**/*is2*.py",
             sorted(
                 [
                     "./icepyx/core/is2ref.py",
-                    "./icepyx/tests/is2class_query.py",
+                    "./icepyx/tests/test_is2class_query.py",
+                    "./icepyx/tests/test_is2ref.py",
                 ]
             ),
         ),

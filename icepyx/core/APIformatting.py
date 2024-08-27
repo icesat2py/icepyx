@@ -2,7 +2,6 @@
 
 import datetime as dt
 
-
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
 # or input to a set of API parameters (CMR or NSIDC)
@@ -212,7 +211,7 @@ class Parameters:
             "CMR",
             "required",
             "subset",
-        ], "You need to submit a valid parametery type."
+        ], "You need to submit a valid parameter type."
         self.partype = partype
 
         if partype == "required":

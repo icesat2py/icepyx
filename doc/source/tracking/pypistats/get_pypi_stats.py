@@ -1,6 +1,7 @@
 import os
-import pypistats
+
 import pandas as pd
+import pypistats
 
 cwd = os.getcwd()
 

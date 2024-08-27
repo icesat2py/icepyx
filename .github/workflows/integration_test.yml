@@ -4,10 +4,21 @@ name: "Integration test"
 
 on:
   pull_request:
+    paths:
+      - ".github/**"
+      - "icepyx/**/*.py"
+      - "pyproject.toml"
+      - "requirements*.txt"
+
   push:
     branches:
       - "main"
       - "development"
+    paths:  # IMPORTANT: Keep in sync with pull request paths
+      - ".github/**"
+      - "icepyx/**/*.py"
+      - "pyproject.toml"
+      - "requirements*.txt"
 
 jobs:
   test:

@@ -12,6 +12,7 @@ on:
 
 jobs:
   test:
+    name: "Unit test (Python ${{ matrix.python-version }})"
     runs-on: "ubuntu-latest"
     strategy:
       fail-fast: false

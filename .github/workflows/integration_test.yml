@@ -39,6 +39,7 @@ jobs:
       - name: "Run tests"
         env:
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
+          NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |
           pytest icepyx/ --verbose --cov app \
             icepyx/tests/test_behind_NSIDC_API_login.py \

@@ -130,6 +130,7 @@ force-sort-within-sections = true
 
 [tool.pyright]
 pythonVersion = "3.10"
+# DevGoal: "strict"
 typeCheckingMode = "standard"
 include = [
   "icepyx",
@@ -138,6 +139,7 @@ exclude = [
   "**/__pycache__",
   "icepyx/tests",
 ]
+# DevGoal: Remove all ignores
 ignore = [
   "icepyx/quest/*",
   "icepyx/core/APIformatting.py",

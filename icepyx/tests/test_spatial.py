@@ -1,12 +1,12 @@
+from pathlib import Path
+import re
+
 import geopandas as gpd
 import numpy as np
-from pathlib import Path
 import pytest
-import re
 from shapely.geometry import Polygon
 
 import icepyx.core.spatial as spat
-
 
 # ######### "Bounding Box" input tests ################################################################################
 # (Note that these ALSO test the @property functions for the class for bounding boxes)

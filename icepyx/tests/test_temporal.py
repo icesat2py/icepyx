@@ -1,8 +1,8 @@
 import datetime as dt
+
 import pytest
 
 import icepyx.core.temporal as tp
-
 
 # DevNote: this test suite needs to be parameterized (and fixtured) to include ALL acceptable input types
 # Currently it tests most cases for lists and dicts where the input type is str

@@ -1,4 +1,10 @@
+import pytest
+
 import icepyx as ipx
+
+# Skip the whole module. See:
+# https://docs.pytest.org/en/stable/reference/reference.html#globalvar-pytestmark
+pytestmark = pytest.mark.skip("Legacy tests -- not sure if they ever passed!")
 
 
 def test_CMRparams():

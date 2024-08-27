@@ -120,7 +120,7 @@ def _parse_source(data_source, glob_kwargs={}) -> list:
         # if data_source is a directory glob search the directory and assign to _filelist
         data_source = os.path.join(data_source, "*")
         filelist = glob.glob(data_source, **glob_kwargs)
-    elif isinstance(data_source, str) or isinstance(data_source, Path):
+    elif isinstance(data_source, (Path, str)):
         if data_source.startswith("s3"):
             # if the string is an s3 path put it in the _filelist without globbing
             filelist = [data_source]
@@ -164,7 +164,7 @@ def _confirm_proceed():
 class Read(EarthdataAuthMixin):
     """
     Data object to read ICESat-2 data into the specified formats.
-    Provides flexiblity for reading nested hdf5 files into common analysis formats.
+    Provides flexibility for reading nested hdf5 files into common analysis formats.
 
     Parameters
     ----------
@@ -661,11 +661,11 @@ class Read(EarthdataAuthMixin):
         """
 
         is2ds = xr.Dataset(
-            coords=dict(
-                gran_idx=[np.uint64(999999)],
-                source_file=(["gran_idx"], [file]),
-            ),
-            attrs=dict(data_product=self.product),
+            coords={
+                "gran_idx": [np.uint64(999999)],
+                "source_file": (["gran_idx"], [file]),
+            },
+            attrs={"data_product": self.product},
         )
         return is2ds
 
@@ -740,7 +740,7 @@ class Read(EarthdataAuthMixin):
             "ATL23",
         ]:
             wanted_grouponly_set = set(wanted_groups_tiered[0])
-            wanted_groups_list = list(sorted(wanted_grouponly_set))
+            wanted_groups_list = sorted(wanted_grouponly_set)
             if len(wanted_groups_list) == 1:
                 is2ds = self._read_single_grp(file, grp_path=wanted_groups_list[0])
             else:

@@ -470,6 +470,41 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "cclauss",
+      "name": "Christian Clauss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3709715?v=4",
+      "profile": "https://github.com/cclauss",
+      "contributions": [
+        "maintenance",
+        "review",
+        "tool"
+      ]
+    },
+    {
+      "login": "jrenrut",
+      "name": "Jeremy Turner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42989238?v=4",
+      "profile": "https://github.com/jrenrut",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "mfisher87",
+      "name": "Matt Fisher",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3608264?v=4",
+      "profile": "https://mfisher87.github.io/",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "maintenance",
+        "test",
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,

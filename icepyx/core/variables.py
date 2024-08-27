@@ -85,10 +85,7 @@ class Variables(EarthdataAuthMixin):
             self._path = val.check_s3bucket(path)
 
             # Set up auth
-            if self._path.startswith("s3"):
-                auth = self.auth
-            else:
-                auth = None
+            auth = self.auth if self._path.startswith("s3") else None
             # Read the product and version from the file
             self._product = is2ref.extract_product(self._path, auth=auth)
             self._version = is2ref.extract_version(self._path, auth=auth)
@@ -112,11 +109,7 @@ class Variables(EarthdataAuthMixin):
 
     @property
     def path(self):
-        if self._path:
-            path = self._path
-        else:
-            path = None
-        return path
+        return self._path if self._path else None
 
     @property
     def product(self):
@@ -272,7 +265,7 @@ class Variables(EarthdataAuthMixin):
         for vn in varlist:
             vpath, vkey = os.path.split(vn)
             # print('path '+ vpath + ', key '+vkey)
-            if vkey not in vgrp.keys():
+            if vkey not in vgrp:
                 vgrp[vkey] = [vn]
             else:
                 vgrp[vkey].append(vn)
@@ -322,7 +315,7 @@ class Variables(EarthdataAuthMixin):
         # check if the list of variables, if specified, are available in the product
         if var_list is not None:
             for var_id in var_list:
-                if var_id not in vgrp.keys():
+                if var_id not in vgrp:
                     err_msg_varid = "Invalid variable name: " + var_id + ". "
                     err_msg_varid = err_msg_varid + "Please select from this list: "
                     err_msg_varid = err_msg_varid + ", ".join(vgrp.keys())
@@ -438,7 +431,7 @@ class Variables(EarthdataAuthMixin):
         ----------
         defaults : boolean, default False
             Include the variables in the default variable list. Defaults are defined per-data product.
-            When specified in conjuction with a var_list, default variables not on the user-
+            When specified in conjunction with a var_list, default variables not on the user-
             specified list will be added to the order.
 
         var_list : list of strings, default None
@@ -452,8 +445,8 @@ class Variables(EarthdataAuthMixin):
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
-            A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
-            the product that include that keyword in their path. A list of availble keywords can be obtained by
+            A list of subdirectory names (keywords), from any hierarchy level within the data structure, to select variables within
+            the product that include that keyword in their path. A list of available keywords can be obtained by
             entering `keyword_list=['']` into the function.
 
         Notes
@@ -515,9 +508,9 @@ class Variables(EarthdataAuthMixin):
             )
 
         # update the data object variables
-        for vkey in final_vars.keys():
+        for vkey in final_vars:
             # add all matching keys and paths for new variables
-            if vkey not in self.wanted.keys():
+            if vkey not in self.wanted:
                 self.wanted[vkey] = final_vars[vkey]
             else:
                 for vpath in final_vars[vkey]:
@@ -546,7 +539,7 @@ class Variables(EarthdataAuthMixin):
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
         keyword_list : list of strings, default None
-            A list of subdirectory names (keywords), from any heirarchy level within the data structure, to select variables within
+            A list of subdirectory names (keywords), from any hierarchy level within the data structure, to select variables within
             the product that include that keyword in their path.
 
         Notes

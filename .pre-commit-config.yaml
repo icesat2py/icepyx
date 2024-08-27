@@ -18,12 +18,24 @@ repos:
         args: [--markdown-linebreak-ext=md]
       - id: requirements-txt-fixer
 
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+      - id: codespell
+        additional_dependencies:
+          - tomli
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.7
+    rev: v0.6.0
     hooks:
       - id: ruff
         args: ["--fix", "--show-fixes"]
       - id: ruff-format
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.18
+    hooks:
+      - id: validate-pyproject
 
 ci:
   autoupdate_schedule: monthly

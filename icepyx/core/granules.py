@@ -76,14 +76,13 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
         if cloud is True:
             try:
                 for link in gran["links"]:
-                    if link["href"].startswith("s3") and link["href"].endswith(
-                        (".h5", "nc")
-                    ):
-                        gran_s3urls.append(link["href"])
+                    href = link["href"]
+                    if href.startswith("s3") and href.endswith((".h5", "nc")):
+                        gran_s3urls.append(href)
             except KeyError:
                 pass
 
-        if any([param is True for param in [cycles, tracks, dates]]):
+        if any(param is True for param in [cycles, tracks, dates]):
             # PRD: ICESat-2 product
             # HEM: Sea Ice Hemisphere flag
             # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second

@@ -1,6 +1,6 @@
 name: "Integration test"
 # NOTE: We're just running the tests that require earthdata login here; we
-#       don't distinguish yet between unit and integration tests yet.
+#       don't distinguish between unit and integration tests yet.
 
 on:
   pull_request:

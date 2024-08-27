@@ -38,11 +38,11 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |Docs Status dev| image:: https://readthedocs.org/projects/icepyx/badge/?version=development
    :target: https://icepyx.readthedocs.io/en/development
 
-.. |Travis main Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=main
-    :target: https://app.travis-ci.com/icesat2py/icepyx
+.. |Tests Status (main)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=main
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
 
-.. |Travis dev Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
-    :target: https://app.travis-ci.com/icesat2py/icepyx
+.. |Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=development
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
 
 .. |Code Coverage main| image:: https://codecov.io/gh/icesat2py/icepyx/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx

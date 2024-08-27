@@ -1,14 +1,15 @@
 import datetime
-import requests
-import time
 import io
-import re
 import json
-import numpy as np
 import os
 import pprint
+import re
+import time
 from xml.etree import ElementTree as ET
 import zipfile
+
+import numpy as np
+import requests
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin

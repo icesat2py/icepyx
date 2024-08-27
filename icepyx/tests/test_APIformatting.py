@@ -2,7 +2,6 @@ import datetime as dt
 
 import icepyx.core.APIformatting as apifmt
 
-
 # DevNote: is this a situation where you'd ideally build a test class,
 # since you're just repeating the test function with different inputs?
 # Especially for the _fmt_spaital, where there's >2 tests?

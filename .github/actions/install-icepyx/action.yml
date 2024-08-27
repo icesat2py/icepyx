@@ -1,5 +1,5 @@
 name: 'Install icepyx'
-description: 'Install icepyx, and dev dependencies'
+description: 'Install icepyx and dev dependencies'
 
 inputs:
   python-version:

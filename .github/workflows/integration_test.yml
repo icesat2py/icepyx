@@ -9,11 +9,11 @@ on:
       - "main"
       - "development"
 
-
 jobs:
   test:
     name: "Test"
-    if: "github.repository == 'icesat2py/icepyx'"
+    # Do not run on PRs from forks:
+    if: "${{ !github.event.pull_request.head.repo.fork }}"
     runs-on: "ubuntu-latest"
 
     steps:

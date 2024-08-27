@@ -123,3 +123,6 @@ ignore = [
 
 # Ignore too many leading '#' for block comment
 "*/tests/*" = ["E266"]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true

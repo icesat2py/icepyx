@@ -2,10 +2,10 @@ import os
 
 import numpy as np
 
-import icepyx.core.is2ref as is2ref
-import icepyx.core.validate_inputs as val
 from icepyx.core.auth import EarthdataAuthMixin
 from icepyx.core.exceptions import DeprecationError
+import icepyx.core.is2ref as is2ref
+import icepyx.core.validate_inputs as val
 
 # DEVGOAL: use h5py to simplify some of these tasks, if possible!
 

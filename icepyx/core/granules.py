@@ -5,15 +5,15 @@ import os
 import pprint
 import re
 import time
-import zipfile
 from xml.etree import ElementTree as ET
+import zipfile
 
 import numpy as np
 import requests
 
 import icepyx.core.APIformatting as apifmt
-import icepyx.core.exceptions
 from icepyx.core.auth import EarthdataAuthMixin
+import icepyx.core.exceptions
 
 
 def info(grans):

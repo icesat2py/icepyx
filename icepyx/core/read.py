@@ -7,9 +7,9 @@ import earthaccess
 import numpy as np
 import xarray as xr
 
-import icepyx.core.is2ref as is2ref
 from icepyx.core.auth import EarthdataAuthMixin
 from icepyx.core.exceptions import DeprecationError
+import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
 

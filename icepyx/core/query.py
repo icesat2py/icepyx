@@ -4,14 +4,14 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 
 import icepyx.core.APIformatting as apifmt
+from icepyx.core.auth import EarthdataAuthMixin
+from icepyx.core.exceptions import DeprecationError
 import icepyx.core.granules as granules
+from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
 import icepyx.core.validate_inputs as val
-from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.exceptions import DeprecationError
-from icepyx.core.granules import Granules
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.visualization import Visualize
 

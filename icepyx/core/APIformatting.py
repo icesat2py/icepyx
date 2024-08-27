@@ -36,10 +36,6 @@ def _fmt_temporal(start, end, key):
 
     assert isinstance(start, dt.datetime)
     assert isinstance(end, dt.datetime)
-    assert key in [
-        "time",
-        "temporal",
-    ], "An invalid time key was submitted for formatting."
 
     if key == "temporal":
         fmt_timerange = (
@@ -53,6 +49,8 @@ def _fmt_temporal(start, end, key):
             + ","
             + end.strftime("%Y-%m-%dT%H:%M:%S")
         )
+    else:
+        raise RuntimeError("An invalid time key was submitted for formatting.")
 
     return {key: fmt_timerange}
 

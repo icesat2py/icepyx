@@ -14,7 +14,7 @@ import requests
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.exceptions
-from icepyx.core.urls import DOWNLOAD_BASE_URL, ORDER_BASE_URL, GRANULE_SEARCH_BASE_URL
+from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 
 
 def info(grans):

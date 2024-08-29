@@ -1,11 +1,12 @@
-import pytest
 import re
+
+import pytest
 import responses
 
 import icepyx as ipx
 from icepyx.core import granules as granules
-from icepyx.core.granules import Granules as Granules
 from icepyx.core.exceptions import NsidcQueryError
+from icepyx.core.granules import Granules as Granules
 
 # @pytest.fixture
 # def reg_a():

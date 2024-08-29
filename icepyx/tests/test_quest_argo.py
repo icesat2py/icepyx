@@ -1,7 +1,7 @@
 import os
+import re
 
 import pytest
-import re
 
 from icepyx.quest.quest import Quest
 

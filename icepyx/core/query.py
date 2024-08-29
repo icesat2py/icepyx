@@ -1,6 +1,7 @@
+import pprint
+
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import pprint
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
@@ -1131,8 +1132,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         gdf = self._spatial.extent_as_gdf
 
         try:
-            from shapely.geometry import Polygon  # noqa: F401
             import geoviews as gv
+            from shapely.geometry import Polygon  # noqa: F401
 
             gv.extension("bokeh")
 

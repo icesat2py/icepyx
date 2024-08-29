@@ -1,7 +1,4 @@
-import h5py
 import json
-import numpy as np
-import requests
 import warnings
 from xml.etree import ElementTree as ET
 
@@ -9,6 +6,9 @@ import earthaccess
 
 from icepyx.core.urls import COLLECTION_SEARCH_BASE_URL, EGI_BASE_URL
 
+import h5py
+import numpy as np
+import requests
 
 # ICESat-2 specific reference functions
 

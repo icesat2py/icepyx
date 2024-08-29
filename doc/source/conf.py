@@ -19,7 +19,6 @@ sys.path.insert(0, os.path.abspath("../sphinxext"))
 
 import icepyx
 
-
 # -- Project information -----------------------------------------------------
 
 project = "icepyx"
@@ -120,10 +119,9 @@ def setup(app):
 
 # this should possibly be moved to the sphinxext directory as a standalone .py file
 # -- custom style for pybtex output -------------------------------------------
-from pybtex.style.formatting.unsrt import Style as UnsrtStyle
-
 # from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle
 from pybtex.plugin import register_plugin
+from pybtex.style.formatting.unsrt import Style as UnsrtStyle
 
 # I seem to be unable to figure out how to control what is used for the label. It would
 # make sense if it were fed into this function, which then just formatted it, but I can't figure out from where

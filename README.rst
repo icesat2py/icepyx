@@ -45,7 +45,7 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
     :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
 .. |Unit Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml/badge.svg?branch=development
     :target: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml
-    
+
 .. |Integration Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=development
     :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
 

@@ -38,10 +38,15 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |Docs Status dev| image:: https://readthedocs.org/projects/icepyx/badge/?version=development
    :target: https://icepyx.readthedocs.io/en/development
 
-.. |Tests Status (main)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=main
-    :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
+.. |Unit Tests Status (main)| image:: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml/badge.svg?branch=main
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml
 
-.. |Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=development
+.. |Integration Tests Status (main)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=main
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
+.. |Unit Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml/badge.svg?branch=development
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml
+    
+.. |Integration Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=development
     :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
 
 .. |Code Coverage main| image:: https://codecov.io/gh/icesat2py/icepyx/branch/main/graph/badge.svg

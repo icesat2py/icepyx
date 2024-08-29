@@ -23,8 +23,10 @@ on:
 jobs:
   test:
     name: "Integration test"
-    # Do not run on PRs from forks:
-    if: "${{ !github.event.pull_request.head.repo.fork }}"
+    # Job is conditional:
+    # - Do not run on PRs from forks
+    # - Do not run on `pull_request_review` events unless the PR is approved.
+    if: "${{ !github.event.pull_request.head.repo.fork && (github.event.action != 'pull_request_review' || github.event.review.state == 'approved') }}"
     runs-on: "ubuntu-latest"
 
     steps:

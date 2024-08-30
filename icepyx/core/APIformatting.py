@@ -425,6 +425,9 @@ class Parameters(Generic[T]):
             self._check_valid_keys()
 
         if self.partype == "required":
+            if not self._reqtype:
+                raise RuntimeError("Programmer error!")
+
             if self.check_req_values() and kwargs == {}:
                 pass
             else:
@@ -482,6 +485,7 @@ class Parameters(Generic[T]):
                 if any(keys in self._fmted_keys for keys in spatial_keys):
                     pass
                 else:
+                    k = None
                     if self.partype == "CMR":
                         k = kwargs["extent_type"]
                     elif self.partype == "subset":
@@ -489,6 +493,9 @@ class Parameters(Generic[T]):
                             k = "bbox"
                         elif kwargs["extent_type"] == "polygon":
                             k = "Boundingshape"
+
+                    if not k:
+                        raise RuntimeError("Programmer error!")
 
                     self._fmted_keys.update({k: kwargs["spatial_extent"]})
 

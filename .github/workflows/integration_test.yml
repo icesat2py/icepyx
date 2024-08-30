@@ -8,8 +8,8 @@ on:
       - "main"  # Releases
       - "development"  # PR merges
   pull_request:
-    branches:
-      - "main"  # Release pull requests
+    # branches:
+    #   - "main"  # Release pull requests
   pull_request_review:
     types:
       - "submitted"

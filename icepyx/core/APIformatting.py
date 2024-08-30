@@ -255,13 +255,15 @@ class Parameters(Generic[T]):
         on the type of query. Must be one of ['search','download']
     """
 
+    partype: T
+    _reqtype: Literal["search", "download"] | None
     fmted_keys = _FmtedKeysDescriptor()
 
     def __init__(
         self,
         partype: T,
-        values=None,
-        reqtype=None,
+        values: dict | None = None,
+        reqtype: Literal["search", "download"] | None = None,
     ):
         assert partype in [
             "CMR",
@@ -280,7 +282,7 @@ class Parameters(Generic[T]):
         self._fmted_keys = values if values is not None else {}
 
     @property
-    def poss_keys(self):
+    def poss_keys(self) -> dict[str, list[str]]:
         """
         Returns a list of possible input keys for the given parameter object.
         Possible input keys depend on the parameter type (partype).
@@ -340,7 +342,7 @@ class Parameters(Generic[T]):
                 ],
             }
 
-    def _check_valid_keys(self):
+    def _check_valid_keys(self) -> None:
         """
         Checks that any keys passed in with values are valid keys.
         """
@@ -356,7 +358,7 @@ class Parameters(Generic[T]):
             )
 
     # DevNote: can check_req_values and check_values be combined?
-    def check_req_values(self):
+    def check_req_values(self) -> bool:
         """
         Check that all of the required keys have values, if the key was passed in with
         the values parameter.
@@ -375,7 +377,7 @@ class Parameters(Generic[T]):
         else:
             return False
 
-    def check_values(self):
+    def check_values(self) -> bool:
         """
         Check that the non-required keys have values, if the key was
         passed in with the values parameter.

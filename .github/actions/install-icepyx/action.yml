@@ -1,0 +1,19 @@
+name: 'Install icepyx'
+description: 'Install icepyx and dev dependencies'
+
+inputs:
+  python-version:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: "actions/setup-python@v5"
+      with:
+        python-version: "${{ inputs.python-version }}"
+
+    - name: "Install package and test dependencies"
+      shell: "bash"
+      run: |
+        python -m pip install .
+        python -m pip install -r requirements-dev.txt

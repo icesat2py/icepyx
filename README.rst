@@ -7,9 +7,9 @@ icepyx
 
 |JOSS| |Zenodo-all|
 
-Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
+Latest release (main branch): |Docs Status main| |Unit Tests Status (main)| |Integration Tests Status (main)| |Code Coverage main|
 
-Current development version (development branch): |Docs Status dev| |Travis dev Build Status| |Code Coverage dev| |Pre-commit dev|
+Current development version (development branch): |Docs Status dev| |Unit Tests Status (dev)| |Integration Tests Status (main)| |Code Coverage dev| |Pre-commit dev|
 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
@@ -38,11 +38,17 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |Docs Status dev| image:: https://readthedocs.org/projects/icepyx/badge/?version=development
    :target: https://icepyx.readthedocs.io/en/development
 
-.. |Travis main Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=main
-    :target: https://app.travis-ci.com/icesat2py/icepyx
+.. |Unit Tests Status (main)| image:: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml/badge.svg?branch=main
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml
 
-.. |Travis dev Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
-    :target: https://app.travis-ci.com/icesat2py/icepyx
+.. |Integration Tests Status (main)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=main
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
+
+.. |Unit Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml/badge.svg?branch=development
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml
+
+.. |Integration Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=development
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
 
 .. |Code Coverage main| image:: https://codecov.io/gh/icesat2py/icepyx/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx

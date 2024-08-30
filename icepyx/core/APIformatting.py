@@ -229,7 +229,7 @@ class _FmtedKeysDescriptor:
         Returns the dictionary of formatted keys associated with the
         parameter object.
         """
-        return instance._fmted_keys
+        return instance._fmted_keys  # pyright: ignore[reportReturnType]
 
 
 # ----------------------------------------------------------------------
@@ -344,7 +344,7 @@ class Parameters(Generic[T]):
 
         val_list = list({val for lis in self.poss_keys.values() for val in lis})
 
-        for key in self.fmted_keys:
+        for key in self.fmted_keys:  # pyright: ignore[reportAttributeAccessIssue]
             assert key in val_list, (
                 "An invalid key (" + key + ") was passed. Please remove it using `del`"
             )
@@ -359,11 +359,16 @@ class Parameters(Generic[T]):
         assert (
             self.partype == "required"
         ), "You cannot call this function for your parameter type"
+
+        if not self._reqtype:
+            raise RuntimeError("Programmer error!")
+
         reqkeys = self.poss_keys[self._reqtype]
 
-        if all(keys in self.fmted_keys for keys in reqkeys):
+        if all(keys in self.fmted_keys for keys in reqkeys):  # pyright: ignore[reportAttributeAccessIssue]
             assert all(
-                self.fmted_keys.get(key, -9999) != -9999 for key in reqkeys
+                self.fmted_keys.get(key, -9999) != -9999  # pyright: ignore[reportAttributeAccessIssue]
+                for key in reqkeys
             ), "One of your formatted parameters is missing a value"
             return True
         else:
@@ -383,7 +388,8 @@ class Parameters(Generic[T]):
         # not the most robust check, but better than nothing...
         if any(keys in self._fmted_keys for keys in spatial_keys):
             assert any(
-                self.fmted_keys.get(key, -9999) != -9999 for key in spatial_keys
+                self.fmted_keys.get(key, -9999) != -9999  # pyright: ignore[reportAttributeAccessIssue]
+                for key in spatial_keys
             ), "One of your formatted parameters is missing a value"
             return True
         else:

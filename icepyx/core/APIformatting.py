@@ -288,25 +288,8 @@ class Parameters(Generic[T]):
         Possible input keys depend on the parameter type (partype).
         """
 
-        if not hasattr(self, "_poss_keys"):
-            self._get_possible_keys()
-
-        return self._poss_keys
-
-    # @property
-    # def wanted_keys(self):
-    #     if not hasattr(_wanted):
-    #         self._wanted = []
-
-    #     return self._wanted
-
-    def _get_possible_keys(self) -> dict[str, list[str]]:
-        """
-        Use the parameter type to get a list of possible parameter keys.
-        """
-
         if self.partype == "CMR":
-            self._poss_keys = {
+            return {
                 "spatial": ["bounding_box", "polygon"],
                 "optional": [
                     "temporal",
@@ -316,7 +299,7 @@ class Parameters(Generic[T]):
                 ],
             }
         elif self.partype == "required":
-            self._poss_keys = {
+            return {
                 "search": ["short_name", "version", "page_size"],
                 "download": [
                     "short_name",
@@ -331,7 +314,7 @@ class Parameters(Generic[T]):
                 ],
             }
         elif self.partype == "subset":
-            self._poss_keys = {
+            return {
                 "spatial": ["bbox", "Boundingshape"],
                 "optional": [
                     "time",
@@ -341,6 +324,15 @@ class Parameters(Generic[T]):
                     "Coverage",
                 ],
             }
+        else:
+            raise RuntimeError("Programmer error!")
+
+    # @property
+    # def wanted_keys(self):
+    #     if not hasattr(_wanted):
+    #         self._wanted = []
+
+    #     return self._wanted
 
     def _check_valid_keys(self) -> None:
         """

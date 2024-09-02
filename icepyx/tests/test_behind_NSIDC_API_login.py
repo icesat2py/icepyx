@@ -82,7 +82,7 @@ def test_download_granules_without_subsetting(reg, session, capsys):
     assert int(reg.granules.orderIDs[0]) >= 5_000_000_000_000
 
     reg.download_granules(path=path)
-    # check that the max extent of the downloaded granules isn't subsetted
+    # check that there are the right number of files of the correct size
     assert len(glob.glob(pathname=f"{path}/ATL06_201902*.iso.xml")) == 3
     h5_paths = sorted(glob.glob(pathname=f"{path}/ATL06_201902*.h5"))
     assert len(h5_paths) == 3

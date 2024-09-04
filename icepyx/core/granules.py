@@ -289,7 +289,7 @@ class Granules(EarthdataAuthMixin):
             Dictionary of properly formatted CMR search parameters.
         reqparams :
             Dictionary of properly formatted parameters required for searching, ordering,
-            or downloading from EGI.
+            or downloading from NSIDC (via their EGI system).
         subsetparams : dictionary
             Dictionary of properly formatted subsetting parameters. An empty dictionary
             is passed as input here when subsetting is set to False in query methods.

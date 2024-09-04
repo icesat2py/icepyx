@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import io
 import json
@@ -10,10 +12,12 @@ import zipfile
 
 import numpy as np
 import requests
+from requests.compat import unquote
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.exceptions
+from icepyx.core.types import CMRParams, EGISpecificParams
 from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 
 
@@ -170,14 +174,19 @@ class Granules(EarthdataAuthMixin):
     # ----------------------------------------------------------------------
     # Methods
 
-    def get_avail(self, CMRparams, reqparams, cloud=False):
+    def get_avail(
+        self,
+        CMRparams: CMRParams | None,
+        reqparams: EGISpecificParams | None,
+        cloud=False,
+    ):
         """
         Get a list of available granules for the query object's parameters.
         Generates the `avail` attribute of the granules object.
 
         Parameters
         ----------
-        CMRparams : dictionary
+        CMRparams :
             Dictionary of properly formatted CMR search parameters.
         reqparams : dictionary
             Dictionary of properly formatted parameters required for searching, ordering,
@@ -261,13 +270,13 @@ class Granules(EarthdataAuthMixin):
     # DevGoal: add kwargs to allow subsetting and more control over request options.
     def place_order(
         self,
-        CMRparams,
-        reqparams,
+        CMRparams: CMRParams,
+        reqparams: EGISpecificParams,
         subsetparams,
         verbose,
         subset=True,
         geom_filepath=None,
-    ):  # , **kwargs):
+    ):
         """
         Place an order for the available granules for the query object.
         Adds the list of zipped files (orders) to the granules data object (which is
@@ -276,11 +285,11 @@ class Granules(EarthdataAuthMixin):
 
         Parameters
         ----------
-        CMRparams : dictionary
+        CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams : dictionary
+        reqparams :
             Dictionary of properly formatted parameters required for searching, ordering,
-            or downloading from NSIDC.
+            or downloading from EGI.
         subsetparams : dictionary
             Dictionary of properly formatted subsetting parameters. An empty dictionary
             is passed as input here when subsetting is set to False in query methods.
@@ -359,7 +368,7 @@ class Granules(EarthdataAuthMixin):
             request.raise_for_status()
             esir_root = ET.fromstring(request.content)
             if verbose is True:
-                print("Order request URL: ", requests.utils.unquote(request.url))
+                print("Order request URL: ", unquote(request.url))
                 print(
                     "Order request response XML content: ",
                     request.content.decode("utf-8"),
@@ -402,6 +411,7 @@ class Granules(EarthdataAuthMixin):
                 loop_root = ET.fromstring(loop_response.content)
 
             # Continue loop while request is still processing
+            loop_root = None
             while status == "pending" or status == "processing":
                 print(
                     "Your order status is still ",
@@ -424,6 +434,13 @@ class Granules(EarthdataAuthMixin):
                 # print('Retry request status is: ', status)
                 if status == "pending" or status == "processing":
                     continue
+
+            if not isinstance(loop_root, ET.Element):
+                # The typechecker determined that loop_root could be unbound at this
+                # point. We know for sure this shouldn't be possible, though, because
+                # the while loop should run once.
+                # See: https://github.com/microsoft/pyright/discussions/2033
+                raise RuntimeError("Programmer error!")
 
             # Order can either complete, complete_with_errors, or fail:
             # Provide complete_with_errors error message:

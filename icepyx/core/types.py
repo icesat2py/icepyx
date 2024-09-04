@@ -4,6 +4,31 @@ from typing import Literal, TypedDict
 
 from typing_extensions import NotRequired
 
+IcesatProductShortName = Literal[
+    "ATL01",
+    "ATL02",
+    "ATL03",
+    "ATL04",
+    "ATL06",
+    "ATL07",
+    "ATL07QL",
+    "ATL08",
+    "ATL09",
+    "ATL09QL",
+    "ATL10",
+    "ATL11",
+    "ATL12",
+    "ATL13",
+    "ATL14",
+    "ATL15",
+    "ATL16",
+    "ATL17",
+    "ATL19",
+    "ATL20",
+    "ATL21",
+    "ATL23",
+]
+
 CMRParamsBase = TypedDict(
     "CMRParamsBase",
     {
@@ -37,12 +62,11 @@ class EGISpecificParamsBase(TypedDict):
     TODO: Validate more strongly (with Pydantic and its annotated types?
     https://docs.pydantic.dev/latest/concepts/types/#composing-types-via-annotated):
 
-    * short_name is `ATL##` (or Literal list of values?)
-    * version is 1-3 digits
+    * version is 3 digits
     * 0 < page_size <= 2000
     """
 
-    short_name: str  # alias: "product"
+    short_name: IcesatProductShortName  # alias: "product"
     version: str
     page_size: int  # default 2000
     page_num: int  # default 0

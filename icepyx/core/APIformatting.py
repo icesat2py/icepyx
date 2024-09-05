@@ -3,7 +3,11 @@
 import datetime as dt
 from typing import Any, Generic, Literal, TypeVar, overload
 
-from icepyx.core.types import CMRParams, EGISpecificParams, EGISpecificParamsSubset
+from icepyx.core.types import (
+    CMRParams,
+    EGIParamsSubset,
+    EGISpecificRequiredParams,
+)
 
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
@@ -198,7 +202,7 @@ class _FmtedKeysDescriptor:
     """
 
     @overload
-    def __get__(  # type: ignore
+    def __get__(
         self,
         instance: 'Parameters[Literal["CMR"]]',
         owner: Any,
@@ -209,20 +213,20 @@ class _FmtedKeysDescriptor:
         self,
         instance: 'Parameters[Literal["required"]]',
         owner: Any,
-    ) -> EGISpecificParams: ...
+    ) -> EGISpecificRequiredParams: ...
 
     @overload
     def __get__(
         self,
         instance: 'Parameters[Literal["subset"]]',
         owner: Any,
-    ) -> EGISpecificParamsSubset: ...
+    ) -> EGIParamsSubset: ...
 
     def __get__(
         self,
         instance: "Parameters",
         owner: Any,
-    ) -> CMRParams | EGISpecificParams:
+    ) -> CMRParams | EGISpecificRequiredParams | EGIParamsSubset:
         """
         Returns the dictionary of formatted keys associated with the
         parameter object.

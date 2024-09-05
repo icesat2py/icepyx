@@ -1,7 +1,7 @@
 """Generate and format information for submitting to API (CMR and NSIDC)."""
 
 import datetime as dt
-from typing import Any, Generic, Literal, TypeVar, Union, overload
+from typing import Any, Generic, Literal, Optional, TypeVar, Union, overload
 
 from icepyx.core.types import (
     CMRParams,
@@ -256,14 +256,15 @@ class Parameters(Generic[T]):
     """
 
     partype: T
-    _reqtype: Literal["search", "download"] | None
+    _reqtype: Optional[Literal["search", "download"]]
     fmted_keys = _FmtedKeysDescriptor()
+    # _fmted_keys: Union[CMRParams, EGISpecificRequiredParams, EGIParamsSubset]
 
     def __init__(
         self,
         partype: T,
-        values: dict | None = None,
-        reqtype: Literal["search", "download"] | None = None,
+        values: Optional[dict] = None,
+        reqtype: Optional[Literal["search", "download"]] = None,
     ):
         assert partype in [
             "CMR",

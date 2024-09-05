@@ -7,6 +7,7 @@ import os
 import pprint
 import re
 import time
+from typing import Optional
 from xml.etree import ElementTree as ET
 import zipfile
 
@@ -176,8 +177,8 @@ class Granules(EarthdataAuthMixin):
 
     def get_avail(
         self,
-        CMRparams: CMRParams | None,
-        reqparams: EGISpecificRequiredParams | None,
+        CMRparams: Optional[CMRParams],
+        reqparams: Optional[EGISpecificRequiredParams],
         cloud=False,
     ):
         """

@@ -1,7 +1,7 @@
 """Generate and format information for submitting to API (CMR and NSIDC)."""
 
 import datetime as dt
-from typing import Any, Generic, Literal, TypeVar, overload
+from typing import Any, Generic, Literal, TypeVar, Union, overload
 
 from icepyx.core.types import (
     CMRParams,
@@ -226,7 +226,7 @@ class _FmtedKeysDescriptor:
         self,
         instance: "Parameters",
         owner: Any,
-    ) -> CMRParams | EGISpecificRequiredParams | EGIParamsSubset:
+    ) -> Union[CMRParams, EGISpecificRequiredParams, EGIParamsSubset]:
         """
         Returns the dictionary of formatted keys associated with the
         parameter object.

@@ -1,4 +1,5 @@
 import pprint
+from typing import Optional, Union
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -397,7 +398,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     _CMRparams: apifmt.CMRParameters
     _reqparams: apifmt.RequiredParameters
-    _subsetparams: apifmt.SubsetParameters | None
+    _subsetparams: Optional[apifmt.SubsetParameters]
 
     # ----------------------------------------------------------------------
     # Constructors
@@ -605,7 +606,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # @property
     # DevQuestion: if I make this a property, I get a "dict" object is not callable
     # when I try to give input kwargs... what approach should I be taking?
-    def subsetparams(self, **kwargs) -> EGIParamsSubset | dict[Never, Never]:
+    def subsetparams(self, **kwargs) -> Union[EGIParamsSubset, dict[Never, Never]]:
         """
         Display the subsetting key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Union
 
 from typing_extensions import NotRequired
 
@@ -48,7 +48,7 @@ class CMRParamsWithPolygon(CMRParamsBase):
     polygon: str
 
 
-CMRParams = CMRParamsWithBbox | CMRParamsWithPolygon
+CMRParams = Union[CMRParamsWithBbox, CMRParamsWithPolygon]
 
 
 class EGISpecificParamsBase(TypedDict):
@@ -106,6 +106,6 @@ class EGIParamsSubsetBoundingShape(EGIParamsSubsetBase):
     Boundingshape: str
 
 
-EGIParamsSubset = EGIParamsSubsetBbox | EGIParamsSubsetBoundingShape
+EGIParamsSubset = Union[EGIParamsSubsetBbox, EGIParamsSubsetBoundingShape]
 
-EGISpecificRequiredParams = EGISpecificParamsSearch | EGISpecificParamsDownload
+EGISpecificRequiredParams = Union[EGISpecificParamsSearch, EGISpecificParamsDownload]

@@ -1,3 +1,8 @@
+"""
+Integration tests that require authentication to Earthdata login.
+"""
+
+import glob
 import json
 import os
 
@@ -49,8 +54,40 @@ def test_download_granules_with_subsetting(reg, session):
     reg.download_granules(path)
 
 
-# def test_download_granules_without_subsetting(reg_a, session):
-#     path = './downloads'
-#     reg_a.order_granules(session, subset=False)
-#     reg_a.download_granules(session, path)
-#     #check that the max extent of the downloaded granules isn't subsetted
+def test_download_granules_without_subsetting(reg, session, capsys):
+    """
+    Test that granules can be ordered from NSIDC and downloaded with the `subset=False`
+    option.
+    """
+    path = "./downloads"
+
+    reg.order_granules(verbose=False, subset=False, email=False)
+    out, err = capsys.readouterr()  # capture stdout and stderr
+    assert out.startswith(
+        "Total number of data order requests is  1  for  3  granules.\n"
+        "Data request  1  of  1  is submitting to NSIDC\n"
+    )
+    assert err == ""
+
+    assert reg.reqparams == {
+        "client_string": "icepyx",
+        "include_meta": "Y",
+        "page_num": 0,
+        "page_size": 2000,
+        "request_mode": "async",
+        "short_name": "ATL06",
+        "version": "006",
+    }
+    assert len(reg.granules.orderIDs) == 2
+    assert int(reg.granules.orderIDs[0]) >= 5_000_000_000_000
+
+    reg.download_granules(path=path)
+    # check that there are the right number of files of the correct size
+    assert len(glob.glob(pathname=f"{path}/ATL06_201902*.iso.xml")) == 3
+    h5_paths = sorted(glob.glob(pathname=f"{path}/ATL06_201902*.h5"))
+    assert len(h5_paths) == 3
+    assert [os.path.getsize(filename=p) for p in h5_paths] == [
+        53228429,  # 50.8 MiB
+        65120027,  # 62.1 MiB
+        49749227,  # 47.4 MiB
+    ]

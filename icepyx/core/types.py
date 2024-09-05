@@ -73,13 +73,7 @@ class EGISpecificParamsBase(TypedDict):
 
 
 class EGISpecificParamsSearch(EGISpecificParamsBase):
-    """Parameters for searching through EGI."""
-
-
-class EGISpecificParamsOrder(EGISpecificParamsBase):
-    """Parameters for ordering through EGI."""
-
-    # TODO: Does this type need page_* attributes?
+    """Parameters for interacting with EGI."""
 
 
 class EGISpecificParamsDownload(EGISpecificParamsBase):
@@ -94,10 +88,24 @@ class EGISpecificParamsDownload(EGISpecificParamsBase):
     # token, email
 
 
-class EGISpecificParamsSubset(EGISpecificParamsBase):
+class EGIParamsSubsetBase(TypedDict):
     """Parameters for subsetting with EGI."""
 
+    time: NotRequired[str]
+    format: NotRequired[str]
+    projection: NotRequired[str]
+    projection_parameters: NotRequired[str]
+    Coverage: NotRequired[str]
 
-EGISpecificParams = (
-    EGISpecificParamsSearch | EGISpecificParamsDownload | EGISpecificParamsSubset
-)
+
+class EGIParamsSubsetBbox(EGIParamsSubsetBase):
+    bbox: str
+
+
+class EGIParamsSubsetBoundingShape(EGIParamsSubsetBase):
+    Boundingshape: str
+
+
+EGIParamsSubset = EGIParamsSubsetBbox | EGIParamsSubsetBoundingShape
+
+EGISpecificRequiredParams = EGISpecificParamsSearch | EGISpecificParamsDownload

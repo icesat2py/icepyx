@@ -12,7 +12,7 @@ from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
-from icepyx.core.types import CMRParams, EGISpecificParams, EGISpecificParamsSubset
+from icepyx.core.types import CMRParams, EGIParamsSubset, EGISpecificRequiredParams
 import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.visualization import Visualize
@@ -579,7 +579,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._CMRparams.fmted_keys
 
     @property
-    def reqparams(self) -> EGISpecificParams:
+    def reqparams(self) -> EGISpecificRequiredParams:
         """
         Display the required key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist.
@@ -605,7 +605,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # @property
     # DevQuestion: if I make this a property, I get a "dict" object is not callable
     # when I try to give input kwargs... what approach should I be taking?
-    def subsetparams(self, **kwargs) -> EGISpecificParamsSubset | dict[Never, Never]:
+    def subsetparams(self, **kwargs) -> EGIParamsSubset | dict[Never, Never]:
         """
         Display the subsetting key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist

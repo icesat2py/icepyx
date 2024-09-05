@@ -17,7 +17,7 @@ from requests.compat import unquote
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.exceptions
-from icepyx.core.types import CMRParams, EGISpecificParams
+from icepyx.core.types import CMRParams, EGISpecificRequiredParams
 from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 
 
@@ -177,7 +177,7 @@ class Granules(EarthdataAuthMixin):
     def get_avail(
         self,
         CMRparams: CMRParams | None,
-        reqparams: EGISpecificParams | None,
+        reqparams: EGISpecificRequiredParams | None,
         cloud=False,
     ):
         """
@@ -271,7 +271,7 @@ class Granules(EarthdataAuthMixin):
     def place_order(
         self,
         CMRparams: CMRParams,
-        reqparams: EGISpecificParams,
+        reqparams: EGISpecificRequiredParams,
         subsetparams,
         verbose,
         subset=True,

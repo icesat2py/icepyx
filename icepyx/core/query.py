@@ -458,10 +458,9 @@ class Query(GenQuery, EarthdataAuthMixin):
     # Properties
 
     def __str__(self):
-        str = "Product {2} v{3}\n{0}\nDate range {1}".format(
+        return "Product {2} v{3}\n{0}\nDate range {1}".format(
             self.spatial_extent, self.dates, self.product, self.product_version
         )
-        return str
 
     @property
     def dataset(self):

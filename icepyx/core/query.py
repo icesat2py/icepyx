@@ -182,10 +182,10 @@ class GenQuery:
         ['No temporal parameters set']
         """
 
-        if hasattr(self, "_temporal"):
-            return self._temporal
-        else:
+        if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
+
+        return self._temporal
 
     @property
     def spatial(self) -> spat.Spatial:
@@ -275,11 +275,11 @@ class GenQuery:
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
-        else:
-            return [
-                self._temporal._start.strftime("%Y-%m-%d"),
-                self._temporal._end.strftime("%Y-%m-%d"),
-            ]  # could also use self._start.date()
+
+        return [
+            self._temporal._start.strftime("%Y-%m-%d"),
+            self._temporal._end.strftime("%Y-%m-%d"),
+        ]  # could also use self._start.date()
 
     @property
     def start_time(self) -> Union[list[str], str]:
@@ -302,8 +302,8 @@ class GenQuery:
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
-        else:
-            return self._temporal._start.strftime("%H:%M:%S")
+
+        return self._temporal._start.strftime("%H:%M:%S")
 
     @property
     def end_time(self) -> Union[list[str], str]:
@@ -326,8 +326,8 @@ class GenQuery:
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
-        else:
-            return self._temporal._end.strftime("%H:%M:%S")
+
+        return self._temporal._end.strftime("%H:%M:%S")
 
 
 # DevGoal: update docs throughout to allow for polygon spatial extent

@@ -127,13 +127,14 @@ class GenQuery:
     """
 
     _temporal: tp.Temporal
+    _spatial: spat.Spatial
 
     def __init__(
         self,
-        spatial_extent=None,
-        date_range=None,
-        start_time=None,
-        end_time=None,
+        spatial_extent: Union[str, list[float], None] = None,
+        date_range: Union[list, dict, None] = None,
+        start_time: Union[str, dt.time, None] = None,
+        end_time: Union[str, dt.time, None] = None,
         **kwargs,
     ):
         # validate & init spatial extent
@@ -187,7 +188,7 @@ class GenQuery:
             return ["No temporal parameters set"]
 
     @property
-    def spatial(self):
+    def spatial(self) -> spat.Spatial:
         """
         Return the spatial object, which provides the underlying functionality for validating
         and formatting geospatial objects. The spatial object has several properties to enable
@@ -214,7 +215,7 @@ class GenQuery:
         return self._spatial
 
     @property
-    def spatial_extent(self):
+    def spatial_extent(self) -> tuple[spat.ExtentType, list[float]]:
         """
         Return an array showing the spatial extent of the query object.
         Spatial extent is returned as an input type (which depends on how

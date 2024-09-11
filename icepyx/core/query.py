@@ -147,14 +147,13 @@ class GenQuery:
         if date_range:
             self._temporal = tp.Temporal(date_range, start_time, end_time)
 
-    def __str__(self):
-        str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
+    def __str__(self) -> str:
+        return "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._spatial._ext_type,
             self._spatial._spatial_ext,
             self._temporal._start,
             self._temporal._end,
         )
-        return str
 
     # ----------------------------------------------------------------------
     # Properties

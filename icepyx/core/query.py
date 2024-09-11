@@ -462,7 +462,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         )
 
     @property
-    def dataset(self):
+    def dataset(self) -> Never:
         """
         Legacy property included to provide deprecation warning.
 
@@ -470,7 +470,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         product
         """
-        DeprecationError(
+        raise DeprecationError(
             "In line with most common usage, 'dataset' has been replaced by 'product'.",
         )
 

@@ -3,11 +3,13 @@ icepyx
 
 **Python tools for obtaining and working with ICESat-2 data**
 
-|GitHub license| |Conda install| |Pypi install| |Contributors| |JOSS|
+|Contributors| |GitHub license| |Conda install| |Pypi install|
 
-Latest release (main branch): |Docs Status main| |Travis main Build Status| |Code Coverage main|
+|JOSS| |Zenodo-all|
 
-Current development version (development branch): |Docs Status dev| |Travis dev Build Status| |Code Coverage dev| |Pre-commit dev|
+Latest release (main branch): |Docs Status main| |Unit Tests Status (main)| |Integration Tests Status (main)| |Code Coverage main|
+
+Current development version (development branch): |Docs Status dev| |Unit Tests Status (dev)| |Integration Tests Status (main)| |Code Coverage dev| |Pre-commit dev|
 
 .. |GitHub license| image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
@@ -18,7 +20,7 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx
 
-.. |Contributors| image:: https://img.shields.io/badge/all_contributors-34-orange.svg?style=flat-square
+.. |Contributors| image:: https://img.shields.io/github/all-contributors/icesat2py/icepyx?color=ee8449&style=flat-square(#contributors)
     :alt: All Contributors
     :target: https://github.com/icesat2py/icepyx/blob/main/CONTRIBUTORS.rst
 
@@ -26,17 +28,27 @@ Current development version (development branch): |Docs Status dev| |Travis dev 
     :alt: JOSS publication link and DOI
     :target: https://doi.org/10.21105/joss.04912
 
+.. |Zenodo-all| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.7729175.svg
+    :alt: Zenodo all-versions DOI for icepyx
+    :target: https://doi.org/10.5281/zenodo.7729175
+
 .. |Docs Status main| image:: https://readthedocs.org/projects/icepyx/badge/?version=latest
    :target: http://icepyx.readthedocs.io/?badge=latest
 
 .. |Docs Status dev| image:: https://readthedocs.org/projects/icepyx/badge/?version=development
    :target: https://icepyx.readthedocs.io/en/development
 
-.. |Travis main Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=main
-    :target: https://app.travis-ci.com/icesat2py/icepyx
+.. |Unit Tests Status (main)| image:: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml/badge.svg?branch=main
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml
 
-.. |Travis dev Build Status| image:: https://app.travis-ci.com/icesat2py/icepyx.svg?branch=development
-    :target: https://app.travis-ci.com/icesat2py/icepyx
+.. |Integration Tests Status (main)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=main
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
+
+.. |Unit Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml/badge.svg?branch=development
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/unit_test.yml
+
+.. |Integration Tests Status (dev)| image:: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml/badge.svg?branch=development
+    :target: https://github.com/icesat2py/icepyx/actions/workflows/integration_test.yml
 
 .. |Code Coverage main| image:: https://codecov.io/gh/icesat2py/icepyx/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/icesat2py/icepyx
@@ -78,6 +90,32 @@ Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/st
 
 More detailed instructions for installing `icepyx` can be found at
 https://icepyx.readthedocs.io/en/latest/getting_started/install.html
+
+Quick Start
+-----------
+
+.. code-block:: python
+
+   import icepyx as ipx
+   query = ipx.Query(
+       # Collection short name
+       "ATL06",
+       # Bounding box
+       [-55, 68, -48, 71],
+       # Time bounds
+       ['2019-02-20','2019-02-28'],
+   )
+   query.download_granules('/tmp/icepyx')
+
+.. code-block:: bash
+
+   $ ls -1 /tmp/icepyx/
+   processed_ATL06_20190221121851_08410203_006_02.h5
+   processed_ATL06_20190222010344_08490205_006_02.h5
+   processed_ATL06_20190225121032_09020203_006_02.h5
+   processed_ATL06_20190226005526_09100205_006_02.h5
+
+See the examples below for more things `icepyx` can do!
 
 
 Examples (Jupyter Notebooks)

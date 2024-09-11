@@ -1,7 +1,4 @@
-import matplotlib.pyplot as plt
-
 from icepyx.core.query import GenQuery, Query
-
 from icepyx.quest.dataset_scripts.argo import Argo
 
 
@@ -74,7 +71,7 @@ class Quest(GenQuery):
         if not self.datasets:
             str += "None"
         else:
-            for i in self.datasets.keys():
+            for i in self.datasets:
                 str += "{0}, ".format(i)
             str = str[:-2]  # remove last ', '
 
@@ -159,7 +156,7 @@ class Quest(GenQuery):
     # error handling? what happens when the user tries to re-query?
     def search_all(self, **kwargs):
         """
-        Searches for requred dataset within platform (i.e. ICESat-2, Argo) of interest.
+        Searches for required dataset within platform (i.e. ICESat-2, Argo) of interest.
 
         Parameters
         ----------
@@ -189,7 +186,7 @@ class Quest(GenQuery):
                     except KeyError:
                         v.search_data()
 
-            except:
+            except Exception:
                 dataset_name = type(v).__name__
                 print("Error querying data from {0}".format(dataset_name))
 
@@ -228,7 +225,7 @@ class Quest(GenQuery):
                     except KeyError:
                         msg = v.download()
                     print(msg)
-            except:
+            except Exception:
                 dataset_name = type(v).__name__
                 print("Error downloading data from {0}".format(dataset_name))
 

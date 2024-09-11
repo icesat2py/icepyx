@@ -1,12 +1,13 @@
-import h5py
 import json
-import numpy as np
-import requests
 import warnings
 from xml.etree import ElementTree as ET
 
 import earthaccess
+import h5py
+import numpy as np
+import requests
 
+from icepyx.core.urls import COLLECTION_SEARCH_BASE_URL, EGI_BASE_URL
 
 # ICESat-2 specific reference functions
 
@@ -15,7 +16,10 @@ def _validate_product(product):
     """
     Confirm a valid ICESat-2 product was specified
     """
-    error_msg = "A valid product string was not provided. Check user input, if given, or file metadata."
+    error_msg = (
+        "A valid product string was not provided. "
+        "Check user input, if given, or file metadata."
+    )
     if isinstance(product, str):
         product = str.upper(product)
         assert product in [
@@ -53,14 +57,17 @@ def _validate_OA_product(product):
     """
     if isinstance(product, str):
         product = str.upper(product)
-        assert product in [
-            "ATL06",
-            "ATL07",
-            "ATL08",
-            "ATL10",
-            "ATL12",
-            "ATL13",
-        ], "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
+        assert (
+            product
+            in [
+                "ATL06",
+                "ATL07",
+                "ATL08",
+                "ATL10",
+                "ATL12",
+                "ATL13",
+            ]
+        ), "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
     else:
         raise TypeError("Please enter a product string")
     return product
@@ -76,8 +83,7 @@ def about_product(prod):
     query.Query.product_all_info
     """
 
-    cmr_collections_url = "https://cmr.earthdata.nasa.gov/search/collections.json"
-    response = requests.get(cmr_collections_url, params={"short_name": prod})
+    response = requests.get(COLLECTION_SEARCH_BASE_URL, params={"short_name": prod})
     results = json.loads(response.content)
     return results
 
@@ -95,9 +101,7 @@ def _get_custom_options(session, product, version):
             "Don't forget to log in to Earthdata using query.earthdata_login()"
         )
 
-    capability_url = (
-        f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{product}.{version}.xml"
-    )
+    capability_url = f"{EGI_BASE_URL}/capabilities/{product}.{version}.xml"
     response = session.get(capability_url)
     root = ET.fromstring(response.content)
 
@@ -156,7 +160,7 @@ def _get_custom_options(session, product, version):
 
     get_varlist(root)
     vars_vals = [
-        v.replace(":", "/") if v.startswith("/") == False else v.replace("/:", "")
+        v.replace(":", "/") if v.startswith("/") is False else v.replace("/:", "")
         for v in vars_raw
     ]
     cust_options.update({"variables": vars_vals})
@@ -268,6 +272,10 @@ def _default_varlists(product):
         return common_list
 
 
+# Currently this function is used one-off, but if it needs to be done for a series of values,
+# a faster version using pandas map (instead of apply) is available in SlideRule:
+# https://github.com/SlideRuleEarth/sliderule/issues/388
+# https://github.com/SlideRuleEarth/sliderule/commit/46cceac0e5f6d0a580933d399a6239bc911757f3
 def gt2spot(gt, sc_orient):
     warnings.warn(
         "icepyx versions 0.8.0 and earlier used an incorrect spot number calculation."
@@ -427,6 +435,17 @@ def extract_version(filepath, auth=None):
         raise Exception(
             "Unable to parse the version from file metadata"
         ).with_traceback(e.__traceback__)
+
+    # catch cases where the version number is an invalid string
+    # e.g. a VersionID of "SET_BY_PGE", causing issues where version needs to be a valid number
+    try:
+        float(version)
+    except ValueError:
+        raise Exception(
+            "There is an underlying issue with the version information"
+            "provided in the metadata of this file."
+            "Consider setting the version manually for further processing."
+        )
 
     # Close the file reader
     f.close()

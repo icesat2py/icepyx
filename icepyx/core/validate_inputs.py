@@ -1,9 +1,7 @@
 import datetime as dt
-import os
 import warnings
-import numpy as np
 
-import icepyx.core.APIformatting as apifmt
+import numpy as np
 
 
 def prod_version(latest_vers, version):

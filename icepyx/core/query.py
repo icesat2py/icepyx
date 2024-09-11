@@ -1,7 +1,7 @@
+import pprint
+
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from pathlib import Path  # used in docstring tests
-import pprint
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
@@ -103,9 +103,10 @@ class GenQuery:
 
     Initializing Query with a geospatial polygon file.
 
-    >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+    >>> from pathlib import Path
+    >>> aoi = Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a = GenQuery(aoi, reg_a_dates)
+    >>> reg_a = GenQuery(str(aoi), reg_a_dates)
     >>> print(reg_a)
     Extent type: polygon
     Coordinates: [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0]
@@ -126,7 +127,7 @@ class GenQuery:
         **kwargs,
     ):
         # validate & init spatial extent
-        if "xdateline" in kwargs.keys():
+        if "xdateline" in kwargs:
             self._spatial = spat.Spatial(spatial_extent, xdateline=kwargs["xdateline"])
         else:
             self._spatial = spat.Spatial(spatial_extent)
@@ -378,9 +379,10 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     Initializing Query with a geospatial polygon file.
 
-    >>> aoi = str(Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve())
+    >>> from pathlib import Path
+    >>> aoi = Path('./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg').resolve()
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
-    >>> reg_a = Query('ATL06', aoi, reg_a_dates)
+    >>> reg_a = Query('ATL06', str(aoi), reg_a_dates)
     >>> print(reg_a)
     Product ATL06 v006
     ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
@@ -449,7 +451,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     @property
     def dataset(self):
         """
-        Legacy property included to provide depracation warning.
+        Legacy property included to provide deprecation warning.
 
         See Also
         --------
@@ -636,7 +638,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             # If the user has supplied a subset list of variables, append the
             # icepyx required variables to the Coverage dict
-            if "Coverage" in kwargs.keys():
+            if "Coverage" in kwargs:
                 var_list = [
                     "orbit_info/sc_orient",
                     "orbit_info/sc_orient_time",
@@ -652,7 +654,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 ]
                 # Add any variables from var_list to Coverage that are not already included
                 for var in var_list:
-                    if var not in kwargs["Coverage"].keys():
+                    if var not in kwargs["Coverage"]:
                         kwargs["Coverage"][var.split("/")[-1]] = [var]
 
             if self._subsetparams is None:
@@ -721,7 +723,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     @property
     def granules(self):
         """
-        Return the granules object, which provides the underlying funtionality for searching, ordering,
+        Return the granules object, which provides the underlying functionality for searching, ordering,
         and downloading granules for the specified product.
         Users are encouraged to use the built-in wrappers
         rather than trying to access the granules object themselves.
@@ -740,9 +742,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         <icepyx.core.granules.Granules at [location]>
         """
 
-        if not hasattr(self, "_granules"):
-            self._granules = Granules()
-        elif self._granules is None:
+        if not hasattr(self, "_granules") or self._granules is None:
             self._granules = Granules()
 
         return self._granules
@@ -868,8 +868,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         ]
 
         try:
-            all(key in self._cust_options.keys() for key in keys)
-        except AttributeError or KeyError:
+            all(key in self._cust_options for key in keys)
+        except (AttributeError, KeyError):
             self._cust_options = is2ref._get_custom_options(
                 self.session, self.product, self._version
             )
@@ -914,7 +914,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.avail_granules()
         {'Number of available granules': 4,
-        'Average size of granules (MB)': 55.166646003723145,
+        'Average size of granules (MB)': np.float64(55.166646003723145),
         'Total size of all granules (MB)': 220.66658401489258}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-23'])
@@ -998,7 +998,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         if self._reqparams._reqtype == "search":
             self._reqparams._reqtype = "download"
 
-        if "email" in self._reqparams.fmted_keys.keys() or email is False:
+        if "email" in self._reqparams.fmted_keys or email is False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
         elif email is True:
             user_profile = self.auth.get_user_profile()
@@ -1021,7 +1021,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             self.granules
 
         # Place multiple orders, one per granule, if readable_granule_name is used.
-        if "readable_granule_name[]" in self.CMRparams.keys():
+        if "readable_granule_name[]" in self.CMRparams:
             gran_name_list = self.CMRparams["readable_granule_name[]"]
             tempCMRparams = self.CMRparams
             if len(gran_name_list) > 1:
@@ -1132,8 +1132,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         gdf = self._spatial.extent_as_gdf
 
         try:
-            from shapely.geometry import Polygon
             import geoviews as gv
+            from shapely.geometry import Polygon  # noqa: F401
 
             gv.extension("bokeh")
 

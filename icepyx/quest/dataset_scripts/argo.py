@@ -45,10 +45,7 @@ class Argo(DataSet):
         self._apikey = "92259861231b55d32a9c0e4e3a93f4834fc0b6fa"
 
     def __str__(self):
-        if self.presRange is None:
-            prange = "All"
-        else:
-            prange = str(self.presRange)
+        prange = "All" if self.presRange is None else str(self.presRange)
 
         if self.argodata is None:
             df = "No data yet"
@@ -268,10 +265,10 @@ class Argo(DataSet):
         """
 
         # if search is called with replaced parameters or presRange
-        if not params is None:
+        if params is not None:
             self.params = params
 
-        if not presRange is None:
+        if presRange is not None:
             self.presRange = presRange
 
         # builds URL to be submitted
@@ -297,7 +294,7 @@ class Argo(DataSet):
         selectionProfiles = resp.json()
 
         # Consider any status other than 2xx an error
-        if not resp.status_code // 100 == 2:
+        if resp.status_code // 100 != 2:
             # check for the existence of profiles from query
             if selectionProfiles == []:
                 msg = (
@@ -362,7 +359,7 @@ class Argo(DataSet):
             print(resp.url)
 
         # Consider any status other than 2xx an error
-        if not resp.status_code // 100 == 2:
+        if resp.status_code // 100 != 2:
             return "Error: Unexpected response {}".format(resp)
         profile = resp.json()
         return profile
@@ -437,23 +434,23 @@ class Argo(DataSet):
         """
 
         # TODO: do some basic testing of this block and how the dataframe merging actually behaves
-        if keep_existing == False:
+        if keep_existing is False:
             print(
                 "Your previously stored data in reg.argodata",
                 "will be deleted before new data is downloaded.",
             )
             self.argodata = None
-        elif keep_existing == True and hasattr(self, "argodata"):
+        elif keep_existing is True and hasattr(self, "argodata"):
             print(
                 "The data requested by running this line of code\n",
                 "will be added to previously downloaded data.",
             )
 
         # if download is called with replaced parameters or presRange
-        if not params is None:
+        if params is not None:
             self.params = params
 
-        if not presRange is None:
+        if presRange is not None:
             self.presRange = presRange
 
         # Add qc data for each of the parameters requested
@@ -477,12 +474,12 @@ class Argo(DataSet):
                 profile_data = self._download_profile(i)
                 profile_df = self._parse_into_df(profile_data[0])
                 merged_df = pd.concat([merged_df, profile_df], sort=False)
-            except:
+            except Exception:
                 print("\tError processing profile {0}. Skipping.".format(i))
 
         # now that we have a df from this round of downloads, we can add it to any existing dataframe
         # note that if a given column has previously been added, update needs to be used to replace nans (merge will not replace the nan values)
-        if not self.argodata is None:
+        if self.argodata is not None:
             self.argodata = self.argodata.merge(merged_df, how="outer")
         else:
             self.argodata = merged_df

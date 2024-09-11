@@ -48,6 +48,7 @@ From the bash command line with $GITHUB token.
     $ ./scripts/announce.py $GITHUB v1.11.0..v1.11.1 > announce.rst
 
 """
+
 import codecs
 import os
 import re
@@ -76,10 +77,7 @@ def get_authors(revision_range):
         # e.g. v1.0.1|HEAD
         maybe_tag, head = cur_release.split("|")
         assert head == "HEAD"
-        if maybe_tag in this_repo.tags:
-            cur_release = maybe_tag
-        else:
-            cur_release = head
+        cur_release = maybe_tag if maybe_tag in this_repo.tags else head
         revision_range = f"{lst_release}..{cur_release}"
 
     # authors, in current release and previous to current release.
@@ -124,7 +122,7 @@ def get_authors(revision_range):
     #     pre.discard("Homu")
 
     # Append '+' to new authors.
-    authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
+    authors = [s + " +" for s in cur - pre] + list(cur & pre)
     authors.sort()
     return authors
 

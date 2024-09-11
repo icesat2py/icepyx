@@ -2,6 +2,7 @@ import pprint
 from typing import Optional, Union, cast
 
 import geopandas as gpd
+import holoviews as hv
 import matplotlib.pyplot as plt
 from typing_extensions import Never
 
@@ -456,7 +457,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # ----------------------------------------------------------------------
     # Properties
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Product {2} v{3}\n{0}\nDate range {1}".format(
             self.spatial_extent, self.dates, self.product, self.product_version
         )
@@ -475,7 +476,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         )
 
     @property
-    def product(self):
+    def product(self) -> str:
         """
         Return the short name product ID string associated with the query object.
 
@@ -488,7 +489,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._prod
 
     @property
-    def product_version(self):
+    def product_version(self) -> str:
         """
         Return the product version of the data object.
 
@@ -505,7 +506,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._version
 
     @property
-    def cycles(self):
+    def cycles(self) -> list[str]:
         """
         Return the unique ICESat-2 orbital cycle.
 
@@ -525,7 +526,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             return sorted(set(self._cycles))
 
     @property
-    def tracks(self):
+    def tracks(self) -> list[str]:
         """
         Return the unique ICESat-2 Reference Ground Tracks
 
@@ -691,7 +692,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # DevGoal: add to tests
     # DevGoal: add statements to the following vars properties to let the user know if they've got a mismatched source and vars type
     @property
-    def order_vars(self):
+    def order_vars(self) -> Variables:
         """
         Return the order variables object.
         This instance is generated when data is ordered from the NSIDC.
@@ -734,7 +735,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._order_vars
 
     @property
-    def granules(self):
+    def granules(self) -> Granules:
         """
         Return the granules object, which provides the underlying functionality for searching, ordering,
         and downloading granules for the specified product.
@@ -763,7 +764,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the product level
 
-    def product_summary_info(self):
+    def product_summary_info(self) -> None:
         """
         Display a summary of selected metadata for the specified version of the product
         of interest (the collection).
@@ -794,7 +795,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         for key in summ_keys:
             print(key, ": ", self._about_product["feed"]["entry"][-1][key])
 
-    def product_all_info(self):
+    def product_all_info(self) -> None:
         """
         Display all metadata about the product of interest (the collection).
 
@@ -809,7 +810,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             self._about_product = is2ref.about_product(self._prod)
         pprint.pprint(self._about_product)
 
-    def latest_version(self):
+    def latest_version(self) -> str:
         """
         A reference function to is2ref.latest_version.
 
@@ -823,7 +824,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
         return is2ref.latest_version(self.product)
 
-    def show_custom_options(self, dictview=False):
+    def show_custom_options(self, dictview=False) -> None:
         """
         Display customization/subsetting options available for this product.
 
@@ -899,7 +900,13 @@ class Query(GenQuery, EarthdataAuthMixin):
     # Methods - Granules (NSIDC-API)
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):
+    def avail_granules(
+        self,
+        ids: bool = False,
+        cycles: bool = False,
+        tracks: bool = False,
+        cloud: bool = False,
+    ) -> Union[list[list[str]], dict[str, Union[int, float]]]:
         """
         Obtain information about the available granules for the query
         object's parameters. By default, a complete list of available granules is
@@ -962,7 +969,13 @@ class Query(GenQuery, EarthdataAuthMixin):
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
     # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
+    def order_granules(
+        self,
+        verbose: bool = False,
+        subset: bool = True,
+        email: bool = False,
+        **kwargs,
+    ) -> None:
         """
         Place an order for the available granules for the query object.
 
@@ -1064,8 +1077,13 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
     def download_granules(
-        self, path, verbose=False, subset=True, restart=False, **kwargs
-    ):  # , extract=False):
+        self,
+        path: str,
+        verbose: bool = False,
+        subset: bool = True,
+        restart: bool = False,
+        **kwargs,
+    ) -> None:
         """
         Downloads the data ordered using order_granules.
 
@@ -1131,7 +1149,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # DevGoal: see Amy's data access notebook for a zoomed in map - implement here?
     def visualize_spatial_extent(
         self,
-    ):  # additional args, basemap, zoom level, cmap, export
+    ) -> None:  # additional args, basemap, zoom level, cmap, export
         """
         Creates a map displaying the input spatial extent
 
@@ -1161,7 +1179,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
             plt.show()
 
-    def visualize_elevation(self):
+    def visualize_elevation(self) -> tuple[hv.DynamicMap, hv.Layout]:
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles
         https://holoviz.org/tutorial/Large_Data.html

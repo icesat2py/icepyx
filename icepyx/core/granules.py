@@ -178,7 +178,7 @@ class Granules(EarthdataAuthMixin):
         self,
         CMRparams: CMRParams,
         reqparams: EGISpecificParamsSearch,
-        cloud=False,
+        cloud: bool = False,
     ):
         """
         Get a list of available granules for the query object's parameters.
@@ -188,15 +188,18 @@ class Granules(EarthdataAuthMixin):
         ----------
         CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams : dictionary
+        reqparams :
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
-        cloud : deprecated, boolean, default False
+        cloud :
             CMR metadata is always collected for the cloud system.
+
+            .. deprecated:: 1.2
+                This parameter is ignored.
 
         Notes
         -----
-        This function is used by query.Query.avail_granules(), which automatically
+        This function is used by ``query.Query.avail_granules()``, which automatically
         feeds in the required parameters.
 
         See Also

@@ -38,7 +38,7 @@ extensions = [
     "myst_nb",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
-    "sphinx_panels",
+    "sphinx_design",
     # "sphinx.ext.imgconverter", # this extension should help the latex svg warning, but results in an error instead
 ]
 myst_enable_extensions = [

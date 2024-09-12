@@ -31,86 +31,99 @@ ICESat-2 datasets to enable scientific discovery.
 To further enhance data discovery, we have developed the QUEST module to facilitate querying of ICESat-2 data and complimentary Argo oceanographic data, with additional dataset support expected in the future.
 
 
-.. panels::
-    :card: + intro-card text-center
-    :column: col-lg-4 col-md-4 col-sm-6 col-xs-12 p-2
-    :img-top-cls: pl-2 pr-2 pt-2 pb-2
+.. grid:: 1 2 2 3
+    :gutter: 2
 
-    ---
-    :img-top: https://cdn-icons-png.flaticon.com/128/2498/2498074.png
+    .. grid-item-card::
+        :img-top: https://cdn-icons-png.flaticon.com/128/2498/2498074.png
 
-    **Getting Started**
-    ^^^^^^^^^^^^^^^^^^^
+        **Getting Started**
+        ^^^^^^^^^^^^^^^^^^^
 
-    New to ICESat-2 or icepyx?
-    Learn how to install icepyx and use it to jumpstart your project today.
-    Check out our gallery of examples, too!
+        New to ICESat-2 or icepyx?
+        Learn how to install icepyx and use it to jumpstart your project today.
+        Check out our gallery of examples, too!
 
-    .. link-button:: install_ref
-        :type: ref
-        :text: Installation Instructions
-        :classes: stretched-link btn-outline-primary btn-block
+        .. button-ref:: install_ref
+            :ref-type: ref
+            :color: primary
+            :outline:
+            :expand:
 
-    ---
-    :img-top: https://cdn-icons-png.flaticon.com/128/3730/3730041.png
+            Installation Instructions
 
-    **User Guide**
-    ^^^^^^^^^^^^^^
+    .. grid-item-card::
+        :img-top: https://cdn-icons-png.flaticon.com/128/3730/3730041.png
 
-    The user guide provides in-depth information on the tools and functionality
-    available for obtaining and interacting with ICESat-2 data products.
+        **User Guide**
+        ^^^^^^^^^^^^^^
 
-    .. link-button:: api_doc_ref
-        :type: ref
-        :text: Software Docs
-        :classes: stretched-link btn-outline-primary btn-block
+        The user guide provides in-depth information on the tools and functionality
+        available for obtaining and interacting with ICESat-2 data products.
 
-    ---
-    :img-top: https://cdn-icons-png.flaticon.com/512/4230/4230997.png
+        .. button-ref:: api_doc_ref
+            :ref-type: ref
+            :color: primary
+            :outline:
+            :expand:
 
-    **Development Guide**
-    ^^^^^^^^^^^^^^^^^^^^^
+            Software Docs
 
-    Have an idea or an ancillary dataset to contribute to icepyx? Go here for information on best practices
-    for developing and contributing to icepyx.
+    .. grid-item-card::
+        :img-top: https://cdn-icons-png.flaticon.com/512/4230/4230997.png
 
-    .. link-button:: dev_guide_label
-        :type: ref
-        :text: Development Guide
-        :classes: stretched-link btn-outline-primary btn-block
+        **Development Guide**
+        ^^^^^^^^^^^^^^^^^^^^^
 
-    ---
-    :img-top: https://cdn-icons-png.flaticon.com/128/1283/1283342.png
+        Have an idea or an ancillary dataset to contribute to icepyx? Go here for information on best practices
+        for developing and contributing to icepyx.
 
-    **Get in Touch**
-    ^^^^^^^^^^^^^^^^
+        .. button-ref:: dev_guide_label
+            :ref-type: ref
+            :color: primary
+            :outline:
+            :expand:
 
-    icepyx is more than just software!
-    We're a community of data producers, managers, and users
-    who collaborate openly and share code and skills
-    for every step along the entire data pipeline. Find resources for
-    your questions here!
+            Development Guide
 
-    .. link-button:: contact_ref_label
-        :type: ref
-        :text: Get Involved!
-        :classes: stretched-link btn-outline-primary btn-block
+    .. grid-item-card::
+        :img-top: https://cdn-icons-png.flaticon.com/128/1283/1283342.png
 
-    ---
-    :img-top: https://icesat-2.gsfc.nasa.gov/sites/default/files/MissionLogo_0.png
-    :img-top-cls: pl-2 pr-2 pt-4 pb-4
+        **Get in Touch**
+        ^^^^^^^^^^^^^^^^
 
-    **ICESat-2 Resources**
-    ^^^^^^^^^^^^^^^^^^^^^^
+        icepyx is more than just software!
+        We're a community of data producers, managers, and users
+        who collaborate openly and share code and skills
+        for every step along the entire data pipeline. Find resources for
+        your questions here!
 
-    Curious about other tools for working with ICESat-2 data?
-    Want to share your resource?
-    Check out the amazing work already in progress!
+        .. button-ref:: contact_ref_label
+            :ref-type: ref
+            :color: primary
+            :outline:
+            :expand:
 
-    .. link-button:: resource_ref_label
-        :type: ref
-        :text: ICESat-2 Resource Guide
-        :classes: stretched-link btn-outline-primary btn-block
+            Get Involved!
+
+    .. grid-item-card::
+        :img-top: https://icesat-2.gsfc.nasa.gov/sites/default/files/MissionLogo_0.png
+        :class-img-top: pl-2 pr-2 pt-4 pb-4
+
+        **ICESat-2 Resources**
+        ^^^^^^^^^^^^^^^^^^^^^^
+
+        Curious about other tools for working with ICESat-2 data?
+        Want to share your resource?
+        Check out the amazing work already in progress!
+
+        .. button-ref:: resource_ref_label
+            :ref-type: ref
+            :color: primary
+            :outline:
+            :expand:
+
+            ICESat-2 Resource Guide
 
 
 .. toctree::

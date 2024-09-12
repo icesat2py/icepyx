@@ -4,7 +4,7 @@ from typing import Literal, TypedDict, Union
 
 from typing_extensions import NotRequired
 
-IcesatProductShortName = Literal[
+ICESat2ProductShortName = Literal[
     "ATL01",
     "ATL02",
     "ATL03",
@@ -66,7 +66,7 @@ class EGISpecificParamsBase(TypedDict):
     * 0 < page_size <= 2000
     """
 
-    short_name: IcesatProductShortName  # alias: "product"
+    short_name: ICESat2ProductShortName  # alias: "product"
     version: str
     page_size: int  # default 2000
     page_num: int  # default 0

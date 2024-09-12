@@ -129,7 +129,7 @@ force-sort-within-sections = true
 
 
 [tool.pyright]
-pythonVersion = "3.10"
+pythonVersion = "3.9"
 # DevGoal: "strict"
 typeCheckingMode = "standard"
 include = [

@@ -9,7 +9,7 @@ information!
 # IMPORTANT: This is being done before the other icepyx imports because the imported
 # code changes warning filters. If this is done after the imports, the warning won't
 # work.
-warn(deprecation_msg, DeprecationWarning, stacklevel=2)
+warn(deprecation_msg, FutureWarning, stacklevel=2)
 
 
 from _icepyx_version import version as __version__

@@ -1,6 +1,6 @@
 from warnings import warn
 
-deprecation_msg = """icepyx v1.x is deprecated; the back-end systems on which it relies
+deprecation_msg = """icepyx v1.x is being deprecated; the back-end systems on which it relies
 will be shut down as of late 2024. At that time, upgrade to icepyx v2.x, which uses the
 new NASA Harmony back-end, will be required. Please see
 <https://icepyx.readthedocs.io/en/latest/user_guide/changelog/v1.3.0.html> for more

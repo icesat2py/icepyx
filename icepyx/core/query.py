@@ -1,5 +1,5 @@
 import pprint
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -13,7 +13,12 @@ from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
-from icepyx.core.types import CMRParams, EGIParamsSubset, EGISpecificRequiredParams
+from icepyx.core.types import (
+    CMRParams,
+    EGIParamsSubset,
+    EGISpecificParamsDownload,
+    EGISpecificRequiredParams,
+)
 import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.visualization import Visualize
@@ -1039,7 +1044,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 tempCMRparams["readable_granule_name[]"] = gran
                 self._granules.place_order(
                     tempCMRparams,
-                    self.reqparams,
+                    cast(EGISpecificParamsDownload, self.reqparams),
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
@@ -1049,7 +1054,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             self._granules.place_order(
                 self.CMRparams,
-                self.reqparams,
+                cast(EGISpecificParamsDownload, self.reqparams),
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,

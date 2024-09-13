@@ -6,7 +6,7 @@ from typing import Any, Generic, Literal, TypeVar, Union, overload
 from icepyx.core.types import (
     CMRParams,
     EGIParamsSubset,
-    EGISpecificRequiredParams,
+    EGIRequiredParams,
 )
 
 # ----------------------------------------------------------------------
@@ -213,7 +213,7 @@ class _FmtedKeysDescriptor:
         self,
         instance: 'Parameters[Literal["required"]]',
         owner: Any,
-    ) -> EGISpecificRequiredParams: ...
+    ) -> EGIRequiredParams: ...
 
     @overload
     def __get__(
@@ -226,7 +226,7 @@ class _FmtedKeysDescriptor:
         self,
         instance: "Parameters",
         owner: Any,
-    ) -> Union[CMRParams, EGISpecificRequiredParams, EGIParamsSubset]:
+    ) -> Union[CMRParams, EGIRequiredParams, EGIParamsSubset]:
         """
         Returns the dictionary of formatted keys associated with the
         parameter object.

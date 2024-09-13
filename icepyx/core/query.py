@@ -16,8 +16,8 @@ import icepyx.core.temporal as tp
 from icepyx.core.types import (
     CMRParams,
     EGIParamsSubset,
-    EGISpecificParamsDownload,
-    EGISpecificRequiredParams,
+    EGIRequiredParams,
+    EGIRequiredParamsDownload,
 )
 import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables as Variables
@@ -585,7 +585,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._CMRparams.fmted_keys
 
     @property
-    def reqparams(self) -> EGISpecificRequiredParams:
+    def reqparams(self) -> EGIRequiredParams:
         """
         Display the required key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist.
@@ -1044,7 +1044,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 tempCMRparams["readable_granule_name[]"] = gran
                 self._granules.place_order(
                     tempCMRparams,
-                    cast(EGISpecificParamsDownload, self.reqparams),
+                    cast(EGIRequiredParamsDownload, self.reqparams),
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
@@ -1054,7 +1054,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             self._granules.place_order(
                 self.CMRparams,
-                cast(EGISpecificParamsDownload, self.reqparams),
+                cast(EGIRequiredParamsDownload, self.reqparams),
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,

@@ -19,8 +19,8 @@ from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.exceptions
 from icepyx.core.types import (
     CMRParams,
-    EGISpecificParamsDownload,
-    EGISpecificParamsSearch,
+    EGIRequiredParamsDownload,
+    EGIRequiredParamsSearch,
 )
 from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 
@@ -181,7 +181,7 @@ class Granules(EarthdataAuthMixin):
     def get_avail(
         self,
         CMRparams: CMRParams,
-        reqparams: EGISpecificParamsSearch,
+        reqparams: EGIRequiredParamsSearch,
         cloud: bool = False,
     ):
         """
@@ -278,7 +278,7 @@ class Granules(EarthdataAuthMixin):
     def place_order(
         self,
         CMRparams: CMRParams,
-        reqparams: EGISpecificParamsDownload,
+        reqparams: EGIRequiredParamsDownload,
         subsetparams,
         verbose,
         subset=True,

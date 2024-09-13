@@ -51,7 +51,7 @@ class CMRParamsWithPolygon(CMRParamsBase):
 CMRParams = Union[CMRParamsWithBbox, CMRParamsWithPolygon]
 
 
-class EGISpecificParamsBase(TypedDict):
+class EGIRequiredParamsBase(TypedDict):
     """Common parameters for searching, ordering, or downloading from EGI.
 
     See: https://wiki.earthdata.nasa.gov/display/SDPSDOCS/EGI+Programmatic+Access+Documentation
@@ -72,11 +72,11 @@ class EGISpecificParamsBase(TypedDict):
     page_num: int  # default 0
 
 
-class EGISpecificParamsSearch(EGISpecificParamsBase):
+class EGIRequiredParamsSearch(EGIRequiredParamsBase):
     """Parameters for interacting with EGI."""
 
 
-class EGISpecificParamsDownload(EGISpecificParamsBase):
+class EGIRequiredParamsDownload(EGIRequiredParamsBase):
     """Parameters for ordering from EGI.
 
     TODO: Validate more strongly (with Pydantic?): page_num >=0.
@@ -108,4 +108,4 @@ class EGIParamsSubsetBoundingShape(EGIParamsSubsetBase):
 
 EGIParamsSubset = Union[EGIParamsSubsetBbox, EGIParamsSubsetBoundingShape]
 
-EGISpecificRequiredParams = Union[EGISpecificParamsSearch, EGISpecificParamsDownload]
+EGIRequiredParams = Union[EGIRequiredParamsSearch, EGIRequiredParamsDownload]

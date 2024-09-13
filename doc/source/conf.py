@@ -84,7 +84,7 @@ nb_execution_mode = "off"
 suppress_warnings = ["myst.header"]  # suppress non-consecutive header warning
 
 
-# -- Options for Napoleon docstrign parsing ----------------------------------
+# -- Options for Napoleon docstring parsing ----------------------------------
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 napoleon_use_admonition_for_examples = True

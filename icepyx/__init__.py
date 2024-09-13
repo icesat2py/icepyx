@@ -1,8 +1,8 @@
 from warnings import warn
 
-deprecation_msg = """icepyx v1.x is deprecated; the back-end systems on which is relies
-are being shut down. Please upgrade to icepyx v2.x which uses the new NASA Harmony
-back-end.
+deprecation_msg = """icepyx v1.x is deprecated; the back-end systems on which it relies
+will be shut down as of late 2024. At that time, upgrade to icepyx v2.x, which uses the
+new NASA Harmony back-end, will be required.
 """
 # IMPORTANT: This is being done before the other icepyx imports because the imported
 # code changes warning filters. If this is done after the imports, the warning won't

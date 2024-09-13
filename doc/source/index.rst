@@ -32,10 +32,13 @@ To further enhance data discovery, we have developed the QUEST module to facilit
 
 
 .. grid:: 1 2 2 3
-    :gutter: 2
+    :gutter: 3
+    :class-container: sd-text-center
 
     .. grid-item-card::
         :img-top: https://cdn-icons-png.flaticon.com/128/2498/2498074.png
+        :class-img-top: sd-p-2
+        :class-card: sd-shadow-md
 
         **Getting Started**
         ^^^^^^^^^^^^^^^^^^^
@@ -54,6 +57,8 @@ To further enhance data discovery, we have developed the QUEST module to facilit
 
     .. grid-item-card::
         :img-top: https://cdn-icons-png.flaticon.com/128/3730/3730041.png
+        :class-img-top: sd-p-2
+        :class-card: sd-shadow-md
 
         **User Guide**
         ^^^^^^^^^^^^^^
@@ -71,6 +76,8 @@ To further enhance data discovery, we have developed the QUEST module to facilit
 
     .. grid-item-card::
         :img-top: https://cdn-icons-png.flaticon.com/512/4230/4230997.png
+        :class-img-top: sd-p-2
+        :class-card: sd-shadow-md
 
         **Development Guide**
         ^^^^^^^^^^^^^^^^^^^^^
@@ -88,6 +95,8 @@ To further enhance data discovery, we have developed the QUEST module to facilit
 
     .. grid-item-card::
         :img-top: https://cdn-icons-png.flaticon.com/128/1283/1283342.png
+        :class-img-top: sd-p-2
+        :class-card: sd-shadow-md
 
         **Get in Touch**
         ^^^^^^^^^^^^^^^^
@@ -108,7 +117,8 @@ To further enhance data discovery, we have developed the QUEST module to facilit
 
     .. grid-item-card::
         :img-top: https://icesat-2.gsfc.nasa.gov/sites/default/files/MissionLogo_0.png
-        :class-img-top: pl-2 pr-2 pt-4 pb-4
+        :class-img-top: sd-p-2
+        :class-card: sd-shadow-md
 
         **ICESat-2 Resources**
         ^^^^^^^^^^^^^^^^^^^^^^

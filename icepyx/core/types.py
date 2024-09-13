@@ -99,11 +99,11 @@ class EGIParamsSubsetBase(TypedDict):
 
 
 class EGIParamsSubsetBbox(EGIParamsSubsetBase):
-    bbox: str
+    bbox: NotRequired[str]
 
 
 class EGIParamsSubsetBoundingShape(EGIParamsSubsetBase):
-    Boundingshape: str
+    Boundingshape: NotRequired[str]
 
 
 EGIParamsSubset = Union[EGIParamsSubsetBbox, EGIParamsSubsetBoundingShape]

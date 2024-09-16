@@ -19,12 +19,6 @@ including other versions of icepyx.
     Find more details on all these changes, including their progress, on GitHub issues and discussions.
 
 
-New Features
-~~~~~~~~~~~~
-
-- Extract constant URLs to own module (#591)
-
-
 Bug fixes
 ~~~~~~~~~
 
@@ -34,7 +28,8 @@ Bug fixes
 Deprecations
 ~~~~~~~~~~~~
 
-- None
+- Drop support for Python 3.7 and 3.8 (#608)
+- Add v1.x deprecation warning (#603)
 
 
 Maintenance
@@ -54,6 +49,7 @@ Maintenance
 - Add ruff rules SIM to simplify Python code (#572)
 - More ruff & pre-commit rules (#546)
 - Fix minor typo (#589)
+- Extract constant URLs to own module (#591)
 - Clarify some comments / docstrings (#592)
 - Migrate unit and integration tests from TravisCI to GitHub Actions (#580)
 - Reinstate test_download_granules_without_subsetting (#581)
@@ -64,6 +60,7 @@ Maintenance
 - Bump sangonzal/repository-traffic-action from 0.1.5 to 1 in the github-actions group (#596)
 - [pre-commit.ci] pre-commit autoupdate (#597)
 - bump sangonzal/repository-traffic-action version to latest working one (fixes #596) (#601)
+- Replace integration test review trigger with manual trigger (#595)
 
 
 Documentation

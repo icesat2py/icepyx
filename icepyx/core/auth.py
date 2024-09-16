@@ -68,7 +68,7 @@ class EarthdataAuthMixin:
         """
         # Only login the first time .auth is accessed
         if self._auth is None:
-            auth = earthaccess.login()
+            auth = earthaccess.login(system=earthaccess.system.UAT)
             # check for a valid auth response
             if auth.authenticated is False:
                 raise AuthenticationError(

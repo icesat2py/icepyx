@@ -17,6 +17,7 @@ from requests.compat import unquote
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
+from icepyx.core.cmr import CMR_PROVIDER
 import icepyx.core.exceptions
 from icepyx.core.types import (
     CMRParams,
@@ -234,7 +235,7 @@ class Granules(EarthdataAuthMixin):
         params = apifmt.combine_params(
             CMRparams,
             {k: reqparams[k] for k in ["short_name", "version", "page_size"]},
-            {"provider": "NSIDC_CPRD"},
+            {"provider": CMR_PROVIDER},
         )
 
         cmr_search_after = None

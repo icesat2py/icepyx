@@ -1,7 +1,6 @@
+import earthaccess
 import pytest
 import requests
-
-import earthaccess
 
 from icepyx.core.auth import EarthdataAuthMixin
 
@@ -23,9 +22,7 @@ def test_get_session(auth_instance):
 # Test that .s3login_credentials creates a dict with the correct keys
 def test_get_s3login_credentials(auth_instance):
     assert isinstance(auth_instance.s3login_credentials, dict)
-    expected_keys = set(
-        ["accessKeyId", "secretAccessKey", "sessionToken", "expiration"]
-    )
+    expected_keys = {"accessKeyId", "secretAccessKey", "sessionToken", "expiration"}
     assert set(auth_instance.s3login_credentials.keys()) == expected_keys
 
 

@@ -1,10 +1,10 @@
-import geopandas as gpd
-import numpy as np
 import os
-from shapely.geometry import box, Polygon
-from shapely.geometry.polygon import orient
 import warnings
 
+import geopandas as gpd
+import numpy as np
+from shapely.geometry import Polygon, box
+from shapely.geometry.polygon import orient
 
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 
@@ -496,7 +496,7 @@ class Spatial:
             self._spatial_ext = [float(i) for i in arrpoly]
 
         # check for cross dateline keyword submission
-        if "xdateline" in kwarg.keys():
+        if "xdateline" in kwarg:
             self._xdateln = kwarg["xdateline"]
             assert self._xdateln in [
                 True,
@@ -542,10 +542,7 @@ class Spatial:
         """
 
         # TODO: test this
-        if hasattr(self, "_xdateln"):
-            xdateln = self._xdateln
-        else:
-            xdateln = None
+        xdateln = self._xdateln if hasattr(self, "_xdateln") else None
 
         if not hasattr(self, "_gdf_spat"):
             if self._geom_file is not None:

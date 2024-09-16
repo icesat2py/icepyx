@@ -1,0 +1,49 @@
+name: "Integration test"
+# NOTE: We're just running the tests that require earthdata login here; we
+#       don't distinguish between unit and integration tests yet.
+
+on:
+  push:
+    branches:
+      - "main"  # Releases
+      - "development"  # Feature PR merges
+  pull_request:
+    branches:
+      - "main"  # Release PRs
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref to test"
+        type: "string"
+
+
+jobs:
+  test:
+    name: "Integration test"
+    # Do not run on PRs from forks:
+    if: "${{ !github.event.pull_request.head.repo.fork }}"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+          ref: "${{ inputs.ref }}"
+
+      - uses: "./.github/actions/install-icepyx"
+        with:
+          python-version: "3.12"
+
+      - name: "Run tests"
+        env:
+          EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
+          NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
+        run: |
+          pytest icepyx/ --verbose --cov app \
+            icepyx/tests/test_behind_NSIDC_API_login.py \
+            icepyx/tests/test_auth.py
+
+      - name: "Upload coverage report"
+        uses: "codecov/codecov-action@v4.5.0"
+        with:
+          token: "${{ secrets.CODECOV_TOKEN }}"

@@ -13,7 +13,7 @@ by any modules that need an Earthdata login.
 
 **Property Access**
 
-Even though they aren't explicity defined in the init method, properties
+Even though they aren't explicitly defined in the init method, properties
 like ``.session`` are accessible on a Query object because they are inherited. The
 code that indicates this to Python is ``EarthdataAuthMixin.__init__(self)``.
 

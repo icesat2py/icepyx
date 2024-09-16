@@ -14,6 +14,7 @@ import requests
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.exceptions
+from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 
 
 def info(grans):
@@ -202,8 +203,6 @@ class Granules(EarthdataAuthMixin):
         # if not hasattr(self, 'avail'):
         self.avail = []
 
-        granule_search_url = "https://cmr.earthdata.nasa.gov/search/granules"
-
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API -
         # make a function to check for errors
@@ -221,7 +220,7 @@ class Granules(EarthdataAuthMixin):
                 headers["CMR-Search-After"] = cmr_search_after
 
             response = requests.get(
-                granule_search_url,
+                GRANULE_SEARCH_BASE_URL,
                 headers=headers,
                 params=apifmt.to_string(params),
             )
@@ -309,8 +308,6 @@ class Granules(EarthdataAuthMixin):
         query.Query.order_granules
         """
 
-        base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
-
         self.get_avail(CMRparams, reqparams)
 
         if subset is False:
@@ -346,7 +343,7 @@ class Granules(EarthdataAuthMixin):
             )
             request_params.update({"page_num": page_num})
 
-            request = self.session.get(base_url, params=request_params)
+            request = self.session.get(ORDER_BASE_URL, params=request_params)
 
             # DevGoal: use the request response/number to do some error handling/
             # give the user better messaging for failures
@@ -378,7 +375,7 @@ class Granules(EarthdataAuthMixin):
             print("order ID: ", orderID)
 
             # Create status URL
-            statusURL = base_url + "/" + orderID
+            statusURL = f"{ORDER_BASE_URL}/{orderID}"
             if verbose is True:
                 print("status URL: ", statusURL)
 
@@ -398,6 +395,11 @@ class Granules(EarthdataAuthMixin):
                 statuslist.append(status.text)
             status = statuslist[0]
             print("Initial status of your order request at NSIDC is: ", status)
+
+            # If status is already finished without going into pending/processing
+            if status.startswith("complete"):
+                loop_response = self.session.get(statusURL)
+                loop_root = ET.fromstring(loop_response.content)
 
             # Continue loop while request is still processing
             while status == "pending" or status == "processing":
@@ -523,7 +525,7 @@ class Granules(EarthdataAuthMixin):
                 i_order = self.orderIDs.index(order_start) + 1
 
         for order in self.orderIDs[i_order:]:
-            downloadURL = "https://n5eil02u.ecs.nsidc.org/esir/" + order + ".zip"
+            downloadURL = f"{DOWNLOAD_BASE_URL}/{order}.zip"
             # DevGoal: get the download_url from the granules
 
             if verbose is True:

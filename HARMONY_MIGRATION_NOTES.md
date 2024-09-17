@@ -5,6 +5,7 @@
 * Variable subsetting won't be supported on day 1.
 * All the ICESat-2 products we currently support will not be supported on day 1.
     * <https://nsidc.atlassian.net/wiki/spaces/DAACSW/pages/222593028/ICESat-2+data+sets+and+versions+we+are+supporting+for+Harmony>
+* ECS and CMR shared some parameters. This is not the case with Harmony.
 
 
 ## Testing with Harmony
@@ -23,3 +24,15 @@ for icepyx to work correctly.
   account must be on an access control list. Ask NSIDC operations for help.
     * The code *temporarily* uses `$EDL_TOKEN` envvar to authenticate with CMR. Populate
       this envvar with your Earthdata Login token.
+
+
+## Open questions
+
+### Which API?
+
+Harmony has two APIs:
+
+* [OGC Environmental Data Retrieval API](https://harmony.earthdata.nasa.gov/docs/edr-api)
+* [OGC Coverages API](https://harmony.earthdata.nasa.gov/docs/api/)
+
+Which should be used and when and why?

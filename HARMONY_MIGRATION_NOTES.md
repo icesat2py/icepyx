@@ -1,0 +1,25 @@
+## Assumptions that are different in Harmony
+
+* We can't use short name and version with Harmony like we do with ECS, we have to use
+  Concept ID (or DOI). We need to get this from CMR using short name and version.
+* Variable subsetting won't be supported on day 1.
+* All the ICESat-2 products we currently support will not be supported on day 1.
+    * <https://nsidc.atlassian.net/wiki/spaces/DAACSW/pages/222593028/ICESat-2+data+sets+and+versions+we+are+supporting+for+Harmony>
+
+
+## Testing with Harmony
+
+Harmony is available for testing in the UAT environment.
+
+We will need to interact with everything (CMR, Earthdata Login, Harmony itself) in UAT
+for icepyx to work correctly.
+
+* URLs *temporarily* modified for UAT.
+* You need a separate Earthdata Login registration for UAT
+  (<https://uat.urs.earthdata.nasa.gov/>).
+* The UAT NSIDC provider name is `NSIDC_UAT`
+  (<https://cmr.uat.earthdata.nasa.gov/search/collections.json?provider=NSIDC_CUAT>).
+* To test in UAT (i.e. access data in `NSIDC_CUAT` provider), your Earthdata Login
+  account must be on an access control list. Ask NSIDC operations for help.
+    * The code *temporarily* uses `$EDL_TOKEN` envvar to authenticate with CMR. Populate
+      this envvar with your Earthdata Login token.

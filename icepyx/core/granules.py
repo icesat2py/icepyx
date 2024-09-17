@@ -25,6 +25,7 @@ from icepyx.core.types import (
     EGIRequiredParamsSearch,
 )
 from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
+from icepyx.uat import EDL_ACCESS_TOKEN
 
 
 def info(grans: list[dict]) -> dict[str, Union[int, float]]:
@@ -228,7 +229,11 @@ class Granules(EarthdataAuthMixin):
         # if not hasattr(self, 'avail'):
         self.avail = []
 
-        headers = {"Accept": "application/json", "Client-Id": "icepyx"}
+        headers = {
+            "Accept": "application/json",
+            "Client-Id": "icepyx",
+            "Authorization": f"Bearer {EDL_ACCESS_TOKEN}",
+        }
         # note we should also check for errors whenever we ping NSIDC-API -
         # make a function to check for errors
 

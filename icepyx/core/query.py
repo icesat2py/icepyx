@@ -1,3 +1,5 @@
+import datetime as dt
+from functools import cached_property
 import pprint
 from typing import Optional, Union, cast
 
@@ -734,10 +736,11 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         return self._order_vars
 
-    @property
+    @cached_property
     def granules(self) -> Granules:
         """
-        Return the granules object, which provides the underlying functionality for searching, ordering,
+        Return the granules object, which provides the underlying functionality
+        hing, ordering,
         and downloading granules for the specified product.
         Users are encouraged to use the built-in wrappers
         rather than trying to access the granules object themselves.
@@ -751,15 +754,13 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         Examples
         --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48,
+                                       71],['2019-02-20','2019-02-28']) #
+        +SKIP
         >>> reg_a.granules # doctest: +SKIP
         <icepyx.core.granules.Granules at [location]>
         """
-
-        if not hasattr(self, "_granules") or self._granules is None:
-            self._granules = Granules()
-
-        return self._granules
+        return Granules()
 
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the product level
@@ -947,8 +948,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
 
         #         REFACTOR: add test to make sure there's a session
-        if not hasattr(self, "_granules"):
-            self.granules
         try:
             self.granules.avail
         except AttributeError:
@@ -1043,8 +1042,6 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         # REFACTOR: add checks here to see if the granules object has been created,
         # and also if it already has a list of avail granules (if not, need to create one and add session)
-        if not hasattr(self, "_granules"):
-            self.granules
 
         # Place multiple orders, one per granule, if readable_granule_name is used.
         if "readable_granule_name[]" in self.CMRparams:
@@ -1056,7 +1053,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 )
             for gran in gran_name_list:
                 tempCMRparams["readable_granule_name[]"] = gran
-                self._granules.place_order(
+                self.granules.place_order(
                     tempCMRparams,
                     cast(EGIRequiredParamsDownload, self.reqparams),
                     self.subsetparams(**kwargs),
@@ -1066,7 +1063,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 )
 
         else:
-            self._granules.place_order(
+            self.granules.place_order(
                 self.CMRparams,
                 cast(EGIRequiredParamsDownload, self.reqparams),
                 self.subsetparams(**kwargs),
@@ -1129,19 +1126,16 @@ class Query(GenQuery, EarthdataAuthMixin):
         #     os.mkdir(path)
         # os.chdir(path)
 
-        if not hasattr(self, "_granules"):
-            self.granules
-
         if restart is True:
             pass
         else:
             if (
-                not hasattr(self._granules, "orderIDs")
-                or len(self._granules.orderIDs) == 0
+                not hasattr(self.granules, "orderIDs")
+                or len(self.granules.orderIDs) == 0
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
 
-        self._granules.download(verbose, path, restart=restart)
+        self.granules.download(verbose, path, restart=restart)
 
     # DevGoal: add testing? What do we test, and how, given this is a visualization.
     # DevGoal(long term): modify this to accept additional inputs, etc.

@@ -1,6 +1,13 @@
-# Generate and format information for submitting to API (CMR and NSIDC)
+"""Generate and format information for submitting to API (CMR and NSIDC)."""
 
 import datetime as dt
+from typing import Any, Generic, Literal, TypeVar, Union, overload
+
+from icepyx.core.types import (
+    CMRParams,
+    EGIParamsSubset,
+    EGIRequiredParams,
+)
 
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
@@ -183,12 +190,56 @@ def to_string(params):
     return "&".join(param_list)
 
 
+ParameterType = Literal["CMR", "required", "subset"]
+# DevGoal: When Python 3.12 is minimum supported version, migrate to PEP695 style
+T = TypeVar("T", bound=ParameterType)
+
+
+class _FmtedKeysDescriptor:
+    """Enable the Parameters class' fmted_keys property to be typechecked correctly.
+
+    See: https://github.com/microsoft/pyright/issues/3071#issuecomment-1043978070
+    """
+
+    @overload
+    def __get__(
+        self,
+        instance: 'Parameters[Literal["CMR"]]',
+        owner: Any,
+    ) -> CMRParams: ...
+
+    @overload
+    def __get__(
+        self,
+        instance: 'Parameters[Literal["required"]]',
+        owner: Any,
+    ) -> EGIRequiredParams: ...
+
+    @overload
+    def __get__(
+        self,
+        instance: 'Parameters[Literal["subset"]]',
+        owner: Any,
+    ) -> EGIParamsSubset: ...
+
+    def __get__(
+        self,
+        instance: "Parameters",
+        owner: Any,
+    ) -> Union[CMRParams, EGIRequiredParams, EGIParamsSubset]:
+        """
+        Returns the dictionary of formatted keys associated with the
+        parameter object.
+        """
+        return instance._fmted_keys
+
+
 # ----------------------------------------------------------------------
 # DevNote: Currently, this class is not tested!!
 # DevGoal: this could be expanded, similar to the variables class, to provide users with valid options if need be
 # DevGoal: currently this does not do much by way of checking/formatting of other subsetting options (reprojection or formats)
 # it would be great to incorporate that so that people can't just feed any keywords in...
-class Parameters:
+class Parameters(Generic[T]):
     """
     Build and update the parameter lists needed to submit a data order
 
@@ -206,7 +257,14 @@ class Parameters:
         on the type of query. Must be one of ['search','download']
     """
 
-    def __init__(self, partype, values=None, reqtype=None):
+    fmted_keys = _FmtedKeysDescriptor()
+
+    def __init__(
+        self,
+        partype: T,
+        values=None,
+        reqtype=None,
+    ):
         assert partype in [
             "CMR",
             "required",
@@ -242,15 +300,7 @@ class Parameters:
 
     #     return self._wanted
 
-    @property
-    def fmted_keys(self):
-        """
-        Returns the dictionary of formatted keys associated with the
-        parameter object.
-        """
-        return self._fmted_keys
-
-    def _get_possible_keys(self):
+    def _get_possible_keys(self) -> dict[str, list[str]]:
         """
         Use the parameter type to get a list of possible parameter keys.
         """
@@ -347,7 +397,7 @@ class Parameters:
         else:
             return False
 
-    def build_params(self, **kwargs):
+    def build_params(self, **kwargs) -> None:
         """
         Build the parameter dictionary of formatted key:value pairs for submission to NSIDC
         in the data request.
@@ -443,3 +493,8 @@ class Parameters:
                             k = "Boundingshape"
 
                     self._fmted_keys.update({k: kwargs["spatial_extent"]})
+
+
+CMRParameters = Parameters[Literal["CMR"]]
+RequiredParameters = Parameters[Literal["required"]]
+SubsetParameters = Parameters[Literal["subset"]]

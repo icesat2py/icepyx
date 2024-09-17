@@ -466,7 +466,7 @@ class Visualize:
             OA_data_da = da.concatenate(requested_OA_data, axis=0)
             return OA_data_da
 
-    def viz_elevation(self) -> (hv.DynamicMap, hv.Layout):
+    def viz_elevation(self) -> tuple[hv.DynamicMap, hv.Layout]:
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles
         https://holoviz.org/tutorial/Large_Data.html

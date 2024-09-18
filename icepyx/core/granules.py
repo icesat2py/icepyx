@@ -7,6 +7,7 @@ import os
 import pprint
 import re
 import time
+from typing import Union
 from xml.etree import ElementTree as ET
 import zipfile
 
@@ -16,6 +17,7 @@ from requests.compat import unquote
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
+from icepyx.core.cmr import CMR_PROVIDER
 import icepyx.core.exceptions
 from icepyx.core.types import (
     CMRParams,
@@ -25,7 +27,7 @@ from icepyx.core.types import (
 from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 
 
-def info(grans):
+def info(grans: list[dict]) -> dict[str, Union[int, float]]:
     """
     Return some basic summary information about a set of granules for an
     query object. Granule info may be from a list of those available
@@ -45,7 +47,14 @@ def info(grans):
 
 # DevNote: currently this fn is not tested
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
-def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=False):
+def gran_IDs(
+    grans: list[dict],
+    ids: bool = False,
+    cycles: bool = False,
+    tracks: bool = False,
+    dates: bool = False,
+    cloud: bool = False,
+):
     """
     Returns a list of granule information for each granule dictionary
     in the input list of granule dictionaries.
@@ -54,17 +63,17 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
 
     Parameters
     ----------
-    grans : list of dictionaries
+    grans :
         List of input granule json dictionaries. Must have key "producer_granule_id"
-    ids: boolean, default True
+    ids :
         Return a list of the available granule IDs for the granule dictionary
-    cycles : boolean, default False
+    cycles :
         Return a list of the available orbital cycles for the granule dictionary
-    tracks : boolean, default False
+    tracks :
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
-    dates : boolean, default False
+    dates :
         Return a list of the available dates for the granule dictionary.
-    cloud : boolean, default False
+    cloud :
         Return a a list of AWS s3 urls for the available granules in the granule dictionary.
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
@@ -226,7 +235,7 @@ class Granules(EarthdataAuthMixin):
         params = apifmt.combine_params(
             CMRparams,
             {k: reqparams[k] for k in ["short_name", "version", "page_size"]},
-            {"provider": "NSIDC_CPRD"},
+            {"provider": CMR_PROVIDER},
         )
 
         cmr_search_after = None

@@ -10,6 +10,7 @@ from typing_extensions import Never
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
+from icepyx.core.cmr import get_concept_id
 from icepyx.core.exceptions import DeprecationError
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules
@@ -462,6 +463,13 @@ class Query(GenQuery, EarthdataAuthMixin):
     def __str__(self) -> str:
         return "Product {2} v{3}\n{0}\nDate range {1}".format(
             self.spatial_extent, self.dates, self.product, self.product_version
+        )
+
+    @cached_property
+    def concept_id(self) -> str:
+        return get_concept_id(
+            product=self.product,
+            version=self.product_version,
         )
 
     @property

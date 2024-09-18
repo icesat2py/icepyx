@@ -514,10 +514,6 @@ class Granules(EarthdataAuthMixin):
         --------
         query.Query.download_granules
         """
-        """
-        extract : boolean, default False
-            Unzip the downloaded granules.
-        """
 
         # DevNote: this will replace any existing orderIDs with the saved list
         # (could create confusion depending on whether download was interrupted or kernel restarted)

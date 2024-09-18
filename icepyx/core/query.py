@@ -1104,10 +1104,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         See Also
         --------
         granules.download
-        """
-        """
-        extract : boolean, default False
-            Unzip the downloaded granules.
 
         Examples
         --------

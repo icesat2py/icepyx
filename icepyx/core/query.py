@@ -978,16 +978,16 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         Parameters
         ----------
-        verbose : boolean, default False
+        verbose :
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
-        subset : boolean, default True
+        subset :
             Apply subsetting to the data order from the NSIDC, returning only data that meets the
             subset parameters. Spatial and temporal subsetting based on the input parameters happens
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email: boolean, default False
+        email :
             Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
             The emails are sent to the account associated with your Earthdata account.
         **kwargs : key-value pairs

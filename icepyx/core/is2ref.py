@@ -75,7 +75,7 @@ def _validate_OA_product(product) -> str:
 
 
 # DevNote: test for this function is commented out; dates in some of the values were causing the test to fail...
-def about_product(prod) -> dict:
+def about_product(prod: str) -> dict:
     """
     Ping Earthdata to get metadata about the product of interest (the collection).
 

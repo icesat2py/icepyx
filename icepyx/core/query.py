@@ -1,7 +1,9 @@
 import pprint
+from typing import Optional, Union, cast
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
+from typing_extensions import Never
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
@@ -11,6 +13,12 @@ from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
+from icepyx.core.types import (
+    CMRParams,
+    EGIParamsSubset,
+    EGIRequiredParams,
+    EGIRequiredParamsDownload,
+)
 import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.visualization import Visualize
@@ -393,6 +401,10 @@ class Query(GenQuery, EarthdataAuthMixin):
     GenQuery
     """
 
+    _CMRparams: apifmt.CMRParameters
+    _reqparams: apifmt.RequiredParameters
+    _subsetparams: Optional[apifmt.SubsetParameters]
+
     # ----------------------------------------------------------------------
     # Constructors
 
@@ -532,7 +544,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             return sorted(set(self._tracks))
 
     @property
-    def CMRparams(self):
+    def CMRparams(self) -> CMRParams:
         """
         Display the CMR key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist.
@@ -573,7 +585,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._CMRparams.fmted_keys
 
     @property
-    def reqparams(self):
+    def reqparams(self) -> EGIRequiredParams:
         """
         Display the required key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist.
@@ -599,7 +611,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # @property
     # DevQuestion: if I make this a property, I get a "dict" object is not callable
     # when I try to give input kwargs... what approach should I be taking?
-    def subsetparams(self, **kwargs):
+    def subsetparams(self, **kwargs) -> Union[EGIParamsSubset, dict[Never, Never]]:
         """
         Display the subsetting key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist
@@ -1001,7 +1013,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         if "email" in self._reqparams.fmted_keys or email is False:
             self._reqparams.build_params(**self._reqparams.fmted_keys)
         elif email is True:
-            user_profile = self.auth.get_user_profile()
+            user_profile = self.auth.get_user_profile()  # pyright: ignore[reportAttributeAccessIssue]
             self._reqparams.build_params(
                 **self._reqparams.fmted_keys, email=user_profile["email_address"]
             )
@@ -1032,7 +1044,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 tempCMRparams["readable_granule_name[]"] = gran
                 self._granules.place_order(
                     tempCMRparams,
-                    self.reqparams,
+                    cast(EGIRequiredParamsDownload, self.reqparams),
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
@@ -1042,7 +1054,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             self._granules.place_order(
                 self.CMRparams,
-                self.reqparams,
+                cast(EGIRequiredParamsDownload, self.reqparams),
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,
@@ -1135,14 +1147,14 @@ class Query(GenQuery, EarthdataAuthMixin):
             import geoviews as gv
             from shapely.geometry import Polygon  # noqa: F401
 
-            gv.extension("bokeh")
+            gv.extension("bokeh")  # pyright: ignore[reportCallIssue]
 
             bbox_poly = gv.Path(gdf["geometry"]).opts(color="red", line_color="red")
             tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
-            return tile * bbox_poly
+            return tile * bbox_poly  # pyright: ignore[reportOperatorIssue]
 
         except ImportError:
-            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))  # pyright: ignore[reportAttributeAccessIssue]
             f, ax = plt.subplots(1, figsize=(12, 6))
             world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
             gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)

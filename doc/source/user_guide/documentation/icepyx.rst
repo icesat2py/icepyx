@@ -19,3 +19,4 @@ Diagrams are updated automatically after a pull request (PR) is approved and bef
    read
    variables
    components
+   types

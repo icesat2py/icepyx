@@ -6,33 +6,29 @@ on:
   push:
     branches:
       - "main"  # Releases
-      - "development"  # PR merges
+      - "development"  # Feature PR merges
   pull_request:
     branches:
-      - "main"  # Release pull requests
-  pull_request_review:
-    types:
-      - "submitted"
-    paths:
-      - ".github/**"
-      - "icepyx/**/*.py"
-      - "pyproject.toml"
-      - "requirements*.txt"
+      - "main"  # Release PRs
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref to test"
+        type: "string"
 
 
 jobs:
   test:
     name: "Integration test"
-    # Job is conditional:
-    # - Do not run on PRs from forks
-    # - Do not run on `pull_request_review` events unless the PR is approved.
-    if: "${{ !github.event.pull_request.head.repo.fork && (github.event.action != 'pull_request_review' || github.event.review.state == 'approved') }}"
+    # Do not run on PRs from forks:
+    if: "${{ !github.event.pull_request.head.repo.fork }}"
     runs-on: "ubuntu-latest"
 
     steps:
       - uses: "actions/checkout@v4"
         with:
           fetch-depth: 0
+          ref: "${{ inputs.ref }}"
 
       - uses: "./.github/actions/install-icepyx"
         with:

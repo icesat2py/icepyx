@@ -1,10 +1,8 @@
-"""
-Helper functions for validation of dates
-"""
-
 import datetime as dt
 from typing import Union
 import warnings
+
+#### Helper functions for validation of dates ####
 
 
 def convert_string_to_date(date: str) -> dt.date:

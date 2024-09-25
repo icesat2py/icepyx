@@ -12,6 +12,12 @@
 
 Harmony is available for testing in the UAT environment.
 
+> [!NOTE]
+> ICESat-2 products will be available in production in early October 2024. If you're
+> reading this after that time, please talk to Amy Steiker about Harmony's current
+> status before investing time setting up to test with UAT. If prod is available, test
+> with prod.
+
 We will need to interact with everything (CMR, Earthdata Login, Harmony itself) in UAT
 for icepyx to work correctly.
 

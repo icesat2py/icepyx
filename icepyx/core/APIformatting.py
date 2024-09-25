@@ -51,7 +51,7 @@ def _fmt_temporal(start, end, key):
             + end.strftime("%Y-%m-%dT%H:%M:%S")
         )
     else:
-        raise RuntimeError("An invalid time key was submitted for formatting.")
+        raise ValueError("An invalid time key was submitted for formatting.")
 
     return {key: fmt_timerange}
 

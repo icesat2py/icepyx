@@ -257,7 +257,7 @@ class GenQuery:
         return (self._spatial._ext_type, self._spatial._spatial_ext)
 
     @property
-    def dates(self) -> Union[list[str], list[dt.time]]:
+    def dates(self) -> list[str]:
         """
         Return an array showing the date range of the query object.
         Dates are returned as an array containing the start and end datetime

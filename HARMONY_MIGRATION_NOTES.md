@@ -32,7 +32,7 @@ for icepyx to work correctly.
       this envvar with your Earthdata Login token.
 
 
-## Open questions
+## FAQ
 
 ### Which API?
 
@@ -42,3 +42,18 @@ Harmony has two APIs:
 * [OGC Coverages API](https://harmony.earthdata.nasa.gov/docs/api/)
 
 Which should be used and when and why?
+
+
+#### "Answer"
+
+Use the [OGC Coverages API](https://harmony.earthdata.nasa.gov/docs/api/)!
+
+> My take is that we ought to focus on the Coverages API for ICESat-2, since we aren’t
+> making use of the new parameters. And this is what they primarily support. But I don’t
+> have a good handle on whether we ought to pursue the EDR API at any point.
+>
+> - Amy Steiker
+
+See this thread on EOSDIS Slack for more details:
+
+<https://nsidc.slack.com/archives/CLC2SR1S6/p1716482829956969>

@@ -3,6 +3,7 @@
 import datetime as dt
 from typing import Any, Generic, Literal, Optional, TypeVar, Union, overload
 
+from icepyx.core.exceptions import ExhaustiveTypeGuardException, TypeGuardException
 from icepyx.core.types import (
     CMRParams,
     EGIParamsSubset,
@@ -50,7 +51,7 @@ def _fmt_temporal(start, end, key):
             + end.strftime("%Y-%m-%dT%H:%M:%S")
         )
     else:
-        raise RuntimeError("An invalid time key was submitted for formatting.")
+        raise ValueError("An invalid time key was submitted for formatting.")
 
     return {key: fmt_timerange}
 
@@ -326,7 +327,7 @@ class Parameters(Generic[T]):
                 ],
             }
         else:
-            raise RuntimeError("Programmer error!")
+            raise ExhaustiveTypeGuardException
 
     # @property
     # def wanted_keys(self):
@@ -362,7 +363,7 @@ class Parameters(Generic[T]):
         ), "You cannot call this function for your parameter type"
 
         if not self._reqtype:
-            raise RuntimeError("Programmer error!")
+            raise TypeGuardException
 
         reqkeys = self.poss_keys[self._reqtype]
 
@@ -427,7 +428,7 @@ class Parameters(Generic[T]):
 
         if self.partype == "required":
             if not self._reqtype:
-                raise RuntimeError("Programmer error!")
+                raise TypeGuardException
 
             if self.check_req_values() and kwargs == {}:
                 pass
@@ -496,7 +497,7 @@ class Parameters(Generic[T]):
                             k = "Boundingshape"
 
                     if not k:
-                        raise RuntimeError("Programmer error!")
+                        raise TypeGuardException
 
                     self._fmted_keys.update({k: kwargs["spatial_extent"]})
 

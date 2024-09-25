@@ -140,7 +140,6 @@ exclude = [
 # DevGoal: Remove all ignores
 ignore = [
   "icepyx/quest/*",
-  "icepyx/core/APIformatting.py",
   "icepyx/core/auth.py",
   "icepyx/core/is2ref.py",
   "icepyx/core/read.py",

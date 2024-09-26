@@ -270,7 +270,7 @@ def validate_date_range_date(
 
 
 def validate_date_range_dict(
-    date_range: dict[str, dt.datetime],
+    date_range: dict[str, dt.date],
     start_time: Union[str, dt.time, None] = None,
     end_time: Union[str, dt.time, None] = None,
 ) -> tuple[dt.datetime, dt.datetime]:

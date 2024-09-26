@@ -270,7 +270,7 @@ def validate_date_range_date(
 
 
 def validate_date_range_dict(
-    date_range: dict[str, dt.date],
+    date_range: dict[str, Union[str, dt.datetime]],
     start_time: Union[str, dt.time, None] = None,
     end_time: Union[str, dt.time, None] = None,
 ) -> tuple[dt.datetime, dt.datetime]:
@@ -303,7 +303,6 @@ def validate_date_range_dict(
     >>> valid_drange = validate_date_range_dict(drange, "00:00:00", "23:59:59")
     >>> valid_drange
     (datetime.datetime(2016, 1, 1, 0, 0), datetime.datetime(2020, 1, 1, 23, 59, 59))
-
     """
 
     # Try to get keys from date_range dict

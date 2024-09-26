@@ -10,6 +10,7 @@ holoviews
 hvplot
 matplotlib
 numpy
+pydantic>=2.9.2
 requests
 s3fs
 shapely

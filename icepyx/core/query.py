@@ -11,7 +11,7 @@ from typing_extensions import Never
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 from icepyx.core.cmr import get_concept_id
-from icepyx.core.exceptions import DeprecationError
+from icepyx.core.exceptions import DeprecationError, RefactoringException
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
@@ -613,6 +613,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a.reqparams # doctest: +SKIP
         {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
+        raise RefactoringException
 
         if not hasattr(self, "_reqparams"):
             self._reqparams = apifmt.Parameters("required", reqtype="search")
@@ -649,6 +650,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         {'time': '2019-02-20T00:00:00,2019-02-28T23:59:59',
         'bbox': '-55.0,68.0,-48.0,71.0'}
         """
+        raise RefactoringException
+
         if not hasattr(self, "_subsetparams"):
             self._subsetparams = apifmt.Parameters("subset")
 
@@ -1024,6 +1027,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         .
         Retry request status is: complete
         """
+        breakpoint()
+        raise RefactoringException
 
         if not hasattr(self, "reqparams"):
             self.reqparams
@@ -1138,6 +1143,8 @@ class Query(GenQuery, EarthdataAuthMixin):
                 or len(self.granules.orderIDs) == 0
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
+        breakpoint()
+        raise RefactoringException
 
         self.granules.download(verbose, path, restart=restart)
 

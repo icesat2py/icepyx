@@ -337,6 +337,7 @@ class Granules(EarthdataAuthMixin):
         --------
         query.Query.order_granules
         """
+        raise icepyx.core.exceptions.RefactoringException
 
         self.get_avail(CMRparams, reqparams)
 
@@ -371,6 +372,7 @@ class Granules(EarthdataAuthMixin):
                 total_pages,
                 " is submitting to NSIDC",
             )
+            breakpoint()
             request_params.update({"page_num": page_num})
 
             request = self.session.get(ORDER_BASE_URL, params=request_params)

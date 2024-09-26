@@ -26,4 +26,3 @@ ICESat2ProductShortName = Literal[
     "ATL21",
     "ATL23",
 ]
-

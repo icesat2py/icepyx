@@ -8,6 +8,107 @@
 * ECS and CMR shared some parameters. This is not the case with Harmony.
 
 
+## Getting started on development
+
+### Work so far
+
+Work in progress is on the `harmony` branch. This depends on the `low-hanging-refactors`
+branch being merged. A PR is open.
+
+> [!IMPORTANT]
+> Several commits establish communication with UAT instead of production. They will need
+> to be reverted once Harmony is available in prod.
+
+In addition to this work, refactoring, type checking, and type annotations have been
+added to the codebase to support the migration to Harmony.
+
+
+### Familiarize with Harmony
+
+* Check out this amazing notebook provided by Amy Steiker and Patrick Quinn:
+  <https://github.com/nasa/harmony/blob/main/docs/Harmony%20API%20introduction.ipynb>
+* Review the interactive API documentation:
+  <https://harmony.uat.earthdata.nasa.gov/docs/api/> (remember, remove UAT from URL if
+  Harmony is live with ICESat-2 products in early October 2024)
+
+
+### Getting started replacing ECS with Harmony
+
+1. Find the `WIP` commit (`ac916d6`) and use `git reset` to restore the changes into the
+   working tree. There are several breakpoints set, as well as an artificially
+   introduced exception class to help trace and narrow the code paths during
+   refactoring.
+2. Exercise a specific code path. For example:
+
+    ```python
+    import icepyx as ipx
+    import datetime as dt
+
+    q = ipx.Query(
+        product="ATL06",
+        version="006",
+        spatial_extent=[-90, 68, 48, 90],
+        # "./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg",
+        date_range={
+            "start_date": dt.datetime(2018, 10, 10, 0, 10, 0),
+            "end_date": dt.datetime(2018, 10, 18, 14, 45, 30),
+            # "end_date": '2019-02-28',
+        }
+    )
+
+    q.download_granules("/tmp/icepyx")
+    ```
+
+3. Identify the first query to ECS. Queries, except the capabilities query in
+   `is2ref.py`, are formed from constants in `urls.py`. Continue this practice. Harmony
+   URLs in this file are placeholders.
+4. Determine an equivalent Harmony query. The Harmony Coverages API has an equivalent to
+   the capabilities query in `is2ref.py`, for example.
+5. Raise `RefactoringException` at the top of any functions or methods which currently
+   speak to ECS. This will help us find and delete those "dead code" functions later,
+   and prevent them from being inadvertently executed.
+6. Write new functions or methods which speak to Harmony instead. It's important to
+   encapsulate the communication with the Harmony API in a single function. This may
+   mean replacing one function with several smaller functions during refactoring.
+7. Maintain the high standard of documentation in the code. Include examples as doctests
+   in the new functions. Use Numpy style docstrings. **DO NOT** include type information
+   in docstrings -- write type annotations instead. They will be automatically
+   documented by the documentation generator.
+8. Repeat from step 3 for the next EGI query.
+
+### Watch out for broken assumptions
+
+It's important to note that two major assumptions will require significant refactoring.
+The type annotations will help with this process!
+
+1. Broken assumption: "CMR and EGI share parameter sets". My mental model looks like:
+  * Current: User passes in parameters to `Query(...)`. Those params are used to generate
+    separate "CMR parameters" and "reqparams". "CMRparams" are spatial and temporal
+    parameters compatible with CMR. I'm not sure about the naming of "reqparams", but I
+    think of them as the EGI parameters (which may include more than the user passed, like
+    `page_size`) _minus_ the CMR spatial and temporal parameters. The actual queries
+    submitted to CMR and EGI are based on those generated parameter sets.
+  * Future: In Harmony-land, the shared parameter assumption is broken. CMR and Harmony's
+    Coverages API have completely parameter sets. The code can be drastically simplified:
+    User passes in parameters to `Query(...)`. Those params are used directly to generate
+    both CMR and Harmony queries without an intervening layer. E.g.
+2. Broken assumption: "We can query with only short_name and version number". Harmony
+   requires a unique identifier (concept ID or DOI). E.g.:
+   <https://harmony.uat.earthdata.nasa.gov/capabilities?collectionId=C1261703129-EEDTEST>
+   (NOTE: UAT query using a collection from a test provider; we should be using
+   `NSIDC_CUAT` provider in real UAT queries and `NSIDC_CPRD` for real prod queries).
+   Since we want the user to be able to provide short_name and version, implementing the
+   concept ID as a `@cached_property` on `Query` which asks CMR for the concept ID makes
+   sense to me.
+
+
+### Don't forget to enhance along the way
+
+* Now that we're ripping things apart and changing parameters, I think it's important to
+  replace the TypedDict annotations we're using with Pydantic models. This will enable us
+  to better encapsulate validation code that's currently spread around.
+
+
 ## Testing with Harmony
 
 Harmony is available for testing in the UAT environment.

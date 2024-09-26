@@ -31,8 +31,7 @@ jobs:
       - name: "Run tests"
         run: |
           pytest icepyx/ --verbose --cov app \
-            --ignore=icepyx/tests/test_behind_NSIDC_API_login.py \
-            --ignore=icepyx/tests/test_auth.py
+            --ignore=icepyx/tests/integration
 
       - name: "Upload coverage report"
         uses: "codecov/codecov-action@v4.5.0"

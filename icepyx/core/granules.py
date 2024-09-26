@@ -412,13 +412,13 @@ class Granules(EarthdataAuthMixin):
             status = statuslist[0]
             print("Initial status of your order request at NSIDC is: ", status)
 
+            loop_root = None
             # If status is already finished without going into pending/processing
             if status.startswith("complete"):
                 loop_response = self.session.get(statusURL)
                 loop_root = ET.fromstring(loop_response.content)
 
             # Continue loop while request is still processing
-            loop_root = None
             while status == "pending" or status == "processing":
                 print(
                     "Your order status is still ",
@@ -443,11 +443,10 @@ class Granules(EarthdataAuthMixin):
                     continue
 
             if not isinstance(loop_root, ET.Element):
-                # The typechecker determined that loop_root could be unbound at this
-                # point. We know for sure this shouldn't be possible, though, because
-                # the while loop should run once.
-                # See: https://github.com/microsoft/pyright/discussions/2033
-                raise RuntimeError("Programmer error!")
+                # The typechecker needs help knowing that at this point loop_root is
+                # set, as it can't tell that the conditionals above are supposed to be
+                # exhaustive.
+                raise icepyx.core.exceptions.ExhaustiveTypeGuardException
 
             # Order can either complete, complete_with_errors, or fail:
             # Provide complete_with_errors error message:

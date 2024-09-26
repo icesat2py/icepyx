@@ -448,8 +448,6 @@ class Parameters(Generic[T]):
                             self._fmted_keys.update({key: kwargs[key]})
                         except KeyError:
                             self._fmted_keys.update({key: kwargs["product"]})
-                    elif key == "version":
-                        self._fmted_keys.update({key: kwargs["version"]})
                     elif key in kwargs:
                         self._fmted_keys.update({key: kwargs[key]})
                     elif key in defaults:

@@ -24,3 +24,11 @@ class NsidcQueryError(QueryError):
 
     def __str__(self):
         return f"{self.msgtxt}: {self.errmsg}"
+
+
+class RefactoringException(Exception):
+    def __str__(self):
+        return (
+            "This code is being refactored."
+            " The code after this exception is expected to require major changes."
+        )

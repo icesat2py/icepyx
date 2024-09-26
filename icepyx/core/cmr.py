@@ -27,3 +27,6 @@ def get_concept_id(*, product: str, version: str) -> str:
         raise RuntimeError(f"Expected 1 result from CMR, received {metadata}")
 
     return metadata[0]["id"]
+
+
+# TODO: Extract CMR collection query from granules.py

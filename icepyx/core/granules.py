@@ -1,18 +1,28 @@
+from __future__ import annotations
+
 import datetime
-import requests
-import time
 import io
-import re
 import json
-import numpy as np
 import os
 import pprint
+import re
+import time
 from xml.etree import ElementTree as ET
 import zipfile
+
+import numpy as np
+import requests
+from requests.compat import unquote
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.exceptions
+from icepyx.core.types import (
+    CMRParams,
+    EGIRequiredParamsDownload,
+    EGIRequiredParamsSearch,
+)
+from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 
 
 def info(grans):
@@ -168,24 +178,32 @@ class Granules(EarthdataAuthMixin):
     # ----------------------------------------------------------------------
     # Methods
 
-    def get_avail(self, CMRparams, reqparams, cloud=False):
+    def get_avail(
+        self,
+        CMRparams: CMRParams,
+        reqparams: EGIRequiredParamsSearch,
+        cloud: bool = False,
+    ):
         """
         Get a list of available granules for the query object's parameters.
         Generates the `avail` attribute of the granules object.
 
         Parameters
         ----------
-        CMRparams : dictionary
+        CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams : dictionary
+        reqparams :
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
-        cloud : deprecated, boolean, default False
+        cloud :
             CMR metadata is always collected for the cloud system.
+
+            .. deprecated:: 1.2
+                This parameter is ignored.
 
         Notes
         -----
-        This function is used by query.Query.avail_granules(), which automatically
+        This function is used by ``query.Query.avail_granules()``, which automatically
         feeds in the required parameters.
 
         See Also
@@ -200,8 +218,6 @@ class Granules(EarthdataAuthMixin):
 
         # if not hasattr(self, 'avail'):
         self.avail = []
-
-        granule_search_url = "https://cmr.earthdata.nasa.gov/search/granules"
 
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
         # note we should also check for errors whenever we ping NSIDC-API -
@@ -220,7 +236,7 @@ class Granules(EarthdataAuthMixin):
                 headers["CMR-Search-After"] = cmr_search_after
 
             response = requests.get(
-                granule_search_url,
+                GRANULE_SEARCH_BASE_URL,
                 headers=headers,
                 params=apifmt.to_string(params),
             )
@@ -261,13 +277,13 @@ class Granules(EarthdataAuthMixin):
     # DevGoal: add kwargs to allow subsetting and more control over request options.
     def place_order(
         self,
-        CMRparams,
-        reqparams,
+        CMRparams: CMRParams,
+        reqparams: EGIRequiredParamsDownload,
         subsetparams,
         verbose,
         subset=True,
         geom_filepath=None,
-    ):  # , **kwargs):
+    ):
         """
         Place an order for the available granules for the query object.
         Adds the list of zipped files (orders) to the granules data object (which is
@@ -276,11 +292,11 @@ class Granules(EarthdataAuthMixin):
 
         Parameters
         ----------
-        CMRparams : dictionary
+        CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams : dictionary
+        reqparams :
             Dictionary of properly formatted parameters required for searching, ordering,
-            or downloading from NSIDC.
+            or downloading from NSIDC (via their EGI system).
         subsetparams : dictionary
             Dictionary of properly formatted subsetting parameters. An empty dictionary
             is passed as input here when subsetting is set to False in query methods.
@@ -307,8 +323,6 @@ class Granules(EarthdataAuthMixin):
         --------
         query.Query.order_granules
         """
-
-        base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
 
         self.get_avail(CMRparams, reqparams)
 
@@ -345,7 +359,7 @@ class Granules(EarthdataAuthMixin):
             )
             request_params.update({"page_num": page_num})
 
-            request = self.session.get(base_url, params=request_params)
+            request = self.session.get(ORDER_BASE_URL, params=request_params)
 
             # DevGoal: use the request response/number to do some error handling/
             # give the user better messaging for failures
@@ -361,7 +375,7 @@ class Granules(EarthdataAuthMixin):
             request.raise_for_status()
             esir_root = ET.fromstring(request.content)
             if verbose is True:
-                print("Order request URL: ", requests.utils.unquote(request.url))
+                print("Order request URL: ", unquote(request.url))
                 print(
                     "Order request response XML content: ",
                     request.content.decode("utf-8"),
@@ -377,7 +391,7 @@ class Granules(EarthdataAuthMixin):
             print("order ID: ", orderID)
 
             # Create status URL
-            statusURL = base_url + "/" + orderID
+            statusURL = f"{ORDER_BASE_URL}/{orderID}"
             if verbose is True:
                 print("status URL: ", statusURL)
 
@@ -397,6 +411,12 @@ class Granules(EarthdataAuthMixin):
                 statuslist.append(status.text)
             status = statuslist[0]
             print("Initial status of your order request at NSIDC is: ", status)
+
+            loop_root = None
+            # If status is already finished without going into pending/processing
+            if status.startswith("complete"):
+                loop_response = self.session.get(statusURL)
+                loop_root = ET.fromstring(loop_response.content)
 
             # Continue loop while request is still processing
             while status == "pending" or status == "processing":
@@ -421,6 +441,12 @@ class Granules(EarthdataAuthMixin):
                 # print('Retry request status is: ', status)
                 if status == "pending" or status == "processing":
                     continue
+
+            if not isinstance(loop_root, ET.Element):
+                # The typechecker needs help knowing that at this point loop_root is
+                # set, as it can't tell that the conditionals above are supposed to be
+                # exhaustive.
+                raise icepyx.core.exceptions.ExhaustiveTypeGuardException
 
             # Order can either complete, complete_with_errors, or fail:
             # Provide complete_with_errors error message:
@@ -522,7 +548,7 @@ class Granules(EarthdataAuthMixin):
                 i_order = self.orderIDs.index(order_start) + 1
 
         for order in self.orderIDs[i_order:]:
-            downloadURL = "https://n5eil02u.ecs.nsidc.org/esir/" + order + ".zip"
+            downloadURL = f"{DOWNLOAD_BASE_URL}/{order}.zip"
             # DevGoal: get the download_url from the granules
 
             if verbose is True:

@@ -1,7 +1,14 @@
-# Generate and format information for submitting to API (CMR and NSIDC)
+"""Generate and format information for submitting to API (CMR and NSIDC)."""
 
 import datetime as dt
+from typing import Any, Generic, Literal, Optional, TypeVar, Union, overload
 
+from icepyx.core.exceptions import ExhaustiveTypeGuardException, TypeGuardException
+from icepyx.core.types import (
+    CMRParams,
+    EGIParamsSubset,
+    EGIRequiredParams,
+)
 
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
@@ -30,10 +37,6 @@ def _fmt_temporal(start, end, key):
 
     assert isinstance(start, dt.datetime)
     assert isinstance(end, dt.datetime)
-    assert key in [
-        "time",
-        "temporal",
-    ], "An invalid time key was submitted for formatting."
 
     if key == "temporal":
         fmt_timerange = (
@@ -47,6 +50,8 @@ def _fmt_temporal(start, end, key):
             + ","
             + end.strftime("%Y-%m-%dT%H:%M:%S")
         )
+    else:
+        raise ValueError("An invalid time key was submitted for formatting.")
 
     return {key: fmt_timerange}
 
@@ -122,6 +127,9 @@ def combine_params(*param_dicts):
     """
     Combine multiple dictionaries into one.
 
+    Merging is performed in sequence using `dict.update()`; dictionaries later in the
+    list overwrite those earlier.
+
     Parameters
     ----------
     params : dictionaries
@@ -129,7 +137,7 @@ def combine_params(*param_dicts):
 
     Returns
     -------
-    single dictionary of all input dictionaries combined
+    A single dictionary of all input dictionaries combined
 
     Examples
     --------
@@ -181,12 +189,56 @@ def to_string(params):
     return "&".join(param_list)
 
 
+ParameterType = Literal["CMR", "required", "subset"]
+# DevGoal: When Python 3.12 is minimum supported version, migrate to PEP695 style
+T = TypeVar("T", bound=ParameterType)
+
+
+class _FmtedKeysDescriptor:
+    """Enable the Parameters class' fmted_keys property to be typechecked correctly.
+
+    See: https://github.com/microsoft/pyright/issues/3071#issuecomment-1043978070
+    """
+
+    @overload
+    def __get__(
+        self,
+        instance: 'Parameters[Literal["CMR"]]',
+        owner: Any,
+    ) -> CMRParams: ...
+
+    @overload
+    def __get__(
+        self,
+        instance: 'Parameters[Literal["required"]]',
+        owner: Any,
+    ) -> EGIRequiredParams: ...
+
+    @overload
+    def __get__(
+        self,
+        instance: 'Parameters[Literal["subset"]]',
+        owner: Any,
+    ) -> EGIParamsSubset: ...
+
+    def __get__(
+        self,
+        instance: "Parameters",
+        owner: Any,
+    ) -> Union[CMRParams, EGIRequiredParams, EGIParamsSubset]:
+        """
+        Returns the dictionary of formatted keys associated with the
+        parameter object.
+        """
+        return instance._fmted_keys  # pyright: ignore[reportReturnType]
+
+
 # ----------------------------------------------------------------------
 # DevNote: Currently, this class is not tested!!
 # DevGoal: this could be expanded, similar to the variables class, to provide users with valid options if need be
 # DevGoal: currently this does not do much by way of checking/formatting of other subsetting options (reprojection or formats)
 # it would be great to incorporate that so that people can't just feed any keywords in...
-class Parameters:
+class Parameters(Generic[T]):
     """
     Build and update the parameter lists needed to submit a data order
 
@@ -204,12 +256,22 @@ class Parameters:
         on the type of query. Must be one of ['search','download']
     """
 
-    def __init__(self, partype, values=None, reqtype=None):
+    partype: T
+    _reqtype: Optional[Literal["search", "download"]]
+    fmted_keys = _FmtedKeysDescriptor()
+    # _fmted_keys: Union[CMRParams, EGISpecificRequiredParams, EGIParamsSubset]
+
+    def __init__(
+        self,
+        partype: T,
+        values: Optional[dict] = None,
+        reqtype: Optional[Literal["search", "download"]] = None,
+    ):
         assert partype in [
             "CMR",
             "required",
             "subset",
-        ], "You need to submit a valid parametery type."
+        ], "You need to submit a valid parameter type."
         self.partype = partype
 
         if partype == "required":
@@ -222,39 +284,14 @@ class Parameters:
         self._fmted_keys = values if values is not None else {}
 
     @property
-    def poss_keys(self):
+    def poss_keys(self) -> dict[str, list[str]]:
         """
         Returns a list of possible input keys for the given parameter object.
         Possible input keys depend on the parameter type (partype).
         """
 
-        if not hasattr(self, "_poss_keys"):
-            self._get_possible_keys()
-
-        return self._poss_keys
-
-    # @property
-    # def wanted_keys(self):
-    #     if not hasattr(_wanted):
-    #         self._wanted = []
-
-    #     return self._wanted
-
-    @property
-    def fmted_keys(self):
-        """
-        Returns the dictionary of formatted keys associated with the
-        parameter object.
-        """
-        return self._fmted_keys
-
-    def _get_possible_keys(self):
-        """
-        Use the parameter type to get a list of possible parameter keys.
-        """
-
         if self.partype == "CMR":
-            self._poss_keys = {
+            return {
                 "spatial": ["bounding_box", "polygon"],
                 "optional": [
                     "temporal",
@@ -264,7 +301,7 @@ class Parameters:
                 ],
             }
         elif self.partype == "required":
-            self._poss_keys = {
+            return {
                 "search": ["short_name", "version", "page_size"],
                 "download": [
                     "short_name",
@@ -279,7 +316,7 @@ class Parameters:
                 ],
             }
         elif self.partype == "subset":
-            self._poss_keys = {
+            return {
                 "spatial": ["bbox", "Boundingshape"],
                 "optional": [
                     "time",
@@ -289,8 +326,17 @@ class Parameters:
                     "Coverage",
                 ],
             }
+        else:
+            raise ExhaustiveTypeGuardException
 
-    def _check_valid_keys(self):
+    # @property
+    # def wanted_keys(self):
+    #     if not hasattr(_wanted):
+    #         self._wanted = []
+
+    #     return self._wanted
+
+    def _check_valid_keys(self) -> None:
         """
         Checks that any keys passed in with values are valid keys.
         """
@@ -300,13 +346,13 @@ class Parameters:
 
         val_list = list({val for lis in self.poss_keys.values() for val in lis})
 
-        for key in self.fmted_keys:
+        for key in self.fmted_keys:  # pyright: ignore[reportAttributeAccessIssue]
             assert key in val_list, (
                 "An invalid key (" + key + ") was passed. Please remove it using `del`"
             )
 
     # DevNote: can check_req_values and check_values be combined?
-    def check_req_values(self):
+    def check_req_values(self) -> bool:
         """
         Check that all of the required keys have values, if the key was passed in with
         the values parameter.
@@ -315,17 +361,22 @@ class Parameters:
         assert (
             self.partype == "required"
         ), "You cannot call this function for your parameter type"
+
+        if not self._reqtype:
+            raise TypeGuardException
+
         reqkeys = self.poss_keys[self._reqtype]
 
-        if all(keys in self.fmted_keys for keys in reqkeys):
+        if all(keys in self.fmted_keys for keys in reqkeys):  # pyright: ignore[reportAttributeAccessIssue]
             assert all(
-                self.fmted_keys.get(key, -9999) != -9999 for key in reqkeys
+                self.fmted_keys.get(key, -9999) != -9999  # pyright: ignore[reportAttributeAccessIssue]
+                for key in reqkeys
             ), "One of your formatted parameters is missing a value"
             return True
         else:
             return False
 
-    def check_values(self):
+    def check_values(self) -> bool:
         """
         Check that the non-required keys have values, if the key was
         passed in with the values parameter.
@@ -339,13 +390,14 @@ class Parameters:
         # not the most robust check, but better than nothing...
         if any(keys in self._fmted_keys for keys in spatial_keys):
             assert any(
-                self.fmted_keys.get(key, -9999) != -9999 for key in spatial_keys
+                self.fmted_keys.get(key, -9999) != -9999  # pyright: ignore[reportAttributeAccessIssue]
+                for key in spatial_keys
             ), "One of your formatted parameters is missing a value"
             return True
         else:
             return False
 
-    def build_params(self, **kwargs):
+    def build_params(self, **kwargs) -> None:
         """
         Build the parameter dictionary of formatted key:value pairs for submission to NSIDC
         in the data request.
@@ -375,6 +427,9 @@ class Parameters:
             self._check_valid_keys()
 
         if self.partype == "required":
+            if not self._reqtype:
+                raise TypeGuardException
+
             if self.check_req_values() and kwargs == {}:
                 pass
             else:
@@ -409,7 +464,10 @@ class Parameters:
 
                 for key in opt_keys:
                     if key == "Coverage" and key in kwargs:
-                        # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that product without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+                        # DevGoal: make an option along the lines of Coverage=default,
+                        # which will get the default variables for that product without
+                        # the user having to input is2obj.build_wanted_wanted_var_list
+                        # as their input value for using the Coverage kwarg
                         self._fmted_keys.update(
                             {key: _fmt_var_subset_list(kwargs[key])}
                         )
@@ -427,6 +485,7 @@ class Parameters:
                 if any(keys in self._fmted_keys for keys in spatial_keys):
                     pass
                 else:
+                    k = None
                     if self.partype == "CMR":
                         k = kwargs["extent_type"]
                     elif self.partype == "subset":
@@ -435,4 +494,12 @@ class Parameters:
                         elif kwargs["extent_type"] == "polygon":
                             k = "Boundingshape"
 
+                    if not k:
+                        raise TypeGuardException
+
                     self._fmted_keys.update({k: kwargs["spatial_extent"]})
+
+
+CMRParameters = Parameters[Literal["CMR"]]
+RequiredParameters = Parameters[Literal["required"]]
+SubsetParameters = Parameters[Literal["subset"]]

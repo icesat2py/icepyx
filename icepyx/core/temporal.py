@@ -1,7 +1,6 @@
 import datetime as dt
 import warnings
 
-
 """
 Helper functions for validation of dates
 """

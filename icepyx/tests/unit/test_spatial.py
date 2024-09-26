@@ -1,12 +1,12 @@
+from pathlib import Path
+import re
+
 import geopandas as gpd
 import numpy as np
-from pathlib import Path
 import pytest
-import re
 from shapely.geometry import Polygon
 
 import icepyx.core.spatial as spat
-
 
 # ######### "Bounding Box" input tests ################################################################################
 # (Note that these ALSO test the @property functions for the class for bounding boxes)
@@ -378,7 +378,7 @@ def test_bad_poly_inputfile_name_throws_error():
 
 def test_bad_poly_inputfile_type_throws_error():
     with pytest.raises(TypeError):
-        spat.Spatial(str(Path("./icepyx/tests/test_read.py").resolve()))
+        spat.Spatial(str(Path("./icepyx/tests/unit/test_read.py").resolve()))
 
 
 ########## geodataframe ##########

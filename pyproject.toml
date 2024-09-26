@@ -4,7 +4,7 @@ description = "Python tools for obtaining and working with ICESat-2 data"
 license = {file = "LICENSE"}
 readme = "README.rst"
 
-requires-python = "~=3.7"
+requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 
 authors = [
@@ -20,8 +20,6 @@ classifiers=[
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -73,12 +71,33 @@ extend-exclude = ["*.ipynb"]
 # docstring-code-format = true
 # docstring-code-line-length = "dynamic"
 
+
 [tool.ruff.lint]
+# DevGoal: Enable "ARG" and "B" rulesets ASAP!
 select = [
+  # "ARG",  # flake8-unused-arguments
+  # "B",    # flake8-bugbear
   "C4",   # flake8-comprehensions
   "E",    # pycodestyle
+  # "EM",   # flake8-errmsg
+  "EXE",  # flake8-executable
   "F",    # pyflakes
+  "G",    # flake8-logging-format
+  "I",    # isort
+  "ICN",  # flake8-import-conventions
+  "NPY",  # NumPy specific rules
+  # "PD",   # pandas-vet
+  "PGH",  # pygrep-hooks
+  "PIE",  # flake8-pie
+  # "PL",   # pylint
+  # "PT",   # flake8-pytest-style
+  # "PTH",  # flake8-use-pathlib
+  # "RET",  # flake8-return
+  # "RUF",  # Ruff-specific
   "SIM",  # flake8-simplify
+  # "T20",  # flake8-print
+  # "UP",   # pyupgrade
+  "YTT",  # flake8-2020
 ]
 ignore = [
   # Line too long
@@ -102,3 +121,29 @@ ignore = [
 
 # Ignore too many leading '#' for block comment
 "*/tests/*" = ["E266"]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+
+
+[tool.pyright]
+pythonVersion = "3.9"
+# DevGoal: "strict"
+typeCheckingMode = "standard"
+include = [
+  "icepyx",
+]
+exclude = [
+  "**/__pycache__",
+  "icepyx/tests",
+]
+# DevGoal: Remove all ignores
+ignore = [
+  "icepyx/quest/*",
+  "icepyx/core/auth.py",
+  "icepyx/core/is2ref.py",
+  "icepyx/core/read.py",
+  "icepyx/core/spatial.py",
+  "icepyx/core/variables.py",
+  "icepyx/core/visualization.py",
+]

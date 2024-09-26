@@ -10,15 +10,15 @@ import dask.array as da
 import dask.dataframe as dd
 import datashader as ds
 import holoviews as hv
+from holoviews.operation.datashader import rasterize
 import numpy as np
 import pandas as pd
 import requests
-from holoviews.operation.datashader import rasterize
 from tqdm import tqdm
 
 import icepyx as ipx
-import icepyx.core.is2ref as is2ref
 import icepyx.core.granules as granules
+import icepyx.core.is2ref as is2ref
 
 hv.extension("bokeh")
 
@@ -466,7 +466,7 @@ class Visualize:
             OA_data_da = da.concatenate(requested_OA_data, axis=0)
             return OA_data_da
 
-    def viz_elevation(self) -> (hv.DynamicMap, hv.Layout):
+    def viz_elevation(self) -> tuple[hv.DynamicMap, hv.Layout]:
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles
         https://holoviz.org/tutorial/Large_Data.html

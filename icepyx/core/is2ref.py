@@ -1,12 +1,13 @@
-import h5py
 import json
-import numpy as np
-import requests
 import warnings
 from xml.etree import ElementTree as ET
 
 import earthaccess
+import h5py
+import numpy as np
+import requests
 
+from icepyx.core.urls import COLLECTION_SEARCH_BASE_URL, EGI_BASE_URL
 
 # ICESat-2 specific reference functions
 
@@ -82,8 +83,7 @@ def about_product(prod):
     query.Query.product_all_info
     """
 
-    cmr_collections_url = "https://cmr.earthdata.nasa.gov/search/collections.json"
-    response = requests.get(cmr_collections_url, params={"short_name": prod})
+    response = requests.get(COLLECTION_SEARCH_BASE_URL, params={"short_name": prod})
     results = json.loads(response.content)
     return results
 
@@ -101,9 +101,7 @@ def _get_custom_options(session, product, version):
             "Don't forget to log in to Earthdata using query.earthdata_login()"
         )
 
-    capability_url = (
-        f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{product}.{version}.xml"
-    )
+    capability_url = f"{EGI_BASE_URL}/capabilities/{product}.{version}.xml"
     response = session.get(capability_url)
     root = ET.fromstring(response.content)
 

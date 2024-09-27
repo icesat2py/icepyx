@@ -126,6 +126,8 @@ class GenQuery:
     Quest
     """
 
+    _temporal: tp.Temporal
+
     def __init__(
         self,
         spatial_extent=None,
@@ -157,7 +159,7 @@ class GenQuery:
     # Properties
 
     @property
-    def temporal(self):
+    def temporal(self) -> Union[tp.Temporal, list[str]]:
         """
         Return the Temporal object containing date/time range information for the query object.
 
@@ -254,7 +256,7 @@ class GenQuery:
         return (self._spatial._ext_type, self._spatial._spatial_ext)
 
     @property
-    def dates(self):
+    def dates(self) -> list[str]:
         """
         Return an array showing the date range of the query object.
         Dates are returned as an array containing the start and end datetime
@@ -279,7 +281,7 @@ class GenQuery:
             ]  # could also use self._start.date()
 
     @property
-    def start_time(self):
+    def start_time(self) -> Union[list[str], str]:
         """
         Return the start time specified for the start date.
 
@@ -303,7 +305,7 @@ class GenQuery:
             return self._temporal._start.strftime("%H:%M:%S")
 
     @property
-    def end_time(self):
+    def end_time(self) -> Union[list[str], str]:
         """
         Return the end time specified for the end date.
 

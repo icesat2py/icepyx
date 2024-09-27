@@ -133,6 +133,19 @@ for icepyx to work correctly.
       this envvar with your Earthdata Login token.
 
 
+## Integrating with other ongoing Icepyx work
+
+Harmony is a major breaking change, so we'll be releasing it in Icepyx v2. 
+
+We know the community wants to break the API in some other ways, so we want to include those in v2 as well!
+
+* Some of Icepyx's Query functionality is already served by earthaccess; refactor or replace the `Query` class?
+* ?
+
+Jessica is currently determining who can help work on these changes, and what that looks like. *If you, the 
+Harmony/ECS migration developer, identify opportunities to easily replace portions of Icepyx with _earthaccess_
+or other libraries, take advantage of that opportunity.
+
 ## FAQ
 
 ### Which API?

@@ -8,6 +8,10 @@ on:
     branches:
       - "main"
       - "development"
+  workflow_run:
+    workflows: [Update UML diagrams]
+    types:
+      - completed
 
 
 jobs:

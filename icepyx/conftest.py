@@ -1,5 +1,6 @@
-import icepyx
 import pytest
+
+import icepyx
 
 
 @pytest.fixture(autouse=True)

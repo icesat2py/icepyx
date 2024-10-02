@@ -1,11 +1,8 @@
 import datetime as dt
-import numpy as np
+
 import pytest
-from shapely.geometry import Polygon
-import warnings
 
 import icepyx.core.temporal as tp
-
 
 # DevNote: this test suite needs to be parameterized (and fixtured) to include ALL acceptable input types
 # Currently it tests most cases for lists and dicts where the input type is str
@@ -239,44 +236,44 @@ def test_range_str_yyyydoy_dict_time_start_end():
 # (The following inputs are bad, testing to ensure the temporal class handles this elegantly)
 def test_bad_start_time_type():
     with pytest.raises(AssertionError):
-        bad_start = tp.Temporal(["2016-01-01", "2020-01-01"], 100000, "13:10:01")
+        tp.Temporal(["2016-01-01", "2020-01-01"], 100000, "13:10:01")
 
 
 def test_bad_end_time_type():
     with pytest.raises(AssertionError):
-        bad_end = tp.Temporal(["2016-01-01", "2020-01-01"], "01:00:00", 131001)
+        tp.Temporal(["2016-01-01", "2020-01-01"], "01:00:00", 131001)
 
 
 def test_range_bad_list_len():
     with pytest.raises(ValueError):
-        result = tp.Temporal(["2016-01-01", "2020-01-01", "2022-02-15"])
+        tp.Temporal(["2016-01-01", "2020-01-01", "2022-02-15"])
 
 
 def test_range_str_bad_yyyydoy():
     with pytest.raises(AssertionError):
-        bad_end = tp.Temporal(["2016-01-01", "2020-01-01"], "01:00:00", 131001)
+        tp.Temporal(["2016-01-01", "2020-01-01"], "01:00:00", 131001)
 
 
 def test_range_str_bad_yyyymmdd():
     with pytest.raises(AssertionError):
-        bad_end = tp.Temporal(["2016-01-01", "2020-01-01"], "01:00:00", 131001)
+        tp.Temporal(["2016-01-01", "2020-01-01"], "01:00:00", 131001)
 
 
 # a "bad dict" is assumed to be one of the wrong length or with the wrong key names
 def test_bad_dict_keys():
     with pytest.raises(ValueError):
-        result = tp.Temporal({"startdate": "2016-01-01", "enddate": "2020-01-01"})
+        tp.Temporal({"startdate": "2016-01-01", "enddate": "2020-01-01"})
 
 
 def test_bad_dict_length():
     with pytest.raises(ValueError):
-        result = tp.Temporal({"start_date": "2016-01-01"})
+        tp.Temporal({"start_date": "2016-01-01"})
 
 
 # A "bad range" is a range where the start_date > end date
 def test_range_str_bad_range():
     with pytest.raises(AssertionError):
-        result = tp.Temporal({"start_date": "2020-01-01", "end_date": "2016-01-01"})
+        tp.Temporal({"start_date": "2020-01-01", "end_date": "2016-01-01"})
 
 
 # NOTE: Not testing bad datetime/time inputs because it is assumed the datetime library

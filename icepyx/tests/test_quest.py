@@ -1,5 +1,4 @@
 import pytest
-import re
 
 import icepyx as ipx
 from icepyx.quest.quest import Quest
@@ -16,7 +15,7 @@ def quest_instance(scope="module", autouse=True):
 ########## PER-DATASET ADDITION TESTS ##########
 
 
-# Paramaterize these add_dataset tests once more datasets are added
+# Parameterize these add_dataset tests once more datasets are added
 def test_add_is2(quest_instance):
     # Add ATL06 as a test to QUEST
 
@@ -27,9 +26,9 @@ def test_add_is2(quest_instance):
 
     obs = quest_instance.datasets
 
-    assert type(obs) == dict
-    assert exp_key in obs.keys()
-    assert type(obs[exp_key]) == exp_type
+    assert type(obs) is dict
+    assert exp_key in obs
+    assert type(obs[exp_key]) is exp_type
     assert quest_instance.datasets[exp_key].product == prod
 
 
@@ -41,9 +40,9 @@ def test_add_argo(quest_instance):
 
     obs = quest_instance.datasets
 
-    assert type(obs) == dict
-    assert exp_key in obs.keys()
-    assert type(obs[exp_key]) == exp_type
+    assert type(obs) is dict
+    assert exp_key in obs
+    assert type(obs[exp_key]) is exp_type
     assert set(quest_instance.datasets[exp_key].params) == set(params)
 
 
@@ -55,7 +54,7 @@ def test_add_multiple_datasets(quest_instance):
     # print(quest_instance.datasets["icesat2"].product)
 
     exp_keys = ["argo", "icesat2"]
-    assert set(exp_keys) == set(quest_instance.datasets.keys())
+    assert set(exp_keys) == set(quest_instance.datasets)
 
 
 ########## ALL DATASET METHODS TESTS ##########

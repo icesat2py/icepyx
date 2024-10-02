@@ -1,8 +1,8 @@
 import copy
 import datetime
-import warnings
 
 import earthaccess
+
 from icepyx.core.exceptions import DeprecationError
 
 
@@ -10,8 +10,6 @@ class AuthenticationError(Exception):
     """
     Raised when an error is encountered while authenticating Earthdata credentials
     """
-
-    pass
 
 
 class EarthdataAuthMixin:
@@ -50,7 +48,7 @@ class EarthdataAuthMixin:
 
     def __init__(self, auth=None):
         self._auth = copy.deepcopy(auth)
-        # initializatin of session and s3 creds is not allowed because those are generated
+        # initialization of session and s3 creds is not allowed because those are generated
         # from the auth object
         self._session = None
         self._s3login_credentials = None
@@ -108,11 +106,9 @@ class EarthdataAuthMixin:
 
         # Only generate s3login_credentials the first time credentials are accessed, or if an hour
         # has passed since the last login
-        if self._s3login_credentials is None:
-            set_s3_creds()
-        elif (datetime.datetime.now() - self._s3_initial_ts) >= datetime.timedelta(
-            hours=1
-        ):
+        if self._s3login_credentials is None or (
+            datetime.datetime.now() - self._s3_initial_ts
+        ) >= datetime.timedelta(hours=1):
             set_s3_creds()
         return self._s3login_credentials
 

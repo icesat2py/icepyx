@@ -1,15 +1,12 @@
-import datetime as dt
+from pathlib import Path
+import re
+
 import geopandas as gpd
 import numpy as np
-import os
-from pathlib import Path
 import pytest
-import re
 from shapely.geometry import Polygon
-import warnings
 
 import icepyx.core.spatial as spat
-
 
 # ######### "Bounding Box" input tests ################################################################################
 # (Note that these ALSO test the @property functions for the class for bounding boxes)
@@ -65,62 +62,62 @@ def test_intlist_with0_bbox():
 
 def test_too_few_bbox_points():
     with pytest.raises(AssertionError):
-        too_few_bbox_points = spat.Spatial([-64.2, 66.2, -55.5])
+        spat.Spatial([-64.2, 66.2, -55.5])
 
 
 def test_too_many_bbox_points():
     with pytest.raises(AssertionError):
-        too_many_bbox_points = spat.Spatial([-64.2, 66.2, -55.5, 72.5, 0])
+        spat.Spatial([-64.2, 66.2, -55.5, 72.5, 0])
 
 
 def test_invalid_low_latitude_1_bbox():
     with pytest.raises(AssertionError):
-        low_lat_1_bbox = spat.Spatial([-64.2, -90.2, -55.5, 72.5])
+        spat.Spatial([-64.2, -90.2, -55.5, 72.5])
 
 
 def test_invalid_high_latitude_1_bbox():
     with pytest.raises(AssertionError):
-        high_lat_1_bbox = spat.Spatial([-64.2, 90.2, -55.5, 72.5])
+        spat.Spatial([-64.2, 90.2, -55.5, 72.5])
 
 
 def test_invalid_low_latitude_3_bbox():
     with pytest.raises(AssertionError):
-        low_lat_3_bbox = spat.Spatial([-64.2, 66.2, -55.5, -90.5])
+        spat.Spatial([-64.2, 66.2, -55.5, -90.5])
 
 
 def test_invalid_high_latitude_3_bbox():
     with pytest.raises(AssertionError):
-        high_lat_3_bbox = spat.Spatial([-64.2, 66.2, -55.5, 90.5])
+        spat.Spatial([-64.2, 66.2, -55.5, 90.5])
 
 
 def test_invalid_low_longitude_0_bbox():
     with pytest.raises(AssertionError):
-        low_lon_0_bbox = spat.Spatial([-180.2, 66.2, -55.5, 72.5])
+        spat.Spatial([-180.2, 66.2, -55.5, 72.5])
 
 
 def test_invalid_high_longitude_0_bbox():
     with pytest.raises(AssertionError):
-        high_lon_0_bbox = spat.Spatial([180.2, 66.2, -55.5, 72.5])
+        spat.Spatial([180.2, 66.2, -55.5, 72.5])
 
 
 def test_invalid_low_longitude_2_bbox():
     with pytest.raises(AssertionError):
-        low_lon_2_bbox = spat.Spatial([-64.2, 66.2, -180.5, 72.5])
+        spat.Spatial([-64.2, 66.2, -180.5, 72.5])
 
 
 def test_invalid_high_longitude_2_bbox():
     with pytest.raises(AssertionError):
-        high_lon_2_bbox = spat.Spatial([-64.2, 66.2, 180.5, 72.5])
+        spat.Spatial([-64.2, 66.2, 180.5, 72.5])
 
 
 def test_same_sign_lowleft_gt_upright_latitude_bbox():
     with pytest.raises(AssertionError):
-        lat_ll_gt_ur_ss_bbox = spat.Spatial([-64.2, 72.5, -55.5, 66.2])
+        spat.Spatial([-64.2, 72.5, -55.5, 66.2])
 
 
 def test_bad_values_bbox():
     with pytest.raises(ValueError):
-        bad_input = spat.Spatial(["a", "b", "c", "d"])
+        spat.Spatial(["a", "b", "c", "d"])
 
 
 # ############### END BOUNDING BOX TESTS ################################################################
@@ -287,19 +284,17 @@ def test_numpy_intlist_latlon_coords():
 
 def test_odd_num_lat_long_list_poly_throws_error():
     with pytest.raises(AssertionError):
-        bad_input = spat.Spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55])
+        spat.Spatial([-55, 68, -55, 71, -48, 71, -48, 68, -55])
 
 
 def test_wrong_num_lat_long_tuple_poly_throws_error():
     with pytest.raises(ValueError):
-        bad_input = spat.Spatial(
-            [(-55, 68, 69), (-55, 71), (-48, 71), (-48, 68), (-55, 68)]
-        )
+        spat.Spatial([(-55, 68, 69), (-55, 71), (-48, 71), (-48, 68), (-55, 68)])
 
 
 def test_bad_value_types_poly():
     with pytest.raises(ValueError):
-        bad_input = spat.Spatial(["a", "b", "c", "d", "e"])
+        spat.Spatial(["a", "b", "c", "d", "e"])
 
 
 # ###################### Automatically Closed Polygon Tests ###########################################################
@@ -378,12 +373,12 @@ def test_poly_file_simple_one_poly():
 
 def test_bad_poly_inputfile_name_throws_error():
     with pytest.raises(AssertionError):
-        bad_input = spat.Spatial("bad_filename.gpkg")
+        spat.Spatial("bad_filename.gpkg")
 
 
 def test_bad_poly_inputfile_type_throws_error():
     with pytest.raises(TypeError):
-        bad_input = spat.Spatial(str(Path("./icepyx/tests/test_read.py").resolve()))
+        spat.Spatial(str(Path("./icepyx/tests/test_read.py").resolve()))
 
 
 ########## geodataframe ##########
@@ -461,7 +456,7 @@ def test_bbox_not_crosses_dateline(bbox):
 
 def test_poly_wrong_input():
     with pytest.raises(AssertionError):
-        tuplelist = spat.check_dateline(
+        spat.check_dateline(
             "polygon",
             [[160, -45], [160, -40], [-170, -39], [-128, -40], [-128, -45], [160, -45]],
         )

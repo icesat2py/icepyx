@@ -1,17 +1,41 @@
 repos:
--   repo: https://github.com/psf/black
-    rev: 24.8.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
     hooks:
-    - id: black
+      - id: check-toml
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=5000"]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: debug-statements
+      - id: name-tests-test
+        args: ["--pytest-test-first"]
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: requirements-txt-fixer
 
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0  # Use the ref you want to point at
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
     hooks:
-    - id: check-added-large-files
-      args: ["--maxkb=5000"]
-    - id: end-of-file-fixer
-    - id: trailing-whitespace
-      args: [--markdown-linebreak-ext=md]
+      - id: codespell
+        additional_dependencies:
+          - tomli
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.3
+    hooks:
+      - id: ruff
+        args: ["--fix", "--show-fixes"]
+      - id: ruff-format
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.19
+    hooks:
+      - id: validate-pyproject
 
 ci:
   autoupdate_schedule: monthly

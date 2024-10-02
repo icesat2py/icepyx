@@ -2,5 +2,4 @@
 branch = True
 source = icepyx
 omit =
-    setup.py
     doc/*

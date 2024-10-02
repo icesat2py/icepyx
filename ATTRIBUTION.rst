@@ -99,7 +99,7 @@ to identify core issues and propose solutions to challenges around software cred
 For software, current best practices (`e.g. <https://arxiv.org/pdf/2012.13117.pdf>`_) emphasize the importance of having a document
 such as this one to describe an individual community's policies for credit, authorship, and attribution.
 This document is an effort to describe icepyx's policies, with an awareness that they may change
-to accomodate community growth, best practices, and feedback.
+to accommodate community growth, best practices, and feedback.
 
 We do not attempt to identify contribution levels through the number of commits made to the repository (e.g. ``git shortlog -sne``)
 or active engagement on GitHub (e.g. through issues, discussions, and pull requests) and Discourse.

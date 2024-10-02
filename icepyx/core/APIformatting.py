@@ -2,7 +2,6 @@
 
 import datetime as dt
 
-
 # ----------------------------------------------------------------------
 # parameter-specific formatting for display
 # or input to a set of API parameters (CMR or NSIDC)
@@ -73,7 +72,7 @@ def _fmt_readable_granules(dset, **kwds):
     # list of readable granule names
     readable_granule_list = []
     # if querying either by 91-day orbital cycle or RGT
-    if "cycles" in kwargs.keys() or "tracks" in kwargs.keys():
+    if "cycles" in kwargs or "tracks" in kwargs:
         # default character wildcards for cycles and tracks
         kwargs.setdefault("cycles", ["??"])
         kwargs.setdefault("tracks", ["????"])
@@ -110,7 +109,7 @@ def _fmt_var_subset_list(vdict):
     """
 
     subcover = ""
-    for vn in vdict.keys():
+    for vn in vdict:
         vpaths = vdict[vn]
         for vpath in vpaths:
             subcover += "/" + vpath + ","
@@ -122,6 +121,9 @@ def combine_params(*param_dicts):
     """
     Combine multiple dictionaries into one.
 
+    Merging is performed in sequence using `dict.update()`; dictionaries later in the
+    list overwrite those earlier.
+
     Parameters
     ----------
     params : dictionaries
@@ -129,7 +131,7 @@ def combine_params(*param_dicts):
 
     Returns
     -------
-    single dictionary of all input dictionaries combined
+    A single dictionary of all input dictionaries combined
 
     Examples
     --------
@@ -209,7 +211,7 @@ class Parameters:
             "CMR",
             "required",
             "subset",
-        ], "You need to submit a valid parametery type."
+        ], "You need to submit a valid parameter type."
         self.partype = partype
 
         if partype == "required":
@@ -243,7 +245,7 @@ class Parameters:
     @property
     def fmted_keys(self):
         """
-        Returns the dictionary of formated keys associated with the
+        Returns the dictionary of formatted keys associated with the
         parameter object.
         """
         return self._fmted_keys
@@ -298,9 +300,9 @@ class Parameters:
         # if self._wanted == None:
         #     raise ValueError("No desired parameter list was passed")
 
-        val_list = list(set(val for lis in self.poss_keys.values() for val in lis))
+        val_list = list({val for lis in self.poss_keys.values() for val in lis})
 
-        for key in self.fmted_keys.keys():
+        for key in self.fmted_keys:
             assert key in val_list, (
                 "An invalid key (" + key + ") was passed. Please remove it using `del`"
             )
@@ -317,10 +319,10 @@ class Parameters:
         ), "You cannot call this function for your parameter type"
         reqkeys = self.poss_keys[self._reqtype]
 
-        if all(keys in self.fmted_keys.keys() for keys in reqkeys):
+        if all(keys in self.fmted_keys for keys in reqkeys):
             assert all(
                 self.fmted_keys.get(key, -9999) != -9999 for key in reqkeys
-            ), "One of your formated parameters is missing a value"
+            ), "One of your formatted parameters is missing a value"
             return True
         else:
             return False
@@ -337,10 +339,10 @@ class Parameters:
         spatial_keys = self.poss_keys["spatial"]
 
         # not the most robust check, but better than nothing...
-        if any(keys in self._fmted_keys.keys() for keys in spatial_keys):
+        if any(keys in self._fmted_keys for keys in spatial_keys):
             assert any(
                 self.fmted_keys.get(key, -9999) != -9999 for key in spatial_keys
-            ), "One of your formated parameters is missing a value"
+            ), "One of your formatted parameters is missing a value"
             return True
         else:
             return False
@@ -410,13 +412,16 @@ class Parameters:
                 opt_keys = self.poss_keys["optional"]
 
                 for key in opt_keys:
-                    if key == "Coverage" and key in kwargs.keys():
-                        # DevGoal: make there be an option along the lines of Coverage=default, which will get the default variables for that product without the user having to input is2obj.build_wanted_wanted_var_list as their input value for using the Coverage kwarg
+                    if key == "Coverage" and key in kwargs:
+                        # DevGoal: make an option along the lines of Coverage=default,
+                        # which will get the default variables for that product without
+                        # the user having to input is2obj.build_wanted_wanted_var_list
+                        # as their input value for using the Coverage kwarg
                         self._fmted_keys.update(
                             {key: _fmt_var_subset_list(kwargs[key])}
                         )
                     elif (key == "temporal" or key == "time") and (
-                        "start" in kwargs.keys() and "end" in kwargs.keys()
+                        "start" in kwargs and "end" in kwargs
                     ):
                         self._fmted_keys.update(
                             _fmt_temporal(kwargs["start"], kwargs["end"], key)

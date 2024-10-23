@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 import warnings
 from xml.etree import ElementTree as ET
 
@@ -20,38 +21,38 @@ def _validate_product(product):
         "A valid product string was not provided. "
         "Check user input, if given, or file metadata."
     )
-    if isinstance(product, str):
-        product = str.upper(product)
-        assert product in [
-            "ATL01",
-            "ATL02",
-            "ATL03",
-            "ATL04",
-            "ATL06",
-            "ATL07",
-            "ATL07QL",
-            "ATL08",
-            "ATL09",
-            "ATL09QL",
-            "ATL10",
-            "ATL11",
-            "ATL12",
-            "ATL13",
-            "ATL14",
-            "ATL15",
-            "ATL16",
-            "ATL17",
-            "ATL19",
-            "ATL20",
-            "ATL21",
-            "ATL23",
-        ], error_msg
-    else:
+    if not isinstance(product, str):
         raise TypeError(error_msg)
+
+    product = str.upper(product)
+    assert product in [
+        "ATL01",
+        "ATL02",
+        "ATL03",
+        "ATL04",
+        "ATL06",
+        "ATL07",
+        "ATL07QL",
+        "ATL08",
+        "ATL09",
+        "ATL09QL",
+        "ATL10",
+        "ATL11",
+        "ATL12",
+        "ATL13",
+        "ATL14",
+        "ATL15",
+        "ATL16",
+        "ATL17",
+        "ATL19",
+        "ATL20",
+        "ATL21",
+        "ATL23",
+    ], error_msg
     return product
 
 
-def _validate_OA_product(product):
+def _validate_OA_product(product) -> str:
     """
     Confirm a valid ICESat-2 product was specified
     """
@@ -74,7 +75,7 @@ def _validate_OA_product(product):
 
 
 # DevNote: test for this function is commented out; dates in some of the values were causing the test to fail...
-def about_product(prod):
+def about_product(prod: str) -> dict:
     """
     Ping Earthdata to get metadata about the product of interest (the collection).
 
@@ -170,7 +171,7 @@ def _get_custom_options(session, product, version):
 
 # DevGoal: populate this with default variable lists for all of the products!
 # DevGoal: add a test for this function (to make sure it returns the right list, but also to deal with product not being in the list, though it should since it was checked as valid earlier...)
-def _default_varlists(product):
+def _default_varlists(product) -> list[str]:
     """
     Return a list of default variables to select and send to the NSIDC subsetter.
     """
@@ -276,7 +277,7 @@ def _default_varlists(product):
 # a faster version using pandas map (instead of apply) is available in SlideRule:
 # https://github.com/SlideRuleEarth/sliderule/issues/388
 # https://github.com/SlideRuleEarth/sliderule/commit/46cceac0e5f6d0a580933d399a6239bc911757f3
-def gt2spot(gt, sc_orient):
+def gt2spot(gt, sc_orient) -> np.uint8:
     warnings.warn(
         "icepyx versions 0.8.0 and earlier used an incorrect spot number calculation."
         "As a result, computations depending on spot number may be incorrect and should be redone."
@@ -295,6 +296,7 @@ def gt2spot(gt, sc_orient):
     gr_lr = gt[3]
 
     # spacecraft oriented forward
+    spot: Optional[int] = None
     if sc_orient == 1:
         if gr_num == 1:
             if gr_lr == "l":
@@ -330,13 +332,13 @@ def gt2spot(gt, sc_orient):
             elif gr_lr == "r":
                 spot = 6
 
-    if "spot" not in locals():
+    if spot is None:
         raise ValueError("Could not compute the spot number.")
 
     return np.uint8(spot)
 
 
-def latest_version(product):
+def latest_version(product) -> str:
     """
     Determine the most recent version available for the given product.
 
@@ -350,7 +352,7 @@ def latest_version(product):
     return max([entry["version_id"] for entry in _about_product["feed"]["entry"]])
 
 
-def extract_product(filepath, auth=None):
+def extract_product(filepath, auth=None) -> str:
     """
     Read the product type from the metadata of the file. Valid for local or s3 files, but must
     provide an auth object if reading from s3. Return the product as a string.
@@ -396,7 +398,7 @@ def extract_product(filepath, auth=None):
     return product
 
 
-def extract_version(filepath, auth=None):
+def extract_version(filepath, auth=None) -> str:
     """
     Read the version from the metadata of the file. Valid for local or s3 files, but must
     provide an auth object if reading from s3. Return the version as a string.
@@ -423,23 +425,28 @@ def extract_version(filepath, auth=None):
         f = h5py.File(filepath, "r")
 
     # Read the version information
+    version_str: str
     try:
-        version = f["METADATA"]["DatasetIdentification"].attrs["VersionID"]
+        version = f["METADATA"]["DatasetIdentification"].attrs["VersionID"]  # pyright: ignore[reportIndexIssue]
         if isinstance(version, np.ndarray):
             # ATL14 stores the version as an array ['00x']
-            version = version[0]
-        if isinstance(version, bytes):
-            version = version.decode()
-
-    except KeyError as e:
+            version_str = version[0]
+        elif isinstance(version, bytes):
+            version_str = version.decode()
+        else:
+            raise TypeError(f"Unexpected type {version=}")
+    except (KeyError, TypeError) as e:
         raise Exception(
             "Unable to parse the version from file metadata"
         ).with_traceback(e.__traceback__)
+    finally:
+        # Close the file reader
+        f.close()
 
     # catch cases where the version number is an invalid string
     # e.g. a VersionID of "SET_BY_PGE", causing issues where version needs to be a valid number
     try:
-        float(version)
+        float(version)  # pyright: ignore[reportArgumentType]
     except ValueError:
         raise Exception(
             "There is an underlying issue with the version information"
@@ -447,6 +454,4 @@ def extract_version(filepath, auth=None):
             "Consider setting the version manually for further processing."
         )
 
-    # Close the file reader
-    f.close()
-    return version
+    return version_str

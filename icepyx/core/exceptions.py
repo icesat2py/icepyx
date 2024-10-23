@@ -53,3 +53,11 @@ class ExhaustiveTypeGuardException(TypeGuardException):
     Used exclusively in cases where the typechecker needs a typeguard to tell it that a
     check is exhaustive.
     """
+
+
+class RefactoringException(Exception):
+    def __str__(self):
+        return (
+            "This code is being refactored."
+            " The code after this exception is expected to require major changes."
+        )

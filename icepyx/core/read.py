@@ -553,6 +553,8 @@ class Read(EarthdataAuthMixin):
             pass
 
         ds = ds[grp_spec_vars].swap_dims({"delta_time": "photon_idx"})
+        # add the rest of the dimensions of length 1 from is2ds to ds
+        ds = ds.expand_dims(dim=[dim for dim in is2ds.dims if is2ds[dim].size == 1])
         is2ds = is2ds.assign(ds)
 
         return is2ds

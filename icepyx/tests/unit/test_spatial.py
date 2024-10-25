@@ -378,7 +378,7 @@ def test_bad_poly_inputfile_name_throws_error():
 
 def test_bad_poly_inputfile_type_throws_error():
     with pytest.raises(TypeError):
-        spat.Spatial(str(Path("./icepyx/tests/test_read.py").resolve()))
+        spat.Spatial(str(Path("./icepyx/tests/unit/test_read.py").resolve()))
 
 
 ########## geodataframe ##########

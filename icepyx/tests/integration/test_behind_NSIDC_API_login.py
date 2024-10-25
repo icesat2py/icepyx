@@ -11,6 +11,15 @@ import pytest
 import icepyx as ipx
 import icepyx.core.is2ref as is2ref
 
+# Skip the whole module. See:
+# https://docs.pytest.org/en/stable/reference/reference.html#globalvar-pytestmark
+pytestmark = pytest.mark.xfail(
+    reason=(
+        "The back-end API on which these tests depend, ECS/EGI/ESI, is scheduled for"
+        " shutdown in late 2024. At that point, these tests will begin failing."
+    )
+)
+
 # Misc notes and needed tests
 # test avail data and subsetting success for each input type
 # (kml, shp, list of coords, bbox)
@@ -40,7 +49,7 @@ def session(reg):
 
 def test_get_custom_options_output(session):
     obs = is2ref._get_custom_options(session, "ATL06", "006")
-    with open("./icepyx/tests/ATL06v06_options.json") as exp_json:
+    with open("./icepyx/tests/integration/ATL06v06_options.json") as exp_json:
         exp = json.load(exp_json)
         assert all(keys in obs for keys in exp)
         assert all(obs[key] == exp[key] for key in exp)

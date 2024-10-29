@@ -8,6 +8,8 @@ from numpy.typing import NDArray
 from shapely.geometry import Polygon, box
 from shapely.geometry.polygon import orient
 
+import icepyx.core.exceptions
+
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 
 
@@ -33,10 +35,11 @@ def geodataframe(
         If file is False, spatial_extent should be a shapely.Polygon,
         list of bounding box coordinates in decimal degrees of [lower-left-longitude,
         lower-left-latitute, upper-right-longitude, upper-right-latitude] or polygon vertices as
-        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
+        [longitude1, latitude1, longitude2, latitude2, ...
+        longitude_n,latitude_n, longitude1,latitude1].
 
-        If file is True, spatial_extent is a string containing the full file path and filename to the
-        file containing the desired spatial extent.
+        If file is True, spatial_extent is a string containing the full file path and filename
+        to the file containing the desired spatial extent.
 
     file :
         Indication for whether the spatial_extent string is a filename or coordinate list
@@ -730,7 +733,7 @@ class Spatial:
             cmr_extent = ",".join(map(str, extent))
 
         else:
-            raise RuntimeError("Programmer error!")
+            raise icepyx.core.exceptions.ExhaustiveTypeGuardException
 
         return cmr_extent
 

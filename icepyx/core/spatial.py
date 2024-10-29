@@ -764,6 +764,6 @@ class Spatial:
             egi_extent = egi_extent.replace(" ", "")  # remove spaces for API call
 
         else:
-            raise RuntimeError("Programmer error!")
+            raise icepyx.core.exceptions.ExhaustiveTypeGuardException
 
         return egi_extent

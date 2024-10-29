@@ -29,10 +29,10 @@ def geodataframe(
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
     spatial_extent :
-        A list containing the spatial extent OR a string containing a filename.
-        If file is False, spatial_extent should be a
-        list of coordinates in decimal degrees of [lower-left-longitude,
-        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
+        A list containing the spatial extent, a shapely.Polygon, OR a string containing a filename.
+        If file is False, spatial_extent should be a shapely.Polygon,
+        list of bounding box coordinates in decimal degrees of [lower-left-longitude,
+        lower-left-latitute, upper-right-longitude, upper-right-latitude] or polygon vertices as
         [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
 
         If file is True, spatial_extent is a string containing the full file path and filename to the

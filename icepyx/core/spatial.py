@@ -18,7 +18,7 @@ ExtentType = Literal["bounding_box", "polygon"]
 
 def geodataframe(
     extent_type: ExtentType,
-    spatial_extent: Union[str, list[float]],
+    spatial_extent: Union[str, list[float], Polygon],
     file: bool = False,
     xdateline: Optional[bool] = None,
 ) -> gpd.GeoDataFrame:
@@ -76,7 +76,12 @@ def geodataframe(
             raise TypeError("When 'file' is True, 'extent_type' must be 'polygon'")
 
     if isinstance(spatial_extent, str):
-        raise TypeError(f"Expected list of floats, received {spatial_extent=}")
+        raise TypeError(f"Expected list of floats or Polygon, received {spatial_extent=}")
+
+    if isinstance(spatial_extent, Polygon):
+        # Convert `spatial_extent` into a list of floats like:
+        # `[longitude1, latitude1, longitude2, latitude2, ...]`
+        spatial_extent = [coord for point in spatial_extent.exterior.coords for coord in point]
 
     if xdateline is not None:
         xdateline = xdateline

@@ -414,8 +414,8 @@ def validate_polygon_file(
 
 class Spatial:
     _ext_type: ExtentType
-    _spatial_ext: list[float]
     _geom_file: Optional[str]
+    _spatial_ext: list[float]
 
     def __init__(
         self,

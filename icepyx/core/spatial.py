@@ -315,7 +315,7 @@ def validate_polygon_pairs(
 
 def validate_polygon_list(
     spatial_extent: Union[
-        list[Union[float, str]],
+        list[float],
         NDArray[np.floating],
     ],
 ) -> tuple[Literal["polygon"], list[float], None]:
@@ -330,7 +330,7 @@ def validate_polygon_list(
     Parameters
     ----------
     spatial_extent:
-        A list or np.ndarray of strings or numerics representing polygon coordinates,
+        A list or np.ndarray of numerics representing polygon coordinates,
         provided as coordinate pairs in decimal degrees in the order:
         [longitude1, latitude1, longitude2, latitude2, ...
         ... longitude_n,latitude_n, longitude1,latitude1]
@@ -421,7 +421,6 @@ class Spatial:
         self,
         spatial_extent: Union[
             str,  # Filepath
-            list[str],  # Bounding box or polygon
             list[float],  # Bounding box or polygon
             list[tuple[float, float]],  # Polygon
             NDArray,  # Polygon
@@ -439,7 +438,7 @@ class Spatial:
         ----------
         spatial_extent : list or string
             * list of coordinates
-             (stored in a list of strings, list of numerics, list of tuples, OR np.ndarray) as one of:
+             (stored in a list of numerics, list of tuples, OR np.ndarray) as one of:
                 * bounding box
                     * provided in the order: [lower-left-longitude, lower-left-latitude,
                                              upper-right-longitude, upper-right-latitude].)
@@ -545,7 +544,7 @@ class Spatial:
                     # HACK: Unfortunately, the typechecker can't narrow based on the
                     # above conditional expressions. Tell the typechecker, "trust us"!
                     cast(
-                        Union[list[Union[str, float]], NDArray[np.floating]],
+                        Union[list[float], NDArray[np.floating]],
                         spatial_extent,
                     )
                 )

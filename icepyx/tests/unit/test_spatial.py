@@ -433,7 +433,7 @@ def test_gdf_from_list_tuples():
 
 def test_gdf_raises_error_bounding_box_file():
     with pytest.raises(TypeError):
-        spat.geodataframe("bounding_box", "/fake/file/somewhere/polygon.shp")
+        spat.geodataframe("bounding_box", "/fake/file/somewhere/polygon.shp", file=True)
 
 
 # Potential tests to include once multipolygon and complex polygons are handled

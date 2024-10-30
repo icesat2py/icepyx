@@ -444,6 +444,34 @@ def test_gdf_raises_error_string_file_false():
         )
 
 
+def test_gdf_boundingbox_xdateline():
+    bbox = [-55.5, 66.2, -64.2, 72.5]
+
+    # construct a geodataframe with the geometry corrected for the xdateline.
+    bbox_with_fix_for_xdateline = [304.5, 66.2, 295.8, 72.5]
+    min_x, min_y, max_x, max_y = bbox_with_fix_for_xdateline
+    exp = gpd.GeoDataFrame(
+        geometry=[
+            Polygon(
+                [
+                    (min_x, min_y),
+                    (min_x, max_y),
+                    (max_x, max_y),
+                    (max_x, min_y),
+                    (min_x, min_y),
+                ]
+            )
+        ]
+    )
+
+    obs = spat.geodataframe("bounding_box", bbox)
+
+    # make sure there is only one geometry before comparing them
+    assert len(obs.geometry) == 1
+    assert len(exp.geometry) == 1
+    assert obs.geometry[0].equals(exp.geometry[0])
+
+
 # Potential tests to include once multipolygon and complex polygons are handled
 
 # def test_gdf_from_strpoly_one_simple():

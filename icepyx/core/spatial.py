@@ -71,7 +71,6 @@ def geodataframe(
     """
 
     # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
-    # DevGoal: Currently this branch isn't tested...
     if file is True:
         if extent_type == "polygon":
             return gpd.read_file(spatial_extent)

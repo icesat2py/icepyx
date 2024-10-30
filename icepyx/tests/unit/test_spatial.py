@@ -431,6 +431,11 @@ def test_gdf_from_list_tuples():
     assert obs.geometry[0].equals(exp.geometry[0])
 
 
+def test_gdf_raises_error_bounding_box_file():
+    with pytest.raises(TypeError):
+        spat.geodataframe("bounding_box", "/fake/file/somewhere/polygon.shp")
+
+
 # Potential tests to include once multipolygon and complex polygons are handled
 
 # def test_gdf_from_strpoly_one_simple():

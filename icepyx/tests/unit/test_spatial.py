@@ -437,6 +437,13 @@ def test_gdf_raises_error_bounding_box_file():
         spat.geodataframe("bounding_box", "/fake/file/somewhere/polygon.shp", file=True)
 
 
+def test_gdf_raises_error_string_file_false():
+    with pytest.raises(TypeError):
+        spat.geodataframe(
+            "bounding_box", "/fake/file/somewhere/polygon.shp", file=False
+        )
+
+
 # Potential tests to include once multipolygon and complex polygons are handled
 
 # def test_gdf_from_strpoly_one_simple():

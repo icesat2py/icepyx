@@ -79,7 +79,7 @@ def geodataframe(
 
     if isinstance(spatial_extent, str):
         raise TypeError(
-            f"Expected list of floats or Polygon, received {spatial_extent=}"
+            f"Expected list of floats, list of tuples of floats, or Polygon, received {spatial_extent=}"
         )
 
     if isinstance(spatial_extent, Polygon):

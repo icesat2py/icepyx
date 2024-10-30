@@ -406,6 +406,31 @@ def test_gdf_from_multi_bbox():
     assert obs.geometry[0].equals(exp.geometry[0])
 
 
+def test_gdf_from_polygon():
+    polygon = Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))
+    obs = spat.geodataframe("polygon", polygon)
+    exp = gpd.GeoDataFrame(geometry=[polygon])
+
+    # make sure there is only one geometry before comparing them
+    assert len(obs.geometry) == 1
+    assert len(exp.geometry) == 1
+    assert obs.geometry[0].equals(exp.geometry[0])
+
+
+def test_gdf_from_list_tuples():
+    polygon_tuples = list(
+        zip([-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0])
+    )
+    obs = spat.geodataframe("polygon", polygon_tuples)
+    geom = [Polygon(polygon_tuples)]
+    exp = gpd.GeoDataFrame(geometry=geom)
+
+    # make sure there is only one geometry before comparing them
+    assert len(obs.geometry) == 1
+    assert len(exp.geometry) == 1
+    assert obs.geometry[0].equals(exp.geometry[0])
+
+
 # Potential tests to include once multipolygon and complex polygons are handled
 
 # def test_gdf_from_strpoly_one_simple():

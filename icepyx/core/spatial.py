@@ -1,3 +1,4 @@
+from itertools import chain
 import os
 from typing import Literal, Optional, Union, cast
 import warnings
@@ -18,7 +19,7 @@ ExtentType = Literal["bounding_box", "polygon"]
 
 def geodataframe(
     extent_type: ExtentType,
-    spatial_extent: Union[str, list[float], Polygon],
+    spatial_extent: Union[str, list[float], list[tuple[float, float]], Polygon],
     file: bool = False,
     xdateline: Optional[bool] = None,
 ) -> gpd.GeoDataFrame:
@@ -31,7 +32,9 @@ def geodataframe(
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
     spatial_extent :
-        A list containing the spatial extent, a shapely.Polygon, OR a string containing a filename.
+        A list containing the spatial extent, a shapely.Polygon, a list of
+        tuples (i.e.,, `[(longitude1, latitude1), (longitude2, latitude2),
+        ...]`)containing floats, OR a string containing a filename.
         If file is False, spatial_extent should be a shapely.Polygon,
         list of bounding box coordinates in decimal degrees of [lower-left-longitude,
         lower-left-latitute, upper-right-longitude, upper-right-latitude] or polygon vertices as
@@ -84,8 +87,16 @@ def geodataframe(
         # Convert `spatial_extent` into a list of floats like:
         # `[longitude1, latitude1, longitude2, latitude2, ...]`
         spatial_extent = [
-            coord for point in spatial_extent.exterior.coords for coord in point
+            float(coord) for point in spatial_extent.exterior.coords for coord in point
         ]
+
+    # We are dealing with a `list[tuple[float, float]]`
+    if isinstance(spatial_extent, list) and isinstance(spatial_extent[0], tuple):
+        # Convert the list of tuples into a flat list of floats
+        spatial_extent = cast(list[tuple[float, float]], spatial_extent)
+        spatial_extent = list(chain.from_iterable(spatial_extent))
+
+    spatial_extent = cast(list[float], spatial_extent)
 
     if xdateline is not None:
         xdateline = xdateline

@@ -129,8 +129,8 @@ class GenQuery:
     Quest
     """
 
-    _temporal: tp.Temporal
     _spatial: spat.Spatial
+    _temporal: tp.Temporal
 
     def __init__(
         self,

@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from shapely.geometry import Polygon
 
+import icepyx
 import icepyx.core.spatial as spat
 
 # ######### "Bounding Box" input tests ################################################################################
@@ -406,6 +407,71 @@ def test_gdf_from_multi_bbox():
     assert obs.geometry[0].equals(exp.geometry[0])
 
 
+def test_gdf_from_polygon():
+    polygon = Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))
+    obs = spat.geodataframe("polygon", polygon)
+    exp = gpd.GeoDataFrame(geometry=[polygon])
+
+    # make sure there is only one geometry before comparing them
+    assert len(obs.geometry) == 1
+    assert len(exp.geometry) == 1
+    assert obs.geometry[0].equals(exp.geometry[0])
+
+
+def test_gdf_from_list_tuples():
+    polygon_tuples = list(
+        zip([-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0])
+    )
+    obs = spat.geodataframe("polygon", polygon_tuples)
+    geom = [Polygon(polygon_tuples)]
+    exp = gpd.GeoDataFrame(geometry=geom)
+
+    # make sure there is only one geometry before comparing them
+    assert len(obs.geometry) == 1
+    assert len(exp.geometry) == 1
+    assert obs.geometry[0].equals(exp.geometry[0])
+
+
+def test_gdf_raises_error_bounding_box_file():
+    with pytest.raises(TypeError):
+        spat.geodataframe("bounding_box", "/fake/file/somewhere/polygon.shp", file=True)
+
+
+def test_gdf_raises_error_string_file_false():
+    with pytest.raises(TypeError):
+        spat.geodataframe(
+            "bounding_box", "/fake/file/somewhere/polygon.shp", file=False
+        )
+
+
+def test_gdf_boundingbox_xdateline():
+    bbox = [-55.5, 66.2, -64.2, 72.5]
+
+    # construct a geodataframe with the geometry corrected for the xdateline.
+    bbox_with_fix_for_xdateline = [304.5, 66.2, 295.8, 72.5]
+    min_x, min_y, max_x, max_y = bbox_with_fix_for_xdateline
+    exp = gpd.GeoDataFrame(
+        geometry=[
+            Polygon(
+                [
+                    (min_x, min_y),
+                    (min_x, max_y),
+                    (max_x, max_y),
+                    (max_x, min_y),
+                    (min_x, min_y),
+                ]
+            )
+        ]
+    )
+
+    obs = spat.geodataframe("bounding_box", bbox)
+
+    # make sure there is only one geometry before comparing them
+    assert len(obs.geometry) == 1
+    assert len(exp.geometry) == 1
+    assert obs.geometry[0].equals(exp.geometry[0])
+
+
 # Potential tests to include once multipolygon and complex polygons are handled
 
 # def test_gdf_from_strpoly_one_simple():
@@ -496,6 +562,20 @@ def test_bbox_fmt():
     obs = bbox.fmt_for_EGI()
     exp = "-55.0,68.0,-48.0,71.0"
     assert obs == exp
+
+
+def test_fmt_for_cmr_fails_unknown_extent_type():
+    bbox = spat.Spatial([-55, 68, -48, 71])
+    bbox._ext_type = "Unknown_user_override"
+    with pytest.raises(icepyx.core.exceptions.ExhaustiveTypeGuardException):
+        bbox.fmt_for_CMR()
+
+
+def test_fmt_for_egi_fails_unknown_extent_type():
+    bbox = spat.Spatial([-55, 68, -48, 71])
+    bbox._ext_type = "Unknown_user_override"
+    with pytest.raises(icepyx.core.exceptions.ExhaustiveTypeGuardException):
+        bbox.fmt_for_EGI()
 
 
 @pytest.fixture

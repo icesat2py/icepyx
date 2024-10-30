@@ -536,6 +536,13 @@ def test_fmt_for_cmr_fails_unknown_extent_type():
         bbox.fmt_for_CMR()
 
 
+def test_fmt_for_egi_fails_unknown_extent_type():
+    bbox = spat.Spatial([-55, 68, -48, 71])
+    bbox._ext_type = "Unknown_user_override"
+    with pytest.raises(icepyx.core.exceptions.ExhaustiveTypeGuardException):
+        bbox.fmt_for_EGI()
+
+
 @pytest.fixture
 def poly():
     coords = [

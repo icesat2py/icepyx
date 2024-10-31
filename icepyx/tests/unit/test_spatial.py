@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from shapely.geometry import Polygon
 
-import icepyx
+import icepyx as ipx
 import icepyx.core.spatial as spat
 
 # ######### "Bounding Box" input tests ################################################################################
@@ -567,14 +567,14 @@ def test_bbox_fmt():
 def test_fmt_for_cmr_fails_unknown_extent_type():
     bbox = spat.Spatial([-55, 68, -48, 71])
     bbox._ext_type = "Unknown_user_override"
-    with pytest.raises(icepyx.core.exceptions.ExhaustiveTypeGuardException):
+    with pytest.raises(ipx.core.exceptions.ExhaustiveTypeGuardException):
         bbox.fmt_for_CMR()
 
 
 def test_fmt_for_egi_fails_unknown_extent_type():
     bbox = spat.Spatial([-55, 68, -48, 71])
     bbox._ext_type = "Unknown_user_override"
-    with pytest.raises(icepyx.core.exceptions.ExhaustiveTypeGuardException):
+    with pytest.raises(ipx.core.exceptions.ExhaustiveTypeGuardException):
         bbox.fmt_for_EGI()
 
 

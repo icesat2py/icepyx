@@ -15,10 +15,6 @@
 Work in progress is on the `harmony` branch. This depends on the `low-hanging-refactors`
 branch being merged. A PR is open.
 
-> [!IMPORTANT]
-> Several commits establish communication with UAT instead of production. They will need
-> to be reverted once Harmony is available in prod.
-
 In addition to this work, refactoring, type checking, and type annotations have been
 added to the codebase to support the migration to Harmony.
 
@@ -28,8 +24,7 @@ added to the codebase to support the migration to Harmony.
 * Check out this amazing notebook provided by Amy Steiker and Patrick Quinn:
   <https://github.com/nasa/harmony/blob/main/docs/Harmony%20API%20introduction.ipynb>
 * Review the interactive API documentation:
-  <https://harmony.uat.earthdata.nasa.gov/docs/api/> (remember, remove UAT from URL if
-  Harmony is live with ICESat-2 products in early October 2024)
+  <https://harmony.earthdata.nasa.gov/docs/api/>
 
 
 ### Getting started replacing ECS with Harmony
@@ -94,9 +89,8 @@ The type annotations will help with this process!
     both CMR and Harmony queries without an intervening layer. E.g.
 2. Broken assumption: "We can query with only short_name and version number". Harmony
    requires a unique identifier (concept ID or DOI). E.g.:
-   <https://harmony.uat.earthdata.nasa.gov/capabilities?collectionId=C1261703129-EEDTEST>
-   (NOTE: UAT query using a collection from a test provider; we should be using
-   `NSIDC_CUAT` provider in real UAT queries and `NSIDC_CPRD` for real prod queries).
+   <https://harmony.earthdata.nasa.gov/capabilities?collectionId=C1261703129-EEDTEST>
+   .
    Since we want the user to be able to provide short_name and version, implementing the
    concept ID as a `@cached_property` on `Query` which asks CMR for the concept ID makes
    sense to me.
@@ -107,30 +101,6 @@ The type annotations will help with this process!
 * Now that we're ripping things apart and changing parameters, I think it's important to
   replace the TypedDict annotations we're using with Pydantic models. This will enable us
   to better encapsulate validation code that's currently spread around.
-
-
-## Testing with Harmony
-
-Harmony is available for testing in the UAT environment.
-
-> [!NOTE]
-> ICESat-2 products will be available in production in early October 2024. If you're
-> reading this after that time, please talk to Amy Steiker about Harmony's current
-> status before investing time setting up to test with UAT. If prod is available, test
-> with prod.
-
-We will need to interact with everything (CMR, Earthdata Login, Harmony itself) in UAT
-for icepyx to work correctly.
-
-* URLs *temporarily* modified for UAT.
-* You need a separate Earthdata Login registration for UAT
-  (<https://uat.urs.earthdata.nasa.gov/>).
-* The UAT NSIDC provider name is `NSIDC_UAT`
-  (<https://cmr.uat.earthdata.nasa.gov/search/collections.json?provider=NSIDC_CUAT>).
-* To test in UAT (i.e. access data in `NSIDC_CUAT` provider), your Earthdata Login
-  account must be on an access control list. Ask NSIDC operations for help.
-    * The code *temporarily* uses `$EDL_TOKEN` envvar to authenticate with CMR. Populate
-      this envvar with your Earthdata Login token.
 
 
 ## Integrating with other ongoing Icepyx work

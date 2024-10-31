@@ -1,13 +1,14 @@
 from typing import Any
 
-import requests
-
-from icepyx.core.urls import CAPABILITIES_BASE_URL
+import harmony
 
 
 def get_capabilities(concept_id: str) -> dict[str, Any]:
-    response = requests.get(
-        CAPABILITIES_BASE_URL,
-        params={"collectionId": concept_id},
-    )
-    return response.json()
+    capabilities_request = harmony.CapabilitiesRequest(concept_id=concept_id)
+    # TODO: This will work if the user has a .netrc file available but the other
+    # auth options might fail. We might need to add harmony client auth to the
+    # icepyx auth package.
+    harmony_client = harmony.Client()
+    response = harmony_client.submit(capabilities_request)
+
+    return response

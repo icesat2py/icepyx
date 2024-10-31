@@ -1,3 +1,4 @@
+from itertools import chain
 import os
 from typing import Literal, Optional, Union, cast
 import warnings
@@ -8,6 +9,8 @@ from numpy.typing import NDArray
 from shapely.geometry import Polygon, box
 from shapely.geometry.polygon import orient
 
+import icepyx.core.exceptions
+
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 
 
@@ -16,7 +19,7 @@ ExtentType = Literal["bounding_box", "polygon"]
 
 def geodataframe(
     extent_type: ExtentType,
-    spatial_extent: Union[str, list[float]],
+    spatial_extent: Union[str, list[float], list[tuple[float, float]], Polygon],
     file: bool = False,
     xdateline: Optional[bool] = None,
 ) -> gpd.GeoDataFrame:
@@ -29,14 +32,17 @@ def geodataframe(
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
     spatial_extent :
-        A list containing the spatial extent OR a string containing a filename.
-        If file is False, spatial_extent should be a
-        list of coordinates in decimal degrees of [lower-left-longitude,
-        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
-        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
+        A list containing the spatial extent, a shapely.Polygon, a list of
+        tuples (i.e.,, `[(longitude1, latitude1), (longitude2, latitude2),
+        ...]`)containing floats, OR a string containing a filename.
+        If file is False, spatial_extent should be a shapely.Polygon,
+        list of bounding box coordinates in decimal degrees of [lower-left-longitude,
+        lower-left-latitute, upper-right-longitude, upper-right-latitude] or polygon vertices as
+        [longitude1, latitude1, longitude2, latitude2, ...
+        longitude_n,latitude_n, longitude1,latitude1].
 
-        If file is True, spatial_extent is a string containing the full file path and filename to the
-        file containing the desired spatial extent.
+        If file is True, spatial_extent is a string containing the full file path and filename
+        to the file containing the desired spatial extent.
 
     file :
         Indication for whether the spatial_extent string is a filename or coordinate list
@@ -65,7 +71,6 @@ def geodataframe(
     """
 
     # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
-    # DevGoal: Currently this branch isn't tested...
     if file is True:
         if extent_type == "polygon":
             return gpd.read_file(spatial_extent)
@@ -73,7 +78,24 @@ def geodataframe(
             raise TypeError("When 'file' is True, 'extent_type' must be 'polygon'")
 
     if isinstance(spatial_extent, str):
-        raise TypeError(f"Expected list of floats, received {spatial_extent=}")
+        raise TypeError(
+            f"Expected list of floats, list of tuples of floats, or Polygon, received {spatial_extent=}"
+        )
+
+    if isinstance(spatial_extent, Polygon):
+        # Convert `spatial_extent` into a list of floats like:
+        # `[longitude1, latitude1, longitude2, latitude2, ...]`
+        spatial_extent = [
+            float(coord) for point in spatial_extent.exterior.coords for coord in point
+        ]
+
+    # We are dealing with a `list[tuple[float, float]]`
+    if isinstance(spatial_extent, list) and isinstance(spatial_extent[0], tuple):
+        # Convert the list of tuples into a flat list of floats
+        spatial_extent = cast(list[tuple[float, float]], spatial_extent)
+        spatial_extent = list(chain.from_iterable(spatial_extent))
+
+    spatial_extent = cast(list[float], spatial_extent)
 
     if xdateline is not None:
         xdateline = xdateline
@@ -312,7 +334,7 @@ def validate_polygon_pairs(
 
 def validate_polygon_list(
     spatial_extent: Union[
-        list[Union[float, str]],
+        list[float],
         NDArray[np.floating],
     ],
 ) -> tuple[Literal["polygon"], list[float], None]:
@@ -327,7 +349,7 @@ def validate_polygon_list(
     Parameters
     ----------
     spatial_extent:
-        A list or np.ndarray of strings or numerics representing polygon coordinates,
+        A list or np.ndarray of numerics representing polygon coordinates,
         provided as coordinate pairs in decimal degrees in the order:
         [longitude1, latitude1, longitude2, latitude2, ...
         ... longitude_n,latitude_n, longitude1,latitude1]
@@ -411,14 +433,13 @@ def validate_polygon_file(
 
 class Spatial:
     _ext_type: ExtentType
-    _spatial_ext: list[float]
     _geom_file: Optional[str]
+    _spatial_ext: list[float]
 
     def __init__(
         self,
         spatial_extent: Union[
             str,  # Filepath
-            list[str],  # Bounding box or polygon
             list[float],  # Bounding box or polygon
             list[tuple[float, float]],  # Polygon
             NDArray,  # Polygon
@@ -436,7 +457,7 @@ class Spatial:
         ----------
         spatial_extent : list or string
             * list of coordinates
-             (stored in a list of strings, list of numerics, list of tuples, OR np.ndarray) as one of:
+             (stored in a list of numerics, list of tuples, OR np.ndarray) as one of:
                 * bounding box
                     * provided in the order: [lower-left-longitude, lower-left-latitude,
                                              upper-right-longitude, upper-right-latitude].)
@@ -542,7 +563,7 @@ class Spatial:
                     # HACK: Unfortunately, the typechecker can't narrow based on the
                     # above conditional expressions. Tell the typechecker, "trust us"!
                     cast(
-                        Union[list[Union[str, float]], NDArray[np.floating]],
+                        Union[list[float], NDArray[np.floating]],
                         spatial_extent,
                     )
                 )
@@ -730,9 +751,7 @@ class Spatial:
             return ",".join(map(str, extent))
 
         else:
-            # HACK: Pyright doesn't correctly understand this exhaustive check
-            #       see: https://github.com/microsoft/pyright/issues/8955
-            raise RuntimeError("Programmer error!")
+            raise icepyx.core.exceptions.ExhaustiveTypeGuardException
 
     def fmt_for_EGI(self) -> str:
         """
@@ -761,6 +780,4 @@ class Spatial:
             return egi_extent.replace(" ", "")  # remove spaces for API call
 
         else:
-            # HACK: Pyright doesn't correctly understand this exhaustive check
-            #       see: https://github.com/microsoft/pyright/issues/8955
-            raise RuntimeError("Programmer error!")
+            raise icepyx.core.exceptions.ExhaustiveTypeGuardException

@@ -740,10 +740,9 @@ class Query(GenQuery, EarthdataAuthMixin):
     def granules(self) -> Granules:
         """
         Return the granules object, which provides the underlying functionality
-        hing, ordering,
-        and downloading granules for the specified product.
-        Users are encouraged to use the built-in wrappers
-        rather than trying to access the granules object themselves.
+        for searching, ordering, and downloading granules for the specified
+        product.  Users are encouraged to use the built-in wrappers rather than
+        trying to access the granules object themselves.
 
         See Also
         --------

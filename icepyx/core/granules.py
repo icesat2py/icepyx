@@ -25,6 +25,7 @@ from icepyx.core.types import (
     EGIRequiredParamsSearch,
 )
 from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
+from icepyx.uat import EDL_ACCESS_TOKEN
 
 
 def info(grans: list[dict]) -> dict[str, Union[int, float]]:
@@ -228,7 +229,11 @@ class Granules(EarthdataAuthMixin):
         # if not hasattr(self, 'avail'):
         self.avail = []
 
-        headers = {"Accept": "application/json", "Client-Id": "icepyx"}
+        headers = {
+            "Accept": "application/json",
+            "Client-Id": "icepyx",
+            "Authorization": f"Bearer {EDL_ACCESS_TOKEN}",
+        }
         # note we should also check for errors whenever we ping NSIDC-API -
         # make a function to check for errors
 
@@ -332,6 +337,7 @@ class Granules(EarthdataAuthMixin):
         --------
         query.Query.order_granules
         """
+        raise icepyx.core.exceptions.RefactoringException
 
         self.get_avail(CMRparams, reqparams)
 
@@ -366,6 +372,7 @@ class Granules(EarthdataAuthMixin):
                 total_pages,
                 " is submitting to NSIDC",
             )
+            breakpoint()
             request_params.update({"page_num": page_num})
 
             request = self.session.get(ORDER_BASE_URL, params=request_params)
@@ -522,10 +529,6 @@ class Granules(EarthdataAuthMixin):
         See Also
         --------
         query.Query.download_granules
-        """
-        """
-        extract : boolean, default False
-            Unzip the downloaded granules.
         """
 
         # DevNote: this will replace any existing orderIDs with the saved list

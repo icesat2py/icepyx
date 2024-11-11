@@ -10,7 +10,8 @@ from typing_extensions import Never
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.exceptions import DeprecationError
+from icepyx.core.cmr import get_concept_id
+from icepyx.core.exceptions import DeprecationError, RefactoringException
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
@@ -464,6 +465,13 @@ class Query(GenQuery, EarthdataAuthMixin):
             self.spatial_extent, self.dates, self.product, self.product_version
         )
 
+    @cached_property
+    def concept_id(self) -> str:
+        return get_concept_id(
+            product=self.product,
+            version=self.product_version,
+        )
+
     @property
     def dataset(self) -> Never:
         """
@@ -605,6 +613,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a.reqparams # doctest: +SKIP
         {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
+        raise RefactoringException
 
         if not hasattr(self, "_reqparams"):
             self._reqparams = apifmt.Parameters("required", reqtype="search")
@@ -641,6 +650,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         {'time': '2019-02-20T00:00:00,2019-02-28T23:59:59',
         'bbox': '-55.0,68.0,-48.0,71.0'}
         """
+        raise RefactoringException
+
         if not hasattr(self, "_subsetparams"):
             self._subsetparams = apifmt.Parameters("subset")
 
@@ -977,16 +988,16 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         Parameters
         ----------
-        verbose : boolean, default False
+        verbose :
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
-        subset : boolean, default True
+        subset :
             Apply subsetting to the data order from the NSIDC, returning only data that meets the
             subset parameters. Spatial and temporal subsetting based on the input parameters happens
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email: boolean, default False
+        email :
             Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
             The emails are sent to the account associated with your Earthdata account.
         **kwargs : key-value pairs
@@ -1013,6 +1024,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         .
         Retry request status is: complete
         """
+        breakpoint()
+        raise RefactoringException
 
         if not hasattr(self, "reqparams"):
             self.reqparams
@@ -1106,10 +1119,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         See Also
         --------
         granules.download
-        """
-        """
-        extract : boolean, default False
-            Unzip the downloaded granules.
 
         Examples
         --------
@@ -1131,6 +1140,8 @@ class Query(GenQuery, EarthdataAuthMixin):
                 or len(self.granules.orderIDs) == 0
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
+        breakpoint()
+        raise RefactoringException
 
         self.granules.download(verbose, path, restart=restart)
 

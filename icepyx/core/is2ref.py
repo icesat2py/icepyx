@@ -8,7 +8,8 @@ import h5py
 import numpy as np
 import requests
 
-from icepyx.core.urls import COLLECTION_SEARCH_BASE_URL, EGI_BASE_URL
+from icepyx.core.exceptions import RefactoringException
+from icepyx.core.urls import COLLECTION_SEARCH_BASE_URL
 
 # ICESat-2 specific reference functions
 
@@ -92,15 +93,20 @@ def about_product(prod: str) -> dict:
 # DevGoal: use a mock of this output to test later functions, such as displaying options and widgets, etc.
 # options to get customization options for ICESat-2 data (though could be used generally)
 def _get_custom_options(session, product, version):
-    """
-    Get lists of what customization options are available for the product from NSIDC.
-    """
+    """Get lists of available customization options from Harmony."""
+    raise RefactoringException
+
     cust_options = {}
 
     if session is None:
         raise ValueError(
             "Don't forget to log in to Earthdata using query.earthdata_login()"
         )
+
+    # concept_id_query_url = f"{COLLECTION_SEARCH_BASE_URL}?short_name={product}&version={version}"
+    # concept_id = session.get(concept_id_query_url).json()["feed"]["entry"][-1]["id"]
+    # capability_url = f"{CAPABILITIES_BASE_URL}?collectionId={concept_id}"
+    # response_json = session.get(capability_url).json()
 
     capability_url = f"{EGI_BASE_URL}/capabilities/{product}.{version}.xml"
     response = session.get(capability_url)
@@ -111,6 +117,7 @@ def _get_custom_options(session, product, version):
     cust_options.update({"options": subagent})
 
     # reformatting
+    # cust_options.update({"fileformats": response_json["outputFormats"]})
     formats = [Format.attrib for Format in root.iter("Format")]
     format_vals = [formats[i]["value"] for i in range(len(formats))]
     try:

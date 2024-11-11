@@ -1,4 +1,3 @@
-from itertools import chain
 import os
 from typing import Literal, Optional, Union, cast
 import warnings
@@ -15,6 +14,59 @@ import icepyx.core.exceptions
 
 
 ExtentType = Literal["bounding_box", "polygon"]
+
+
+def _geodataframe_from_bounding_box(
+    spatial_extent: list[float],
+    xdateline: bool,
+) -> gpd.GeoDataFrame:
+    if xdateline is True:
+        cartesian_lons = [i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]]
+        cartesian_spatial_extent = [
+            item for pair in zip(cartesian_lons, spatial_extent[1::2]) for item in pair
+        ]
+        bbox = box(
+            cartesian_spatial_extent[0],
+            cartesian_spatial_extent[1],
+            cartesian_spatial_extent[2],
+            cartesian_spatial_extent[3],
+        )
+    else:
+        bbox = box(
+            spatial_extent[0],
+            spatial_extent[1],
+            spatial_extent[2],
+            spatial_extent[3],
+        )
+
+    # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
+    # HACK: Disabled Pyright due to issue
+    #       https://github.com/geopandas/geopandas/issues/3115
+    return gpd.GeoDataFrame(geometry=[bbox], crs="epsg:4326")  # pyright: ignore[reportCallIssue]
+
+
+def _geodataframe_from_polygon_list(
+    spatial_extent: list[float],
+    xdateline: bool,
+) -> gpd.GeoDataFrame:
+    if xdateline is True:
+        cartesian_lons = [i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]]
+        spatial_extent = [
+            item for pair in zip(cartesian_lons, spatial_extent[1::2]) for item in pair
+        ]
+
+    spatial_extent_geom = Polygon(
+        # syntax of dbl colon is- "start:stop:steps"
+        # 0::2 = start at 0, grab every other coord after
+        # 1::2 = start at 1, grab every other coord after
+        zip(spatial_extent[0::2], spatial_extent[1::2])
+    )  # spatial_extent
+    # TODO: check if the crs param should always just be epsg:4326 for everything OR if it should be a parameter
+    # HACK: Disabled Pyright due to issue
+    #       https://github.com/geopandas/geopandas/issues/3115
+    return gpd.GeoDataFrame(  # pyright: ignore[reportCallIssue]
+        index=[0], crs="epsg:4326", geometry=[spatial_extent_geom]
+    )
 
 
 def geodataframe(
@@ -69,6 +121,7 @@ def geodataframe(
     0    POLYGON ((-48 68, -48 71, -55 71, -55 68, -48 ...
     Name: geometry, dtype: geometry
     """
+    # DevGoal: the crs setting and management needs to be improved
 
     # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
     if file is True:
@@ -82,84 +135,38 @@ def geodataframe(
             f"Expected list of floats, list of tuples of floats, or Polygon, received {spatial_extent=}"
         )
 
-    if isinstance(spatial_extent, Polygon):
-        # Convert `spatial_extent` into a list of floats like:
-        # `[longitude1, latitude1, longitude2, latitude2, ...]`
-        spatial_extent = [
-            float(coord) for point in spatial_extent.exterior.coords for coord in point
-        ]
-
-    # We are dealing with a `list[tuple[float, float]]`
-    if isinstance(spatial_extent, list) and isinstance(spatial_extent[0], tuple):
-        # Convert the list of tuples into a flat list of floats
-        spatial_extent = cast(list[tuple[float, float]], spatial_extent)
-        spatial_extent = list(chain.from_iterable(spatial_extent))
-
-    spatial_extent = cast(list[float], spatial_extent)
-
-    if xdateline is not None:
-        xdateline = xdateline
-    else:
+    #### Non-file processing
+    if xdateline is None:
+        assert isinstance(spatial_extent, list)
+        assert isinstance(spatial_extent[0], float)
+        spatial_extent = cast(list[float], spatial_extent)
         xdateline = check_dateline(extent_type, spatial_extent)
 
-    if extent_type == "bounding_box":
-        if xdateline is True:
-            cartesian_lons = [i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]]
-            cartesian_spatial_extent = [
-                item
-                for pair in zip(cartesian_lons, spatial_extent[1::2])
-                for item in pair
-            ]
-            bbox = box(
-                cartesian_spatial_extent[0],
-                cartesian_spatial_extent[1],
-                cartesian_spatial_extent[2],
-                cartesian_spatial_extent[3],
-            )
-        else:
-            bbox = box(
-                spatial_extent[0],
-                spatial_extent[1],
-                spatial_extent[2],
-                spatial_extent[3],
-            )
-
-        # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
-        # HACK: Disabled Pyright due to issue
-        #       https://github.com/geopandas/geopandas/issues/3115
-        return gpd.GeoDataFrame(geometry=[bbox], crs="epsg:4326")  # pyright: ignore[reportCallIssue]
-
     # DevGoal: Currently this if/else within this elif are not tested...
-    # DevGoal: the crs setting and management needs to be improved
+    if extent_type == "bounding_box":
+        assert isinstance(spatial_extent, list)
+        assert isinstance(spatial_extent[0], float)
+        spatial_extent = cast(list[float], spatial_extent)
+        return _geodataframe_from_bounding_box(
+            spatial_extent=spatial_extent,
+            xdateline=xdateline,
+        )
 
     elif extent_type == "polygon":
         # if spatial_extent is already a Polygon
         if isinstance(spatial_extent, Polygon):
             spatial_extent_geom = spatial_extent
+            return gpd.GeoDataFrame(  # pyright: ignore[reportCallIssue]
+                index=[0], crs="epsg:4326", geometry=[spatial_extent_geom]
+            )
 
-        # else, spatial_extent must be a list of floats (or list of tuples of floats)
-        else:
-            if xdateline is True:
-                cartesian_lons = [
-                    i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]
-                ]
-                spatial_extent = [
-                    item
-                    for pair in zip(cartesian_lons, spatial_extent[1::2])
-                    for item in pair
-                ]
-
-            spatial_extent_geom = Polygon(
-                # syntax of dbl colon is- "start:stop:steps"
-                # 0::2 = start at 0, grab every other coord after
-                # 1::2 = start at 1, grab every other coord after
-                zip(spatial_extent[0::2], spatial_extent[1::2])
-            )  # spatial_extent
-        # TODO: check if the crs param should always just be epsg:4326 for everything OR if it should be a parameter
-        # HACK: Disabled Pyright due to issue
-        #       https://github.com/geopandas/geopandas/issues/3115
-        return gpd.GeoDataFrame(  # pyright: ignore[reportCallIssue]
-            index=[0], crs="epsg:4326", geometry=[spatial_extent_geom]
+        # The input must be a list of floats.
+        assert isinstance(spatial_extent, list)
+        assert isinstance(spatial_extent[0], float)
+        spatial_extent = cast(list[float], spatial_extent)
+        return _geodataframe_from_polygon_list(
+            spatial_extent=spatial_extent,
+            xdateline=xdateline,
         )
 
     else:
@@ -171,6 +178,8 @@ def geodataframe(
 
 def check_dateline(
     extent_type: ExtentType,
+    # TODO: I think this is actually wrong. It expects a different type of
+    # spatial_extent depending on the `extent_type`, showing below.
     spatial_extent: list[float],
 ) -> bool:
     """
@@ -193,6 +202,7 @@ def check_dateline(
         indicating whether or not the spatial extent crosses the dateline.
     """
     if extent_type == "bounding_box":
+        # We expect the bounding_box to be a list of floats.
         if spatial_extent[0] > spatial_extent[2]:
             # if lower left lon is larger then upper right lon, verify the values are crossing the dateline
             assert spatial_extent[0] - 360 <= spatial_extent[2]
@@ -208,6 +218,8 @@ def check_dateline(
 
     # this works properly, but limits the user to at most 270 deg longitude...
     elif extent_type == "polygon":
+        # This checks that the first instance of `spatial_extent` NOT a list or
+        # a tuple. Assumes that this is a list of floats.
         assert not isinstance(
             spatial_extent[0], (list, tuple)
         ), "Your polygon list is the wrong format for this function."

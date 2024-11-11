@@ -1,3 +1,4 @@
+from itertools import chain
 import os
 from typing import Literal, Optional, Union, cast
 import warnings
@@ -14,6 +15,33 @@ import icepyx.core.exceptions
 
 
 ExtentType = Literal["bounding_box", "polygon"]
+
+
+def _convert_spatial_extent_to_list_of_floats(
+    spatial_extent: Union[list[float], list[tuple[float, float]], Polygon],
+) -> list[float]:
+    # This is already a list of floats
+    if isinstance(spatial_extent, list) and isinstance(spatial_extent[0], float):
+        spatial_extent = cast(list[float], spatial_extent)
+        return spatial_extent
+    elif isinstance(spatial_extent, Polygon):
+        # Convert `spatial_extent` into a list of floats like:
+        # `[longitude1, latitude1, longitude2, latitude2, ...]`
+        spatial_extent = [
+            float(coord) for point in spatial_extent.exterior.coords for coord in point
+        ]
+        return spatial_extent
+    elif isinstance(spatial_extent, list) and isinstance(spatial_extent[0], tuple):
+        # Convert the list of tuples into a flat list of floats
+        spatial_extent = cast(list[tuple[float, float]], spatial_extent)
+        spatial_extent = list(chain.from_iterable(spatial_extent))
+        return spatial_extent
+    else:
+        raise TypeError(
+            "Unrecognized spatial_extent that"
+            " cannot be converted into a list of floats:"
+            f"{spatial_extent=}"
+        )
 
 
 def _geodataframe_from_bounding_box(
@@ -136,19 +164,22 @@ def geodataframe(
         )
 
     #### Non-file processing
+    # Most functions that this function calls requires the spatial extent as a
+    # list of floats. This function provides that.
+    spatial_extent_list = _convert_spatial_extent_to_list_of_floats(
+        spatial_extent=spatial_extent,
+    )
+
     if xdateline is None:
-        assert isinstance(spatial_extent, list)
-        assert isinstance(spatial_extent[0], float)
-        spatial_extent = cast(list[float], spatial_extent)
-        xdateline = check_dateline(extent_type, spatial_extent)
+        xdateline = check_dateline(
+            extent_type,
+            spatial_extent_list,
+        )
 
     # DevGoal: Currently this if/else within this elif are not tested...
     if extent_type == "bounding_box":
-        assert isinstance(spatial_extent, list)
-        assert isinstance(spatial_extent[0], float)
-        spatial_extent = cast(list[float], spatial_extent)
         return _geodataframe_from_bounding_box(
-            spatial_extent=spatial_extent,
+            spatial_extent=spatial_extent_list,
             xdateline=xdateline,
         )
 
@@ -161,11 +192,8 @@ def geodataframe(
             )
 
         # The input must be a list of floats.
-        assert isinstance(spatial_extent, list)
-        assert isinstance(spatial_extent[0], float)
-        spatial_extent = cast(list[float], spatial_extent)
         return _geodataframe_from_polygon_list(
-            spatial_extent=spatial_extent,
+            spatial_extent=spatial_extent_list,
             xdateline=xdateline,
         )
 

@@ -386,8 +386,14 @@ def test_bad_poly_inputfile_type_throws_error():
 
 
 def test_gdf_from_one_bbox():
-    obs = spat.geodataframe("bounding_box", [-55, 68, -48, 71])
-    geom = [Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))]
+    obs = spat.geodataframe("bounding_box", [-55.0, 68.0, -48.0, 71.0])
+    geom = [
+        Polygon(
+            list(
+                zip([-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0])
+            )
+        )
+    ]
     exp = gpd.GeoDataFrame(geometry=geom)
 
     # make sure there is only one geometry before comparing them
@@ -397,8 +403,14 @@ def test_gdf_from_one_bbox():
 
 
 def test_gdf_from_multi_bbox():
-    obs = spat.geodataframe("bounding_box", [-55, 68, -48, 71])
-    geom = [Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))]
+    obs = spat.geodataframe("bounding_box", [-55.0, 68.0, -48.0, 71.0])
+    geom = [
+        Polygon(
+            list(
+                zip([-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0])
+            )
+        )
+    ]
     exp = gpd.GeoDataFrame(geometry=geom)
 
     # make sure there is only one geometry before comparing them
@@ -408,7 +420,9 @@ def test_gdf_from_multi_bbox():
 
 
 def test_gdf_from_polygon():
-    polygon = Polygon(list(zip([-55, -55, -48, -48, -55], [68, 71, 71, 68, 68])))
+    polygon = Polygon(
+        list(zip([-55.0, -55.0, -48.0, -48.0, -55.0], [68.0, 71.0, 71.0, 68.0, 68.0]))
+    )
     obs = spat.geodataframe("polygon", polygon)
     exp = gpd.GeoDataFrame(geometry=[polygon])
 
@@ -492,7 +506,7 @@ def test_bad_extent_type_input():
         r"Your spatial extent type (polybox) is not an accepted input and a geodataframe cannot be constructed"
     )
     with pytest.raises(TypeError, match=ermsg):
-        spat.geodataframe("polybox", [1, 2, 3, 4])
+        spat.geodataframe("polybox", [1.0, 2.0, 3.0, 4.0])
 
 
 # ###################### END GEOM FILE INPUT TESTS ####################################################################

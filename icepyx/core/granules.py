@@ -334,6 +334,8 @@ class Granules(EarthdataAuthMixin):
         """
         # raise icepyx.core.exceptions.RefactoringException
 
+        # TODO: this returns granules for collections that do not match our
+        # query. Why? Is this expected or a bug?
         self.get_avail(CMRparams, reqparams)
 
         # TODO: the harmony API may not support non-subsetting. So we may need

@@ -1,7 +1,7 @@
 import datetime as dt
 from functools import cached_property
 import pprint
-from typing import Optional, Union, cast
+from typing import Optional, Union
 
 import geopandas as gpd
 import holoviews as hv
@@ -17,11 +17,8 @@ from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
-from icepyx.core.types import (
+from icepyx.core.types.api import (
     CMRParams,
-    EGIParamsSubset,
-    EGIRequiredParams,
-    EGIRequiredParamsDownload,
 )
 import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables as Variables
@@ -597,7 +594,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._CMRparams.fmted_keys
 
     @property
-    def reqparams(self) -> EGIRequiredParams:
+    def reqparams(self):  # -> EGIRequiredParams:
         """
         Display the required key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist.
@@ -613,8 +610,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a.reqparams # doctest: +SKIP
         {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
-        raise RefactoringException
-
         if not hasattr(self, "_reqparams"):
             self._reqparams = apifmt.Parameters("required", reqtype="search")
             self._reqparams.build_params(product=self.product, version=self._version)
@@ -624,7 +619,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # @property
     # DevQuestion: if I make this a property, I get a "dict" object is not callable
     # when I try to give input kwargs... what approach should I be taking?
-    def subsetparams(self, **kwargs) -> Union[EGIParamsSubset, dict[Never, Never]]:
+    def subsetparams(self, **kwargs):  # -> Union[EGIParamsSubset, dict[Never, Never]]:
         """
         Display the subsetting key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist
@@ -650,7 +645,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         {'time': '2019-02-20T00:00:00,2019-02-28T23:59:59',
         'bbox': '-55.0,68.0,-48.0,71.0'}
         """
-        raise RefactoringException
+        # raise RefactoringException
 
         if not hasattr(self, "_subsetparams"):
             self._subsetparams = apifmt.Parameters("subset")
@@ -665,6 +660,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             # If the user has supplied a subset list of variables, append the
             # icepyx required variables to the Coverage dict
+            # TODO: this is not supported in Harmony.
             if "Coverage" in kwargs:
                 var_list = [
                     "orbit_info/sc_orient",
@@ -690,13 +686,13 @@ class Query(GenQuery, EarthdataAuthMixin):
                 self._subsetparams.build_params(
                     geom_filepath=self._spatial._geom_file,
                     extent_type=self._spatial._ext_type,
-                    spatial_extent=self._spatial.fmt_for_EGI(),
+                    spatial_extent=self._spatial.fmt_for_harmony(),
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
                     extent_type=self._spatial._ext_type,
-                    spatial_extent=self._spatial.fmt_for_EGI(),
+                    spatial_extent=self._spatial.fmt_for_harmony(),
                     **kwargs,
                 )
 
@@ -1024,12 +1020,13 @@ class Query(GenQuery, EarthdataAuthMixin):
         .
         Retry request status is: complete
         """
-        breakpoint()
-        raise RefactoringException
+        # breakpoint()
+        # raise RefactoringException
 
-        if not hasattr(self, "reqparams"):
-            self.reqparams
-
+        # TODO: this probably shouldn't be mutated based on which method is being called...
+        # It is also very confusing to have both `self.reqparams` and
+        # `self._reqparams`, each of which does something different!
+        self.reqparams
         if self._reqparams._reqtype == "search":
             self._reqparams._reqtype = "download"
 
@@ -1065,7 +1062,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 tempCMRparams["readable_granule_name[]"] = gran
                 self.granules.place_order(
                     tempCMRparams,
-                    cast(EGIRequiredParamsDownload, self.reqparams),
+                    self.reqparams,
                     self.subsetparams(**kwargs),
                     verbose,
                     subset,
@@ -1075,7 +1072,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             self.granules.place_order(
                 self.CMRparams,
-                cast(EGIRequiredParamsDownload, self.reqparams),
+                self.reqparams,
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,

@@ -1004,7 +1004,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         self,
         verbose: bool = False,
         subset: bool = True,
-        email: bool = False,
         **kwargs,
     ) -> None:
         """
@@ -1021,9 +1020,6 @@ class Query(GenQuery, EarthdataAuthMixin):
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email :
-            Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
-            The emails are sent to the account associated with your Earthdata account.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
@@ -1055,14 +1051,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         self.cmr_reqparams
         if self._cmr_reqparams._reqtype == "search":
             self._cmr_reqparams._reqtype = "download"
-
-        if "email" in self._cmr_reqparams.fmted_keys or email is False:
-            self._cmr_reqparams.build_params(**self._cmr_reqparams.fmted_keys)
-        elif email is True:
-            user_profile = self.auth.get_user_profile()  # pyright: ignore[reportAttributeAccessIssue]
-            self._cmr_reqparams.build_params(
-                **self._cmr_reqparams.fmted_keys, email=user_profile["email_address"]
-            )
 
         if subset is False:
             self._subsetparams = None

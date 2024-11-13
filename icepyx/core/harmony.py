@@ -46,9 +46,7 @@ class HarmonyApi(EarthdataAuthMixin):
         """
         collection = harmony.Collection(id=concept_id)
         request = harmony.Request(
-            collection=collection,
-            spatial=bounding_box,
-            temporal=temporal,
+            collection=collection, spatial=bounding_box, temporal=temporal
         )
 
         if not request.is_valid():

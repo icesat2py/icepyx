@@ -1052,6 +1052,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         ):
             del self._subsetparams
 
+        # TODO: this shouldn't be necessary:
+        cmr_params = {**self.CMRparams, **self.cmr_reqparams}
+
         # REFACTOR: add checks here to see if the granules object has been created,
         # and also if it already has a list of avail granules (if not, need to create one and add session)
 
@@ -1063,9 +1066,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         # take for its own internal queries to CMR, but it is unclear how that
         # works. See https://harmony.earthdata.nasa.gov/docs#query-parameters
         # `harmony-py` accepts `granule_name` as an input.
-        if "readable_granule_name[]" in self.CMRparams:
-            gran_name_list = self.CMRparams["readable_granule_name[]"]
-            tempCMRparams = self.CMRparams
+        if "readable_granule_name[]" in cmr_params:
+            gran_name_list = cmr_params["readable_granule_name[]"]
+            tempCMRparams = cmr_params.copy()
             if len(gran_name_list) > 1:
                 print(
                     "Harmony only allows ordering of one granule by name at a time;"
@@ -1083,7 +1086,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         else:
             self.granules.place_order(
-                self.CMRparams,
+                cmr_params,
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,

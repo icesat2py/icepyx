@@ -59,6 +59,6 @@ class HarmonyApi(EarthdataAuthMixin):
 
         return job_id
 
-    def check_order_status(self, job_id: str):
+    def check_order_status(self, job_id: str) -> dict[str, Any]:
         status = self.harmony_client.status(job_id)
         return status

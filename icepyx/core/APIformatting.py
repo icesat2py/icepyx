@@ -265,6 +265,9 @@ class Parameters(Generic[T]):
         self,
         partype: T,
         values: Optional[dict] = None,
+        # TODO: 'download" reqtype appears to never get used. `None` is most
+        # common, and `search` is passed in when creating required cmr
+        # parameters to search for matching granules.
         reqtype: Optional[Literal["search", "download"]] = None,
     ):
         assert partype in [

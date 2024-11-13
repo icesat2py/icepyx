@@ -571,8 +571,13 @@ class Query(GenQuery, EarthdataAuthMixin):
         # print(self._CMRparams)
         # print(self._CMRparams.fmted_keys)
 
-        # dictionary of optional CMR parameters
-        kwargs = {}
+        # create a dictionary of required and optional CMR parameters.
+        # Start by copying the required keys, formatted for CMR requests.
+        # TODO: This gets set at some point in the code, but later `CMRparams`
+        # lacks the values in `cmr_reqparams`! Why??
+        self.cmr_reqparams
+        kwargs = self._cmr_reqparams.fmted_keys.copy()
+
         # temporal CMR parameters
         if hasattr(self, "_temporal") and self.product != "ATL11":
             kwargs["start"] = self._temporal._start
@@ -594,9 +599,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._CMRparams.fmted_keys
 
     @property
-    def reqparams(self):  # -> EGIRequiredParams:
+    def cmr_reqparams(self):
         """
-        Display the required key:value pairs that will be submitted.
+        Display the required key:value pairs that will be submitted for a CMR request.
         It generates the dictionary if it does not already exist.
 
         Examples
@@ -611,10 +616,12 @@ class Query(GenQuery, EarthdataAuthMixin):
         {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
         if not hasattr(self, "_reqparams"):
-            self._reqparams = apifmt.Parameters("required", reqtype="search")
-            self._reqparams.build_params(product=self.product, version=self._version)
+            self._cmr_reqparams = apifmt.Parameters("required", reqtype="search")
+            self._cmr_reqparams.build_params(
+                product=self.product, version=self._version
+            )
 
-        return self._reqparams.fmted_keys
+        return self._cmr_reqparams.fmted_keys
 
     # @property
     # DevQuestion: if I make this a property, I get a "dict" object is not callable
@@ -955,7 +962,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         try:
             self.granules.avail
         except AttributeError:
-            self.granules.get_avail(self.CMRparams, self.reqparams)
+            self.granules.get_avail(self.CMRparams)
 
         if ids or cycles or tracks or cloud:
             # list of outputs in order of ids, cycles, tracks, cloud
@@ -1023,19 +1030,17 @@ class Query(GenQuery, EarthdataAuthMixin):
         # breakpoint()
         # raise RefactoringException
 
-        # TODO: this probably shouldn't be mutated based on which method is being called...
-        # It is also very confusing to have both `self.reqparams` and
-        # `self._reqparams`, each of which does something different!
-        self.reqparams
-        if self._reqparams._reqtype == "search":
-            self._reqparams._reqtype = "download"
+        # This call ensures that `self._cmr_reqparams` is set.
+        self.cmr_reqparams
+        if self._cmr_reqparams._reqtype == "search":
+            self._cmr_reqparams._reqtype = "download"
 
-        if "email" in self._reqparams.fmted_keys or email is False:
-            self._reqparams.build_params(**self._reqparams.fmted_keys)
+        if "email" in self._cmr_reqparams.fmted_keys or email is False:
+            self._cmr_reqparams.build_params(**self._cmr_reqparams.fmted_keys)
         elif email is True:
             user_profile = self.auth.get_user_profile()  # pyright: ignore[reportAttributeAccessIssue]
-            self._reqparams.build_params(
-                **self._reqparams.fmted_keys, email=user_profile["email_address"]
+            self._cmr_reqparams.build_params(
+                **self._cmr_reqparams.fmted_keys, email=user_profile["email_address"]
             )
 
         if subset is False:
@@ -1051,19 +1056,26 @@ class Query(GenQuery, EarthdataAuthMixin):
         # and also if it already has a list of avail granules (if not, need to create one and add session)
 
         # Place multiple orders, one per granule, if readable_granule_name is used.
+        # TODO/Question: is "readable granule name" a thing in harmony? This may
+        # only be relevant for non-subset requests that will be handled by e.g.,
+        # `earthaccess`.
+        # Answer: there appears to be a `granuleName` parameter that harmony can
+        # take for its own internal queries to CMR, but it is unclear how that
+        # works. See https://harmony.earthdata.nasa.gov/docs#query-parameters
+        # `harmony-py` accepts `granule_name` as an input.
         if "readable_granule_name[]" in self.CMRparams:
             gran_name_list = self.CMRparams["readable_granule_name[]"]
             tempCMRparams = self.CMRparams
             if len(gran_name_list) > 1:
                 print(
-                    "NSIDC only allows ordering of one granule by name at a time; your orders will be placed accordingly."
+                    "Harmony only allows ordering of one granule by name at a time;"
+                    " your orders will be placed accordingly."
                 )
             for gran in gran_name_list:
                 tempCMRparams["readable_granule_name[]"] = gran
                 self.granules.place_order(
                     tempCMRparams,
-                    self.reqparams,
-                    self.subsetparams(**kwargs),
+                    self.subsetparams(granule_name=gran, **kwargs),
                     verbose,
                     subset,
                     geom_filepath=self._spatial._geom_file,
@@ -1072,7 +1084,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             self.granules.place_order(
                 self.CMRparams,
-                self.reqparams,
                 self.subsetparams(**kwargs),
                 verbose,
                 subset,

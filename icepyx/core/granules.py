@@ -249,6 +249,7 @@ class Granules(EarthdataAuthMixin):
                 headers=headers,
                 params=apifmt.to_string(params),
             )
+            breakpoint()
 
             try:
                 cmr_search_after = response.headers["CMR-Search-After"]
@@ -287,7 +288,6 @@ class Granules(EarthdataAuthMixin):
     def place_order(
         self,
         CMRparams: CMRParams,
-        reqparams,  # : EGIRequiredParamsDownload,
         subsetparams,
         verbose,
         subset=True,
@@ -305,7 +305,7 @@ class Granules(EarthdataAuthMixin):
             Dictionary of properly formatted CMR search parameters.
         reqparams :
             Dictionary of properly formatted parameters required for searching, ordering,
-            or downloading from NSIDC (via their EGI system).
+            or downloading from NSASA (via harmony).
         subsetparams : dictionary
             Dictionary of properly formatted subsetting parameters. An empty dictionary
             is passed as input here when subsetting is set to False in query methods.
@@ -336,25 +336,21 @@ class Granules(EarthdataAuthMixin):
 
         # TODO: this returns granules for collections that do not match our
         # query. Why? Is this expected or a bug?
-        self.get_avail(CMRparams, reqparams)
+        breakpoint()
+        self.get_avail(CMRparams)
 
         # TODO: the harmony API may not support non-subsetting. So we may need
         # to provide a list of granules for harmony to download, or use a
         # different API.
         if subset is False:
-            request_params = apifmt.combine_params(
-                CMRparams, reqparams, {"agent": "NO"}
-            )
+            request_params = apifmt.combine_params(CMRparams, {"agent": "NO"})
         else:
-            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
+            request_params = apifmt.combine_params(CMRparams, subsetparams)
 
         concept_id = get_concept_id(
-            product=request_params["short_name"], version=request_params["version"]
+            product=request_params["short_name"],
+            version=request_params["version"],
         )
-
-        # TODO: At this point, the request parameters have been formatted into
-        # strings. `harmony-py` expects python objects (e.g., `dt.datetime` for
-        # temporal values)
 
         # Place the order.
         # TODO: there are probably other options we want to more generically
@@ -381,6 +377,8 @@ class Granules(EarthdataAuthMixin):
         # "paused", or "canceled" are documented here:
         # https://harmony.earthdata.nasa.gov/docs#getting-job-status
         # I have also seen `running` and `running_with_errors`.
+        # The list of possible statues are here:
+        # https://github.com/nasa/harmony/blob/8b2eb47feab5283d237f3679ac8e09f50e85038f/db/db.sql#L8
         while status["status"].startswith("running"):
             print(
                 "Your harmony order status is still ",

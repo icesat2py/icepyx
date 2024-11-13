@@ -623,6 +623,27 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         return self._cmr_reqparams.fmted_keys
 
+    def get_harmony_subset_order_params(self):
+        """TODO: this function will return the parameters for a harmony subset order.
+
+        Params are formatted for use with an `HarmonyAPI` instance. This
+        function will return all of the required and optional parameters.
+        """
+
+    def get_cmr_search_params(self):
+        """TODO: this function will return the parameters for a CMR search query.
+
+        Params are formatted for a CMR search URL. This function will return all
+        of the required and optional parameters.
+        """
+
+    def get_non_subset_order_params(self):
+        """TODO: this function will return the parameters for a non-subset order via earthaccess
+
+        Params are formatted for input into `earthaccess`. This function will
+        return all of the required and optional parameters.
+        """
+
     # @property
     # DevQuestion: if I make this a property, I get a "dict" object is not callable
     # when I try to give input kwargs... what approach should I be taking?

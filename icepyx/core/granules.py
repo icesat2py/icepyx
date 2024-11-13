@@ -185,6 +185,8 @@ class Granules(EarthdataAuthMixin):
         # self.files = files
         # session = session
 
+        orderIDs: list[str] = []
+
     # ----------------------------------------------------------------------
     # Methods
 
@@ -302,9 +304,9 @@ class Granules(EarthdataAuthMixin):
             temporal=subsetparams["time"],
         )
 
-        # TODO/Question: should this be changed from a list to a single value?
-        # There will only be one harmony job per request (I think)
-        self.orderIDs = [job_id]
+        # Append this job to the list of order ids.
+        self.orderIDs.append(job_id)
+
         order_fn = ".order_restart"
         with open(order_fn, "w") as fid:
             json.dump({"orderIDs": self.orderIDs}, fid)

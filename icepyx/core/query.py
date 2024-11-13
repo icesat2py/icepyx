@@ -997,68 +997,15 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             return granules.info(self.granules.avail)
 
-    # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
-    # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
-    # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(
-        self,
-        verbose: bool = False,
-        subset: bool = True,
-        **kwargs,
-    ) -> None:
-        """
-        Place an order for the available granules for the query object.
-
-        Parameters
-        ----------
-        verbose :
-            Print out all feedback available from the order process.
-            Progress information is automatically printed regardless of the value of verbose.
-        subset :
-            Apply subsetting to the data order from Harmony, returning only data that meets the
-            subset parameters. Spatial and temporal subsetting based on the input parameters happens
-            by default when subset=True, but additional subsetting options are available.
-            Spatial subsetting returns all data that are within the area of interest (but not complete
-            granules. This eliminates false-positive granules returned by the metadata-level search)
-        **kwargs : key-value pairs
-            Additional parameters to be passed to the subsetter.
-            By default temporal and spatial subset keys are passed.
-            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
-            The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
-            At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
-
-        See Also
-        --------
-        granules.place_order
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.order_granules() # doctest: +SKIP
-        order ID: [###############]
-        [order status output]
-        error messages:
-        [if any were returned from the NSIDC subsetter, e.g. No data found that matched subset constraints.]
-        .
-        .
-        .
-        Retry request status is: complete
-        """
-        if not subset:
-            raise NotImplementedError
-
+    def _order_subset_granules(self, **kwargs):
         # This call ensures that `self._cmr_reqparams` is set.
         self.cmr_reqparams
         if self._cmr_reqparams._reqtype == "search":
             self._cmr_reqparams._reqtype = "download"
 
-        if subset is False:
-            self._subsetparams = None
-        elif (
-            subset is True
-            and hasattr(self, "_subsetparams")
-            and self._subsetparams is None
-        ):
+        # TODO: is it necessary to delete the `self._subsetparams` attr? We are
+        # performing a subset so this seems the opposite of what is expected.
+        if hasattr(self, "_subsetparams") and self._subsetparams is None:
             del self._subsetparams
 
         # TODO: this shouldn't be necessary:
@@ -1085,18 +1032,74 @@ class Query(GenQuery, EarthdataAuthMixin):
                 )
             for gran in gran_name_list:
                 tempCMRparams["readable_granule_name[]"] = gran
-                self.granules.place_subset_order(
+                self.granules.place_harmony_subset_order(
                     tempCMRparams,
                     self.subsetparams(granule_name=gran, **kwargs),
                     geom_filepath=self._spatial._geom_file,
                 )
 
         else:
-            self.granules.place_subset_order(
+            self.granules.place_harmony_subset_order(
                 cmr_params,
                 self.subsetparams(**kwargs),
                 geom_filepath=self._spatial._geom_file,
             )
+
+    def _order_whole_granules(self):
+        raise NotImplementedError
+        self._subsetparams = None
+
+    # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
+    # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
+    # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
+    def order_granules(
+        self,
+        verbose: bool = False,
+        subset: bool = True,
+        **kwargs,
+    ) -> None:
+        """
+        Place an order for the available granules for the query object.
+
+        Parameters
+        ----------
+        verbose :
+            Print out all feedback available from the order process.
+            Progress information is automatically printed regardless of the value of verbose.
+        subset :
+            Apply subsetting to the data order from Harmony, returning only data that meets the
+            subset parameters. Spatial and temporal subsetting based on the input parameters happens
+            by default when subset=True, but additional subsetting options are available.
+            Spatial subsetting returns all data that are within the area of interest (but not complete
+            granules. This eliminates false-positive granules returned by the metadata-level search)
+        **kwargs : key-value pairs
+            Additional parameters to be passed to the subsetter.
+            By default temporal and spatial subset keys are passed.
+            Acceptable key values are [TODO].
+
+        See Also
+        --------
+        granules.place_order
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.order_granules() # doctest: +SKIP
+        order ID: [###############]
+        [order status output]
+        error messages:
+        [if any were returned from the NSIDC subsetter, e.g. No data found that matched subset constraints.]
+        .
+        .
+        .
+        Retry request status is: complete
+        """
+        if subset:
+            self._order_subset_granules(
+                **kwargs,
+            )
+        else:
+            self._order_whole_granules()
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
     def download_granules(

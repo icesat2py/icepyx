@@ -1016,7 +1016,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
         subset :
-            Apply subsetting to the data order from the NSIDC, returning only data that meets the
+            Apply subsetting to the data order from Harmony, returning only data that meets the
             subset parameters. Spatial and temporal subsetting based on the input parameters happens
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
@@ -1048,8 +1048,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         .
         Retry request status is: complete
         """
-        # breakpoint()
-        # raise RefactoringException
+        if not subset:
+            raise NotImplementedError
 
         # This call ensures that `self._cmr_reqparams` is set.
         self.cmr_reqparams
@@ -1097,20 +1097,16 @@ class Query(GenQuery, EarthdataAuthMixin):
                 )
             for gran in gran_name_list:
                 tempCMRparams["readable_granule_name[]"] = gran
-                self.granules.place_order(
+                self.granules.place_subset_order(
                     tempCMRparams,
                     self.subsetparams(granule_name=gran, **kwargs),
-                    verbose,
-                    subset,
                     geom_filepath=self._spatial._geom_file,
                 )
 
         else:
-            self.granules.place_order(
+            self.granules.place_subset_order(
                 cmr_params,
                 self.subsetparams(**kwargs),
-                verbose,
-                subset,
                 geom_filepath=self._spatial._geom_file,
             )
 

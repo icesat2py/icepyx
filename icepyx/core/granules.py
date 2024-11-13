@@ -283,11 +283,37 @@ class Granules(EarthdataAuthMixin):
             len(self.avail) > 0
         ), "Your search returned no results; try different search parameters"
 
-    def _place_harmony_subset_order(
+    def place_harmony_subset_order(
         self,
-        request_params,
+        # TODO: remove `CMRparams` from this function. This should only take subset params.
+        CMRparams,
         subsetparams,
+        # TODO: support passing in a geometry filepath
+        geom_filepath=None,
     ) -> list[str]:
+        """
+        Place a harmony subset order.
+
+        Parameters
+        ----------
+        CMRparams :
+            Dictionary of properly formatted CMR search parameters.
+        subsetparams : dictionary
+            Dictionary of properly formatted subsetting parameters. An empty dictionary
+            is passed as input here when subsetting is set to False in query methods.
+        geom_filepath : string, default None
+            String of the full filename and path when the spatial input is a file.
+
+        Notes
+        -----
+        This function is used by query.Query.order_granules(), which automatically
+        feeds in the required parameters.
+
+        See Also
+        --------
+        query.Query.order_granules
+        """
+        request_params = apifmt.combine_params(CMRparams, subsetparams)
         concept_id = get_concept_id(
             product=request_params["short_name"],
             version=request_params["version"],
@@ -347,55 +373,20 @@ class Granules(EarthdataAuthMixin):
 
         return self.orderIDs
 
-    def _place_non_subset_order(
+    def place_non_subset_order(
         self,
         CMRparams: CMRParams,
-    ):
-        # TODO: use e.g., `earthaccess` to download files un-processed by harmony.
-        raise NotImplementedError("Support for non-subset orders is not implemented.")
-        self.get_avail(CMRparams)
-        request_params = apifmt.combine_params(CMRparams, {"agent": "NO"})
-
-    # DevNote: currently, default subsetting DOES NOT include variable subsetting,
-    # only spatial and temporal
-    # DevGoal: add kwargs to allow subsetting and more control over request options.
-    def place_order(
-        self,
-        CMRparams: CMRParams,
-        subsetparams,
-        verbose,
-        subset=True,
-        geom_filepath=None,
     ):
         """
-        Place an order for the available granules for the query object.
-        Adds the list of zipped files (orders) to the granules data object (which is
-        stored as the `granules` attribute of the query object).
-        You must be logged in to Earthdata to use this function.
+        Place an order for data files with `earthaccess`.
 
         Parameters
         ----------
         CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams :
-            Dictionary of properly formatted parameters required for searching, ordering,
-            or downloading from NSASA (via harmony).
         subsetparams : dictionary
             Dictionary of properly formatted subsetting parameters. An empty dictionary
             is passed as input here when subsetting is set to False in query methods.
-        verbose : boolean, default False
-            Print out all feedback available from the order process.
-            Progress information is automatically printed regardless of the value of verbose.
-        subset : boolean, default True
-            Apply subsetting to the data order from the NSIDC, returning only data that meets the
-            subset parameters.
-            Spatial and temporal subsetting based on the input parameters happens
-            by default when subset=True, but additional subsetting options are available.
-            Spatial subsetting returns all data that are within the area of interest
-            (but not complete granules.
-            This eliminates false-positive granules returned by the metadata-level search)
-        geom_filepath : string, default None
-            String of the full filename and path when the spatial input is a file.
 
         Notes
         -----
@@ -406,17 +397,10 @@ class Granules(EarthdataAuthMixin):
         --------
         query.Query.order_granules
         """
-        if subset is False:
-            self._place_non_subset_order(CMRparams)
-        else:
-            # TODO: why are we combining these like this? We could just pass in
-            # these values separately. Eventually would like to collapse this
-            # down into just one `HarmonySubsetParams`.
-            request_params = apifmt.combine_params(CMRparams, subsetparams)
-            return self._place_harmony_subset_order(
-                request_params,
-                subsetparams,
-            )
+        # TODO: use e.g., `earthaccess` to download files un-processed by harmony.
+        raise NotImplementedError("Support for non-subset orders is not implemented.")
+        self.get_avail(CMRparams)
+        request_params = apifmt.combine_params(CMRparams, {"agent": "NO"})
 
     def download(self, verbose, path, restart=False):
         """

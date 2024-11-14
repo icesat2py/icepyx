@@ -1,7 +1,7 @@
 import datetime as dt
 from functools import cached_property
 import pprint
-from typing import Optional, Union, cast
+from typing import Optional, Union
 
 import geopandas as gpd
 import holoviews as hv
@@ -17,11 +17,8 @@ from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
-from icepyx.core.types import (
+from icepyx.core.types.api import (
     CMRParams,
-    EGIParamsSubset,
-    EGIRequiredParams,
-    EGIRequiredParamsDownload,
 )
 import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables as Variables
@@ -574,8 +571,13 @@ class Query(GenQuery, EarthdataAuthMixin):
         # print(self._CMRparams)
         # print(self._CMRparams.fmted_keys)
 
-        # dictionary of optional CMR parameters
-        kwargs = {}
+        # create a dictionary of required and optional CMR parameters.
+        # Start by copying the required keys, formatted for CMR requests.
+        # TODO: This gets set at some point in the code, but later `CMRparams`
+        # lacks the values in `cmr_reqparams`! Why??
+        self.cmr_reqparams
+        kwargs = self._cmr_reqparams.fmted_keys.copy()
+
         # temporal CMR parameters
         if hasattr(self, "_temporal") and self.product != "ATL11":
             kwargs["start"] = self._temporal._start
@@ -597,9 +599,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._CMRparams.fmted_keys
 
     @property
-    def reqparams(self) -> EGIRequiredParams:
+    def cmr_reqparams(self):
         """
-        Display the required key:value pairs that will be submitted.
+        Display the required key:value pairs that will be submitted for a CMR request.
         It generates the dictionary if it does not already exist.
 
         Examples
@@ -613,18 +615,49 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a.reqparams # doctest: +SKIP
         {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
         """
-        raise RefactoringException
-
         if not hasattr(self, "_reqparams"):
-            self._reqparams = apifmt.Parameters("required", reqtype="search")
-            self._reqparams.build_params(product=self.product, version=self._version)
+            self._cmr_reqparams = apifmt.Parameters("required", reqtype="search")
+            self._cmr_reqparams.build_params(
+                product=self.product, version=self._version
+            )
 
-        return self._reqparams.fmted_keys
+        return self._cmr_reqparams.fmted_keys
+
+    def get_harmony_subset_order_params(self):
+        """TODO: this method will return the parameters for a harmony subset order.
+
+        Params are formatted for use with an `HarmonyAPI` instance. This
+        function will return all of the required and optional parameters.
+        """
+
+    def get_cmr_search_params(self):
+        """TODO: this method will return the parameters for a CMR search query.
+
+        Params are formatted for a CMR search URL. This function will return all
+        of the required and optional parameters.
+        """
+        # This call ensures that `self._cmr_reqparams` is set.
+        self.cmr_reqparams
+
+        # This combines the CMRparams with the reqparams.
+        # CMR params are just the user-provided params. The cmr_reqparams
+        # contains the required CMR parameters that any request needs,
+        # regardless of user input.
+        cmr_params = {**self.CMRparams, **self.cmr_reqparams}
+
+        return cmr_params
+
+    def get_non_subset_order_params(self):
+        """TODO: this method will return the parameters for a non-subset order via earthaccess
+
+        Params are formatted for input into `earthaccess`. This function will
+        return all of the required and optional parameters.
+        """
 
     # @property
     # DevQuestion: if I make this a property, I get a "dict" object is not callable
     # when I try to give input kwargs... what approach should I be taking?
-    def subsetparams(self, **kwargs) -> Union[EGIParamsSubset, dict[Never, Never]]:
+    def subsetparams(self, **kwargs):  # -> Union[EGIParamsSubset, dict[Never, Never]]:
         """
         Display the subsetting key:value pairs that will be submitted.
         It generates the dictionary if it does not already exist
@@ -650,7 +683,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         {'time': '2019-02-20T00:00:00,2019-02-28T23:59:59',
         'bbox': '-55.0,68.0,-48.0,71.0'}
         """
-        raise RefactoringException
+        # raise RefactoringException
 
         if not hasattr(self, "_subsetparams"):
             self._subsetparams = apifmt.Parameters("subset")
@@ -665,6 +698,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             # If the user has supplied a subset list of variables, append the
             # icepyx required variables to the Coverage dict
+            # TODO: this is not supported in Harmony.
             if "Coverage" in kwargs:
                 var_list = [
                     "orbit_info/sc_orient",
@@ -690,13 +724,13 @@ class Query(GenQuery, EarthdataAuthMixin):
                 self._subsetparams.build_params(
                     geom_filepath=self._spatial._geom_file,
                     extent_type=self._spatial._ext_type,
-                    spatial_extent=self._spatial.fmt_for_EGI(),
+                    spatial_extent=self._spatial.fmt_for_harmony(),
                     **kwargs,
                 )
             else:
                 self._subsetparams.build_params(
                     extent_type=self._spatial._ext_type,
-                    spatial_extent=self._spatial.fmt_for_EGI(),
+                    spatial_extent=self._spatial.fmt_for_harmony(),
                     **kwargs,
                 )
 
@@ -959,7 +993,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         try:
             self.granules.avail
         except AttributeError:
-            self.granules.get_avail(self.CMRparams, self.reqparams)
+            self.granules.get_avail(self.CMRparams)
 
         if ids or cycles or tracks or cloud:
             # list of outputs in order of ids, cycles, tracks, cloud
@@ -973,6 +1007,57 @@ class Query(GenQuery, EarthdataAuthMixin):
         else:
             return granules.info(self.granules.avail)
 
+    def _order_subset_granules(self, **kwargs):
+        # This call ensures that `self._cmr_reqparams` is set.
+        self.cmr_reqparams
+        if self._cmr_reqparams._reqtype == "search":
+            self._cmr_reqparams._reqtype = "download"
+
+        # TODO: is it necessary to delete the `self._subsetparams` attr? We are
+        # performing a subset so this seems the opposite of what is expected.
+        if hasattr(self, "_subsetparams") and self._subsetparams is None:
+            del self._subsetparams
+
+        cmr_search_params = self.get_cmr_search_params()
+
+        # REFACTOR: add checks here to see if the granules object has been created,
+        # and also if it already has a list of avail granules (if not, need to create one and add session)
+
+        # Place multiple orders, one per granule, if readable_granule_name is used.
+        # TODO/Question: is "readable granule name" a thing in harmony? This may
+        # only be relevant for non-subset requests that will be handled by e.g.,
+        # `earthaccess`.
+        # Answer: there appears to be a `granuleName` parameter that harmony can
+        # take for its own internal queries to CMR, but it is unclear how that
+        # works. See https://harmony.earthdata.nasa.gov/docs#query-parameters
+        # `harmony-py` accepts `granule_name` as an input.
+        if "readable_granule_name[]" in cmr_params:
+            gran_name_list = cmr_params["readable_granule_name[]"]
+            tempCMRparams = cmr_params.copy()
+            if len(gran_name_list) > 1:
+                print(
+                    "Harmony only allows ordering of one granule by name at a time;"
+                    " your orders will be placed accordingly."
+                )
+            for gran in gran_name_list:
+                tempCMRparams["readable_granule_name[]"] = gran
+                self.granules.place_harmony_subset_order(
+                    tempCMRparams,
+                    self.subsetparams(granule_name=gran, **kwargs),
+                    geom_filepath=self._spatial._geom_file,
+                )
+
+        else:
+            self.granules.place_harmony_subset_order(
+                cmr_params,
+                self.subsetparams(**kwargs),
+                geom_filepath=self._spatial._geom_file,
+            )
+
+    def _order_whole_granules(self):
+        raise NotImplementedError
+        self._subsetparams = None
+
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
     # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
@@ -980,7 +1065,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         self,
         verbose: bool = False,
         subset: bool = True,
-        email: bool = False,
         **kwargs,
     ) -> None:
         """
@@ -992,20 +1076,15 @@ class Query(GenQuery, EarthdataAuthMixin):
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
         subset :
-            Apply subsetting to the data order from the NSIDC, returning only data that meets the
+            Apply subsetting to the data order from Harmony, returning only data that meets the
             subset parameters. Spatial and temporal subsetting based on the input parameters happens
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email :
-            Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
-            The emails are sent to the account associated with your Earthdata account.
         **kwargs : key-value pairs
             Additional parameters to be passed to the subsetter.
             By default temporal and spatial subset keys are passed.
-            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
-            The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
-            At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
+            Acceptable key values are [TODO].
 
         See Also
         --------
@@ -1024,63 +1103,12 @@ class Query(GenQuery, EarthdataAuthMixin):
         .
         Retry request status is: complete
         """
-        breakpoint()
-        raise RefactoringException
-
-        if not hasattr(self, "reqparams"):
-            self.reqparams
-
-        if self._reqparams._reqtype == "search":
-            self._reqparams._reqtype = "download"
-
-        if "email" in self._reqparams.fmted_keys or email is False:
-            self._reqparams.build_params(**self._reqparams.fmted_keys)
-        elif email is True:
-            user_profile = self.auth.get_user_profile()  # pyright: ignore[reportAttributeAccessIssue]
-            self._reqparams.build_params(
-                **self._reqparams.fmted_keys, email=user_profile["email_address"]
+        if subset:
+            self._order_subset_granules(
+                **kwargs,
             )
-
-        if subset is False:
-            self._subsetparams = None
-        elif (
-            subset is True
-            and hasattr(self, "_subsetparams")
-            and self._subsetparams is None
-        ):
-            del self._subsetparams
-
-        # REFACTOR: add checks here to see if the granules object has been created,
-        # and also if it already has a list of avail granules (if not, need to create one and add session)
-
-        # Place multiple orders, one per granule, if readable_granule_name is used.
-        if "readable_granule_name[]" in self.CMRparams:
-            gran_name_list = self.CMRparams["readable_granule_name[]"]
-            tempCMRparams = self.CMRparams
-            if len(gran_name_list) > 1:
-                print(
-                    "NSIDC only allows ordering of one granule by name at a time; your orders will be placed accordingly."
-                )
-            for gran in gran_name_list:
-                tempCMRparams["readable_granule_name[]"] = gran
-                self.granules.place_order(
-                    tempCMRparams,
-                    cast(EGIRequiredParamsDownload, self.reqparams),
-                    self.subsetparams(**kwargs),
-                    verbose,
-                    subset,
-                    geom_filepath=self._spatial._geom_file,
-                )
-
         else:
-            self.granules.place_order(
-                self.CMRparams,
-                cast(EGIRequiredParamsDownload, self.reqparams),
-                self.subsetparams(**kwargs),
-                verbose,
-                subset,
-                geom_filepath=self._spatial._geom_file,
-            )
+            self._order_whole_granules()
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
     def download_granules(

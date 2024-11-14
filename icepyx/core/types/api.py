@@ -1,11 +1,14 @@
-from typing import Literal, TypedDict, Union
+from typing import TypedDict, Union
 
-from typing_extensions import NotRequired
 from pydantic import BaseModel
+from typing_extensions import NotRequired
 
 CMRParamsBase = TypedDict(
     "CMRParamsBase",
     {
+        "short_name": str,
+        "version": str,
+        "page_size": int,
         "temporal": NotRequired[str],
         "options[readable_granule_name][pattern]": NotRequired[str],
         "options[spatial][or]": NotRequired[str],
@@ -25,4 +28,4 @@ class CMRParamsWithPolygon(CMRParamsBase):
 CMRParams = Union[CMRParamsWithBbox, CMRParamsWithPolygon]
 
 
-class HarmonyCoverageAPIParamsBase(BaseModel):
+class HarmonyCoverageAPIParamsBase(BaseModel): ...

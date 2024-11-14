@@ -8,24 +8,24 @@ import pprint
 import re
 import time
 from typing import Union
-from xml.etree import ElementTree as ET
 import zipfile
 
 import numpy as np
 import requests
-from requests.compat import unquote
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.cmr import CMR_PROVIDER
+from icepyx.core.cmr import CMR_PROVIDER, get_concept_id
 import icepyx.core.exceptions
-from icepyx.core.types import (
+from icepyx.core.harmony import HarmonyApi
+from icepyx.core.types.api import (
     CMRParams,
-    EGIRequiredParamsDownload,
-    EGIRequiredParamsSearch,
 )
-from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
-from icepyx.uat import EDL_ACCESS_TOKEN
+from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL
+
+# TODO: mix this into existing classes rather than declaring as a global
+# variable.
+HARMONY_API = HarmonyApi()
 
 
 def info(grans: list[dict]) -> dict[str, Union[int, float]]:
@@ -185,13 +185,14 @@ class Granules(EarthdataAuthMixin):
         # self.files = files
         # session = session
 
+        orderIDs: list[str] = []
+
     # ----------------------------------------------------------------------
     # Methods
 
     def get_avail(
         self,
         CMRparams: CMRParams,
-        reqparams: EGIRequiredParamsSearch,
         cloud: bool = False,
     ):
         """
@@ -222,9 +223,7 @@ class Granules(EarthdataAuthMixin):
         query.Query.avail_granules
         """
 
-        assert (
-            CMRparams is not None and reqparams is not None
-        ), "Missing required input parameter dictionaries"
+        assert CMRparams is not None, "Missing required input parameter dictionary"
 
         # if not hasattr(self, 'avail'):
         self.avail = []
@@ -232,14 +231,12 @@ class Granules(EarthdataAuthMixin):
         headers = {
             "Accept": "application/json",
             "Client-Id": "icepyx",
-            "Authorization": f"Bearer {EDL_ACCESS_TOKEN}",
         }
         # note we should also check for errors whenever we ping NSIDC-API -
         # make a function to check for errors
 
         params = apifmt.combine_params(
             CMRparams,
-            {k: reqparams[k] for k in ["short_name", "version", "page_size"]},
             {"provider": CMR_PROVIDER},
         )
 
@@ -286,45 +283,24 @@ class Granules(EarthdataAuthMixin):
             len(self.avail) > 0
         ), "Your search returned no results; try different search parameters"
 
-    # DevNote: currently, default subsetting DOES NOT include variable subsetting,
-    # only spatial and temporal
-    # DevGoal: add kwargs to allow subsetting and more control over request options.
-    def place_order(
+    def place_harmony_subset_order(
         self,
-        CMRparams: CMRParams,
-        reqparams: EGIRequiredParamsDownload,
+        # TODO: remove `CMRparams` from this function. This should only take subset params.
+        CMRparams,
         subsetparams,
-        verbose,
-        subset=True,
+        # TODO: support passing in a geometry filepath
         geom_filepath=None,
-    ):
+    ) -> list[str]:
         """
-        Place an order for the available granules for the query object.
-        Adds the list of zipped files (orders) to the granules data object (which is
-        stored as the `granules` attribute of the query object).
-        You must be logged in to Earthdata to use this function.
+        Place a harmony subset order.
 
         Parameters
         ----------
         CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams :
-            Dictionary of properly formatted parameters required for searching, ordering,
-            or downloading from NSIDC (via their EGI system).
         subsetparams : dictionary
             Dictionary of properly formatted subsetting parameters. An empty dictionary
             is passed as input here when subsetting is set to False in query methods.
-        verbose : boolean, default False
-            Print out all feedback available from the order process.
-            Progress information is automatically printed regardless of the value of verbose.
-        subset : boolean, default True
-            Apply subsetting to the data order from the NSIDC, returning only data that meets the
-            subset parameters.
-            Spatial and temporal subsetting based on the input parameters happens
-            by default when subset=True, but additional subsetting options are available.
-            Spatial subsetting returns all data that are within the area of interest
-            (but not complete granules.
-            This eliminates false-positive granules returned by the metadata-level search)
         geom_filepath : string, default None
             String of the full filename and path when the spatial input is a file.
 
@@ -337,171 +313,94 @@ class Granules(EarthdataAuthMixin):
         --------
         query.Query.order_granules
         """
-        raise icepyx.core.exceptions.RefactoringException
-
-        self.get_avail(CMRparams, reqparams)
-
-        if subset is False:
-            request_params = apifmt.combine_params(
-                CMRparams, reqparams, {"agent": "NO"}
-            )
-        else:
-            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
-
-        order_fn = ".order_restart"
-
-        total_pages = int(np.ceil(len(self.avail) / reqparams["page_size"]))
-        print(
-            "Total number of data order requests is ",
-            total_pages,
-            " for ",
-            len(self.avail),
-            " granules.",
+        request_params = apifmt.combine_params(CMRparams, subsetparams)
+        concept_id = get_concept_id(
+            product=request_params["short_name"],
+            version=request_params["version"],
         )
 
-        if reqparams["page_num"] > 0:
-            pagenums = [reqparams["page_num"]]
-        else:
-            pagenums = range(1, total_pages + 1)
+        # Place the order.
+        # TODO: there are probably other options we want to more generically
+        # expose here. E.g., instead of just accepting a `bounding_box` of a
+        # particular flavor, we want to be able to pass in a polygon?
+        job_id = HARMONY_API.place_order(
+            concept_id=concept_id,
+            # TODO: why the double-nested bbox dict here?
+            bounding_box=subsetparams["bbox"]["bbox"],
+            temporal=subsetparams["time"],
+        )
 
-        for page_num in pagenums:
-            print(
-                "Data request ",
-                page_num,
-                " of ",
-                total_pages,
-                " is submitting to NSIDC",
-            )
-            breakpoint()
-            request_params.update({"page_num": page_num})
+        # Append this job to the list of order ids.
+        self.orderIDs.append(job_id)
 
-            request = self.session.get(ORDER_BASE_URL, params=request_params)
-
-            # DevGoal: use the request response/number to do some error handling/
-            # give the user better messaging for failures
-            # print(request.content)
-            # root = ET.fromstring(request.content)
-            # print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
-
-            if verbose is True:
-                print("Request HTTP response: ", request.status_code)
-                # print('Order request URL: ', request.url)
-
-            # Raise bad request: Loop will stop for bad response code.
-            request.raise_for_status()
-            esir_root = ET.fromstring(request.content)
-            if verbose is True:
-                print("Order request URL: ", unquote(request.url))
-                print(
-                    "Order request response XML content: ",
-                    request.content.decode("utf-8"),
-                )
-
-            # Look up order ID
-            orderlist = []
-            for order in esir_root.findall("./order/"):
-                # if verbose is True:
-                #     print(order)
-                orderlist.append(order.text)
-            orderID = orderlist[0]
-            print("order ID: ", orderID)
-
-            # Create status URL
-            statusURL = f"{ORDER_BASE_URL}/{orderID}"
-            if verbose is True:
-                print("status URL: ", statusURL)
-
-            # Find order status
-            request_response = self.session.get(statusURL)
-            if verbose is True:
-                print(
-                    "HTTP response from order response URL: ",
-                    request_response.status_code,
-                )
-
-            # Raise bad request: Loop will stop for bad response code.
-            request_response.raise_for_status()
-            request_root = ET.fromstring(request_response.content)
-            statuslist = []
-            for status in request_root.findall("./requestStatus/"):
-                statuslist.append(status.text)
-            status = statuslist[0]
-            print("Initial status of your order request at NSIDC is: ", status)
-
-            loop_root = None
-            # If status is already finished without going into pending/processing
-            if status.startswith("complete"):
-                loop_response = self.session.get(statusURL)
-                loop_root = ET.fromstring(loop_response.content)
-
-            # Continue loop while request is still processing
-            while status == "pending" or status == "processing":
-                print(
-                    "Your order status is still ",
-                    status,
-                    " at NSIDC. Please continue waiting... this may take a few moments.",
-                )
-                # print('Status is not complete. Trying again')
-                time.sleep(10)
-                loop_response = self.session.get(statusURL)
-
-                # Raise bad request: Loop will stop for bad response code.
-                loop_response.raise_for_status()
-                loop_root = ET.fromstring(loop_response.content)
-
-                # find status
-                statuslist = []
-                for status in loop_root.findall("./requestStatus/"):
-                    statuslist.append(status.text)
-                status = statuslist[0]
-                # print('Retry request status is: ', status)
-                if status == "pending" or status == "processing":
-                    continue
-
-            if not isinstance(loop_root, ET.Element):
-                # The typechecker needs help knowing that at this point loop_root is
-                # set, as it can't tell that the conditionals above are supposed to be
-                # exhaustive.
-                raise icepyx.core.exceptions.ExhaustiveTypeGuardException
-
-            # Order can either complete, complete_with_errors, or fail:
-            # Provide complete_with_errors error message:
-            if status == "complete_with_errors" or status == "failed":
-                messagelist = []
-                for message in loop_root.findall("./processInfo/"):
-                    messagelist.append(message.text)
-                print("Your order is: ", status)
-                print("NSIDC provided these error messages:")
-                pprint.pprint(messagelist)
-
-            if status == "complete" or status == "complete_with_errors":
-                print("Your order is:", status)
-                messagelist = []
-                for message in loop_root.findall("./processInfo/info"):
-                    messagelist.append(message.text)
-                if messagelist != []:
-                    print("NSIDC returned these messages")
-                    pprint.pprint(messagelist)
-                if not hasattr(self, "orderIDs"):
-                    self.orderIDs = []
-
-                self.orderIDs.append(orderID)
-            else:
-                print("Request failed.")
-
-            # DevGoal: save orderIDs more frequently than just at the end for large orders
-            # (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
-            # Save orderIDs to file to avoid resubmitting order in case kernel breaks down.
-            # save orderIDs for every 5 orders when more than 10 orders are submitted.
-            if reqparams["page_num"] >= 10:
-                with open(order_fn, "w") as fid:
-                    json.dump({"orderIDs": self.orderIDs}, fid)
-
-        # --- Output the final orderIDs
+        order_fn = ".order_restart"
         with open(order_fn, "w") as fid:
             json.dump({"orderIDs": self.orderIDs}, fid)
 
+        print("order ID: ", job_id)
+        status = HARMONY_API.check_order_status(job_id)
+        print("Initial status of your harmony order request: ", status["status"])
+        # TODO: confirm which status responses we might expect. "running",
+        # "paused", or "canceled" are documented here:
+        # https://harmony.earthdata.nasa.gov/docs#getting-job-status
+        # I have also seen `running` and `running_with_errors`.
+        # The list of possible statues are here:
+        # https://github.com/nasa/harmony/blob/8b2eb47feab5283d237f3679ac8e09f50e85038f/db/db.sql#L8
+        while status["status"].startswith("running"):
+            print(
+                "Your harmony order status is still ",
+                status["status"],
+                ". Please continue waiting... this may take a few moments.",
+            )
+            # Requesting the status too often can result in a 500 error.
+            time.sleep(5)
+            status = HARMONY_API.check_order_status(job_id)
+
+        if status["status"] == "complete_with_errors" or status["status"] == "failed":
+            print("Your order is: ", status["status"])
+            print("Harmony provided these error messages:")
+            pprint.pprint(status["errors"])
+
+        # TODO: consider always printing the status message. There's no need for
+        # this check, and the message is relevant regardless of if there are
+        # errors or not. We could check for a failure status instead.
+        if status["status"] == "complete" or status["status"] == "complete_with_errors":
+            print("Your order is:", status["status"])
+            print("Harmony returned this message:")
+            pprint.pprint(status["message"])
+        else:
+            print(f"Request failed with status {status['status']}.")
+
         return self.orderIDs
+
+    def place_non_subset_order(
+        self,
+        CMRparams: CMRParams,
+    ):
+        """
+        Place an order for data files with `earthaccess`.
+
+        Parameters
+        ----------
+        CMRparams :
+            Dictionary of properly formatted CMR search parameters.
+        subsetparams : dictionary
+            Dictionary of properly formatted subsetting parameters. An empty dictionary
+            is passed as input here when subsetting is set to False in query methods.
+
+        Notes
+        -----
+        This function is used by query.Query.order_granules(), which automatically
+        feeds in the required parameters.
+
+        See Also
+        --------
+        query.Query.order_granules
+        """
+        # TODO: use e.g., `earthaccess` to download files un-processed by harmony.
+        raise NotImplementedError("Support for non-subset orders is not implemented.")
+        self.get_avail(CMRparams)
+        request_params = apifmt.combine_params(CMRparams, {"agent": "NO"})
 
     def download(self, verbose, path, restart=False):
         """

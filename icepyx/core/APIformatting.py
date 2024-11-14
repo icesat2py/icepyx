@@ -1,13 +1,12 @@
 """Generate and format information for submitting to API (CMR and NSIDC)."""
 
 import datetime as dt
-from typing import Any, Generic, Literal, Optional, TypeVar, Union, overload
+from typing import Any, Generic, Literal, Optional, TypeVar, overload
 
 from icepyx.core.exceptions import ExhaustiveTypeGuardException, TypeGuardException
-from icepyx.core.types import (
+from icepyx.core.harmony import HarmonyTemporal
+from icepyx.core.types.api import (
     CMRParams,
-    EGIParamsSubset,
-    EGIRequiredParams,
 )
 
 # ----------------------------------------------------------------------
@@ -38,18 +37,17 @@ def _fmt_temporal(start, end, key):
     assert isinstance(start, dt.datetime)
     assert isinstance(end, dt.datetime)
 
-    if key == "temporal":
+    if key == "temporal":  # search option.
         fmt_timerange = (
             start.strftime("%Y-%m-%dT%H:%M:%SZ")
             + ","
             + end.strftime("%Y-%m-%dT%H:%M:%SZ")
         )
-    elif key == "time":
-        fmt_timerange = (
-            start.strftime("%Y-%m-%dT%H:%M:%S")
-            + ","
-            + end.strftime("%Y-%m-%dT%H:%M:%S")
-        )
+    elif key == "time":  # subsetting option.
+        # Format for harmony. This will do subsetting.
+        # TODO: change `key` to something more clear. `temporal` is the key
+        # passed into Harmony, so this is very confusing!
+        fmt_timerange: HarmonyTemporal = {"start": start, "stop": end}
     else:
         raise ValueError("An invalid time key was submitted for formatting.")
 
@@ -212,20 +210,22 @@ class _FmtedKeysDescriptor:
         self,
         instance: 'Parameters[Literal["required"]]',
         owner: Any,
-    ) -> EGIRequiredParams: ...
+    ):  #  -> EGIRequiredParams: ...
+        ...
 
     @overload
     def __get__(
         self,
         instance: 'Parameters[Literal["subset"]]',
         owner: Any,
-    ) -> EGIParamsSubset: ...
+    ):  # -> EGIParamsSubset: ...
+        ...
 
     def __get__(
         self,
         instance: "Parameters",
         owner: Any,
-    ) -> Union[CMRParams, EGIRequiredParams, EGIParamsSubset]:
+    ) -> CMRParams:
         """
         Returns the dictionary of formatted keys associated with the
         parameter object.
@@ -265,6 +265,9 @@ class Parameters(Generic[T]):
         self,
         partype: T,
         values: Optional[dict] = None,
+        # TODO: 'download" reqtype appears to never get used. `None` is most
+        # common, and `search` is passed in when creating required cmr
+        # parameters to search for matching granules.
         reqtype: Optional[Literal["search", "download"]] = None,
     ):
         assert partype in [

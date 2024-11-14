@@ -624,21 +624,31 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._cmr_reqparams.fmted_keys
 
     def get_harmony_subset_order_params(self):
-        """TODO: this function will return the parameters for a harmony subset order.
+        """TODO: this method will return the parameters for a harmony subset order.
 
         Params are formatted for use with an `HarmonyAPI` instance. This
         function will return all of the required and optional parameters.
         """
 
     def get_cmr_search_params(self):
-        """TODO: this function will return the parameters for a CMR search query.
+        """TODO: this method will return the parameters for a CMR search query.
 
         Params are formatted for a CMR search URL. This function will return all
         of the required and optional parameters.
         """
+        # This call ensures that `self._cmr_reqparams` is set.
+        self.cmr_reqparams
+
+        # This combines the CMRparams with the reqparams.
+        # CMR params are just the user-provided params. The cmr_reqparams
+        # contains the required CMR parameters that any request needs,
+        # regardless of user input.
+        cmr_params = {**self.CMRparams, **self.cmr_reqparams}
+
+        return cmr_params
 
     def get_non_subset_order_params(self):
-        """TODO: this function will return the parameters for a non-subset order via earthaccess
+        """TODO: this method will return the parameters for a non-subset order via earthaccess
 
         Params are formatted for input into `earthaccess`. This function will
         return all of the required and optional parameters.
@@ -1008,8 +1018,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         if hasattr(self, "_subsetparams") and self._subsetparams is None:
             del self._subsetparams
 
-        # TODO: this shouldn't be necessary:
-        cmr_params = {**self.CMRparams, **self.cmr_reqparams}
+        cmr_search_params = self.get_cmr_search_params()
 
         # REFACTOR: add checks here to see if the granules object has been created,
         # and also if it already has a list of avail granules (if not, need to create one and add session)

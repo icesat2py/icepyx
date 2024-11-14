@@ -206,8 +206,6 @@ def geodataframe(
 
 def check_dateline(
     extent_type: ExtentType,
-    # TODO: I think this is actually wrong. It expects a different type of
-    # spatial_extent depending on the `extent_type`, showing below.
     spatial_extent: list[float],
 ) -> bool:
     """

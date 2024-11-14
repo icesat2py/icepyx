@@ -11,3 +11,6 @@ updates:
           - "*"  # Group all Actions updates into a single larger pull request
     schedule:
       interval: monthly
+    ignore:
+      - dependency-name: "sangonzal/repository-traffic-action"
+        versions: "v1"

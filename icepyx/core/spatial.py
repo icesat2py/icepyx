@@ -757,10 +757,10 @@ class Spatial:
 
         """
         # CMR keywords: ['bounding_box', 'polygon']
-        if self._ext_type == "bounding_box":
-            cmr_extent = ",".join(map(str, self._spatial_ext))
+        if self.extent_type == "bounding_box":
+            return ",".join(map(str, self._spatial_ext))
 
-        elif self._ext_type == "polygon":
+        elif self.extent_type == "polygon":
             poly = self.extent_as_gdf.geometry
 
             if any(
@@ -786,12 +786,10 @@ class Spatial:
                 neg_lons = [i if i < 181.0 else i - 360 for i in extent[0:-1:2]]
                 extent = [item for pair in zip(neg_lons, extent[1::2]) for item in pair]
 
-            cmr_extent = ",".join(map(str, extent))
+            return ",".join(map(str, extent))
 
         else:
             raise icepyx.core.exceptions.ExhaustiveTypeGuardException
-
-        return cmr_extent
 
     def fmt_for_EGI(self) -> str:
         """
@@ -809,17 +807,15 @@ class Spatial:
         """
 
         # subsetting keywords: ['bbox','Boundingshape'] - these are set in APIformatting
-        if self._ext_type == "bounding_box":
-            egi_extent = ",".join(map(str, self._spatial_ext))
+        if self.extent_type == "bounding_box":
+            return ",".join(map(str, self._spatial_ext))
 
         # TODO: add handling for polygons that cross the dateline
-        elif self._ext_type == "polygon":
+        elif self.extent_type == "polygon":
             poly = self.extent_as_gdf.geometry[0]
             poly = orient(poly, sign=1.0)
             egi_extent = gpd.GeoSeries(poly).to_json()
-            egi_extent = egi_extent.replace(" ", "")  # remove spaces for API call
+            return egi_extent.replace(" ", "")  # remove spaces for API call
 
         else:
             raise icepyx.core.exceptions.ExhaustiveTypeGuardException
-
-        return egi_extent

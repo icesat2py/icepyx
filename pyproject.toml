@@ -141,7 +141,6 @@ exclude = [
 ignore = [
   "icepyx/quest/*",
   "icepyx/core/auth.py",
-  "icepyx/core/is2ref.py",
   "icepyx/core/read.py",
   "icepyx/core/variables.py",
   "icepyx/core/visualization.py",

@@ -1,8 +1,10 @@
 import datetime as dt
+from functools import cached_property
 import pprint
 from typing import Optional, Union, cast
 
 import geopandas as gpd
+import holoviews as hv
 import matplotlib.pyplot as plt
 from typing_extensions import Never
 
@@ -148,14 +150,13 @@ class GenQuery:
         if date_range:
             self._temporal = tp.Temporal(date_range, start_time, end_time)
 
-    def __str__(self):
-        str = "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
+    def __str__(self) -> str:
+        return "Extent type: {0} \nCoordinates: {1}\nDate range: ({2}, {3})".format(
             self._spatial._ext_type,
             self._spatial._spatial_ext,
             self._temporal._start,
             self._temporal._end,
         )
-        return str
 
     # ----------------------------------------------------------------------
     # Properties
@@ -183,10 +184,10 @@ class GenQuery:
         ['No temporal parameters set']
         """
 
-        if hasattr(self, "_temporal"):
-            return self._temporal
-        else:
+        if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
+
+        return self._temporal
 
     @property
     def spatial(self) -> spat.Spatial:
@@ -276,11 +277,11 @@ class GenQuery:
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
-        else:
-            return [
-                self._temporal._start.strftime("%Y-%m-%d"),
-                self._temporal._end.strftime("%Y-%m-%d"),
-            ]  # could also use self._start.date()
+
+        return [
+            self._temporal._start.strftime("%Y-%m-%d"),
+            self._temporal._end.strftime("%Y-%m-%d"),
+        ]  # could also use self._start.date()
 
     @property
     def start_time(self) -> Union[list[str], str]:
@@ -303,8 +304,8 @@ class GenQuery:
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
-        else:
-            return self._temporal._start.strftime("%H:%M:%S")
+
+        return self._temporal._start.strftime("%H:%M:%S")
 
     @property
     def end_time(self) -> Union[list[str], str]:
@@ -327,8 +328,8 @@ class GenQuery:
         """
         if not hasattr(self, "_temporal"):
             return ["No temporal parameters set"]
-        else:
-            return self._temporal._end.strftime("%H:%M:%S")
+
+        return self._temporal._end.strftime("%H:%M:%S")
 
 
 # DevGoal: update docs throughout to allow for polygon spatial extent
@@ -458,14 +459,13 @@ class Query(GenQuery, EarthdataAuthMixin):
     # ----------------------------------------------------------------------
     # Properties
 
-    def __str__(self):
-        str = "Product {2} v{3}\n{0}\nDate range {1}".format(
+    def __str__(self) -> str:
+        return "Product {2} v{3}\n{0}\nDate range {1}".format(
             self.spatial_extent, self.dates, self.product, self.product_version
         )
-        return str
 
     @property
-    def dataset(self):
+    def dataset(self) -> Never:
         """
         Legacy property included to provide deprecation warning.
 
@@ -473,12 +473,12 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         product
         """
-        DeprecationError(
+        raise DeprecationError(
             "In line with most common usage, 'dataset' has been replaced by 'product'.",
         )
 
     @property
-    def product(self):
+    def product(self) -> str:
         """
         Return the short name product ID string associated with the query object.
 
@@ -491,7 +491,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._prod
 
     @property
-    def product_version(self):
+    def product_version(self) -> str:
         """
         Return the product version of the data object.
 
@@ -508,7 +508,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._version
 
     @property
-    def cycles(self):
+    def cycles(self) -> list[str]:
         """
         Return the unique ICESat-2 orbital cycle.
 
@@ -528,7 +528,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             return sorted(set(self._cycles))
 
     @property
-    def tracks(self):
+    def tracks(self) -> list[str]:
         """
         Return the unique ICESat-2 Reference Ground Tracks
 
@@ -694,7 +694,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # DevGoal: add to tests
     # DevGoal: add statements to the following vars properties to let the user know if they've got a mismatched source and vars type
     @property
-    def order_vars(self):
+    def order_vars(self) -> Variables:
         """
         Return the order variables object.
         This instance is generated when data is ordered from the NSIDC.
@@ -736,13 +736,13 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         return self._order_vars
 
-    @property
-    def granules(self):
+    @cached_property
+    def granules(self) -> Granules:
         """
-        Return the granules object, which provides the underlying functionality for searching, ordering,
-        and downloading granules for the specified product.
-        Users are encouraged to use the built-in wrappers
-        rather than trying to access the granules object themselves.
+        Return the granules object, which provides the underlying functionality
+        for searching, ordering, and downloading granules for the specified
+        product.  Users are encouraged to use the built-in wrappers rather than
+        trying to access the granules object themselves.
 
         See Also
         --------
@@ -753,20 +753,16 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         Examples
         --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # +SKIP
         >>> reg_a.granules # doctest: +SKIP
         <icepyx.core.granules.Granules at [location]>
         """
-
-        if not hasattr(self, "_granules") or self._granules is None:
-            self._granules = Granules()
-
-        return self._granules
+        return Granules()
 
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the product level
 
-    def product_summary_info(self):
+    def product_summary_info(self) -> None:
         """
         Display a summary of selected metadata for the specified version of the product
         of interest (the collection).
@@ -797,7 +793,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         for key in summ_keys:
             print(key, ": ", self._about_product["feed"]["entry"][-1][key])
 
-    def product_all_info(self):
+    def product_all_info(self) -> None:
         """
         Display all metadata about the product of interest (the collection).
 
@@ -812,7 +808,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             self._about_product = is2ref.about_product(self._prod)
         pprint.pprint(self._about_product)
 
-    def latest_version(self):
+    def latest_version(self) -> str:
         """
         A reference function to is2ref.latest_version.
 
@@ -826,7 +822,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
         return is2ref.latest_version(self.product)
 
-    def show_custom_options(self, dictview=False):
+    def show_custom_options(self, dictview=False) -> None:
         """
         Display customization/subsetting options available for this product.
 
@@ -902,7 +898,13 @@ class Query(GenQuery, EarthdataAuthMixin):
     # Methods - Granules (NSIDC-API)
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
-    def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):
+    def avail_granules(
+        self,
+        ids: bool = False,
+        cycles: bool = False,
+        tracks: bool = False,
+        cloud: bool = False,
+    ) -> Union[list[list[str]], dict[str, Union[int, float]]]:
         """
         Obtain information about the available granules for the query
         object's parameters. By default, a complete list of available granules is
@@ -943,8 +945,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
 
         #         REFACTOR: add test to make sure there's a session
-        if not hasattr(self, "_granules"):
-            self.granules
         try:
             self.granules.avail
         except AttributeError:
@@ -965,7 +965,13 @@ class Query(GenQuery, EarthdataAuthMixin):
     # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
     # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
     # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
+    def order_granules(
+        self,
+        verbose: bool = False,
+        subset: bool = True,
+        email: bool = False,
+        **kwargs,
+    ) -> None:
         """
         Place an order for the available granules for the query object.
 
@@ -1033,8 +1039,6 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         # REFACTOR: add checks here to see if the granules object has been created,
         # and also if it already has a list of avail granules (if not, need to create one and add session)
-        if not hasattr(self, "_granules"):
-            self.granules
 
         # Place multiple orders, one per granule, if readable_granule_name is used.
         if "readable_granule_name[]" in self.CMRparams:
@@ -1046,7 +1050,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 )
             for gran in gran_name_list:
                 tempCMRparams["readable_granule_name[]"] = gran
-                self._granules.place_order(
+                self.granules.place_order(
                     tempCMRparams,
                     cast(EGIRequiredParamsDownload, self.reqparams),
                     self.subsetparams(**kwargs),
@@ -1056,7 +1060,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 )
 
         else:
-            self._granules.place_order(
+            self.granules.place_order(
                 self.CMRparams,
                 cast(EGIRequiredParamsDownload, self.reqparams),
                 self.subsetparams(**kwargs),
@@ -1067,8 +1071,13 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
     def download_granules(
-        self, path, verbose=False, subset=True, restart=False, **kwargs
-    ):  # , extract=False):
+        self,
+        path: str,
+        verbose: bool = False,
+        subset: bool = True,
+        restart: bool = False,
+        **kwargs,
+    ) -> None:
         """
         Downloads the data ordered using order_granules.
 
@@ -1114,19 +1123,16 @@ class Query(GenQuery, EarthdataAuthMixin):
         #     os.mkdir(path)
         # os.chdir(path)
 
-        if not hasattr(self, "_granules"):
-            self.granules
-
         if restart is True:
             pass
         else:
             if (
-                not hasattr(self._granules, "orderIDs")
-                or len(self._granules.orderIDs) == 0
+                not hasattr(self.granules, "orderIDs")
+                or len(self.granules.orderIDs) == 0
             ):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
 
-        self._granules.download(verbose, path, restart=restart)
+        self.granules.download(verbose, path, restart=restart)
 
     # DevGoal: add testing? What do we test, and how, given this is a visualization.
     # DevGoal(long term): modify this to accept additional inputs, etc.
@@ -1134,7 +1140,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     # DevGoal: see Amy's data access notebook for a zoomed in map - implement here?
     def visualize_spatial_extent(
         self,
-    ):  # additional args, basemap, zoom level, cmap, export
+    ) -> None:  # additional args, basemap, zoom level, cmap, export
         """
         Creates a map displaying the input spatial extent
 
@@ -1164,7 +1170,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
             plt.show()
 
-    def visualize_elevation(self):
+    def visualize_elevation(self) -> tuple[hv.DynamicMap, hv.Layout]:
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles
         https://holoviz.org/tutorial/Large_Data.html

@@ -135,14 +135,14 @@ for icepyx to work correctly.
 
 ## Integrating with other ongoing Icepyx work
 
-Harmony is a major breaking change, so we'll be releasing it in Icepyx v2. 
+Harmony is a major breaking change, so we'll be releasing it in Icepyx v2.
 
 We know the community wants to break the API in some other ways, so we want to include those in v2 as well!
 
 * Some of Icepyx's Query functionality is already served by earthaccess; refactor or replace the `Query` class?
 * ?
 
-Jessica is currently determining who can help work on these changes, and what that looks like. *If you, the 
+Jessica is currently determining who can help work on these changes, and what that looks like. *If you, the
 Harmony/ECS migration developer, identify opportunities to easily replace portions of Icepyx with _earthaccess_
 or other libraries, take advantage of that opportunity.
 
@@ -171,3 +171,32 @@ Use the [OGC Coverages API](https://harmony.earthdata.nasa.gov/docs/api/)!
 See this thread on EOSDIS Slack for more details:
 
 <https://nsidc.slack.com/archives/CLC2SR1S6/p1716482829956969>
+
+
+# "take2"
+
+The above migration notes are related to the initial development effort to add
+harmony support to icepyx. This initial work assumed that icepyx would be
+directly making requests (via e.g., the `requests` library) to the harmony
+API. Further development revealed that [harmony-py]() should be used to interact
+with the harmony API. Moreover, there is a growing realization that
+[earthaccess]() can simplify large parts of icepyx as well.
+
+As these developments began to be worked into the existing code, it became more
+clear that more was being "broken" than added. Icepyx's code has a lot of
+handling of various parameters to ensure that they are formatted correctly for
+various APIs. Although this made sense when icepyx was first developed,
+`harmony-py` and `earthaccess` can replace much of this code.
+
+Instead of ripping out/refactoring large chunks of existing code in the `query`
+and `granules` modules, "take2" strives to replicate existing functionality
+exposed by icepyx through the development of new classes "from scratch".
+
+E.g,. the `queryv2` module provides a `QueryV2` class that should replicate the
+functionality of the `query.Query` class that is designed to interact with CMR
+and the NSIDC EGI ordering system that is being decommissioned.
+
+This approach lets the existing code and tests continue to work as expected
+while parallel functionality is developed using `harmony-py` and
+`earthaccess`. As this development progresses, tests can be migrated to use the
+new class.

@@ -553,6 +553,8 @@ class Read(EarthdataAuthMixin):
             pass
 
         ds = ds[grp_spec_vars].swap_dims({"delta_time": "photon_idx"})
+        # add the rest of the dimensions of length 1 from is2ds to ds
+        ds = ds.expand_dims(dim=[dim for dim in is2ds.dims if is2ds[dim].size == 1])
         is2ds = is2ds.assign(ds)
 
         return is2ds
@@ -812,7 +814,7 @@ class Read(EarthdataAuthMixin):
 
                 # if there are any deeper nested variables,
                 # get those so they have actual coordinates and add them
-                # this may apply to (at a minimum): ATL08
+                # this may apply to (at a minimum): ATL06, ATL08
                 if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
                     for grp_path2 in wanted_groups_list:
                         if grp_path in grp_path2:

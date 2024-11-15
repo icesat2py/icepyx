@@ -4,7 +4,7 @@ description = "Python tools for obtaining and working with ICESat-2 data"
 license = {file = "LICENSE"}
 readme = "README.rst"
 
-requires-python = ">=3.9"
+requires-python = ">=3.9, <3.13"
 dynamic = ["version", "dependencies"]
 
 authors = [

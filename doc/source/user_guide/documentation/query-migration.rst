@@ -39,6 +39,8 @@ Dev Questions and Considerations:
 that show equivalent earthaccess searches
 
 Notes as exploration happens:
+- it looks like services are provided only at the collection, but not granule, level
+- services require a different concept_id than the one used to ID the collection itself, and there are multiple choices
 -
 
 

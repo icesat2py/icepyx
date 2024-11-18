@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Any, NotRequired, TypedDict, Union
+from typing import Any, TypedDict, Union
 
 import harmony
 
@@ -7,8 +7,10 @@ from icepyx.core.auth import EarthdataAuthMixin
 
 
 class HarmonyTemporal(TypedDict):
-    start: NotRequired[dt.datetime]
-    stop: NotRequired[dt.datetime]
+    # TODO: these are optional. Harmony can take a start without a stop or a
+    # stop without a start.
+    start: dt.datetime
+    stop: dt.datetime
 
 
 class HarmonyApi(EarthdataAuthMixin):
@@ -46,7 +48,12 @@ class HarmonyApi(EarthdataAuthMixin):
         """
         collection = harmony.Collection(id=concept_id)
         request = harmony.Request(
-            collection=collection, spatial=bounding_box, temporal=temporal
+            collection=collection,
+            # TODO: these two kwargs are type-ignored because `harmony-py` is
+            # typed to not allow `None`. However, `harmony-py` initializes
+            # values with `None`, so it should be allowed to pass that along.
+            spatial=bounding_box,  # type: ignore[arg-type]
+            temporal=temporal,  # type: ignore[arg-type]
         )
 
         if not request.is_valid():

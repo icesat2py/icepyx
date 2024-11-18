@@ -10,5 +10,7 @@ class. Once core functionality is implemented, relevant "V2" classes/functions
 can be renamed and the v1 versions removed.
 """
 
+from icepyx.core.query import BaseQuery
 
-class QueryV2: ...
+
+class QueryV2(BaseQuery): ...

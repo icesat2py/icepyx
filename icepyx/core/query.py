@@ -331,9 +331,7 @@ class GenQuery:
             return self._temporal._end.strftime("%H:%M:%S")
 
 
-# DevGoal: update docs throughout to allow for polygon spatial extent
-# DevNote: currently this class is not tested
-class Query(GenQuery, EarthdataAuthMixin):
+class BaseQuery(GenQuery, EarthdataAuthMixin):
     """
     Query and get ICESat-2 data
 
@@ -405,10 +403,6 @@ class Query(GenQuery, EarthdataAuthMixin):
     GenQuery
     """
 
-    _CMRparams: apifmt.CMRParameters
-    _reqparams: apifmt.RequiredParameters
-    _subsetparams: Optional[apifmt.SubsetParameters]
-
     # ----------------------------------------------------------------------
     # Constructors
 
@@ -439,18 +433,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
         self._version = val.prod_version(is2ref.latest_version(self._prod), version)
-
-        # build list of available CMR parameters if reducing by cycle or RGT
-        # or a list of explicitly named files (full or partial names)
-        # DevGoal: add file name search to optional queries
-        if cycles or tracks:
-            # get lists of available ICESat-2 cycles and tracks
-            self._cycles = val.cycles(cycles)
-            self._tracks = val.tracks(tracks)
-            # create list of CMR parameters for granule name
-            self._readable_granule_name = apifmt._fmt_readable_granules(
-                self._prod, cycles=self.cycles, tracks=self.tracks
-            )
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
@@ -513,6 +495,148 @@ class Query(GenQuery, EarthdataAuthMixin):
         '004'
         """
         return self._version
+
+    # ----------------------------------------------------------------------
+    # Methods - Get and display neatly information at the product level
+
+    def product_summary_info(self):
+        """
+        Display a summary of selected metadata for the specified version of the product
+        of interest (the collection).
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='006')
+        >>> reg_a.product_summary_info()
+        title :  ATLAS/ICESat-2 L3A Land Ice Height V006
+        short_name :  ATL06
+        version_id :  006
+        time_start :  2018-10-14T00:00:00.000Z
+        coordinate_system :  CARTESIAN
+        summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
+        orbit_parameters :  {}
+        """
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
+        summ_keys = [
+            "title",
+            "short_name",
+            "version_id",
+            "time_start",
+            "coordinate_system",
+            "summary",
+            "orbit_parameters",
+        ]
+        for key in summ_keys:
+            print(key, ": ", self._about_product["feed"]["entry"][-1][key])
+
+    def product_all_info(self):
+        """
+        Display all metadata about the product of interest (the collection).
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.product_all_info() # doctest: +SKIP
+        {very long prettily-formatted dictionary output}
+
+        """
+        if not hasattr(self, "_about_product"):
+            self._about_product = is2ref.about_product(self._prod)
+        pprint.pprint(self._about_product)
+
+    def latest_version(self):
+        """
+        A reference function to is2ref.latest_version.
+
+        Determine the most recent version available for the given product.
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.latest_version()
+        '006'
+        """
+        return is2ref.latest_version(self.product)
+
+    # DevGoal: add testing? What do we test, and how, given this is a visualization.
+    # DevGoal(long term): modify this to accept additional inputs, etc.
+    # DevGoal: move this to it's own module for visualizing, etc.
+    # DevGoal: see Amy's data access notebook for a zoomed in map - implement here?
+    def visualize_spatial_extent(
+        self,
+    ):  # additional args, basemap, zoom level, cmap, export
+        """
+        Creates a map displaying the input spatial extent
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.visualize_spatial_extent # doctest: +SKIP
+        [visual map output]
+        """
+
+        gdf = self._spatial.extent_as_gdf
+
+        try:
+            import geoviews as gv
+            from shapely.geometry import Polygon  # noqa: F401
+
+            gv.extension("bokeh")  # pyright: ignore[reportCallIssue]
+
+            bbox_poly = gv.Path(gdf["geometry"]).opts(color="red", line_color="red")
+            tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
+            return tile * bbox_poly  # pyright: ignore[reportOperatorIssue]
+
+        except ImportError:
+            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))  # pyright: ignore[reportAttributeAccessIssue]
+            f, ax = plt.subplots(1, figsize=(12, 6))
+            world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
+            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
+            plt.show()
+
+    def visualize_elevation(self):
+        """
+        Visualize elevation requested from OpenAltimetry API using datashader based on cycles
+        https://holoviz.org/tutorial/Large_Data.html
+
+        Returns
+        -------
+        map_cycle, map_rgt + lineplot_rgt : Holoviews objects
+            Holoviews data visualization elements
+        """
+        viz = Visualize(self)
+        cycle_map, rgt_map = viz.viz_elevation()
+
+        return cycle_map, rgt_map
+
+
+# DevGoal: update docs throughout to allow for polygon spatial extent
+# DevNote: currently this class is not tested
+class Query(BaseQuery):
+    _CMRparams: apifmt.CMRParameters
+    _reqparams: apifmt.RequiredParameters
+    _subsetparams: Optional[apifmt.SubsetParameters]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
+
+        # build list of available CMR parameters if reducing by cycle or RGT
+        # or a list of explicitly named files (full or partial names)
+        # DevGoal: add file name search to optional queries
+        cycles = kwargs.get("cycles")
+        tracks = kwargs.get("tracks")
+        if cycles or tracks:
+            # get lists of available ICESat-2 cycles and tracks
+            self._cycles = val.cycles(cycles)
+            self._tracks = val.tracks(tracks)
+            # create list of CMR parameters for granule name
+            self._readable_granule_name = apifmt._fmt_readable_granules(
+                self._prod, cycles=self.cycles, tracks=self.tracks
+            )
+
+    # ----------------------------------------------------------------------
+    # Properties
 
     @property
     def cycles(self):
@@ -772,66 +896,6 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the product level
-
-    def product_summary_info(self):
-        """
-        Display a summary of selected metadata for the specified version of the product
-        of interest (the collection).
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='006')
-        >>> reg_a.product_summary_info()
-        title :  ATLAS/ICESat-2 L3A Land Ice Height V006
-        short_name :  ATL06
-        version_id :  006
-        time_start :  2018-10-14T00:00:00.000Z
-        coordinate_system :  CARTESIAN
-        summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
-        orbit_parameters :  {}
-        """
-        if not hasattr(self, "_about_product"):
-            self._about_product = is2ref.about_product(self._prod)
-        summ_keys = [
-            "title",
-            "short_name",
-            "version_id",
-            "time_start",
-            "coordinate_system",
-            "summary",
-            "orbit_parameters",
-        ]
-        for key in summ_keys:
-            print(key, ": ", self._about_product["feed"]["entry"][-1][key])
-
-    def product_all_info(self):
-        """
-        Display all metadata about the product of interest (the collection).
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.product_all_info() # doctest: +SKIP
-        {very long prettily-formatted dictionary output}
-
-        """
-        if not hasattr(self, "_about_product"):
-            self._about_product = is2ref.about_product(self._prod)
-        pprint.pprint(self._about_product)
-
-    def latest_version(self):
-        """
-        A reference function to is2ref.latest_version.
-
-        Determine the most recent version available for the given product.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.latest_version()
-        '006'
-        """
-        return is2ref.latest_version(self.product)
 
     def show_custom_options(self, dictview=False):
         """
@@ -1130,54 +1194,3 @@ class Query(GenQuery, EarthdataAuthMixin):
                 self.order_granules(verbose=verbose, subset=subset, **kwargs)
 
         self._granules.download(verbose, path, restart=restart)
-
-    # DevGoal: add testing? What do we test, and how, given this is a visualization.
-    # DevGoal(long term): modify this to accept additional inputs, etc.
-    # DevGoal: move this to it's own module for visualizing, etc.
-    # DevGoal: see Amy's data access notebook for a zoomed in map - implement here?
-    def visualize_spatial_extent(
-        self,
-    ):  # additional args, basemap, zoom level, cmap, export
-        """
-        Creates a map displaying the input spatial extent
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.visualize_spatial_extent # doctest: +SKIP
-        [visual map output]
-        """
-
-        gdf = self._spatial.extent_as_gdf
-
-        try:
-            import geoviews as gv
-            from shapely.geometry import Polygon  # noqa: F401
-
-            gv.extension("bokeh")  # pyright: ignore[reportCallIssue]
-
-            bbox_poly = gv.Path(gdf["geometry"]).opts(color="red", line_color="red")
-            tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
-            return tile * bbox_poly  # pyright: ignore[reportOperatorIssue]
-
-        except ImportError:
-            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))  # pyright: ignore[reportAttributeAccessIssue]
-            f, ax = plt.subplots(1, figsize=(12, 6))
-            world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
-            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
-            plt.show()
-
-    def visualize_elevation(self):
-        """
-        Visualize elevation requested from OpenAltimetry API using datashader based on cycles
-        https://holoviz.org/tutorial/Large_Data.html
-
-        Returns
-        -------
-        map_cycle, map_rgt + lineplot_rgt : Holoviews objects
-            Holoviews data visualization elements
-        """
-        viz = Visualize(self)
-        cycle_map, rgt_map = viz.viz_elevation()
-
-        return cycle_map, rgt_map

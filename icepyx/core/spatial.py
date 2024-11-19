@@ -2,6 +2,7 @@ import os
 import warnings
 
 import geopandas as gpd
+import harmony
 import numpy as np
 from shapely.geometry import Polygon, box
 from shapely.geometry.polygon import orient
@@ -675,3 +676,60 @@ class Spatial:
             egi_extent = egi_extent.replace(" ", "")  # remove spaces for API call
 
         return egi_extent
+
+    def fmt_for_harmony(self) -> dict[str, harmony.BBox]:
+        """
+        Format the spatial extent input into format expected by `harmony-py`.
+
+        Returns a dictionary with keys mapping to `harmony.Request` kwargs, with
+        values appropriately formatted for the harmony request.
+
+        `harmony-py` can take two different spatial parameters:
+
+        * `spatial`: "Bounding box spatial constraints on the data or Well Known
+          Text (WKT) string describing the spatial constraints." The "Bounding
+          box" is expected to be a `harmony.BBox`.
+        * `shape`: "a file path to an ESRI Shapefile zip, GeoJSON file, or KML
+          file to use for spatial subsetting. Note: not all collections support
+          shapefile subsetting"
+
+        Question: is `spatial` the same as `shape`, in terms of performance? If
+        so, we could be consistent and always turn the input into geojson and
+        pass that along to harmony. Otherwise we should choose `spatial` if the
+        extent_type is bounding, otherwise `shape`.
+        Answer: No! They're not the same. They map to different harmony
+        parameters and each is a different service. E.g., some collections may
+        have bounding box subsetting while others have shape subsetting (or
+        both).
+        TODO: think more about how we verify if certain inputs are valid for
+        harmony. E.g., do we need to check the capabilities of each and
+        cross-check that with user inputs to determine which action to take?
+        Also: Does `icepyx` always perform subsetting based on user input? If
+        not, how do we determine which parameters are for finding granules vs
+        performing subetting?
+
+        Question: is there any way to pass in a geojson string directly, so that
+        we do not have to mock out a file just for harmony?  Answer: no, not
+        directly. `harmony-py` wants a path to a file on disk. We may want to
+        have the function that submits the request to harmony with `harmony-py`
+        accept something that's easily-serializable to a geojson file so that it
+        can manage the lifespan of the file. It would be best (I think) to avoid
+        writing tmp files to disk in this function, because it doesn't know when
+        the request gets made/when to cleanup the file. That means that we may
+        leave stray files on the user's computer. Ideally, we would be able to
+        pass `harmony-py` a bytes object (or a shapely Polygon!)
+        """
+        # Begin with bounding box because this is the simplest case.
+        if self.extent_type == "bounding_box":
+            harmony_kwargs = {
+                "spatial": harmony.BBox(
+                    w=self.extent[0],
+                    s=self.extent[1],
+                    e=self.extent[2],
+                    n=self.extent[3],
+                )
+            }
+
+            return harmony_kwargs
+        else:
+            raise NotImplementedError

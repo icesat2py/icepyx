@@ -7,6 +7,7 @@ from icepyx.core.urls import COLLECTION_SEARCH_BASE_URL
 CMR_PROVIDER: Final = "NSIDC_CPRD"
 
 
+# TODO: can this be replaced by some `earthaccess` equivalent
 def get_concept_id(*, product: str, version: str) -> str:
     response = requests.get(
         COLLECTION_SEARCH_BASE_URL,

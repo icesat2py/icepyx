@@ -619,7 +619,7 @@ class Query(BaseQuery):
     _subsetparams: Optional[apifmt.SubsetParameters]
 
     def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # build list of available CMR parameters if reducing by cycle or RGT
         # or a list of explicitly named files (full or partial names)

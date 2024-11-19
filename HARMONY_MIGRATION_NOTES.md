@@ -200,3 +200,32 @@ This approach lets the existing code and tests continue to work as expected
 while parallel functionality is developed using `harmony-py` and
 `earthaccess`. As this development progresses, tests can be migrated to use the
 new class.
+
+
+## Take2 tasks
+
+* Implement support for harmony subset and earthdata full-granule requests
+* Support reprojection/reformatting without subsetting
+  * E.g., the [subsetting
+    notebook](https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html)
+    indicates that reformatting and reprojection are options.
+  * Not sure how this will be supported yet. Harmony always subsets based on the
+    input parameters, so you can't pass in a polygon to filter and just to a
+    reprojection. We may need to submit one harmony request per granule for
+    reprojection/reformatting without subsetting.
+* Check user inputs against supported harmony services. E.g., see `is2ref`
+  module.
+* Review documentation and jupyter notebooks for outdated information
+  * Remove references to "NSIDC" ordering service.
+  * Remove references to variable subsetting (this is not currently supported in
+    Harmony, but may be in the future. No definitive plans yet).
+  * Update references to OBE concepts like `reqparams` and `subsetparams`.
+* Migrate existing tests to use new query class and the harmony/earthaccess approach.
+* Updates to support cloud access (e.g., see [these docs on how to access data via s3](https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_cloud_data_access.html))
+  * Ideally the underlying code is updated to use `earthaccess`.
+  * There might not be much that needs to be done here.
+* Update
+  [QUEST](https://icepyx.readthedocs.io/en/latest/example_notebooks/QUEST_argo_data_access.html)-related
+  code to enable support for the new query class.
+  * It looks like QUEST support is currently limited to [Argo](https://argo.ucsd.edu/about/) data.
+* Support passing other subsetting kwargs to harmony-py

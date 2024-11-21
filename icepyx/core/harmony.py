@@ -49,6 +49,7 @@ class HarmonyApi(EarthdataAuthMixin):
         # These are optional subset parameters
         spatial: Union[harmony.BBox, None] = None,
         temporal: Union[HarmonyTemporal, None] = None,
+        shape: Union[str, None] = None,
     ) -> str:
         """Places a Harmony order with the given parameters.
 
@@ -62,11 +63,13 @@ class HarmonyApi(EarthdataAuthMixin):
             # values with `None`, so it should be allowed to pass that along.
             spatial=spatial,  # type: ignore[arg-type]
             temporal=temporal,  # type: ignore[arg-type]
+            shape=shape,  # type: ignore[arg-type]
         )
 
         if not request.is_valid():
-            # TODO: consider more specific error class & message
-            raise RuntimeError("Failed to create valid request")
+            raise RuntimeError(
+                "Failed to create valid harmony request:" f" {request.error_messages()}"
+            )
 
         job_id = self.harmony_client.submit(request)
 
@@ -97,6 +100,7 @@ class HarmonyApi(EarthdataAuthMixin):
         # These are optional subset parameters
         spatial: Union[harmony.BBox, None] = None,
         temporal: Union[HarmonyTemporal, None] = None,
+        shape: Union[str, None] = None,
     ) -> str:
         """Places a Harmony order with the given parameters and waits for it to complete.
 
@@ -106,6 +110,7 @@ class HarmonyApi(EarthdataAuthMixin):
             concept_id=concept_id,
             spatial=spatial,
             temporal=temporal,
+            shape=shape,
         )
 
         # Append this job to the list of job ids.
@@ -139,8 +144,6 @@ class HarmonyApi(EarthdataAuthMixin):
         if status["status"] == "complete_with_errors" or status["status"] == "failed":
             print("Harmony provided these error messages:")
             pprint.pprint(status["errors"])
-        else:
-            print(f"Request failed with status {status['status']}.")
 
         return job_id
 

@@ -13,6 +13,9 @@ can be renamed and the v1 versions removed.
 from pathlib import Path
 from typing import Union
 
+from fsspec.utils import tempfile
+import harmony
+
 from icepyx.core.cmr import get_concept_id
 from icepyx.core.harmony import HarmonyApi, HarmonyTemporal
 from icepyx.core.query import BaseQuery
@@ -33,16 +36,56 @@ class QueryV2(BaseQuery):
         if not hasattr(self, "_temporal"):
             self._temporal = None  # type: ignore[reportIncompatibleVariableOverride]
 
-    def _order_subset_granules(self, short_name: str, version: str, **kwargs) -> str:
+    def _order_subset_granules(self) -> str:
         concept_id = get_concept_id(
-            product=short_name,
-            version=version,
+            product=self._prod,
+            version=self._version,
         )
 
-        # Place the order.
-        job_id = self.harmony_api.place_order(concept_id=concept_id, **kwargs)
+        harmony_temporal = None
+        if self._temporal:
+            # TODO: this assumes there will always be a start and stop
+            # temporal range. Harmony can accept start without stop and
+            # vice versa.
+            harmony_temporal = HarmonyTemporal(
+                start=self._temporal.start,
+                stop=self._temporal.end,
+            )
 
-        return job_id
+        # TODO: think more about how this can be DRYed out. We call
+        # `place_order` based on the user spatial input. The bounding box case
+        # is simple, but polygons are more complicated because `harmony-py`
+        # expects a shapefile (e.g,. geojson) to exist on disk.
+        if self.spatial.extent_type == "bounding_box":
+            # Bounding box case.
+            return self.harmony_api.place_order(
+                concept_id=concept_id,
+                temporal=harmony_temporal,
+                spatial=harmony.BBox(
+                    w=self.spatial.extent[0],
+                    s=self.spatial.extent[1],
+                    e=self.spatial.extent[2],
+                    n=self.spatial.extent[3],
+                ),
+            )
+        else:
+            # Polygons must be passed to `harmony-py` as a path to a valid
+            # shapefile (json, geojson, kml, shz, or zip). Create a temporary
+            # directory to store this file for the harmony order.
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                # Polygon
+                df = self.spatial.extent_as_gdf
+                # Use geojson to pass along to harmony. Icepyx supports formats
+                # that harmony does not (e.g., `gpkg`). Harmony supports json,
+                # geojson, kml, shz, zip.
+                shapefile_path = str(Path(tmp_dir) / "harmony_spatial_subset.geojson")
+                df.to_file(shapefile_path)
+
+                return self.harmony_api.place_order(
+                    concept_id=concept_id,
+                    temporal=harmony_temporal,
+                    shape=shapefile_path,
+                )
 
     def _order_whole_granules(self):
         # This may not actually be necessary. Whole granules are just downloaded
@@ -79,23 +122,7 @@ class QueryV2(BaseQuery):
         Your harmony order is:  complete
         """
         if subset:
-            if self._temporal:
-                # TODO: this assumes there will always be a start and stop
-                # temporal range. Harmony can accept start without stop and
-                # vice versa.
-                harmony_temporal = HarmonyTemporal(
-                    start=self._temporal.start,
-                    stop=self._temporal.end,
-                )
-            else:
-                harmony_temporal = None
-
-            self._order_subset_granules(
-                short_name=self._prod,
-                version=self._version,
-                temporal=harmony_temporal,
-                **self.spatial.fmt_for_harmony(),
-            )
+            self._order_subset_granules()
         else:
             self._order_whole_granules()
 

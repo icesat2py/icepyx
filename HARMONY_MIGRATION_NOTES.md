@@ -2,25 +2,60 @@
 
 * We can't use short name and version with Harmony like we do with ECS, we have to use
   Concept ID (or DOI). We need to get this from CMR using short name and version.
-* Variable subsetting won't be supported on day 1.
+* Differences in Harmony features
+  * Variable subsetting won't be supported on day 1.
+  * Reprojection and reformatting won't be supported on day 1.
 * All the ICESat-2 products we currently support will not be supported on day 1.
     * <https://nsidc.atlassian.net/wiki/spaces/DAACSW/pages/222593028/ICESat-2+data+sets+and+versions+we+are+supporting+for+Harmony>
-* ECS and CMR shared some parameters. This is not the case with Harmony.
+* Requests to CMR and ECS share parameters and are made through Python
+  `requests`. Support for harmony will be implemented with `harmony-py` and
+  `earthaccess` will be used for granule search and non-subset orders.
 
 
 ## Getting started on development
 
 ### Work so far
 
-Work in progress is on the `harmony` branch. This depends on the `low-hanging-refactors`
-branch being merged. A PR is open.
+Work in progress is on the `harmony-take2` branch.
 
-> [!IMPORTANT]
-> Several commits establish communication with UAT instead of production. They will need
-> to be reverted once Harmony is available in prod.
 
-In addition to this work, refactoring, type checking, and type annotations have been
-added to the codebase to support the migration to Harmony.
+### OBE Work and "take2"
+
+Matt Fisher began work on implementing support for Harmony in the `harmony`
+branch. This depends on the `low-hanging-refactors` branch being merged. A PR is
+open.
+
+In addition to this work, refactoring, type checking, and type annotations have
+been added to the codebase to support the migration to Harmony. Many of the
+refactors ended up breaking large swaths of the code. The `harmony` branch is
+OBE because we decided to take a different approach after further analysis.
+
+The initial work assumed that icepyx would be directly making requests (via
+e.g., the `requests` library) to the harmony API. Further development revealed
+that [harmony-py](https://harmony-py.readthedocs.io/en/main/) should be used to
+interact with the harmony API. Moreover, there is a growing realization that
+[earthaccess](https://earthaccess.readthedocs.io/en/latest/) can simplify large
+parts of icepyx as well.
+
+As these developments began to be worked into the existing code, it became more
+clear that more was being "broken" than added. Icepyx's code has a lot of
+handling of various parameters to ensure that they are formatted correctly for
+various APIs. Although this made sense when icepyx was first developed,
+`harmony-py` and `earthaccess` can replace much of this code.
+
+Instead of ripping out/refactoring large chunks of existing code in the `query`
+and `granules` modules, "take2" (the `harmony-take2` branch) strives to
+replicate existing functionality exposed by icepyx through the development of
+new classes "from scratch".
+
+E.g,. the `queryv2` module provides a `QueryV2` class that should replicate the
+functionality of the `query.Query` class that is designed to interact with CMR
+and the NSIDC EGI ordering system that is being decommissioned.
+
+This approach lets the existing code and tests continue to work as expected
+while parallel functionality is developed using `harmony-py` and
+`earthaccess`. As this development progresses, tests can be migrated to use the
+new class.
 
 
 ### Familiarize with Harmony
@@ -30,69 +65,15 @@ added to the codebase to support the migration to Harmony.
 * Review the interactive API documentation:
   <https://harmony.uat.earthdata.nasa.gov/docs/api/> (remember, remove UAT from URL if
   Harmony is live with ICESat-2 products in early October 2024)
+* [harmony-py docs](https://harmony-py.readthedocs.io/en/main/)
 
-
-### Getting started replacing ECS with Harmony
-
-1. Find the `WIP` commit (`ac916d6`) and use `git reset` to restore the changes into the
-   working tree. There are several breakpoints set, as well as an artificially
-   introduced exception class to help trace and narrow the code paths during
-   refactoring.
-2. Exercise a specific code path. For example:
-
-    ```python
-    import icepyx as ipx
-    import datetime as dt
-
-    q = ipx.Query(
-        product="ATL06",
-        version="006",
-        spatial_extent=[-90, 68, 48, 90],
-        # "./doc/source/example_notebooks/supporting_files/simple_test_poly.gpkg",
-        date_range={
-            "start_date": dt.datetime(2018, 10, 10, 0, 10, 0),
-            "end_date": dt.datetime(2018, 10, 18, 14, 45, 30),
-            # "end_date": '2019-02-28',
-        }
-    )
-
-    q.download_granules("/tmp/icepyx")
-    ```
-
-3. Identify the first query to ECS. Queries, except the capabilities query in
-   `is2ref.py`, are formed from constants in `urls.py`. Continue this practice. Harmony
-   URLs in this file are placeholders.
-4. Determine an equivalent Harmony query. The Harmony Coverages API has an equivalent to
-   the capabilities query in `is2ref.py`, for example.
-5. Raise `RefactoringException` at the top of any functions or methods which currently
-   speak to ECS. This will help us find and delete those "dead code" functions later,
-   and prevent them from being inadvertently executed.
-6. Write new functions or methods which speak to Harmony instead. It's important to
-   encapsulate the communication with the Harmony API in a single function. This may
-   mean replacing one function with several smaller functions during refactoring.
-7. Maintain the high standard of documentation in the code. Include examples as doctests
-   in the new functions. Use Numpy style docstrings. **DO NOT** include type information
-   in docstrings -- write type annotations instead. They will be automatically
-   documented by the documentation generator.
-8. Repeat from step 3 for the next EGI query.
 
 ### Watch out for broken assumptions
 
 It's important to note that two major assumptions will require significant refactoring.
 The type annotations will help with this process!
 
-1. Broken assumption: "CMR and EGI share parameter sets". My mental model looks like:
-  * Current: User passes in parameters to `Query(...)`. Those params are used to generate
-    separate "CMR parameters" and "reqparams". "CMRparams" are spatial and temporal
-    parameters compatible with CMR. I'm not sure about the naming of "reqparams", but I
-    think of them as the EGI parameters (which may include more than the user passed, like
-    `page_size`) _minus_ the CMR spatial and temporal parameters. The actual queries
-    submitted to CMR and EGI are based on those generated parameter sets.
-  * Future: In Harmony-land, the shared parameter assumption is broken. CMR and Harmony's
-    Coverages API have completely parameter sets. The code can be drastically simplified:
-    User passes in parameters to `Query(...)`. Those params are used directly to generate
-    both CMR and Harmony queries without an intervening layer. E.g.
-2. Broken assumption: "We can query with only short_name and version number". Harmony
+* Broken assumption: "We can query with only short_name and version number". Harmony
    requires a unique identifier (concept ID or DOI). E.g.:
    <https://harmony.uat.earthdata.nasa.gov/capabilities?collectionId=C1261703129-EEDTEST>
    (NOTE: UAT query using a collection from a test provider; we should be using
@@ -100,6 +81,12 @@ The type annotations will help with this process!
    Since we want the user to be able to provide short_name and version, implementing the
    concept ID as a `@cached_property` on `Query` which asks CMR for the concept ID makes
    sense to me.
+* Broken assumption: Harmony features are equivilent to NSIDC's ECS-based
+  ordering system. As mentioned above, Harmony will not support variable
+  subsetting, reprojection, or reformatting for IS2 collections on day 1. In the
+  future, these features may be implemented in Harmony. For now, we need to
+  update existing code and user documentation to remove references to these
+  features.
 
 
 ### Don't forget to enhance along the way
@@ -111,26 +98,32 @@ The type annotations will help with this process!
 
 ## Testing with Harmony
 
-Harmony is available for testing in the UAT environment.
 
-> [!NOTE]
-> ICESat-2 products will be available in production in early October 2024. If you're
-> reading this after that time, please talk to Amy Steiker about Harmony's current
-> status before investing time setting up to test with UAT. If prod is available, test
-> with prod.
+To run `QueryV2` specific tests (places real Harmony orders and waits for
+results - this can take a while):
 
-We will need to interact with everything (CMR, Earthdata Login, Harmony itself) in UAT
-for icepyx to work correctly.
 
-* URLs *temporarily* modified for UAT.
-* You need a separate Earthdata Login registration for UAT
-  (<https://uat.urs.earthdata.nasa.gov/>).
-* The UAT NSIDC provider name is `NSIDC_UAT`
-  (<https://cmr.uat.earthdata.nasa.gov/search/collections.json?provider=NSIDC_CUAT>).
-* To test in UAT (i.e. access data in `NSIDC_CUAT` provider), your Earthdata Login
-  account must be on an access control list. Ask NSIDC operations for help.
-    * The code *temporarily* uses `$EDL_TOKEN` envvar to authenticate with CMR. Populate
-      this envvar with your Earthdata Login token.
+```
+pytest icepyx/tests/integration/test_queryv2.py
+```
+
+> [!WARNING]
+> I noticed that when running tests with `pytest`, sometimes I would get errors
+> related to earthdata login. I see that `conftest.py` is setup to mock out some
+> login credentials by editing the user's `.netrc`. This results in a broken
+> `.netrc`. I'm not sure how this is intended to work, but I resorted to
+> removing those bits from `conftest.py` to get things working consistently.
+
+Be sure to run the type checker periodically as well:
+
+```
+pyright
+```
+
+Eventually, once the `QueryV2` class has the required features implemented, we
+will plan to replace the existing `Query` class with it. Ideally we can migrate
+other existing tests that are specific to the `Query` class to the new `QueryV2`
+class at that time.
 
 
 ## Integrating with other ongoing Icepyx work
@@ -138,9 +131,6 @@ for icepyx to work correctly.
 Harmony is a major breaking change, so we'll be releasing it in Icepyx v2.
 
 We know the community wants to break the API in some other ways, so we want to include those in v2 as well!
-
-* Some of Icepyx's Query functionality is already served by earthaccess; refactor or replace the `Query` class?
-* ?
 
 Jessica is currently determining who can help work on these changes, and what that looks like. *If you, the
 Harmony/ECS migration developer, identify opportunities to easily replace portions of Icepyx with _earthaccess_
@@ -173,46 +163,11 @@ See this thread on EOSDIS Slack for more details:
 <https://nsidc.slack.com/archives/CLC2SR1S6/p1716482829956969>
 
 
-# "take2"
+## Remaining tasks
 
-The above migration notes are related to the initial development effort to add
-harmony support to icepyx. This initial work assumed that icepyx would be
-directly making requests (via e.g., the `requests` library) to the harmony
-API. Further development revealed that [harmony-py]() should be used to interact
-with the harmony API. Moreover, there is a growing realization that
-[earthaccess]() can simplify large parts of icepyx as well.
+Remaining tasks for "take2" development incldue:
 
-As these developments began to be worked into the existing code, it became more
-clear that more was being "broken" than added. Icepyx's code has a lot of
-handling of various parameters to ensure that they are formatted correctly for
-various APIs. Although this made sense when icepyx was first developed,
-`harmony-py` and `earthaccess` can replace much of this code.
-
-Instead of ripping out/refactoring large chunks of existing code in the `query`
-and `granules` modules, "take2" strives to replicate existing functionality
-exposed by icepyx through the development of new classes "from scratch".
-
-E.g,. the `queryv2` module provides a `QueryV2` class that should replicate the
-functionality of the `query.Query` class that is designed to interact with CMR
-and the NSIDC EGI ordering system that is being decommissioned.
-
-This approach lets the existing code and tests continue to work as expected
-while parallel functionality is developed using `harmony-py` and
-`earthaccess`. As this development progresses, tests can be migrated to use the
-new class.
-
-
-## Take2 tasks
-
-* Implement support for harmony subset and earthdata full-granule requests
-* Support reprojection/reformatting without subsetting
-  * E.g., the [subsetting
-    notebook](https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html)
-    indicates that reformatting and reprojection are options.
-  * Not sure how this will be supported yet. Harmony always subsets based on the
-    input parameters, so you can't pass in a polygon to filter and just to a
-    reprojection. We may need to submit one harmony request per granule for
-    reprojection/reformatting without subsetting.
+* Implement support for full-granule orders via `earthaccess`
 * Check user inputs against supported harmony services. E.g., see `is2ref`
   module.
 * Review documentation and jupyter notebooks for outdated information
@@ -220,6 +175,10 @@ new class.
   * Remove references to variable subsetting (this is not currently supported in
     Harmony, but may be in the future. No definitive plans yet).
   * Update references to OBE concepts like `reqparams` and `subsetparams`.
+  * Cleanup references to reprojection/reformatting without subsetting
+    * E.g., the [subsetting
+      notebook](https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_data_access2-subsetting.html)
+    indicates that reformatting and reprojection are options.
 * Migrate existing tests to use new query class and the harmony/earthaccess approach.
 * Updates to support cloud access (e.g., see [these docs on how to access data via s3](https://icepyx.readthedocs.io/en/latest/example_notebooks/IS2_cloud_data_access.html))
   * Ideally the underlying code is updated to use `earthaccess`.

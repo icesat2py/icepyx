@@ -76,10 +76,11 @@ class Argo(DataSet):
     @params.setter
     def params(self, value):
         """
-        Validate the input list of parameters.
+        Validate the input list/dict of parameters.
         """
-
-        self._params = list(set(self._validate_parameters(value)))
+        new_params = self._validate_parameters(value)
+        for k,v in new_params.items():
+            self._params[v] = v
 
     @property
     def presRange(self) -> str:
@@ -208,17 +209,19 @@ class Argo(DataSet):
         ]
         return valid_params
 
-    def _validate_parameters(self, params) -> list:
+    def _validate_parameters(self, params) -> dict:
         """
         Checks that the list of user requested parameters are valid.
 
         Returns
         -------
-        The list of valid parameters
+        The dictionary keyed bt valid parameters: list of QC flags
+        if no qc flags, value is the empty list
         """
 
+
         if "all" in params:
-            params = ["all"]
+            self._params = {"all":[]}
         else:
             valid_params = self._valid_params()
             # checks that params are valid
@@ -229,12 +232,22 @@ class Argo(DataSet):
                     i, valid_params
                 )
 
-        return list(set(params))
+                if isinstance(params, dict):
+                    if i.endswith('_argoqc'):
+                        self._params[i] = []
+                    else:
+                        self._params[i] = params[i]
+                        self._params[i + '_argoqc'] = []
+
+                else:
+                    self._params[i] = []
+
+        return self._params
 
     # ----------------------------------------------------------------------
     # Querying and Getting Data
 
-    def search_data(self, params=None, presRange=None, printURL=False) -> str:
+    def search_data(self, params=None, presRange=None, printURL=False, **kwargs) -> str:
         """
         Query for available argo profiles given the spatio temporal criteria
         and other params specific to the dataset.
@@ -244,7 +257,7 @@ class Argo(DataSet):
 
         Parameters
         ---------
-        params : list of str, default None
+        params : list (or dict) of str (and list of QC values 1,2,3,4), default None
             A list of strings, where each string is a requested parameter.
             This kwarg is used to replace the existing list in `self.params`.
             Do not submit this kwarg if you would like to use the existing `self.params` list.

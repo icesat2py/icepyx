@@ -86,7 +86,7 @@ To further enhance data discovery, we have developed the QUEST module to facilit
         datasets.
 
         .. button-ref:: /example_notebooks/QUEST_argo_data_access.ipynb
-            :type: url
+            :type: ref
             :color: primary
             :outline:
             :expand:

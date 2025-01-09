@@ -54,7 +54,7 @@ class EarthdataAuthMixin:
         self._s3login_credentials = None
         self._s3_initial_ts = None  # timer for 1h expiration on s3 credentials
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.session:
             repr_string = "EarthdataAuth obj with session initialized"
         else:

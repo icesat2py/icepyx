@@ -124,3 +124,26 @@ ignore = [
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
+
+
+[tool.pyright]
+pythonVersion = "3.9"
+# DevGoal: "strict"
+typeCheckingMode = "standard"
+include = [
+  "icepyx",
+]
+exclude = [
+  "**/__pycache__",
+  "icepyx/tests",
+]
+# DevGoal: Remove all ignores
+ignore = [
+  "icepyx/quest/*",
+  "icepyx/core/auth.py",
+  "icepyx/core/is2ref.py",
+  "icepyx/core/read.py",
+  "icepyx/core/spatial.py",
+  "icepyx/core/variables.py",
+  "icepyx/core/visualization.py",
+]

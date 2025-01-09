@@ -75,6 +75,24 @@ To further enhance data discovery, we have developed the QUEST module to facilit
             Software Docs
 
     .. grid-item-card::
+        :img-top: https://cdn-icons-png.flaticon.com/256/9585/9585915.png
+        :class-img-top: sd-p-2
+        :class-card: sd-shadow-md
+
+        **QUEST**
+        ^^^^^^^^^
+
+        Query, Unify, Explore SpatioTemporal (QUEST) is a module that extends icepyx functionality to other
+        datasets.
+
+        .. button-link:: https://icepyx.readthedocs.io/en/latest/example_notebooks/QUEST_argo_data_access.html
+            :color: primary
+            :outline:
+            :expand:
+
+            Start your QUEST!
+
+    .. grid-item-card::
         :img-top: https://cdn-icons-png.flaticon.com/512/4230/4230997.png
         :class-img-top: sd-p-2
         :class-card: sd-shadow-md

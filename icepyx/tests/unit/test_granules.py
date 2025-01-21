@@ -14,10 +14,6 @@ from icepyx.core.granules import Granules as Granules
 
 # #@patch('my_module.__get_input', return_value='y')
 
-# @pytest.fixture
-# def session(reg_a):
-#     return reg_a.earthdata_login(os.getenv('NSIDC_LOGIN'))
-
 # check that agent key is added in event of no subsetting
 
 

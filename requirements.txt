@@ -1,5 +1,5 @@
 backoff
-dask[dataframe] >= 2024.5
+dask[dataframe] <2025.1.0
 datashader
 earthaccess>=0.5.1
 fiona

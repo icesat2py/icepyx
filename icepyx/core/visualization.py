@@ -489,6 +489,8 @@ class Visualize:
                 if self.product == "ATL08"
                 else ["lat", "lon", "elevation", "rgt", "cycle"]
             )
+            # this function is new deprecated and will need to be updated (24 Jan 2025)
+            # try dd.from_dask_array()
             ddf = dd.io.from_dask_array(OA_da, columns=cols).astype(
                 {
                     "lat": "float",

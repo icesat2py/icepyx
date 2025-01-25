@@ -181,7 +181,6 @@ class Granules(EarthdataAuthMixin):
     def get_avail(
         self,
         CMRparams: CMRParams,
-        reqparams: EGIRequiredParamsSearch,
         cloud: bool = False,
     ):
         """
@@ -192,9 +191,6 @@ class Granules(EarthdataAuthMixin):
         ----------
         CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams :
-            Dictionary of properly formatted parameters required for searching, ordering,
-            or downloading from NSIDC.
         cloud :
             CMR metadata is always collected for the cloud system.
 
@@ -213,7 +209,7 @@ class Granules(EarthdataAuthMixin):
         """
 
         assert (
-            CMRparams is not None and reqparams is not None
+            CMRparams is not None 
         ), "Missing required input parameter dictionaries"
 
         # if not hasattr(self, 'avail'):
@@ -223,11 +219,7 @@ class Granules(EarthdataAuthMixin):
         # note we should also check for errors whenever we ping NSIDC-API -
         # make a function to check for errors
 
-        params = apifmt.combine_params(
-            CMRparams,
-            {k: reqparams[k] for k in ["short_name", "version", "page_size"]},
-            {"provider": "NSIDC_CPRD"},
-        )
+        params = CMRparams
 
         cmr_search_after = None
 

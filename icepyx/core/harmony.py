@@ -38,7 +38,7 @@ class HarmonyApi(EarthdataAuthMixin):
         self.job_ids = []
 
     def get_capabilities(self, concept_id: str) -> dict[str, Any]:
-        capabilities_request = harmony.CapabilitiesRequest(concept_id=concept_id)
+        capabilities_request = harmony.CapabilitiesRequest(collection_id=concept_id)
         response = self.harmony_client.submit(capabilities_request)
 
         return response

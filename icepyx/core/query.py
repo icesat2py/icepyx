@@ -12,6 +12,7 @@ can be renamed and the v1 versions removed.
 
 from pathlib import Path
 from typing import Union
+import json
 
 from fsspec.utils import tempfile
 import harmony
@@ -104,6 +105,24 @@ class Query(BaseQuery):
             return collections[0].concept_id()
         else:
             return None
+
+    def show_custom_options(self) -> None:
+        """
+        Display customization/subsetting options available for this product.
+
+        Parameters
+        ----------
+        dictview : boolean, default False
+            Show the variable portion of the custom options list as a dictionary with key:value
+            pairs representing variable:paths-to-variable rather than as a long list of full
+            variable paths.
+
+        """
+        if self.concept_id:
+
+            capabilities = self.harmony_api.get_capabilities(concept_id=self.concept_id)
+            print(json.dumps(capabilities, indent=2))
+        return None
 
 
     @property
@@ -294,12 +313,36 @@ class Query(BaseQuery):
                     shape=shapefile_path,
                 )
 
-    def _order_whole_granules(self):
-        # This may not actually be necessary. Whole granules are just downloaded
-        # from their downloadable URL link using earthaccess, so this can be a
-        # noop. It will just be harmony (subset) orders that require an order
-        # step.
-        raise NotImplementedError
+    def get_granule_links(self, cloud_hosted=False) -> list[str]:
+        links = []
+        for granule in self.granules.avail:
+            for link in granule["links"]:
+                if cloud_hosted and link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
+                    links.append(link["href"])
+                elif link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
+                    if "type" in link and link["type"] in ["application/x-hdf5",
+                                                           "application/x-hdfeos"]:
+                        links.append(link["href"])
+        return links
+
+
+    def _order_whole_granules(self, cloud_hosted=False, path="./") -> None:
+        """
+        Downloads the whole granules for the query object. This is not an asnc operation
+        and will block until the download is complete.
+
+        Parameters
+        ----------
+        cloud_hosted : bool, default False
+            If True, download the cloud-hosted version of the granules. Otherwise, download
+            the on-premises version. We need to run the code in the AWS cloud (us-west-2)
+        path : str, default "./"
+            The local directory to download the granules to.
+
+        """
+        
+        links = self.get_granule_links(cloud_hosted=cloud_hosted)
+        earthaccess.download(links, local_path=path)
 
 
     def order_granules(self, subset=True):

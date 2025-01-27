@@ -42,6 +42,9 @@ Presentations that feature or explain icepyx
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
 
+    ipx-opensci2024agu
+    ipx-is2tools2024agu
+    ipx-harmony2024agu
     quest2023agu
     selper2023
     js2022agu

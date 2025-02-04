@@ -10,23 +10,21 @@ class. Once core functionality is implemented, relevant "V2" classes/functions
 can be renamed and the v1 versions removed.
 """
 
+import json
 from pathlib import Path
 from typing import Union
-import json
 
+import earthaccess
 from fsspec.utils import tempfile
 import harmony
-import earthaccess
 
-from icepyx.core.harmony import HarmonyApi, HarmonyTemporal
-from icepyx.core.base_query import BaseQuery
-import icepyx.core.temporal as tp
 import icepyx.core.APIformatting as apifmt
-
+from icepyx.core.base_query import BaseQuery
 from icepyx.core.granules import Granules, gran_IDs
-import icepyx.core.validate_inputs as val
-
+from icepyx.core.harmony import HarmonyApi, HarmonyTemporal
+import icepyx.core.temporal as tp
 from icepyx.core.types import CMRParams
+import icepyx.core.validate_inputs as val
 
 
 class Query(BaseQuery):
@@ -54,7 +52,6 @@ class Query(BaseQuery):
             self._readable_granule_name = apifmt._fmt_readable_granules(
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
-
 
     @property
     def cycles(self):
@@ -96,11 +93,10 @@ class Query(BaseQuery):
         else:
             return sorted(set(self._tracks))
 
-
     def _get_concept_id(self, product, version) -> Union[str, None]:
-        collections = earthaccess.search_datasets(short_name=product,
-                                                  version=version,
-                                                  cloud_hosted=True)
+        collections = earthaccess.search_datasets(
+            short_name=product, version=version, cloud_hosted=True
+        )
         if collections:
             return collections[0].concept_id()
         else:
@@ -119,11 +115,9 @@ class Query(BaseQuery):
 
         """
         if self.concept_id:
-
             capabilities = self.harmony_api.get_capabilities(concept_id=self.concept_id)
             print(json.dumps(capabilities, indent=2))
         return None
-
 
     @property
     def CMRparams(self) -> CMRParams:
@@ -143,7 +137,6 @@ class Query(BaseQuery):
             self._CMRparams = apifmt.Parameters("CMR")
         # print(self._CMRparams)
         # print(self._CMRparams.fmted_keys)
-        
 
         # dictionary of optional CMR parameters
         kwargs = {}
@@ -168,7 +161,7 @@ class Query(BaseQuery):
             )
 
         return self._CMRparams.fmted_keys
-    
+
     @property
     def granules(self):
         """
@@ -257,8 +250,6 @@ class Query(BaseQuery):
         else:
             return self.granules.avail
 
-
-
     def _order_subset_granules(self) -> str:
         concept_id = self._get_concept_id(
             product=self._prod,
@@ -266,7 +257,9 @@ class Query(BaseQuery):
         )
 
         if concept_id is None:
-            raise ValueError(f"Could not find concept ID for {self._prod} v{self._version}")
+            raise ValueError(
+                f"Could not find concept ID for {self._prod} v{self._version}"
+            )
 
         harmony_temporal = None
         if self._temporal:
@@ -317,14 +310,18 @@ class Query(BaseQuery):
         links = []
         for granule in self.granules.avail:
             for link in granule["links"]:
-                if cloud_hosted and link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
+                if (
+                    cloud_hosted
+                    and link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#"
+                ):
                     links.append(link["href"])
                 elif link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
-                    if "type" in link and link["type"] in ["application/x-hdf5",
-                                                           "application/x-hdfeos"]:
+                    if "type" in link and link["type"] in [
+                        "application/x-hdf5",
+                        "application/x-hdfeos",
+                    ]:
                         links.append(link["href"])
         return links
-
 
     def _order_whole_granules(self, cloud_hosted=False, path="./") -> None:
         """
@@ -340,10 +337,9 @@ class Query(BaseQuery):
             The local directory to download the granules to.
 
         """
-        
+
         links = self.get_granule_links(cloud_hosted=cloud_hosted)
         earthaccess.download(links, local_path=path)
-
 
     def order_granules(self, subset=True):
         """

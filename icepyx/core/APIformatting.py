@@ -358,9 +358,9 @@ class Parameters(Generic[T]):
         the values parameter.
         """
 
-        assert (
-            self.partype == "required"
-        ), "You cannot call this function for your parameter type"
+        assert self.partype == "required", (
+            "You cannot call this function for your parameter type"
+        )
 
         if not self._reqtype:
             raise TypeGuardException
@@ -381,9 +381,9 @@ class Parameters(Generic[T]):
         Check that the non-required keys have values, if the key was
         passed in with the values parameter.
         """
-        assert (
-            self.partype != "required"
-        ), "You cannot call this function for your parameter type"
+        assert self.partype != "required", (
+            "You cannot call this function for your parameter type"
+        )
 
         spatial_keys = self.poss_keys["spatial"]
 

@@ -422,9 +422,9 @@ class Visualize:
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
 
-        assert (
-            OA_para_list
-        ), "Your search returned no results; try different search parameters"
+        assert OA_para_list, (
+            "Your search returned no results; try different search parameters"
+        )
 
         url_number = len(OA_para_list)
 

@@ -481,7 +481,9 @@ class Variables(EarthdataAuthMixin):
             and var_list is None
             and beam_list is None
             and keyword_list is None
-        ), "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
+        ), (
+            "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
+        )
 
         final_vars = {}
 
@@ -579,7 +581,9 @@ class Variables(EarthdataAuthMixin):
             and var_list is None
             and beam_list is None
             and keyword_list is None
-        ), "You must specify which variables/paths/beams you would like to remove from your wanted list."
+        ), (
+            "You must specify which variables/paths/beams you would like to remove from your wanted list."
+        )
 
         # if not hasattr(self, 'avail'): self.get_avail()
         # vgrp, paths = self.parse_var_list(self.avail)

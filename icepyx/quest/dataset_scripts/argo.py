@@ -223,10 +223,10 @@ class Argo(DataSet):
             valid_params = self._valid_params()
             # checks that params are valid
             for i in params:
-                assert (
-                    i in valid_params
-                ), "Parameter '{0}' is not valid. Valid parameters are {1}".format(
-                    i, valid_params
+                assert i in valid_params, (
+                    "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+                        i, valid_params
+                    )
                 )
 
         return list(set(params))

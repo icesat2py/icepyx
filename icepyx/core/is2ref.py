@@ -96,6 +96,7 @@ def _get_custom_options(session, product, version):
     """
     cust_options = {}
 
+    # flagging for update/removal given removal of `.earthdata_login()`
     if session is None:
         raise ValueError(
             "Don't forget to log in to Earthdata using query.earthdata_login()"

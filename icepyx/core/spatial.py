@@ -1,35 +1,134 @@
+from itertools import chain
 import os
+from typing import Literal, Optional, Union, cast
 import warnings
 
 import geopandas as gpd
 import numpy as np
+from numpy.typing import NDArray
 from shapely.geometry import Polygon, box
 from shapely.geometry.polygon import orient
+
+import icepyx.core.exceptions
 
 # DevGoal: need to update the spatial_extent docstring to describe coordinate order for input
 
 
-def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
+ExtentType = Literal["bounding_box", "polygon"]
+
+
+def _convert_spatial_extent_to_list_of_floats(
+    spatial_extent: Union[list[float], list[tuple[float, float]], Polygon],
+) -> list[float]:
+    # This is already a list of floats
+    if isinstance(spatial_extent, list) and isinstance(spatial_extent[0], float):
+        spatial_extent = cast(list[float], spatial_extent)
+        return spatial_extent
+    elif isinstance(spatial_extent, Polygon):
+        # Convert `spatial_extent` into a list of floats like:
+        # `[longitude1, latitude1, longitude2, latitude2, ...]`
+        spatial_extent = [
+            float(coord) for point in spatial_extent.exterior.coords for coord in point
+        ]
+        return spatial_extent
+    elif isinstance(spatial_extent, list) and isinstance(spatial_extent[0], tuple):
+        # Convert the list of tuples into a flat list of floats
+        spatial_extent = cast(list[tuple[float, float]], spatial_extent)
+        spatial_extent = list(chain.from_iterable(spatial_extent))
+        return spatial_extent
+    else:
+        raise TypeError(
+            "Unrecognized spatial_extent that"
+            " cannot be converted into a list of floats:"
+            f"{spatial_extent=}"
+        )
+
+
+def _geodataframe_from_bounding_box(
+    spatial_extent: list[float],
+    xdateline: bool,
+) -> gpd.GeoDataFrame:
+    if xdateline is True:
+        cartesian_lons = [i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]]
+        cartesian_spatial_extent = [
+            item for pair in zip(cartesian_lons, spatial_extent[1::2]) for item in pair
+        ]
+        bbox = box(
+            cartesian_spatial_extent[0],
+            cartesian_spatial_extent[1],
+            cartesian_spatial_extent[2],
+            cartesian_spatial_extent[3],
+        )
+    else:
+        bbox = box(
+            spatial_extent[0],
+            spatial_extent[1],
+            spatial_extent[2],
+            spatial_extent[3],
+        )
+
+    # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
+    # HACK: Disabled Pyright due to issue
+    #       https://github.com/geopandas/geopandas/issues/3115
+    return gpd.GeoDataFrame(geometry=[bbox], crs="epsg:4326")  # pyright: ignore[reportCallIssue]
+
+
+def _geodataframe_from_polygon_list(
+    spatial_extent: list[float],
+    xdateline: bool,
+) -> gpd.GeoDataFrame:
+    if xdateline is True:
+        cartesian_lons = [i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]]
+        spatial_extent = [
+            item for pair in zip(cartesian_lons, spatial_extent[1::2]) for item in pair
+        ]
+
+    spatial_extent_geom = Polygon(
+        # syntax of dbl colon is- "start:stop:steps"
+        # 0::2 = start at 0, grab every other coord after
+        # 1::2 = start at 1, grab every other coord after
+        zip(spatial_extent[0::2], spatial_extent[1::2])
+    )  # spatial_extent
+    # TODO: check if the crs param should always just be epsg:4326 for everything OR if it should be a parameter
+    # HACK: Disabled Pyright due to issue
+    #       https://github.com/geopandas/geopandas/issues/3115
+    return gpd.GeoDataFrame(  # pyright: ignore[reportCallIssue]
+        index=[0], crs="epsg:4326", geometry=[spatial_extent_geom]
+    )
+
+
+def geodataframe(
+    extent_type: ExtentType,
+    spatial_extent: Union[str, list[float], list[tuple[float, float]], Polygon],
+    file: bool = False,
+    xdateline: Optional[bool] = None,
+) -> gpd.GeoDataFrame:
     """
     Return a geodataframe of the spatial extent
 
     Parameters
     ----------
-    extent_type : string
+    extent_type :
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
-    spatial_extent : string or list
-        A list containing the spatial extent OR a string containing a filename.
-        If file is False, spatial_extent should be a
-        list of coordinates in decimal degrees of [lower-left-longitude,
-        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
-        [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
+    spatial_extent :
+        A list containing the spatial extent, a shapely.Polygon, a list of
+        tuples (i.e.,, `[(longitude1, latitude1), (longitude2, latitude2),
+        ...]`)containing floats, OR a string containing a filename.
+        If file is False, spatial_extent should be a shapely.Polygon,
+        list of bounding box coordinates in decimal degrees of [lower-left-longitude,
+        lower-left-latitute, upper-right-longitude, upper-right-latitude] or polygon vertices as
+        [longitude1, latitude1, longitude2, latitude2, ...
+        longitude_n,latitude_n, longitude1,latitude1].
 
-        If file is True, spatial_extent is a string containing the full file path and filename to the
-        file containing the desired spatial extent.
+        If file is True, spatial_extent is a string containing the full file path and filename
+        to the file containing the desired spatial extent.
 
-    file : boolean, default False
+    file :
         Indication for whether the spatial_extent string is a filename or coordinate list
+
+    xdateline :
+        Whether the given extent crosses the dateline
 
     Returns
     -------
@@ -50,65 +149,53 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
     0    POLYGON ((-48 68, -48 71, -55 71, -55 68, -48 ...
     Name: geometry, dtype: geometry
     """
-
-    if xdateline is not None:
-        xdateline = xdateline
-    elif file:
-        pass
-    else:
-        xdateline = check_dateline(extent_type, spatial_extent)
-    # print("this should cross the dateline:" + str(xdateline))
-
-    if extent_type == "bounding_box":
-        if xdateline is True:
-            cartesian_lons = [i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]]
-            cartesian_spatial_extent = [
-                item
-                for pair in zip(cartesian_lons, spatial_extent[1::2])
-                for item in pair
-            ]
-            bbox = box(*cartesian_spatial_extent)
-        else:
-            bbox = box(*spatial_extent)
-
-        # TODO: test case that ensures gdf is constructed as expected (correct coords, order, etc.)
-        gdf = gpd.GeoDataFrame(geometry=[bbox], crs="epsg:4326")
-
-    # DevGoal: Currently this if/else within this elif are not tested...
     # DevGoal: the crs setting and management needs to be improved
 
-    elif extent_type == "polygon" and file is False:
+    # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
+    if file is True:
+        if extent_type == "polygon":
+            return gpd.read_file(spatial_extent)
+        else:
+            raise TypeError("When 'file' is True, 'extent_type' must be 'polygon'")
+
+    if isinstance(spatial_extent, str):
+        raise TypeError(
+            f"Expected list of floats, list of tuples of floats, or Polygon, received {spatial_extent=}"
+        )
+
+    #### Non-file processing
+    # Most functions that this function calls requires the spatial extent as a
+    # list of floats. This function provides that.
+    spatial_extent_list = _convert_spatial_extent_to_list_of_floats(
+        spatial_extent=spatial_extent,
+    )
+
+    if xdateline is None:
+        xdateline = check_dateline(
+            extent_type,
+            spatial_extent_list,
+        )
+
+    # DevGoal: Currently this if/else within this elif are not tested...
+    if extent_type == "bounding_box":
+        return _geodataframe_from_bounding_box(
+            spatial_extent=spatial_extent_list,
+            xdateline=xdateline,
+        )
+
+    elif extent_type == "polygon":
         # if spatial_extent is already a Polygon
         if isinstance(spatial_extent, Polygon):
             spatial_extent_geom = spatial_extent
+            return gpd.GeoDataFrame(  # pyright: ignore[reportCallIssue]
+                index=[0], crs="epsg:4326", geometry=[spatial_extent_geom]
+            )
 
-        # else, spatial_extent must be a list of floats (or list of tuples of floats)
-        else:
-            if xdateline is True:
-                cartesian_lons = [
-                    i if i > 0 else i + 360 for i in spatial_extent[0:-1:2]
-                ]
-                spatial_extent = [
-                    item
-                    for pair in zip(cartesian_lons, spatial_extent[1::2])
-                    for item in pair
-                ]
-
-            spatial_extent_geom = Polygon(
-                # syntax of dbl colon is- "start:stop:steps"
-                # 0::2 = start at 0, grab every other coord after
-                # 1::2 = start at 1, grab every other coord after
-                zip(spatial_extent[0::2], spatial_extent[1::2])
-            )  # spatial_extent
-        # TODO: check if the crs param should always just be epsg:4326 for everything OR if it should be a parameter
-        gdf = gpd.GeoDataFrame(
-            index=[0], crs="epsg:4326", geometry=[spatial_extent_geom]
+        # The input must be a list of floats.
+        return _geodataframe_from_polygon_list(
+            spatial_extent=spatial_extent_list,
+            xdateline=xdateline,
         )
-
-    # If extent_type is a polygon AND from a file, create a geopandas geodataframe from it
-    # DevGoal: Currently this elif isn't tested...
-    elif extent_type == "polygon" and file is True:
-        gdf = gpd.read_file(spatial_extent)
 
     else:
         raise TypeError(
@@ -116,19 +203,20 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
             "input and a geodataframe cannot be constructed"
         )
 
-    return gdf
 
-
-def check_dateline(extent_type, spatial_extent):
+def check_dateline(
+    extent_type: ExtentType,
+    spatial_extent: list[float],
+) -> bool:
     """
     Check if a bounding box or polygon input cross the dateline.
 
     Parameters
     ----------
-    extent_type : string
+    extent_type :
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
-    spatial_extent : list
+    spatial_extent :
         A list containing the spatial extent as
         coordinates in decimal degrees of
         [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
@@ -139,8 +227,8 @@ def check_dateline(extent_type, spatial_extent):
     boolean
         indicating whether or not the spatial extent crosses the dateline.
     """
-
     if extent_type == "bounding_box":
+        # We expect the bounding_box to be a list of floats.
         if spatial_extent[0] > spatial_extent[2]:
             # if lower left lon is larger then upper right lon, verify the values are crossing the dateline
             assert spatial_extent[0] - 360 <= spatial_extent[2]
@@ -156,6 +244,8 @@ def check_dateline(extent_type, spatial_extent):
 
     # this works properly, but limits the user to at most 270 deg longitude...
     elif extent_type == "polygon":
+        # This checks that the first instance of `spatial_extent` NOT a list or
+        # a tuple. Assumes that this is a list of floats.
         assert not isinstance(
             spatial_extent[0], (list, tuple)
         ), "Your polygon list is the wrong format for this function."
@@ -172,7 +262,9 @@ def check_dateline(extent_type, spatial_extent):
             return False
 
 
-def validate_bounding_box(spatial_extent):
+def validate_bounding_box(
+    spatial_extent: Union[list[float], NDArray[np.floating]],
+) -> tuple[Literal["bounding_box"], list[float], None]:
     """
     Validates the spatial_extent parameter as a bounding box.
 
@@ -181,13 +273,13 @@ def validate_bounding_box(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: list or np.ndarray
-                    A list or np.ndarray of strings, numerics, or tuples
-                    representing bounding box coordinates in decimal degrees.
+    spatial_extent:
+        A list or np.ndarray of exactly 4 numerics representing bounding box coordinates
+        in decimal degrees.
 
-                    Must be provided in the order:
-                    [lower-left-longitude, lower-left-latitude,
-                    upper-right-longitude, upper-right-latitude])
+        Must be provided in the order:
+        [lower-left-longitude, lower-left-latitude,
+        upper-right-longitude, upper-right-latitude])
     """
 
     # Latitude must be between -90 and 90 (inclusive); check for this here
@@ -213,7 +305,9 @@ def validate_bounding_box(spatial_extent):
     return "bounding_box", spatial_extent, None
 
 
-def validate_polygon_pairs(spatial_extent):
+def validate_polygon_pairs(
+    spatial_extent: Union[list[tuple[float, float]], NDArray[np.void]],
+) -> tuple[Literal["polygon"], list[float], None]:
     """
     Validates the spatial_extent parameter as a polygon from coordinate pairs.
 
@@ -224,14 +318,21 @@ def validate_polygon_pairs(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: list or np.ndarray
+    spatial_extent:
 
-                    A list or np.ndarray of tuples representing polygon coordinate pairs in decimal degrees in the order:
-                    [(longitude1, latitude1), (longitude2, latitude2), ...
-                    ... (longitude_n,latitude_n), (longitude1,latitude1)]
+        A list or np.ndarray of tuples representing polygon coordinate pairs in decimal
+        degrees in the order:
 
-                    If the first and last coordinate pairs are NOT equal,
-                    the polygon will be closed automatically (last point will be connected to the first point).
+            [
+                (longitude_1, latitude_1),
+                ...,
+                (longitude_n, latitude_n),
+                (longitude_1,latitude_1),
+            ]
+
+        If the first and last coordinate pairs are NOT equal,
+        the polygon will be closed automatically (last point will be connected to the
+        first point).
     """
     # Check to make sure all elements of spatial_extent are coordinate pairs; if not, raise an error
     if any(len(i) != 2 for i in spatial_extent):
@@ -269,7 +370,12 @@ def validate_polygon_pairs(spatial_extent):
     return "polygon", polygon, None
 
 
-def validate_polygon_list(spatial_extent):
+def validate_polygon_list(
+    spatial_extent: Union[
+        list[float],
+        NDArray[np.floating],
+    ],
+) -> tuple[Literal["polygon"], list[float], None]:
     """
     Validates the spatial_extent parameter as a polygon from a list of coordinates.
 
@@ -280,14 +386,14 @@ def validate_polygon_list(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: list or np.ndarray
-                    A list or np.ndarray of strings, numerics, or tuples representing polygon coordinates,
-                    provided as coordinate pairs in decimal degrees in the order:
-                    [longitude1, latitude1, longitude2, latitude2, ...
-                    ... longitude_n,latitude_n, longitude1,latitude1]
+    spatial_extent:
+        A list or np.ndarray of numerics representing polygon coordinates,
+        provided as coordinate pairs in decimal degrees in the order:
+        [longitude1, latitude1, longitude2, latitude2, ...
+        ... longitude_n,latitude_n, longitude1,latitude1]
 
-                    If the first and last coordinate pairs are NOT equal,
-                    the polygon will be closed automatically (last point will be connected to the first point).
+        If the first and last coordinate pairs are NOT equal,
+        the polygon will be closed automatically (last point will be connected to the first point).
     """
 
     # user-entered polygon as a single list of lon and lat coordinates
@@ -306,12 +412,10 @@ def validate_polygon_list(spatial_extent):
 
         # Add starting long/lat to end
         if isinstance(spatial_extent, list):
-            # use list.append() method
             spatial_extent.append(spatial_extent[0])
             spatial_extent.append(spatial_extent[1])
 
         elif isinstance(spatial_extent, np.ndarray):
-            # use np.insert() method
             spatial_extent = np.insert(
                 spatial_extent, len(spatial_extent), spatial_extent[0]
             )
@@ -324,7 +428,9 @@ def validate_polygon_list(spatial_extent):
     return "polygon", polygon, None
 
 
-def validate_polygon_file(spatial_extent):
+def validate_polygon_file(
+    spatial_extent: str,
+) -> tuple[Literal["polygon"], gpd.GeoDataFrame, str]:
     """
     Validates the spatial_extent parameter as a polygon from a file.
 
@@ -364,7 +470,21 @@ def validate_polygon_file(spatial_extent):
 
 
 class Spatial:
-    def __init__(self, spatial_extent, **kwarg):
+    _ext_type: ExtentType
+    _geom_file: Optional[str]
+    _spatial_ext: list[float]
+
+    def __init__(
+        self,
+        spatial_extent: Union[
+            str,  # Filepath
+            list[float],  # Bounding box or polygon
+            list[tuple[float, float]],  # Polygon
+            NDArray,  # Polygon
+            None,
+        ],
+        **kwarg,
+    ):
         """
         Validates input from "spatial_extent" argument, then creates a Spatial object with validated inputs
         as properties of the object.
@@ -375,7 +495,7 @@ class Spatial:
         ----------
         spatial_extent : list or string
             * list of coordinates
-             (stored in a list of strings, list of numerics, list of tuples, OR np.ndarray) as one of:
+             (stored in a list of numerics, list of tuples, OR np.ndarray) as one of:
                 * bounding box
                     * provided in the order: [lower-left-longitude, lower-left-latitude,
                                              upper-right-longitude, upper-right-latitude].)
@@ -384,7 +504,7 @@ class Spatial:
                         * [(longitude1, latitude1), (longitude2, latitude2), ...
                           ... (longitude_n,latitude_n), (longitude1,latitude1)]
                         * [longitude1, latitude1, longitude2, latitude2,
-                        ... longitude_n,latitude_n, longitude1,latitude1].
+                          ... longitude_n,latitude_n, longitude1,latitude1].
                     * NOTE: If the first and last coordinate pairs are NOT equal,
                     the polygon will be closed automatically (last point will be connected to the first point).
             * string representing a geospatial polygon file (kml, shp, gpkg)
@@ -435,34 +555,56 @@ class Spatial:
         if isinstance(spatial_extent, (list, np.ndarray)):
             # bounding box
             if len(spatial_extent) == 4 and all(
-                isinstance(i, scalar_types) for i in spatial_extent
-            ):
-                (
-                    self._ext_type,
-                    self._spatial_ext,
-                    self._geom_file,
-                ) = validate_bounding_box(spatial_extent)
-
-            # polygon (as list of lon, lat coordinate pairs, in tuples)
-            elif all(
-                type(i) in [list, tuple, np.ndarray] for i in spatial_extent
-            ) and all(
-                all(isinstance(i[j], scalar_types) for j in range(len(i)))
+                isinstance(i, scalar_types)  # pyright: ignore[reportArgumentType]
                 for i in spatial_extent
             ):
                 (
                     self._ext_type,
                     self._spatial_ext,
                     self._geom_file,
-                ) = validate_polygon_pairs(spatial_extent)
+                ) = validate_bounding_box(
+                    # HACK: Unfortunately, the typechecker can't narrow based on the
+                    # above conditional expressions. Tell the typechecker, "trust us"!
+                    cast(
+                        Union[list[float], NDArray[np.floating]],
+                        spatial_extent,
+                    ),
+                )
 
-            # polygon (as list of lon, lat coordinate pairs, single "flat" list)
-            elif all(isinstance(i, scalar_types) for i in spatial_extent):
+            # polygon (as list of lon, lat coordinate pairs, in tuples)
+            elif all(
+                type(i) in [list, tuple, np.ndarray] for i in spatial_extent
+            ) and all(
+                all(isinstance(i[j], scalar_types) for j in range(len(i)))  # pyright: ignore[reportArgumentType,reportIndexIssue]
+                for i in spatial_extent
+            ):
                 (
                     self._ext_type,
                     self._spatial_ext,
                     self._geom_file,
-                ) = validate_polygon_list(spatial_extent)
+                ) = validate_polygon_pairs(
+                    # HACK: Unfortunately, the typechecker can't narrow based on the
+                    # above conditional expressions. Tell the typechecker, "trust us"!
+                    cast(
+                        Union[list[tuple[float, float]], NDArray[np.void]],
+                        spatial_extent,
+                    )
+                )
+
+            # polygon (as list of lon, lat coordinate pairs, single "flat" list)
+            elif all(isinstance(i, scalar_types) for i in spatial_extent):  # pyright: ignore[reportArgumentType]
+                (
+                    self._ext_type,
+                    self._spatial_ext,
+                    self._geom_file,
+                ) = validate_polygon_list(
+                    # HACK: Unfortunately, the typechecker can't narrow based on the
+                    # above conditional expressions. Tell the typechecker, "trust us"!
+                    cast(
+                        Union[list[float], NDArray[np.floating]],
+                        spatial_extent,
+                    )
+                )
             else:
                 # TODO: Change this warning to be like "usage", tell user possible accepted input types
                 raise ValueError(
@@ -503,7 +645,7 @@ class Spatial:
                 False,
             ], "Your 'xdateline' value is invalid. It must be boolean."
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self._geom_file is not None:
             return "Extent type: {0}\nSource file: {1}\nCoordinates: {2}".format(
                 self._ext_type, self._geom_file, self._spatial_ext
@@ -514,7 +656,7 @@ class Spatial:
             )
 
     @property
-    def extent(self):
+    def extent(self) -> list[float]:
         """
         Return the coordinates of the spatial extent of the Spatial object.
 
@@ -531,7 +673,7 @@ class Spatial:
         return self._spatial_ext
 
     @property
-    def extent_as_gdf(self):
+    def extent_as_gdf(self) -> gpd.GeoDataFrame:
         """
         Return the spatial extent of the query object as a GeoPandas GeoDataframe.
 
@@ -557,7 +699,7 @@ class Spatial:
         return self._gdf_spat
 
     @property
-    def extent_type(self):
+    def extent_type(self) -> ExtentType:
         """
         Return the extent type of the Spatial object as a string.
 
@@ -575,7 +717,7 @@ class Spatial:
         return self._ext_type
 
     @property
-    def extent_file(self):
+    def extent_file(self) -> Optional[str]:
         """
         Return the path to the geospatial polygon file containing the Spatial object's spatial extent.
         If the spatial extent did not come from a file (i.e. user entered list of coordinates), this will return None.
@@ -597,7 +739,7 @@ class Spatial:
     # Methods
 
     # TODO: can use this docstring as a todo list
-    def fmt_for_CMR(self):
+    def fmt_for_CMR(self) -> str:
         """
         Format the spatial extent for NASA's Common Metadata Repository (CMR) API.
 
@@ -646,9 +788,12 @@ class Spatial:
 
             cmr_extent = ",".join(map(str, extent))
 
+        else:
+            raise icepyx.core.exceptions.ExhaustiveTypeGuardException
+
         return cmr_extent
 
-    def fmt_for_EGI(self):
+    def fmt_for_EGI(self) -> str:
         """
         Format the spatial extent input into a subsetting key value for submission to EGI (the NSIDC DAAC API).
 
@@ -673,5 +818,8 @@ class Spatial:
             poly = orient(poly, sign=1.0)
             egi_extent = gpd.GeoSeries(poly).to_json()
             egi_extent = egi_extent.replace(" ", "")  # remove spaces for API call
+
+        else:
+            raise icepyx.core.exceptions.ExhaustiveTypeGuardException
 
         return egi_extent

@@ -80,9 +80,9 @@ def check_valid_date_range(start: dt.date, end: dt.date) -> None:
         start = start.date()
     if isinstance(end, dt.datetime):
         end = end.date()
-    assert (
-        start <= end
-    ), "Your date range is invalid; end date MUST be on or after the start date."
+    assert start <= end, (
+        "Your date range is invalid; end date MUST be on or after the start date."
+    )
 
 
 def validate_times(

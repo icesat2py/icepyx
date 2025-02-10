@@ -126,9 +126,7 @@ def test_search_data_no_available_profiles(argo_quest_instance):
     reg_a = argo_quest_instance([-55, 68, -48, 71], ["2019-02-20", "2019-02-28"])
     obs = reg_a.search_data()
 
-    exp = (
-        "Warning: Query returned no profiles\n" "Please try different search parameters"
-    )
+    exp = "Warning: Query returned no profiles\nPlease try different search parameters"
 
     assert obs == exp
 
@@ -198,9 +196,7 @@ def test_replace_param_search(argo_quest_instance):
 
     obs = reg_a.search_data(params=["doxy"])
 
-    exp = (
-        "Warning: Query returned no profiles\n" "Please try different search parameters"
-    )
+    exp = "Warning: Query returned no profiles\nPlease try different search parameters"
 
     assert obs == exp
 

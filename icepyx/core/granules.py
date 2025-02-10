@@ -212,9 +212,9 @@ class Granules(EarthdataAuthMixin):
         query.Query.avail_granules
         """
 
-        assert (
-            CMRparams is not None and reqparams is not None
-        ), "Missing required input parameter dictionaries"
+        assert CMRparams is not None and reqparams is not None, (
+            "Missing required input parameter dictionaries"
+        )
 
         # if not hasattr(self, 'avail'):
         self.avail = []
@@ -260,17 +260,17 @@ class Granules(EarthdataAuthMixin):
 
             results = json.loads(response.content)
             if not results["feed"]["entry"]:
-                assert len(self.avail) == int(
-                    response.headers["CMR-Hits"]
-                ), "Search failure - unexpected number of results"
+                assert len(self.avail) == int(response.headers["CMR-Hits"]), (
+                    "Search failure - unexpected number of results"
+                )
                 break
 
             # Collect results
             self.avail.extend(results["feed"]["entry"])
 
-        assert (
-            len(self.avail) > 0
-        ), "Your search returned no results; try different search parameters"
+        assert len(self.avail) > 0, (
+            "Your search returned no results; try different search parameters"
+        )
 
     # DevNote: currently, default subsetting DOES NOT include variable subsetting,
     # only spatial and temporal

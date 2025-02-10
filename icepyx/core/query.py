@@ -7,7 +7,6 @@ from typing_extensions import Never
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.exceptions import DeprecationError
 import icepyx.core.granules as granules
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
@@ -461,19 +460,6 @@ class Query(GenQuery, EarthdataAuthMixin):
             self.spatial_extent, self.dates, self.product, self.product_version
         )
         return str
-
-    @property
-    def dataset(self):
-        """
-        Legacy property included to provide deprecation warning.
-
-        See Also
-        --------
-        product
-        """
-        DeprecationError(
-            "In line with most common usage, 'dataset' has been replaced by 'product'.",
-        )
 
     @property
     def product(self):

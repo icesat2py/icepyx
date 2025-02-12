@@ -88,9 +88,9 @@ def test_variable_mock_path():
         ),
     ):
         variables = Variables(path="path")
-        assert variables._path == "path"
-        variables.product = "prod: path, None"
-        variables.version = "vers: path, None"
+        assert variables.path == "path"
+        assert variables.product == "prod: path, None"
+        assert variables.version == "vers: path, None"
 
 
 def test_variable_mock_product():
@@ -116,6 +116,6 @@ def test_variable_mock_product():
         ),
     ):
         variables = Variables(product="product")
-        assert variables._product == "product"
-        variables.path = "prod: product, None"
-        variables.version = "vers: product, None"
+        assert variables.product == "product"
+        assert variables.path == "prod: product, None"
+        assert variables.version == "vers: product, None"

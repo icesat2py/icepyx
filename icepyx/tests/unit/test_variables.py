@@ -103,7 +103,7 @@ def test_variable_mock_product():
             side_effect=lambda product: product,
         ),
         patch(
-            "iicepyx.core.validate_inputs.prod_version",
+            "icepyx.core.validate_inputs.prod_version",
             side_effect=lambda product, auth: f"prod_version: {product}, {auth}",
         ),
         patch(

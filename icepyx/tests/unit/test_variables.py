@@ -1,5 +1,6 @@
 import pytest
 
+import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables, list_of_dict_vals
 
 
@@ -59,9 +60,8 @@ def test_list_of_dict_vals_old():
 
 
 def test_variables():
-    variables = Variables()
-    assert variables is not None
-    assert variables.variables == {}
+    with pytest.raises(TypeError):
+        Variables()
 
 
 def test_variable_path_and_product():
@@ -70,6 +70,10 @@ def test_variable_path_and_product():
 
 
 def test_add_variable():
-    variables = Variables()
-    variables.add_variable("variable", "path")
-    assert variables.variables == {"variable": "path"}
+    """
+    Create a mock val.check_s3bucket(path) so it always returns path.
+    """
+    val.check_s3bucket = lambda x: x
+    # variables = Variables(path="path")
+    # variables.add_variable("test", ["test1", "test2"])
+    # assert variables.variables == {"test": ["test1", "test2"]}

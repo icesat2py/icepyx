@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 import pytest
 
-import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables, list_of_dict_vals
 
 
@@ -69,11 +70,22 @@ def test_variable_path_and_product():
         Variables(path="path", product="product")
 
 
-def test_add_variable():
+def test_variable_mock_path():
     """
     Create a mock val.check_s3bucket(path) so it always returns path.
     """
-    val.check_s3bucket = lambda x: x
-    # variables = Variables(path="path")
-    # variables.add_variable("test", ["test1", "test2"])
-    # assert variables.variables == {"test": ["test1", "test2"]}
+    with (
+        patch("val.check_s3bucket", side_effect=lambda path: path),
+        patch(
+            "is2ref.extract_product",
+            side_effect=lambda path, auth: f"prod: {path}, {auth}",
+        ),
+        patch(
+            "is2ref.extract_version",
+            side_effect=lambda path, auth: f"vers: {path}, {auth}",
+        ),
+    ):
+        variables = Variables(path="path")
+        assert variables._path == "path"
+        variables._product = "prod: path, None"
+        variables._version = "vers: path, None"

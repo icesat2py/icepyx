@@ -75,13 +75,15 @@ def test_variable_mock_path():
     Create a mock val.check_s3bucket(path) so it always returns path.
     """
     with (
-        patch("val.check_s3bucket", side_effect=lambda path: path),
         patch(
-            "is2ref.extract_product",
+            "icepyx.core.validate_inputs.check_s3bucket", side_effect=lambda path: path
+        ),
+        patch(
+            "icepyx.core.is2ref.extract_product",
             side_effect=lambda path, auth: f"prod: {path}, {auth}",
         ),
         patch(
-            "is2ref.extract_version",
+            "icepyx.core.is2ref.extract_version",
             side_effect=lambda path, auth: f"vers: {path}, {auth}",
         ),
     ):

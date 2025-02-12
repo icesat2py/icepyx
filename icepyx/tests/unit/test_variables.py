@@ -89,5 +89,33 @@ def test_variable_mock_path():
     ):
         variables = Variables(path="path")
         assert variables._path == "path"
-        variables._product = "prod: path, None"
-        variables._version = "vers: path, None"
+        variables.product = "prod: path, None"
+        variables.version = "vers: path, None"
+
+
+def test_variable_mock_product():
+    """
+    Create a mock val.check_s3bucket(product) so it always returns product.
+    """
+    with (
+        patch(
+            "icepyx.core.validate_inputs.check_s3bucket",
+            side_effect=lambda product: product,
+        ),
+        patch(
+            "iicepyx.core.validate_inputs.prod_version",
+            side_effect=lambda product, auth: f"prod_version: {product}, {auth}",
+        ),
+        patch(
+            "icepyx.core.is2ref._validate_product",
+            side_effect=lambda product, auth: f"prod: {product}, {auth}",
+        ),
+        patch(
+            "icepyx.core.is2ref.latest_version",
+            side_effect=lambda product, auth: f"vers: {product}, {auth}",
+        ),
+    ):
+        variables = Variables(product="product")
+        assert variables._product == "product"
+        variables.path = "prod: product, None"
+        variables.version = "vers: product, None"

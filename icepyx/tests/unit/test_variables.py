@@ -108,7 +108,7 @@ def test_variable_mock_product():
         ),
         patch(
             "icepyx.core.is2ref._validate_product",
-            side_effect=lambda product, auth: f"prod: {product}, {auth}",
+            side_effect=lambda product: True,
         ),
         patch(
             "icepyx.core.is2ref.latest_version",

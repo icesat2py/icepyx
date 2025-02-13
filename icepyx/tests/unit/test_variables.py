@@ -112,7 +112,7 @@ def test_variable_mock_product():
         ),
         patch(
             "icepyx.core.is2ref.latest_version",
-            side_effect=lambda product, auth: f"vers: {product}, {auth}",
+            side_effect=lambda product: f"vers: {product}",
         ),
     ):
         variables = Variables(product="product")

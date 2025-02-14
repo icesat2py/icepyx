@@ -90,7 +90,6 @@ class DataOrder():
             return earthaccess.download(self.granules, local_path=path)
 
 
-
 class Query(BaseQuery):
     _temporal: Union[tp.Temporal, None]
     _CMRparams: apifmt.CMRParameters
@@ -117,7 +116,6 @@ class Query(BaseQuery):
             self._readable_granule_name = apifmt._fmt_readable_granules(
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
-
 
     @property
     def cycles(self):
@@ -159,11 +157,10 @@ class Query(BaseQuery):
         else:
             return sorted(set(self._tracks))
 
-
     def _get_concept_id(self, product, version) -> Union[str, None]:
-        collections = earthaccess.search_datasets(short_name=product,
-                                                  version=version,
-                                                  cloud_hosted=True)
+        collections = earthaccess.search_datasets(
+            short_name=product, version=version, cloud_hosted=True
+        )
         if collections:
             return collections[0].concept_id()
         else:
@@ -190,11 +187,9 @@ class Query(BaseQuery):
 
         """
         if self.concept_id:
-
             capabilities = self.harmony_api.get_capabilities(concept_id=self.concept_id)
             print(json.dumps(capabilities, indent=2))
         return None
-
 
     @property
     def CMRparams(self) -> CMRParams:
@@ -214,7 +209,6 @@ class Query(BaseQuery):
             self._CMRparams = apifmt.Parameters("CMR")
         # print(self._CMRparams)
         # print(self._CMRparams.fmted_keys)
-        
 
         # dictionary of optional CMR parameters
         kwargs = {}
@@ -239,7 +233,7 @@ class Query(BaseQuery):
             )
 
         return self._CMRparams.fmted_keys
-    
+
     @property
     def granules(self):
         """
@@ -328,8 +322,6 @@ class Query(BaseQuery):
         else:
             return self.granules.avail
 
-
-
     def _order_subset_granules(self) -> str:
         concept_id = self._get_concept_id(
             product=self._prod,
@@ -338,7 +330,9 @@ class Query(BaseQuery):
 
 
         if concept_id is None:
-            raise ValueError(f"Could not find concept ID for {self._prod} v{self._version}")
+            raise ValueError(
+                f"Could not find concept ID for {self._prod} v{self._version}"
+            )
 
         readable_granule_name = self.CMRparams.get("readable_granule_name[]", [])
         harmony_temporal = None
@@ -410,7 +404,7 @@ class Query(BaseQuery):
             The local directory to download the granules to.
 
         """
-        
+
         links = self.get_granule_links(cloud_hosted=cloud_hosted)
         files = earthaccess.download(links, local_path=path)
         return files

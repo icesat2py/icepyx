@@ -207,9 +207,7 @@ class Granules(EarthdataAuthMixin):
         query.Query.avail_granules
         """
 
-        assert (
-            CMRparams is not None 
-        ), "Missing required input parameter dictionaries"
+        assert CMRparams is not None, "Missing required input parameter dictionaries"
 
         # if not hasattr(self, 'avail'):
         self.avail = []

@@ -1,6 +1,7 @@
 backoff
 dask[dataframe]
 datashader
+deprecated
 earthaccess>=0.12.0
 fiona
 geopandas
@@ -15,4 +16,3 @@ requests
 s3fs
 shapely
 xarray
-deprecated

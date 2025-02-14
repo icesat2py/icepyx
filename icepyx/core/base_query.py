@@ -419,7 +419,6 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
         auth=None,
         **kwargs,
     ):
-
         self._prod = is2ref._validate_product(product)
 
         super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
@@ -448,9 +447,9 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
             version = self._version
         else:
             version = is2ref.latest_version(short_name)
-        collections = earthaccess.search_datasets(short_name=short_name,
-                                                  version=version,
-                                                  cloud_hosted=True)
+        collections = earthaccess.search_datasets(
+            short_name=short_name, version=version, cloud_hosted=True
+        )
         if collections:
             return collections[0].concept_id()
         else:
@@ -900,7 +899,6 @@ class LegacyQuery(BaseQuery):
 
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the product level
-
 
     # ----------------------------------------------------------------------
     # Methods - Granules (NSIDC-API)

@@ -26,6 +26,7 @@ def test_status_subset():
     assert result == {"status": "processing"}
     mock_harmony_client.check_order_status.assert_called_once_with(123)
 
+
 def test_status_non_subset():
     # Mock the harmony_client (not used in this case)
     mock_harmony_client = Mock()
@@ -44,6 +45,7 @@ def test_status_non_subset():
     # Verify the result
     assert result == {"status": "complete"}
     mock_harmony_client.check_order_status.assert_not_called()
+
 
 def test_download_subset():
     # Mock the harmony_client
@@ -74,7 +76,10 @@ def test_download_non_subset(mock_earthaccess_download):
     mock_harmony_client = Mock()
 
     # Mock the earthaccess.download method to return specific file paths
-    mock_earthaccess_download.return_value = ["/fake/path/granule1.nc", "/fake/path/granule2.nc"]
+    mock_earthaccess_download.return_value = [
+        "/fake/path/granule1.nc",
+        "/fake/path/granule2.nc",
+    ]
 
     # Create a DataOrder instance with type="download"
     order = DataOrder(
@@ -93,4 +98,3 @@ def test_download_non_subset(mock_earthaccess_download):
         ["granule1", "granule2"], local_path="/fake/path"
     )
     mock_harmony_client.download_granules.assert_not_called()
-    

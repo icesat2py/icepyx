@@ -20,7 +20,6 @@ import icepyx.core.exceptions
 from icepyx.core.types import (
     CMRParams,
     EGIRequiredParamsDownload,
-    EGIRequiredParamsSearch,
 )
 from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 

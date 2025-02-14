@@ -10,28 +10,91 @@ class. Once core functionality is implemented, relevant "V2" classes/functions
 can be renamed and the v1 versions removed.
 """
 
-from pathlib import Path
-from typing import Union
 import json
+from pathlib import Path
+import pprint
+import sys
+import time
+from typing import Union
 
-from fsspec.utils import tempfile
-import harmony
 import earthaccess
+import harmony
 
-from icepyx.core.harmony import HarmonyApi, HarmonyTemporal
-from icepyx.core.base_query import BaseQuery
-import icepyx.core.temporal as tp
 import icepyx.core.APIformatting as apifmt
-
+from icepyx.core.base_query import BaseQuery
 from icepyx.core.granules import Granules, gran_IDs
-import icepyx.core.validate_inputs as val
-
+from icepyx.core.harmony import HarmonyApi, HarmonyTemporal
+import icepyx.core.temporal as tp
 from icepyx.core.types import CMRParams
+import icepyx.core.validate_inputs as val
+from icepyx.core.variables import Variables
+
+
+class DataOrder():
+
+    HARMONY_BASE_URL = "https://harmony.earthdata.nasa.gov/workflow-ui/"
+
+    def __init__(self, job_id, type, granules, harmony_client):
+        """Initialize a DataOrder object. This object represents an order for Harmony.
+        """
+        self.job_id = job_id
+        self.harmony_api = harmony_client
+        self.granules = granules
+        self.type = type
+
+    def __str__(self):
+        return f"DataOrder(job_id={self.job_id}, type={self.type}, granules={self.granules})"
+
+    def _repr_html_(self):
+        # Create a link using the <a> tag
+        status = self.status()
+        link_html = f'<a target="_blank" href="{self.HARMONY_BASE_URL}{self.job_id}">View Details</a>'
+        # Create a self-contained HTML table with a single row
+        html = f"""
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Job ID</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{self.job_id}</td>
+                    <td>{self.type}</td>
+                    <td>{status["status"]}</td>
+                    <td>{link_html}</td>
+                </tr>
+            </tbody>
+        </table>
+        """
+        return html
+
+    def __repr__(self):
+        return self.__str__()
+
+    def id(self):
+        return self.job_id
+
+    def status(self):
+        if self.type == "subset":
+            return self.harmony_api.check_order_status(self.job_id)
+        return {"status": "complete"}
+
+    def download(self, path, overwrite=False):
+        if self.type == "subset":
+            return self.harmony_api.download_granules(download_dir=path, overwrite=overwrite)
+        else:
+            return earthaccess.download(self.granules, local_path=path)
+
 
 
 class Query(BaseQuery):
     _temporal: Union[tp.Temporal, None]
     _CMRparams: apifmt.CMRParameters
+    REQUEST_RETRY_INTERVAL_SECONDS = 3
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -105,6 +168,14 @@ class Query(BaseQuery):
             return collections[0].concept_id()
         else:
             return None
+    @property
+    def order_vars(self) -> list[str]:
+        """This used to print the list of vasriables for subsetting, Harmony doesn't provide that 
+        we do need to implement a class that gets the variables even if it'sm only for listing.
+        """
+        if self.product:
+            return Variables(product=self.product).avail()
+        return []
 
     def show_custom_options(self) -> None:
         """
@@ -265,10 +336,13 @@ class Query(BaseQuery):
             version=self._version,
         )
 
+
         if concept_id is None:
             raise ValueError(f"Could not find concept ID for {self._prod} v{self._version}")
 
+        readable_granule_name = self.CMRparams.get("readable_granule_name[]", [])
         harmony_temporal = None
+        harmony_spatial = None
         if self._temporal:
             # TODO: this assumes there will always be a start and stop
             # temporal range. Harmony can accept start without stop and
@@ -277,56 +351,52 @@ class Query(BaseQuery):
                 start=self._temporal.start,
                 stop=self._temporal.end,
             )
+        if self.spatial:
+            if self.spatial.extent_type == "bounding_box":
+                # Bounding box case.
 
-        # TODO: think more about how this can be DRYed out. We call
-        # `place_order` based on the user spatial input. The bounding box case
-        # is simple, but polygons are more complicated because `harmony-py`
-        # expects a shapefile (e.g,. geojson) to exist on disk.
-        if self.spatial.extent_type == "bounding_box":
-            # Bounding box case.
-            return self.harmony_api.place_order(
-                concept_id=concept_id,
-                temporal=harmony_temporal,
-                spatial=harmony.BBox(
+                # TODO: think more about how this can be DRYed out. We call
+                # `place_order` based on the user spatial input. The bounding box case
+                # is simple, but polygons are more complicated because `harmony-py`
+                # expects a shapefile (e.g,. geojson) to exist on disk.
+                harmony_spatial = harmony.BBox(
                     w=self.spatial.extent[0],
                     s=self.spatial.extent[1],
                     e=self.spatial.extent[2],
                     n=self.spatial.extent[3],
-                ),
-            )
-        else:
-            # Polygons must be passed to `harmony-py` as a path to a valid
-            # shapefile (json, geojson, kml, shz, or zip). Create a temporary
-            # directory to store this file for the harmony order.
-            with tempfile.TemporaryDirectory() as tmp_dir:
-                # Polygon
-                df = self.spatial.extent_as_gdf
-                # Use geojson to pass along to harmony. Icepyx supports formats
-                # that harmony does not (e.g., `gpkg`). Harmony supports json,
-                # geojson, kml, shz, zip.
-                shapefile_path = str(Path(tmp_dir) / "harmony_spatial_subset.geojson")
-                df.to_file(shapefile_path)
-
-                return self.harmony_api.place_order(
-                    concept_id=concept_id,
-                    temporal=harmony_temporal,
-                    shape=shapefile_path,
                 )
+            elif self.spatial.extent_file or self.spatial.extent_type == "polygon":
+                harmony_spatial = self.spatial.extent_as_gdf.iloc[0].geometry.wkt
+                # Polygons must be passed to `harmony-py` as a path to a valid
+                # shapefile (json, geojson, kml, shz, or zip). Create a temporary
+                # directory to store this file for the harmony order.
+            else: 
+                raise NotImplementedError("Only bounding box and polygon spatial subsetting is supported.")
+        else:
+            if harmony_temporal is None:
+                raise ValueError("No temporal or spatial parameters provided.")
+
+
+        job_id = self.harmony_api.place_order(
+            concept_id=concept_id,
+            temporal=harmony_temporal,
+            spatial=harmony_spatial,
+            granule_name=list(readable_granule_name),
+        )
+        return job_id
 
     def get_granule_links(self, cloud_hosted=False) -> list[str]:
         links = []
         for granule in self.granules.avail:
             for link in granule["links"]:
-                if cloud_hosted and link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
+                if cloud_hosted and link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#" or ((link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#") and 
+                     ("type" in link and link["type"] in ["application/x-hdf5",
+                                                           "application/x-hdfeos"])):
                     links.append(link["href"])
-                elif link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
-                    if "type" in link and link["type"] in ["application/x-hdf5",
-                                                           "application/x-hdfeos"]:
-                        links.append(link["href"])
         return links
 
 
-    def _order_whole_granules(self, cloud_hosted=False, path="./") -> None:
+    def _order_whole_granules(self, cloud_hosted=False, path="./") -> list[str]:
         """
         Downloads the whole granules for the query object. This is not an asnc operation
         and will block until the download is complete.
@@ -342,10 +412,11 @@ class Query(BaseQuery):
         """
         
         links = self.get_granule_links(cloud_hosted=cloud_hosted)
-        earthaccess.download(links, local_path=path)
+        files = earthaccess.download(links, local_path=path)
+        return files
 
 
-    def order_granules(self, subset=True):
+    def order_granules(self, subset=True) -> DataOrder:
         """
         Place an order for the available granules for the query object.
 
@@ -373,29 +444,48 @@ class Query(BaseQuery):
         Your harmony order is:  complete
         """
         if subset:
-            self._order_subset_granules()
+            job_id =self._order_subset_granules()
+            self.last_order = DataOrder(job_id, "subset", self.granules, self.harmony_api)
+            return self.last_order
         else:
-            self._order_whole_granules()
+            files = self._order_whole_granules()
+            self.last_order = DataOrder(None, "whole", files, self.harmony_api)
+            return self.last_order
 
     def download_granules(
         self,
         path: Path,
-        subset: bool = True,
-        restart: bool = False,
         overwrite: bool = False,
     ) -> None:
+        """
+        Download the granules for the query object.
+
+        Parameters
+        ----------
+        path: local directory where data files will be downloaded
+        overwrite: boolean, default False
+            If True, overwrite existing files with the same name. If False, skip existing files.
+        """
         # Order granules based on user selections if restart is False and there
         # are no job IDs registered by the harmony API
-        if not restart:
-            if subset:
-                if not self.harmony_api.job_ids:
-                    self.order_granules(subset=subset)
-            else:
-                # Non-subset orders are not implemented yet.
-                raise NotImplementedError
+        status = self.last_order.status()
+        if status["status"] == "running" or status["status"] == "accepted":
+            print(
+            (
+                "Your harmony job status is still "
+                f"{status['status']}. Please continue waiting... this may take a few moments."
+            )
+            )
+            while status["status"].startswith("running") or status["status"] == "accepted":
+                sys.stdout.write(".")
+                sys.stdout.flush()
+                # Requesting the status too often can result in a 500 error.
+                time.sleep(self.REQUEST_RETRY_INTERVAL_SECONDS)
+                status = self.last_order.status()
 
-        # Download logic
-        if subset:
-            self.harmony_api.download_granules(download_dir=path, overwrite=overwrite)
+        if status["status"] == "complete_with_errors" or status["status"] == "failed":
+            print("Harmony provided these error messages:")
+            pprint.pprint(status["errors"])
+
         else:
-            raise NotImplementedError
+            self.last_order.download(path, overwrite=overwrite)

@@ -1,9 +1,8 @@
 from functools import cached_property
 import pprint
 from typing import Optional, Union, cast
-from deprecated import deprecated
-import earthaccess
 
+import earthaccess
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from typing_extensions import Never
@@ -184,7 +183,7 @@ class GenQuery:
         ['No temporal parameters set']
         """
 
-        if hasattr(self, "_temporal"):
+        if hasattr(self, "_temporal") and self._temporal is not None:
             return self._temporal
         else:
             return ["No temporal parameters set"]
@@ -275,7 +274,7 @@ class GenQuery:
         >>> reg_a.dates
         ['No temporal parameters set']
         """
-        if not hasattr(self, "_temporal"):
+        if not hasattr(self, "_temporal") or self._temporal is None:
             return ["No temporal parameters set"]
         else:
             return [
@@ -302,7 +301,7 @@ class GenQuery:
         >>> reg_a.start_time
         ['No temporal parameters set']
         """
-        if not hasattr(self, "_temporal"):
+        if not hasattr(self, "_temporal") or self._temporal is None:
             return ["No temporal parameters set"]
         else:
             return self._temporal._start.strftime("%H:%M:%S")
@@ -326,7 +325,7 @@ class GenQuery:
         >>> reg_a.end_time
         ['No temporal parameters set']
         """
-        if not hasattr(self, "_temporal"):
+        if not hasattr(self, "_temporal") or self._temporal is None:
             return ["No temporal parameters set"]
         else:
             return self._temporal._end.strftime("%H:%M:%S")

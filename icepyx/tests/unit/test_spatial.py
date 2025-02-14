@@ -1447,6 +1447,7 @@ def poly():
     ]
     return spat.Spatial(coords)
 
+
 @pytest.mark.skip(reason="Skipping this test for now, it fails with current polygons")
 def test_polygon_fmt(poly):
     obs = poly.fmt_for_CMR()

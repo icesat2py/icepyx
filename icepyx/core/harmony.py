@@ -67,7 +67,7 @@ class HarmonyApi(EarthdataAuthMixin):
             spatial=spatial,  # type: ignore[arg-type]
             temporal=temporal,  # type: ignore[arg-type]
             # shape=shape,  # type: ignore[arg-type]
-            granule_name=granule_name
+            granule_name=granule_name,
         )
 
         if not request.is_valid():
@@ -116,7 +116,7 @@ class HarmonyApi(EarthdataAuthMixin):
             spatial=spatial,
             temporal=temporal,
             shape=shape,
-            granule_name=granule_name
+            granule_name=granule_name,
         )
 
         # Append this job to the list of job ids.

@@ -30,13 +30,11 @@ import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables
 
 
-class DataOrder():
-
+class DataOrder:
     HARMONY_BASE_URL = "https://harmony.earthdata.nasa.gov/workflow-ui/"
 
     def __init__(self, job_id, type, granules, harmony_client):
-        """Initialize a DataOrder object. This object represents an order for Harmony.
-        """
+        """Initialize a DataOrder object. This object represents an order for Harmony."""
         self.job_id = job_id
         self.harmony_api = harmony_client
         self.granules = granules
@@ -85,7 +83,9 @@ class DataOrder():
 
     def download(self, path, overwrite=False):
         if self.type == "subset":
-            return self.harmony_api.download_granules(download_dir=path, overwrite=overwrite)
+            return self.harmony_api.download_granules(
+                download_dir=path, overwrite=overwrite
+            )
         else:
             return earthaccess.download(self.granules, local_path=path)
 
@@ -165,9 +165,10 @@ class Query(BaseQuery):
             return collections[0].concept_id()
         else:
             return None
+
     @property
     def order_vars(self) -> list[str]:
-        """This used to print the list of vasriables for subsetting, Harmony doesn't provide that 
+        """This used to print the list of vasriables for subsetting, Harmony doesn't provide that
         we do need to implement a class that gets the variables even if it'sm only for listing.
         """
         if self.product:
@@ -328,7 +329,6 @@ class Query(BaseQuery):
             version=self._version,
         )
 
-
         if concept_id is None:
             raise ValueError(
                 f"Could not find concept ID for {self._prod} v{self._version}"
@@ -364,12 +364,13 @@ class Query(BaseQuery):
                 # Polygons must be passed to `harmony-py` as a path to a valid
                 # shapefile (json, geojson, kml, shz, or zip). Create a temporary
                 # directory to store this file for the harmony order.
-            else: 
-                raise NotImplementedError("Only bounding box and polygon spatial subsetting is supported.")
+            else:
+                raise NotImplementedError(
+                    "Only bounding box and polygon spatial subsetting is supported."
+                )
         else:
             if harmony_temporal is None:
                 raise ValueError("No temporal or spatial parameters provided.")
-
 
         job_id = self.harmony_api.place_order(
             concept_id=concept_id,
@@ -383,12 +384,20 @@ class Query(BaseQuery):
         links = []
         for granule in self.granules.avail:
             for link in granule["links"]:
-                if cloud_hosted and link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#" or ((link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#") and 
-                     ("type" in link and link["type"] in ["application/x-hdf5",
-                                                           "application/x-hdfeos"])):
+                if (
+                    cloud_hosted
+                    and link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#"
+                    or (
+                        (link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#")
+                        and (
+                            "type" in link
+                            and link["type"]
+                            in ["application/x-hdf5", "application/x-hdfeos"]
+                        )
+                    )
+                ):
                     links.append(link["href"])
         return links
-
 
     def _order_whole_granules(self, cloud_hosted=False, path="./") -> list[str]:
         """
@@ -408,7 +417,6 @@ class Query(BaseQuery):
         links = self.get_granule_links(cloud_hosted=cloud_hosted)
         files = earthaccess.download(links, local_path=path)
         return files
-
 
     def order_granules(self, subset=True) -> DataOrder:
         """
@@ -438,8 +446,10 @@ class Query(BaseQuery):
         Your harmony order is:  complete
         """
         if subset:
-            job_id =self._order_subset_granules()
-            self.last_order = DataOrder(job_id, "subset", self.granules, self.harmony_api)
+            job_id = self._order_subset_granules()
+            self.last_order = DataOrder(
+                job_id, "subset", self.granules, self.harmony_api
+            )
             return self.last_order
         else:
             files = self._order_whole_granules()
@@ -465,12 +475,14 @@ class Query(BaseQuery):
         status = self.last_order.status()
         if status["status"] == "running" or status["status"] == "accepted":
             print(
-            (
-                "Your harmony job status is still "
-                f"{status['status']}. Please continue waiting... this may take a few moments."
+                (
+                    "Your harmony job status is still "
+                    f"{status['status']}. Please continue waiting... this may take a few moments."
+                )
             )
-            )
-            while status["status"].startswith("running") or status["status"] == "accepted":
+            while (
+                status["status"].startswith("running") or status["status"] == "accepted"
+            ):
                 sys.stdout.write(".")
                 sys.stdout.flush()
                 # Requesting the status too often can result in a 500 error.

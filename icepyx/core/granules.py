@@ -313,7 +313,7 @@ class Granules(EarthdataAuthMixin):
         query.Query.order_granules
         """
 
-        self.get_avail(CMRparams, reqparams)
+        self.get_avail(CMRparams)
 
         if subset is False:
             request_params = apifmt.combine_params(

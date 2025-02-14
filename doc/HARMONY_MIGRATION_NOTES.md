@@ -81,7 +81,7 @@ The type annotations will help with this process!
    Since we want the user to be able to provide short_name and version, implementing the
    concept ID as a `@cached_property` on `Query` which asks CMR for the concept ID makes
    sense to me.
-* Broken assumption: Harmony features are equivilent to NSIDC's ECS-based
+* Broken assumption: Harmony features are equivalent to NSIDC's ECS-based
   ordering system. As mentioned above, Harmony will not support variable
   subsetting, reprojection, or reformatting for IS2 collections on day 1. In the
   future, these features may be implemented in Harmony. For now, we need to
@@ -165,7 +165,7 @@ See this thread on EOSDIS Slack for more details:
 
 ## Remaining tasks
 
-Remaining tasks for "take2" development incldue:
+Remaining tasks for "take2" development includue:
 
 * Implement support for full-granule orders via `earthaccess`
 * Check user inputs against supported harmony services. E.g., see `is2ref`

@@ -172,7 +172,7 @@ class Query(BaseQuery):
         we do need to implement a class that gets the variables even if it'sm only for listing.
         """
         if self.product:
-            return Variables(product=self.product).avail() # type: ignore
+            return Variables(product=self.product).avail()  # type: ignore
         return []
 
     def show_custom_options(self) -> None:

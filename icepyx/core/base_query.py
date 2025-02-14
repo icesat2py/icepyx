@@ -1,26 +1,16 @@
 from functools import cached_property
 import pprint
-from typing import Optional, Union, cast
+from typing import Union
 
 import earthaccess
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from typing_extensions import Never
 
-import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 from icepyx.core.exceptions import DeprecationError
-import icepyx.core.granules as granules
-from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
-from icepyx.core.types import (
-    CMRParams,
-    EGIParamsSubset,
-    EGIRequiredParams,
-    EGIRequiredParamsDownload,
-)
 import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.visualization import Visualize
@@ -581,7 +571,7 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
         gdf = self._spatial.extent_as_gdf
 
         try:
-            import geoviews as gv #type: ignore
+            import geoviews as gv  # type: ignore
             from shapely.geometry import Polygon  # noqa: F401
 
             gv.extension("bokeh")  # pyright: ignore[reportCallIssue]
@@ -612,4 +602,3 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
         cycle_map, rgt_map = viz.viz_elevation()
 
         return cycle_map, rgt_map
-

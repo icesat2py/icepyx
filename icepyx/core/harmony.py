@@ -58,7 +58,7 @@ class HarmonyApi(EarthdataAuthMixin):
         collection = harmony.Collection(id=concept_id)
         if spatial is not None and isinstance(spatial, str):
             spatial = harmony.WKT(spatial)
-        
+
         params = {
             "collection": collection,
             "spatial": spatial,
@@ -66,7 +66,6 @@ class HarmonyApi(EarthdataAuthMixin):
         }
         if granule_name:
             params["granule_name"] = granule_name
-
 
         request = harmony.Request(**params)
 

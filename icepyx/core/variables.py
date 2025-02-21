@@ -3,7 +3,6 @@ import os
 import numpy as np
 
 from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 import icepyx.core.validate_inputs as val
 
@@ -28,11 +27,6 @@ class Variables(EarthdataAuthMixin):
 
     Parameters
     ----------
-    vartype : string
-        This argument is deprecated. The vartype will be inferred from data_source.
-        One of ['order', 'file'] to indicate the source of the input variables.
-        This field will be auto-populated when a variable object is created as an
-        attribute of a query object.
     path : string, default None
         The path to a local Icesat-2 file. The variables list will contain the variables
         present in this file. Either path or product are required input arguments.
@@ -54,7 +48,6 @@ class Variables(EarthdataAuthMixin):
 
     def __init__(
         self,
-        vartype=None,
         path=None,
         product=None,
         version=None,
@@ -62,14 +55,6 @@ class Variables(EarthdataAuthMixin):
         wanted=None,
         auth=None,
     ):
-        # Deprecation error
-        if vartype in ["order", "file"]:
-            raise DeprecationError(
-                "It is no longer required to specify the variable type `vartype`. Instead please ",
-                "provide either the path to a local file (arg: `path`) or the product you would ",
-                "like variables for (arg: `product`).",
-            )
-
         if path and product:
             raise TypeError(
                 "Please provide either a path or a product. If a path is provided ",
@@ -481,7 +466,9 @@ class Variables(EarthdataAuthMixin):
             and var_list is None
             and beam_list is None
             and keyword_list is None
-        ), "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
+        ), (
+            "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
+        )
 
         final_vars = {}
 
@@ -579,7 +566,9 @@ class Variables(EarthdataAuthMixin):
             and var_list is None
             and beam_list is None
             and keyword_list is None
-        ), "You must specify which variables/paths/beams you would like to remove from your wanted list."
+        ), (
+            "You must specify which variables/paths/beams you would like to remove from your wanted list."
+        )
 
         # if not hasattr(self, 'avail'): self.get_avail()
         # vgrp, paths = self.parse_var_list(self.avail)

@@ -117,6 +117,45 @@ class Query(BaseQuery):
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
+
+    # Properties
+
+    def __str__(self):
+        str = "Product {2} v{3}\n{0}\nDate range {1}".format(
+            self.spatial_extent, self.dates, self.product, self.product_version
+        )
+        return str
+
+    @property
+    def product(self):
+        """
+        Return the short name product ID string associated with the query object.
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.product
+        'ATL06'
+        """
+        return self._prod
+
+    @property
+    def product_version(self):
+        """
+        Return the product version of the data object.
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.product_version
+        '006'
+
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='4')
+        >>> reg_a.product_version
+        '004'
+        """
+        return self._version
+
     @property
     def cycles(self):
         """

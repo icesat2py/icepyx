@@ -1,5 +1,5 @@
 backoff
-dask[dataframe]
+dask[dataframe] <2025.1.0
 datashader
 deprecated
 earthaccess>=0.12.0

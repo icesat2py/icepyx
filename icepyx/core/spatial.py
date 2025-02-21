@@ -156,9 +156,9 @@ def check_dateline(extent_type, spatial_extent):
 
     # this works properly, but limits the user to at most 270 deg longitude...
     elif extent_type == "polygon":
-        assert not isinstance(
-            spatial_extent[0], (list, tuple)
-        ), "Your polygon list is the wrong format for this function."
+        assert not isinstance(spatial_extent[0], (list, tuple)), (
+            "Your polygon list is the wrong format for this function."
+        )
         lonlist = spatial_extent[0:-1:2]
         if np.any(
             [abs(lonlist[i] - lonlist[i + 1]) > 270 for i in range(len(lonlist) - 1)]
@@ -191,19 +191,19 @@ def validate_bounding_box(spatial_extent):
     """
 
     # Latitude must be between -90 and 90 (inclusive); check for this here
-    assert (
-        -90 <= spatial_extent[1] <= 90
-    ), "Invalid latitude value (must be between -90 and 90, inclusive)"
-    assert (
-        -90 <= spatial_extent[3] <= 90
-    ), "Invalid latitude value (must be between -90 and 90, inclusive)"
+    assert -90 <= spatial_extent[1] <= 90, (
+        "Invalid latitude value (must be between -90 and 90, inclusive)"
+    )
+    assert -90 <= spatial_extent[3] <= 90, (
+        "Invalid latitude value (must be between -90 and 90, inclusive)"
+    )
 
-    assert (
-        -180 <= spatial_extent[0] <= 180
-    ), "Invalid longitude value (must be between -180 and 180, inclusive)"
-    assert (
-        -180 <= spatial_extent[2] <= 180
-    ), "Invalid longitude value (must be between -180 and 180, inclusive)"
+    assert -180 <= spatial_extent[0] <= 180, (
+        "Invalid longitude value (must be between -180 and 180, inclusive)"
+    )
+    assert -180 <= spatial_extent[2] <= 180, (
+        "Invalid longitude value (must be between -180 and 180, inclusive)"
+    )
 
     # If the lower left latitude is greater than the upper right latitude, throw an error
     assert spatial_extent[1] <= spatial_extent[3], "Invalid bounding box latitudes"
@@ -292,9 +292,9 @@ def validate_polygon_list(spatial_extent):
 
     # user-entered polygon as a single list of lon and lat coordinates
     assert len(spatial_extent) >= 8, "Your spatial extent polygon has too few vertices"
-    assert (
-        len(spatial_extent) % 2 == 0
-    ), "Your spatial extent polygon list should have an even number of entries"
+    assert len(spatial_extent) % 2 == 0, (
+        "Your spatial extent polygon list should have an even number of entries"
+    )
 
     if (spatial_extent[0] != spatial_extent[-2]) or (
         spatial_extent[1] != spatial_extent[-1]
@@ -346,9 +346,9 @@ def validate_polygon_file(spatial_extent):
     # Check if the filename path exists; if not, throw an error
     # print("print statements work \n")
     # print("SPATIAL EXTENT: " + spatial_extent + "\n")
-    assert os.path.exists(
-        spatial_extent
-    ), "Check that the path and filename of your geometry file are correct"
+    assert os.path.exists(spatial_extent), (
+        "Check that the path and filename of your geometry file are correct"
+    )
 
     # DevGoal: more robust polygon inputting (see Bruce's code):
     # correct for clockwise/counterclockwise coordinates, deal with simplification, etc.

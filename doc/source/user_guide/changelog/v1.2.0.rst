@@ -1,5 +1,5 @@
 What's new in 1.2.0 (14 August 2024)
------------------------------------
+------------------------------------
 
 These are the changes in icepyx 1.2.0 See :ref:`release` for a full changelog
 including other versions of icepyx.

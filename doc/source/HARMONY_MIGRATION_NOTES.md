@@ -165,7 +165,7 @@ See this thread on EOSDIS Slack for more details:
 
 ## Remaining tasks
 
-Remaining tasks for "take2" development includue:
+Remaining tasks for "take2" development include:
 
 * Implement support for full-granule orders via `earthaccess`
 * Check user inputs against supported harmony services. E.g., see `is2ref`

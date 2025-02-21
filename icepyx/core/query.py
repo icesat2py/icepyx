@@ -168,7 +168,7 @@ class Query(BaseQuery):
 
     @property
     def order_vars(self) -> list[str]:
-        """This used to print the list of vasriables for subsetting, Harmony doesn't provide that
+        """This used to print the list of vasriables for subsetting, Harmony doesn't provide that for IS2 datasets.
         we do need to implement a class that gets the variables even if it'sm only for listing.
         """
         if self.product:

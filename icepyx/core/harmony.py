@@ -58,17 +58,17 @@ class HarmonyApi(EarthdataAuthMixin):
         collection = harmony.Collection(id=concept_id)
         if spatial is not None and isinstance(spatial, str):
             spatial = harmony.WKT(spatial)
+        
+        params = {
+            "collection": collection,
+            "spatial": spatial,
+            "temporal": temporal,
+        }
+        if granule_name:
+            params["granule_name"] = granule_name
 
-        request = harmony.Request(
-            collection=collection,
-            # TODO: these two kwargs are type-ignored because `harmony-py` is
-            # typed to not allow `None`. However, `harmony-py` initializes
-            # values with `None`, so it should be allowed to pass that along.
-            spatial=spatial,  # type: ignore[arg-type]
-            temporal=temporal,  # type: ignore[arg-type]
-            # shape=shape,  # type: ignore[arg-type]
-            granule_name=granule_name,
-        )
+
+        request = harmony.Request(**params)
 
         if not request.is_valid():
             raise RuntimeError(

@@ -77,14 +77,29 @@ class DataOrder:
         return self.job_id
 
     def status(self):
+        """
+        returns the status of the order.
+        """
         if self.type == "subset":
             return self.harmony_api.check_order_status(self.job_id)
         return {"status": "complete"}
 
+    def download_granules(self, path, overwrite=False):
+        """
+        Download the granules for the order. mirrors the download_granules method in Query.
+        """
+        self.download(path, overwrite=overwrite)
+
     def download(self, path, overwrite=False):
+        """
+        Download the granules for the order. If the order is not ready it will
+        wait and block until is ready to be downloaded.
+        """
+        path = Path(path)
+        path.mkdir(parents=True, exist_ok=True)
         if self.type == "subset":
             return self.harmony_api.download_granules(
-                download_dir=path, overwrite=overwrite
+                download_dir=str(path), overwrite=overwrite
             )
         else:
             return earthaccess.download(self.granules, local_path=path)
@@ -206,12 +221,12 @@ class Query(BaseQuery):
             return None
 
     @property
-    def order_vars(self) -> list[str]:
+    def order_vars(self) -> Union[list[str], None]:
         """This used to print the list of vasriables for subsetting, Harmony doesn't provide that for IS2 datasets.
         we do need to implement a class that gets the variables even if it'sm only for listing.
         """
         if self.product:
-            return Variables(product=self.product).avail()  # type: ignore
+            return Variables(product=self.product).avail() # type: ignore[no-any-return]
         return []
 
     def show_custom_options(self) -> None:

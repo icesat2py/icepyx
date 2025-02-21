@@ -9,7 +9,7 @@ import pytest
 import shapely
 
 import icepyx as ipx
-from icepyx.core.queryv2 import QueryV2
+from icepyx.core.query import Query
 
 
 @pytest.fixture()
@@ -60,7 +60,7 @@ def test_spatial_and_temporal_subset(tmp_path, spatial_extent):
     does not accept geopackages as input, so we do a conversion to geojson
     behind the scenes!)
     """
-    q = QueryV2(
+    q = Query(
         product="ATL06",
         version="006",
         spatial_extent=spatial_extent,

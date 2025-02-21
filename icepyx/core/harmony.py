@@ -2,7 +2,6 @@ from concurrent.futures import as_completed
 import datetime as dt
 import json
 from pathlib import Path
-import pprint
 import time
 from typing import Any, TypedDict, Union
 
@@ -38,7 +37,7 @@ class HarmonyApi(EarthdataAuthMixin):
         self.job_ids = []
 
     def get_capabilities(self, concept_id: str) -> dict[str, Any]:
-        capabilities_request = harmony.CapabilitiesRequest(concept_id=concept_id)
+        capabilities_request = harmony.CapabilitiesRequest(collection_id=concept_id)
         response = self.harmony_client.submit(capabilities_request)
 
         return response
@@ -47,15 +46,19 @@ class HarmonyApi(EarthdataAuthMixin):
         self,
         concept_id: str,
         # These are optional subset parameters
-        spatial: Union[harmony.BBox, None] = None,
+        spatial: Union[harmony.BBox, str, harmony.WKT, None] = None,
         temporal: Union[HarmonyTemporal, None] = None,
         shape: Union[str, None] = None,
-    ) -> str:
+        granule_name: list[str] = [],
+    ) -> Any:
         """Places a Harmony order with the given parameters.
 
         Return a string representing a job ID.
         """
         collection = harmony.Collection(id=concept_id)
+        if spatial is not None and isinstance(spatial, str):
+            spatial = harmony.WKT(spatial)
+
         request = harmony.Request(
             collection=collection,
             # TODO: these two kwargs are type-ignored because `harmony-py` is
@@ -63,7 +66,8 @@ class HarmonyApi(EarthdataAuthMixin):
             # values with `None`, so it should be allowed to pass that along.
             spatial=spatial,  # type: ignore[arg-type]
             temporal=temporal,  # type: ignore[arg-type]
-            shape=shape,  # type: ignore[arg-type]
+            # shape=shape,  # type: ignore[arg-type]
+            granule_name=granule_name,
         )
 
         if not request.is_valid():
@@ -98,10 +102,11 @@ class HarmonyApi(EarthdataAuthMixin):
         self,
         concept_id: str,
         # These are optional subset parameters
-        spatial: Union[harmony.BBox, None] = None,
+        spatial: Union[harmony.BBox, str, harmony.WKT, None] = None,
         temporal: Union[HarmonyTemporal, None] = None,
         shape: Union[str, None] = None,
-    ) -> str:
+        granule_name: list[str] = [],
+    ) -> Any:
         """Places a Harmony order with the given parameters and waits for it to complete.
 
         Return a string representing a job ID once the order is complete.
@@ -111,6 +116,7 @@ class HarmonyApi(EarthdataAuthMixin):
             spatial=spatial,
             temporal=temporal,
             shape=shape,
+            granule_name=granule_name,
         )
 
         # Append this job to the list of job ids.
@@ -127,24 +133,6 @@ class HarmonyApi(EarthdataAuthMixin):
         print(f"Initial status of your harmony order request: {status['status']}")
         # The list of possible statues are here:
         # https://github.com/nasa/harmony/blob/8b2eb47feab5283d237f3679ac8e09f50e85038f/db/db.sql#L8
-        while status["status"].startswith("running") or status["status"] == "accepted":
-            print(
-                (
-                    "Your harmony job status is still "
-                    f"{status['status']}. Please continue waiting... this may take a few moments."
-                )
-            )
-            # Requesting the status too often can result in a 500 error.
-            time.sleep(REQUEST_RETRY_INTERVAL_SECONDS)
-            status = self.check_order_status(job_id)
-
-        print("Your harmony order is: ", status["status"])
-        print("Harmony returned this message:")
-        pprint.pprint(status["message"])
-        if status["status"] == "complete_with_errors" or status["status"] == "failed":
-            print("Harmony provided these error messages:")
-            pprint.pprint(status["errors"])
-
         return job_id
 
     def _download_job_results(

@@ -72,7 +72,7 @@ class HarmonyApi(EarthdataAuthMixin):
 
         if not request.is_valid():
             raise RuntimeError(
-                "Failed to create valid harmony request:" f" {request.error_messages()}"
+                f"Failed to create valid harmony request: {request.error_messages()}"
             )
 
         job_id = self.harmony_client.submit(request)

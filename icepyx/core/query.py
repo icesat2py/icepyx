@@ -132,7 +132,6 @@ class Query(BaseQuery):
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
-
     # Properties
 
     def __str__(self):

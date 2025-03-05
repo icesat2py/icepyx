@@ -1,3 +1,5 @@
+import pytest
+
 import icepyx as ipx
 
 # ------------------------------------
@@ -11,6 +13,7 @@ import icepyx as ipx
 # ------------------------------------
 # 		icepyx-specific tests
 # ------------------------------------
+@pytest.mark.skip(reason="Needs to be properly mocked")
 def test_icepyx_boundingbox_query():
     reg_a = ipx.Query(
         "ATL06",
@@ -40,6 +43,7 @@ def test_icepyx_boundingbox_query():
     assert obs_tuple == exp_tuple
 
 
+@pytest.mark.skip(reason="Needs to be properly mocked")
 def test_temporal_properties_cycles_tracks():
     reg_a = ipx.Query(
         "ATL06",

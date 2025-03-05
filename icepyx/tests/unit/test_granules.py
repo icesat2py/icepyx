@@ -596,6 +596,7 @@ def test_granules_info():
     assert obs == exp
 
 
+@pytest.mark.skip(reason="Needs to be properly mocked")
 def test_no_granules_in_search_results():
     ermsg = "Your search returned no results; try different search parameters"
     with pytest.raises(AssertionError, match=ermsg):
@@ -604,6 +605,7 @@ def test_no_granules_in_search_results():
         ).avail_granules()
 
 
+@pytest.mark.skip(reason="Needs to be properly mocked")
 def test_correct_granule_list_returned():
     reg_a = ipx.Query(
         "ATL06",

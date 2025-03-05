@@ -8,3 +8,4 @@ responses
 types-docutils
 types-requests
 types-tqdm
+ruff

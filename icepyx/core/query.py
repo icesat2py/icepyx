@@ -24,85 +24,11 @@ import icepyx.core.APIformatting as apifmt
 from icepyx.core.base_query import BaseQuery
 from icepyx.core.granules import Granules, gran_IDs
 from icepyx.core.harmony import HarmonyApi, HarmonyTemporal
+from icepyx.core.orders import DataOrder
 import icepyx.core.temporal as tp
 from icepyx.core.types import CMRParams
 import icepyx.core.validate_inputs as val
 from icepyx.core.variables import Variables
-
-
-class DataOrder:
-    HARMONY_BASE_URL = "https://harmony.earthdata.nasa.gov/workflow-ui/"
-
-    def __init__(self, job_id, type, granules, harmony_client):
-        """Initialize a DataOrder object. This object represents an order for Harmony."""
-        self.job_id = job_id
-        self.harmony_api = harmony_client
-        self.granules = granules
-        self.type = type
-
-    def __str__(self):
-        return f"DataOrder(job_id={self.job_id}, type={self.type}, granules={self.granules})"
-
-    def _repr_html_(self):
-        # Create a link using the <a> tag
-        status = self.status()
-        link_html = f'<a target="_blank" href="{self.HARMONY_BASE_URL}{self.job_id}">View Details</a>'
-        # Create a self-contained HTML table with a single row
-        html = f"""
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Job ID</th>
-                    <th>Type</th>
-                    <th>Status</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{self.job_id}</td>
-                    <td>{self.type}</td>
-                    <td>{status["status"]}</td>
-                    <td>{link_html}</td>
-                </tr>
-            </tbody>
-        </table>
-        """
-        return html
-
-    def __repr__(self):
-        return self.__str__()
-
-    def id(self):
-        return self.job_id
-
-    def status(self):
-        """
-        returns the status of the order.
-        """
-        if self.type == "subset":
-            return self.harmony_api.check_order_status(self.job_id)
-        return {"status": "complete"}
-
-    def download_granules(self, path, overwrite=False):
-        """
-        Download the granules for the order. mirrors the download_granules method in Query.
-        """
-        self.download(path, overwrite=overwrite)
-
-    def download(self, path, overwrite=False):
-        """
-        Download the granules for the order. If the order is not ready it will
-        wait and block until is ready to be downloaded.
-        """
-        path = Path(path)
-        path.mkdir(parents=True, exist_ok=True)
-        if self.type == "subset":
-            return self.harmony_api.download_granules(
-                download_dir=str(path), overwrite=overwrite
-            )
-        else:
-            return earthaccess.download(self.granules, local_path=path)
 
 
 class Query(BaseQuery):
@@ -515,14 +441,20 @@ class Query(BaseQuery):
         overwrite: bool = False,
     ) -> None:
         """
-        Download the granules for the query object.
+        Download the granules for the order, blocking until they are ready if necessary.
 
         Parameters
         ----------
-        path: local directory where data files will be downloaded
-        overwrite: boolean, default False
-            If True, overwrite existing files with the same name. If False, skip existing files.
-        """
+        path : str or Path
+            The directory where granules should be saved.
+        overwrite : bool, optional
+            Whether to overwrite existing files (default is False).
+
+        Returns
+        -------
+        list or None
+            A list of the downloaded file paths if successful, otherwise None.
+        """        
         # Order granules based on user selections if restart is False and there
         # are no job IDs registered by the harmony API
         status = self.last_order.status()

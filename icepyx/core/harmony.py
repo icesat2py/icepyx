@@ -8,6 +8,7 @@ from typing import Any, TypedDict, Union
 import harmony
 import requests
 
+from _icepyx_version import version as ipx_version
 from icepyx.core.auth import EarthdataAuthMixin
 
 # Sometimes harmony has problems (e.g., 500 bad gateway) and we need to retry.
@@ -23,8 +24,31 @@ class HarmonyTemporal(TypedDict):
 
 
 class HarmonyApi(EarthdataAuthMixin):
+    """
+    A client for interacting with the NASA Harmony API.
+
+    Attributes
+    ----------
+    harmony_client : harmony.Client
+        The Harmony API client.
+    job_ids : list of str
+        List of job IDs that have been placed with the Harmony API.
+
+    Methods
+    -------
+    get_capabilities(concept_id)
+        Retrieves the capabilities of a given dataset.
+    check_order_status(job_id)
+        Checks the status of a submitted Harmony job.
+    place_order(...)
+        Submits an order to Harmony and waits for completion.
+    download_granules(download_dir, overwrite)
+        Downloads all granules associated with past orders.
+    """
+
     def __init__(self):
         # initialize authentication properties
+        self.ipx_version = ipx_version
         EarthdataAuthMixin.__init__(self)
         self.harmony_client = harmony.Client(
             auth=(
@@ -37,9 +61,21 @@ class HarmonyApi(EarthdataAuthMixin):
         self.job_ids = []
 
     def get_capabilities(self, concept_id: str) -> dict[str, Any]:
+        """
+        Retrieve the capabilities of a dataset given its concept ID.
+
+        Parameters
+        ----------
+        concept_id : str
+            The concept ID of the dataset.
+
+        Returns
+        -------
+        dict
+            A dictionary containing dataset capabilities.
+        """
         capabilities_request = harmony.CapabilitiesRequest(collection_id=concept_id)
         response = self.harmony_client.submit(capabilities_request)
-
         return response
 
     def _place_order(
@@ -50,11 +86,31 @@ class HarmonyApi(EarthdataAuthMixin):
         temporal: Union[HarmonyTemporal, None] = None,
         shape: Union[str, None] = None,
         granule_name: list[str] = [],
+        skip_preview: bool = False,
     ) -> Any:
-        """Places a Harmony order with the given parameters.
-
-        Return a string representing a job ID.
         """
+        Submit an order to Harmony and wait for it to complete.
+
+        Parameters
+        ----------
+        concept_id : str
+            The concept ID of the dataset.
+        spatial : harmony.BBox, str, harmony.WKT, or None, optional
+            The spatial extent for the order.
+        temporal : HarmonyTemporal or None, optional
+            The temporal range for the order.
+        shape : str or None, optional
+            A spatial shape file for filtering.
+        granule_name : list of str, optional
+            Specific granule names to include in the order.
+        skip_preview : bool, optional
+            Whether to bypass preview mode if the order exceeds 300 granules.
+
+        Returns
+        -------
+        str
+            The Harmony job ID.
+        """        
         collection = harmony.Collection(id=concept_id)
         if spatial is not None and isinstance(spatial, str):
             spatial = harmony.WKT(spatial)
@@ -63,6 +119,7 @@ class HarmonyApi(EarthdataAuthMixin):
             "collection": collection,
             "spatial": spatial,
             "temporal": temporal,
+            "skip_preview": skip_preview
         }
         if granule_name:
             params["granule_name"] = granule_name
@@ -75,10 +132,22 @@ class HarmonyApi(EarthdataAuthMixin):
             )
 
         job_id = self.harmony_client.submit(request)
-
+        label_req = harmony.AddLabelsRequest(
+                    labels=["icepyx",f"icepyx-{self.ipx_version}"],
+                    job_ids=[job_id])
+        self.harmony_client.submit(label_req)
         return job_id
 
     def check_order_status(self, job_id: str) -> dict[str, Any]:
+        """
+        Check the status of a submitted Harmony job.
+
+        Parameters
+        ----------
+        job_id : str
+
+        """
+
         retries = 3
 
         for retry_num in range(1, retries + 1):
@@ -97,6 +166,34 @@ class HarmonyApi(EarthdataAuthMixin):
 
         raise RuntimeError(f"Failed to get harmony order status for {job_id}")
 
+    def resume_order(self, job_id: str) -> None:
+        return self.harmony_client.resume(job_id)
+
+    def pause_order(self, job_id: str) -> None:
+        return self.harmony_client.pause(job_id)
+
+    def skip_preview(self, job_id: str) -> None:
+        """
+        Resume processing of an order that is in the "PREVIEW" state.
+
+        If a subsetting order exceeds 300 granules, Harmony places it in a paused state
+        called "preview," where only a few granules are processed initially. This method
+        resumes processing by first pausing and then resuming the order.
+
+        Parameters
+        ----------
+        job_id : str
+            The ID of the Harmony job to resume.
+
+        Returns
+        -------
+        None
+        """
+        status = self.check_order_status(job_id)
+        if status["status"] == "PREVIEW":
+            self.pause_order(job_id)
+            self.resume_order(job_id)
+
     def place_order(
         self,
         concept_id: str,
@@ -105,17 +202,38 @@ class HarmonyApi(EarthdataAuthMixin):
         temporal: Union[HarmonyTemporal, None] = None,
         shape: Union[str, None] = None,
         granule_name: list[str] = [],
+        skip_preview: bool = False,
     ) -> Any:
-        """Places a Harmony order with the given parameters and waits for it to complete.
-
-        Return a string representing a job ID once the order is complete.
         """
+        Submit an order to Harmony and wait for it to complete.
+
+        Parameters
+        ----------
+        concept_id : str
+            The concept ID of the dataset.
+        spatial : harmony.BBox, str, harmony.WKT, or None, optional
+            The spatial extent for the order.
+        temporal : HarmonyTemporal or None, optional
+            The temporal range for the order.
+        shape : str or None, optional
+            A spatial shape file for filtering.
+        granule_name : list of str, optional
+            Specific granule names to include in the order.
+        skip_preview : bool, optional
+            Whether to bypass preview mode if the order exceeds 300 granules.
+
+        Returns
+        -------
+        str
+            The Harmony job ID.
+        """        
         job_id = self._place_order(
             concept_id=concept_id,
             spatial=spatial,
             temporal=temporal,
             shape=shape,
             granule_name=granule_name,
+            skip_preview=skip_preview,
         )
 
         # Append this job to the list of job ids.
@@ -155,6 +273,24 @@ class HarmonyApi(EarthdataAuthMixin):
     def download_granules(
         self, download_dir: Path, overwrite: bool = False
     ) -> list[Path]:
+        """
+        Download all granules associated with current order.
+
+        This method retrieves and downloads granules for all job IDs stored in 
+        `self.job_ids`, saving them to the specified directory.
+
+        Parameters
+        ----------
+        download_dir : Path
+            The directory where granules should be saved.
+        overwrite : bool, optional
+            Whether to overwrite existing files (default is False).
+
+        Returns
+        -------
+        list of Path
+            A list of file paths to the downloaded granules.
+        """        
         all_paths = []
         for job_id in self.job_ids:
             paths = self._download_job_results(

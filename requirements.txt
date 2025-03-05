@@ -7,7 +7,7 @@ fiona
 geopandas
 h5netcdf
 h5py
-harmony-py
+harmony-py>=1.0.0
 holoviews
 hvplot
 matplotlib

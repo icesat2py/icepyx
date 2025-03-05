@@ -12,8 +12,10 @@ def test_status_subset():
     # Mock the harmony_client
     mock_harmony_client = Mock()
     harmony_base_url = "https://harmony.earthdata.nasa.gov/workflow-ui/"
-    mock_harmony_client.check_order_status.return_value = {"status": "processing",
-                                                           "request": "http://some_url" }
+    mock_harmony_client.check_order_status.return_value = {
+        "status": "processing",
+        "request": "http://some_url",
+    }
 
     # Create a DataOrder instance with type="subset"
     order = DataOrder(
@@ -27,8 +29,7 @@ def test_status_subset():
     result = order.status()
 
     # Verify the result and that the mock was called
-    assert result == {"status": "processing",
-                      "order_url": f"{harmony_base_url}123"}
+    assert result == {"status": "processing", "order_url": f"{harmony_base_url}123"}
     mock_harmony_client.check_order_status.assert_called_once_with(123)
 
 
@@ -71,8 +72,7 @@ def test_download_subset():
         assert result == "downloaded_subset"
         mock_harmony_client.download_granules.assert_called_once_with(
             download_dir=str(temp_path), overwrite=True
-        )    
-
+        )
 
 
 @patch("earthaccess.download")  # Patch the earthaccess.download method
@@ -104,4 +104,3 @@ def test_download_non_subset(mock_earthaccess_download):
             ["granule1", "granule2"], local_path=temp_path
         )
         mock_harmony_client.download_granules.assert_not_called()
-

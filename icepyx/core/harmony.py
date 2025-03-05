@@ -5,10 +5,10 @@ from pathlib import Path
 import time
 from typing import Any, TypedDict, Union
 
+from _icepyx_version import version as ipx_version
 import harmony
 import requests
 
-from _icepyx_version import version as ipx_version
 from icepyx.core.auth import EarthdataAuthMixin
 
 # Sometimes harmony has problems (e.g., 500 bad gateway) and we need to retry.
@@ -110,7 +110,7 @@ class HarmonyApi(EarthdataAuthMixin):
         -------
         str
             The Harmony job ID.
-        """        
+        """
         collection = harmony.Collection(id=concept_id)
         if spatial is not None and isinstance(spatial, str):
             spatial = harmony.WKT(spatial)
@@ -119,7 +119,7 @@ class HarmonyApi(EarthdataAuthMixin):
             "collection": collection,
             "spatial": spatial,
             "temporal": temporal,
-            "skip_preview": skip_preview
+            "skip_preview": skip_preview,
         }
         if granule_name:
             params["granule_name"] = granule_name
@@ -133,8 +133,8 @@ class HarmonyApi(EarthdataAuthMixin):
 
         job_id = self.harmony_client.submit(request)
         label_req = harmony.AddLabelsRequest(
-                    labels=["icepyx",f"icepyx-{self.ipx_version}"],
-                    job_ids=[job_id])
+            labels=["icepyx", f"icepyx-{self.ipx_version}"], job_ids=[job_id]
+        )
         self.harmony_client.submit(label_req)
         return job_id
 
@@ -226,7 +226,7 @@ class HarmonyApi(EarthdataAuthMixin):
         -------
         str
             The Harmony job ID.
-        """        
+        """
         job_id = self._place_order(
             concept_id=concept_id,
             spatial=spatial,
@@ -276,7 +276,7 @@ class HarmonyApi(EarthdataAuthMixin):
         """
         Download all granules associated with current order.
 
-        This method retrieves and downloads granules for all job IDs stored in 
+        This method retrieves and downloads granules for all job IDs stored in
         `self.job_ids`, saving them to the specified directory.
 
         Parameters
@@ -290,7 +290,7 @@ class HarmonyApi(EarthdataAuthMixin):
         -------
         list of Path
             A list of file paths to the downloaded granules.
-        """        
+        """
         all_paths = []
         for job_id in self.job_ids:
             paths = self._download_job_results(

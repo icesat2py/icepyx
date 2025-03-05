@@ -34,7 +34,7 @@ class DataOrder:
         Downloads the granules associated with the order.
     download(path, overwrite=False)
         Downloads the granules, waiting until they are ready if necessary.
-    """    
+    """
 
     HARMONY_BASE_URL = "https://harmony.earthdata.nasa.gov/workflow-ui/"
 
@@ -52,7 +52,7 @@ class DataOrder:
             A list of granules included in the order.
         harmony_client : object
             The Harmony API client.
-        """        
+        """
         self.job_id = job_id
         self.harmony_api = harmony_client
         self.granules = granules
@@ -110,7 +110,7 @@ class DataOrder:
         -------
         dict or None
             The response from the Harmony API if the order is resumed, otherwise None.
-        """        
+        """
         if self.type == "subset":
             return self.harmony_api.resume_order(self.job_id)
         return None
@@ -123,7 +123,7 @@ class DataOrder:
         -------
         dict or None
             The response from the Harmony API if the order is paused, otherwise None.
-        """        
+        """
         if self.type == "subset":
             return self.harmony_api.pause_order(self.job_id)
         return None
@@ -149,7 +149,7 @@ class DataOrder:
         -------
         dict
             A dictionary containing the order status and related metadata.
-        """        
+        """
         if self.type == "subset":
             status = self.harmony_api.check_order_status(self.job_id)
             # so users don't accidentally order again
@@ -185,7 +185,7 @@ class DataOrder:
         Returns
         -------
         list or None
-            A list 
+            A list
         """
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)

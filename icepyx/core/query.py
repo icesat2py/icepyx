@@ -454,7 +454,7 @@ class Query(BaseQuery):
         -------
         list or None
             A list of the downloaded file paths if successful, otherwise None.
-        """        
+        """
         # Order granules based on user selections if restart is False and there
         # are no job IDs registered by the harmony API
         status = self.last_order.status()

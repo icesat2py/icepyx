@@ -3,12 +3,12 @@ import datetime as dt
 import json
 from pathlib import Path
 import time
-from typing import Any, TypedDict, Union
+from typing import Any, Dict, TypedDict, Union
 
-from _icepyx_version import version as ipx_version
 import harmony
 import requests
 
+from _icepyx_version import version as ipx_version
 from icepyx.core.auth import EarthdataAuthMixin
 
 # Sometimes harmony has problems (e.g., 500 bad gateway) and we need to retry.
@@ -119,8 +119,10 @@ class HarmonyApi(EarthdataAuthMixin):
             "collection": collection,
             "spatial": spatial,
             "temporal": temporal,
-            "skip_preview": skip_preview,
+            # "skip_preview": skip_preview,
         }
+        if skip_preview:
+            params["skip_preview"] = skip_preview
         if granule_name:
             params["granule_name"] = granule_name
 
@@ -167,12 +169,38 @@ class HarmonyApi(EarthdataAuthMixin):
         raise RuntimeError(f"Failed to get harmony order status for {job_id}")
 
     def resume_order(self, job_id: str) -> None:
+        """
+        Resume processing of an order that is paused.
+
+        Parameters
+        ----------
+        job_id : str
+            The ID of the Harmony job to resume.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the order status and related metadata.
+        """
         return self.harmony_client.resume(job_id)
 
     def pause_order(self, job_id: str) -> None:
+        """
+        Pauses an order that is currently processing.
+
+        Parameters
+        ----------
+        job_id : str
+            The ID of the Harmony job to resume.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the order status and related metadata.
+        """
         return self.harmony_client.pause(job_id)
 
-    def skip_preview(self, job_id: str) -> None:
+    def skip_preview(self, job_id: str) -> Dict[str, Any]:
         """
         Resume processing of an order that is in the "PREVIEW" state.
 
@@ -187,12 +215,17 @@ class HarmonyApi(EarthdataAuthMixin):
 
         Returns
         -------
-        None
+        dict
+            A dictionary containing the order status and related metadata.
         """
         status = self.check_order_status(job_id)
-        if status["status"] == "PREVIEW":
+        if status["status"] == "paused" or status["status"] == "previewing":
+            # we cannot skip after the facvt but pausing and resuming the order does the trick
             self.pause_order(job_id)
             self.resume_order(job_id)
+            return self.check_order_status(job_id)
+        else:
+            return {"message": "Order is not in preview state."}
 
     def place_order(
         self,

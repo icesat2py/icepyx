@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any, Dict, Union
 
 import earthaccess
 
@@ -58,10 +59,10 @@ class DataOrder:
         self.granules = granules
         self.type = type
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"DataOrder(job_id={self.job_id}, type={self.type}, granules={self.granules})"
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         # Create a link using the <a> tag
         status = self.status()
         link_html = f'<a target="_blank" href="{self.HARMONY_BASE_URL}{self.job_id}">View Details</a>'
@@ -88,10 +89,10 @@ class DataOrder:
         """
         return html
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
-    def id(self):
+    def id(self) -> str:
         """
         Get the job ID of the order.
 
@@ -102,9 +103,9 @@ class DataOrder:
         """
         return self.job_id
 
-    def resume(self):
+    def resume(self) -> Union[Dict[str, Any], None]:
         """
-        Resume the order if it has been paused due to exceeding granule limits.
+        Resume the order if it has been paused or is on a "preview" state.
 
         Returns
         -------
@@ -115,7 +116,21 @@ class DataOrder:
             return self.harmony_api.resume_order(self.job_id)
         return None
 
-    def pause(self):
+    def skip_preview(self) -> Union[Dict[str, Any], None]:
+        """
+        Resume the order if it has been paused due to exceeding granule limits.
+
+        Returns
+        -------
+        dict or None
+            The response from the Harmony API if the order is resumed, otherwise None.
+        """
+        if self.type == "subset":
+            return self.harmony_api.skip_preview(self.job_id)
+        return None
+
+
+    def pause(self) -> Union[Dict[str, Any], None]:
         """
         Pause the order.
 
@@ -128,20 +143,7 @@ class DataOrder:
             return self.harmony_api.pause_order(self.job_id)
         return None
 
-    def cancel(self):
-        """
-        Cancel the order.
-
-        Returns
-        -------
-        dict or None
-            The response from the Harmony API if the order is canceled, otherwise None.
-        """
-        if self.type == "subset":
-            return self.harmony_api.cancel_order(self.job_id)
-        return None
-
-    def status(self):
+    def status(self) -> Dict[str, Any]:
         """
         Retrieve the status of the order.
 
@@ -158,7 +160,7 @@ class DataOrder:
             return status
         return {"status": "complete"}
 
-    def download_granules(self, path, overwrite=False):
+    def download_granules(self, path, overwrite=False) -> Union[list, None]:
         """
         Download the granules for the order.
 
@@ -168,10 +170,15 @@ class DataOrder:
             The directory where granules should be saved.
         overwrite : bool, optional
             Whether to overwrite existing files (default is False).
-        """
-        self.download(path, overwrite=overwrite)
+        Returns
+        -------
+        list or None
+            A list of downloaded granules
 
-    def download(self, path, overwrite=False):
+        """
+        return self.download(path, overwrite=overwrite)
+
+    def download(self, path, overwrite=False) -> Union[list, None]:
         """
         Download the granules for the order, blocking until they are ready if necessary.
 
@@ -185,7 +192,7 @@ class DataOrder:
         Returns
         -------
         list or None
-            A list
+            A list of downloaded granules
         """
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)

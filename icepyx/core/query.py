@@ -302,7 +302,7 @@ class Query(BaseQuery):
         else:
             return self.granules.avail
 
-    def _order_subset_granules(self) -> str:
+    def _order_subset_granules(self, skip_preview: bool= False) -> str:
         concept_id = self._get_concept_id(
             product=self._prod,
             version=self._version,
@@ -356,6 +356,7 @@ class Query(BaseQuery):
             temporal=harmony_temporal,
             spatial=harmony_spatial,
             granule_name=list(readable_granule_name),
+            skip_preview=skip_preview
         )
         return job_id
 
@@ -397,7 +398,16 @@ class Query(BaseQuery):
         files = earthaccess.download(links, local_path=path)
         return files
 
-    def order_granules(self, subset=True) -> DataOrder:
+    def skip_preview(self):
+        """
+        skips preview for current order 
+        """
+        if self.last_order and self.last_order.type == "subset":
+            status = self.last_order.status()
+            if status["status"] == "PREVIEW":
+                return self.last_order.resume()
+
+    def order_granules(self, subset: bool=True, skip_preview: bool=False) -> DataOrder:
         """
         Place an order for the available granules for the query object.
 
@@ -409,6 +419,8 @@ class Query(BaseQuery):
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
+        skip_preview : bool, default False
+            If True, bypass the preview state when we order subsetting queries that exceed 300 granules.
 
         See Also
         --------
@@ -425,7 +437,7 @@ class Query(BaseQuery):
         Your harmony order is:  complete
         """
         if subset:
-            job_id = self._order_subset_granules()
+            job_id = self._order_subset_granules(skip_preview=skip_preview)
             self.last_order = DataOrder(
                 job_id, "subset", self.granules, self.harmony_api
             )

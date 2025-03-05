@@ -129,7 +129,6 @@ class DataOrder:
             return self.harmony_api.skip_preview(self.job_id)
         return None
 
-
     def pause(self) -> Union[Dict[str, Any], None]:
         """
         Pause the order.

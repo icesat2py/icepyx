@@ -302,7 +302,7 @@ class Query(BaseQuery):
         else:
             return self.granules.avail
 
-    def _order_subset_granules(self, skip_preview: bool= False) -> str:
+    def _order_subset_granules(self, skip_preview: bool = False) -> str:
         concept_id = self._get_concept_id(
             product=self._prod,
             version=self._version,
@@ -356,7 +356,7 @@ class Query(BaseQuery):
             temporal=harmony_temporal,
             spatial=harmony_spatial,
             granule_name=list(readable_granule_name),
-            skip_preview=skip_preview
+            skip_preview=skip_preview,
         )
         return job_id
 
@@ -400,14 +400,16 @@ class Query(BaseQuery):
 
     def skip_preview(self):
         """
-        skips preview for current order 
+        skips preview for current order
         """
         if self.last_order and self.last_order.type == "subset":
             status = self.last_order.status()
             if status["status"] == "PREVIEW":
                 return self.last_order.resume()
 
-    def order_granules(self, subset: bool=True, skip_preview: bool=False) -> DataOrder:
+    def order_granules(
+        self, subset: bool = True, skip_preview: bool = False
+    ) -> DataOrder:
         """
         Place an order for the available granules for the query object.
 

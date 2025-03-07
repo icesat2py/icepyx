@@ -7,7 +7,6 @@ import json
 import os
 
 import pytest
-from pytest import pytestmark
 
 import icepyx as ipx
 import icepyx.core.is2ref as is2ref
@@ -49,14 +48,14 @@ def test_get_custom_options_output(session):
 
 ########## query module ##########
 # NOTE: best this test can do at the moment is a successful download with no errors...
-@pytestmark.downloads_data
+@pytest.mark.downloads_data
 def test_download_granules_with_subsetting(reg, session):
     path = "./downloads_subset"
     reg.order_granules()
     reg.download_granules(path)
 
 
-@pytestmark.downloads_data
+@pytest.mark.downloads_data
 def test_download_granules_without_subsetting(reg, session, capsys):
     """
     Test that granules can be ordered from NSIDC and downloaded with the `subset=False`

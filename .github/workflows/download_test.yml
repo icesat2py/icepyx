@@ -1,4 +1,4 @@
-name: "Integration test"
+name: "Integration Download test"
 # NOTE: This runs only integration tests that download data,
 # as denoted by the pytest downloads_data mark.
 

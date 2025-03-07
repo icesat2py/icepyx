@@ -15,6 +15,7 @@ on:
   pull_request:
     branches:
       - "main"  # Release PRs
+      - "development" # Feature PRs
   workflow_dispatch:
     inputs:
       ref:

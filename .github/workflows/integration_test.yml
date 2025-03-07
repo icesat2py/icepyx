@@ -40,13 +40,17 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: "Run tests"
+      - name: "Run [mocked] auth tests"
+        run: |
+          pytest icepyx/tests/integration/test_auth.py --verbose --cov app -m "not downloads_data"
+
+      - name: "Run non-auth tests"
         env:
           EARTHDATA_USERNAME: "icepyx_devteam"
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
           NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |
-          pytest icepyx/tests/integration --verbose --cov app -m "not downloads_data"
+          pytest icepyx/tests/integration --verbose --cov app -m "not downloads_data" --ignore=icepyx/tests/integration/test_auth.py
 
       - name: "Upload coverage report"
         uses: "codecov/codecov-action@v5.4.0"

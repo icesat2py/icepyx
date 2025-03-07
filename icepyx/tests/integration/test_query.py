@@ -1,5 +1,5 @@
 """
-Integration tests that require authentication to Earthdata login.
+Integration tests
 """
 
 import glob
@@ -7,18 +7,10 @@ import json
 import os
 
 import pytest
+from pytest import pytestmark
 
 import icepyx as ipx
 import icepyx.core.is2ref as is2ref
-
-# Skip the whole module. See:
-# https://docs.pytest.org/en/stable/reference/reference.html#globalvar-pytestmark
-pytestmark = pytest.mark.xfail(
-    reason=(
-        "The back-end API on which these tests depend, ECS/EGI/ESI, is scheduled for"
-        " shutdown in late 2024. At that point, these tests will begin failing."
-    )
-)
 
 # Misc notes and needed tests
 # test avail data and subsetting success for each input type

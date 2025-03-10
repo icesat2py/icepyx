@@ -4,8 +4,12 @@ name: "Integration test"
 # on PRs from forks.
 # Integration tests that download data are run separately.
 
-# NOTE: We're just running the tests that require earthdata login here; we
-#       don't distinguish between unit and integration tests yet.
+
+#NEXT STEPS: try to debug locally... get testing of test_auth working again (might need to keep config settings)
+# then see if can also get integration tests to run ignoring marked tests
+# then try and scale it to the action
+# something got messed up with the transition from Travis to GH (surprise!)
+
 
 on:
   push:
@@ -42,7 +46,7 @@ jobs:
 
       - name: "Run [mocked] auth tests"
         run: |
-          pytest icepyx/tests/integration/test_auth.py --verbose --cov app -m "not downloads_data"
+          pytest icepyx/tests/integration/test_auth.py --verbose --cov app
 
       - name: "Run non-auth tests"
         env:

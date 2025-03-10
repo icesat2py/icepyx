@@ -40,7 +40,6 @@ jobs:
 
       - name: "Run auth tests"
         env:
-          EARTHDATA_USERNAME: "icepyx_devteam"
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
           NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |

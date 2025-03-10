@@ -22,6 +22,7 @@ jobs:
 
       - name: "Run download tests"
         env:
+          EARTHDATA_LOGIN: "icepyx_devteam"
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
           NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |

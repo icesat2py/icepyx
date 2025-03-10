@@ -5,12 +5,6 @@ name: "Integration test"
 # Integration tests that download data are run separately.
 
 
-#NEXT STEPS: try to debug locally... get testing of test_auth working again (might need to keep config settings)
-# then see if can also get integration tests to run ignoring marked tests
-# then try and scale it to the action
-# something got messed up with the transition from Travis to GH (surprise!)
-
-
 on:
   push:
     branches:
@@ -44,17 +38,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: "Run [mocked] auth tests"
-        run: |
-          pytest icepyx/tests/integration/test_auth.py --verbose --cov app
-
-      - name: "Run non-auth tests"
+      - name: "Run auth tests"
         env:
           EARTHDATA_USERNAME: "icepyx_devteam"
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
           NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |
-          pytest icepyx/tests/integration --verbose --cov app -m "not downloads_data" --ignore=icepyx/tests/integration/test_auth.py
+          pytest icepyx/tests/integration --verbose --cov app -m "not downloads_data"
 
       - name: "Upload coverage report"
         uses: "codecov/codecov-action@v5.4.0"

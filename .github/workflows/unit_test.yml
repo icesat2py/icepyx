@@ -8,6 +8,17 @@ on:
     branches:
       - "main"
       - "development"
+  workflow_run:
+    workflows: [Update UML diagrams]
+    types:
+      - completed
+
+
+# When this workflow is queued, automatically cancel any previous running
+# or pending jobs from the same branch
+concurrency:
+  group: "unit-tests-${{ github.ref }}"
+  cancel-in-progress: true
 
 
 jobs:
@@ -17,8 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.12"] #NOTE: min and max Python versions supported by icepyx
-
+        python-version: ["3.11", "3.13"] #NOTE: min and max Python versions supported by icepyx
     steps:
       - uses: "actions/checkout@v4"
         with:
@@ -34,6 +44,6 @@ jobs:
             --ignore=icepyx/tests/integration
 
       - name: "Upload coverage report"
-        uses: "codecov/codecov-action@v4.5.0"
+        uses: "codecov/codecov-action@v5.4.0"
         with:
           token: "${{ secrets.CODECOV_TOKEN }}"

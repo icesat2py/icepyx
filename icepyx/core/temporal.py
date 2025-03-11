@@ -1,12 +1,11 @@
 import datetime as dt
+from typing import Union
 import warnings
 
-"""
-Helper functions for validation of dates
-"""
+#### Helper functions for validation of dates ####
 
 
-def convert_string_to_date(date):
+def convert_string_to_date(date: str) -> dt.date:
     """
     Converts a string to a datetime object.
     Throws an error if an invalid format is passed in.
@@ -49,7 +48,7 @@ def convert_string_to_date(date):
     )
 
 
-def check_valid_date_range(start, end):
+def check_valid_date_range(start: dt.date, end: dt.date) -> None:
     """
     Helper function for checking if a date range is valid.
 
@@ -81,12 +80,15 @@ def check_valid_date_range(start, end):
         start = start.date()
     if isinstance(end, dt.datetime):
         end = end.date()
-    assert (
-        start <= end
-    ), "Your date range is invalid; end date MUST be on or after the start date."
+    assert start <= end, (
+        "Your date range is invalid; end date MUST be on or after the start date."
+    )
 
 
-def validate_times(start_time, end_time):
+def validate_times(
+    start_time: Union[str, dt.time, None],
+    end_time: Union[str, dt.time, None],
+) -> tuple[dt.time, dt.time]:
     """
     Validates the start and end times passed into __init__ and returns them as datetime.time objects.
 
@@ -141,7 +143,11 @@ def validate_times(start_time, end_time):
     return start_time, end_time
 
 
-def validate_date_range_datestr(date_range, start_time=None, end_time=None):
+def validate_date_range_datestr(
+    date_range: list[str],
+    start_time: Union[str, dt.time, None] = None,
+    end_time: Union[str, dt.time, None] = None,
+) -> tuple[dt.datetime, dt.datetime]:
     """
     Validates a date range provided in the form of a list of strings.
 
@@ -150,12 +156,10 @@ def validate_date_range_datestr(date_range, start_time=None, end_time=None):
 
     Parameters
     ----------
-    date_range: list(str)
+    date_range:
         A date range provided in the form of a list of strings
             Strings must be of formats accepted by validate_inputs_temporal.convert_string_to_date().
             List must be of length 2.
-    start_time: string, datetime.time, None
-    end_time:  string, datetime.time, None
 
     Returns
     -------
@@ -185,17 +189,19 @@ def validate_date_range_datestr(date_range, start_time=None, end_time=None):
     return _start, _end
 
 
-def validate_date_range_datetime(date_range, start_time=None, end_time=None):
+def validate_date_range_datetime(
+    date_range: list[dt.datetime],
+    start_time: Union[str, dt.time, None] = None,
+    end_time: Union[str, dt.time, None] = None,
+) -> tuple[dt.datetime, dt.datetime]:
     """
     Validates a date range provided in the form of a list of datetimes.
 
     Parameters
     ----------
-    date_range: list(datetime.datetime)
+    date_range:
         A date range provided in the form of a list of datetimes.
         List must be of length 2.
-    start_time: None, string, datetime.time
-    end_time:  None, string, datetime.time
 
     NOTE: If start and/or end times are given,
     they will be **ignored** in favor of the time from the start/end datetime.datetime objects.
@@ -224,7 +230,11 @@ def validate_date_range_datetime(date_range, start_time=None, end_time=None):
     return date_range[0], date_range[1]
 
 
-def validate_date_range_date(date_range, start_time=None, end_time=None):
+def validate_date_range_date(
+    date_range: list[dt.date],
+    start_time: Union[str, dt.time, None] = None,
+    end_time: Union[str, dt.time, None] = None,
+):
     """
     Validates a date range provided in the form of a list of datetime.date objects.
 
@@ -233,11 +243,9 @@ def validate_date_range_date(date_range, start_time=None, end_time=None):
 
     Parameters
     ----------
-    date_range: list(str)
+    date_range:
         A date range provided in the form of a list of datetime.dates.
         List must be of length 2.
-    start_time: string or datetime.time
-    end_time:  string or datetime.time
 
     Returns
     -------
@@ -261,14 +269,18 @@ def validate_date_range_date(date_range, start_time=None, end_time=None):
     return _start, _end
 
 
-def validate_date_range_dict(date_range, start_time=None, end_time=None):
+def validate_date_range_dict(
+    date_range: dict[str, Union[str, dt.date]],
+    start_time: Union[str, dt.time, None] = None,
+    end_time: Union[str, dt.time, None] = None,
+) -> tuple[dt.datetime, dt.datetime]:
     """
     Validates a date range provided in the form of a dict with the following keys:
 
 
     Parameters
     ----------
-    date_range: dict(str, datetime.datetime, datetime.date)
+    date_range:
         A date range provided in the form of a dict.
         date_range must contain only the following keys:
             *  `start_date`: start date, type can be of dt.datetime, dt.date, or string
@@ -278,8 +290,6 @@ def validate_date_range_dict(date_range, start_time=None, end_time=None):
         If the values are of type dt.datetime and were created without times,
         the datetime package defaults of all 0s are used and
         the start_time/end_time parameters will be ignored!
-    start_time: string or datetime.time
-    end_time:  string or datetime.time
 
 
     Returns
@@ -293,7 +303,6 @@ def validate_date_range_dict(date_range, start_time=None, end_time=None):
     >>> valid_drange = validate_date_range_dict(drange, "00:00:00", "23:59:59")
     >>> valid_drange
     (datetime.datetime(2016, 1, 1, 0, 0), datetime.datetime(2020, 1, 1, 23, 59, 59))
-
     """
 
     # Try to get keys from date_range dict
@@ -366,7 +375,15 @@ def validate_date_range_dict(date_range, start_time=None, end_time=None):
 
 
 class Temporal:
-    def __init__(self, date_range, start_time=None, end_time=None):
+    _start: dt.datetime
+    _end: dt.datetime
+
+    def __init__(
+        self,
+        date_range: Union[list, dict],
+        start_time: Union[str, dt.time, None] = None,
+        end_time: Union[str, dt.time, None] = None,
+    ):
         """
         Validates input from "date_range" argument (and start/end time arguments, if provided),
         then creates a Temporal object with validated inputs as properties of the object.
@@ -376,7 +393,7 @@ class Temporal:
 
         Parameters
         ----------
-        date_range : list or dict, as follows
+        date_range :
             Date range of interest, provided as start and end dates, inclusive.
             Accepted input date formats are:
                 * YYYY-MM-DD string
@@ -387,13 +404,13 @@ class Temporal:
             Date inputs are accepted as a list or dictionary with `start_date` and `end_date` keys.
             Currently, a list of specific dates (rather than a range) is not accepted.
             TODO: allow searches with a list of dates, rather than a range.
-        start_time : str, datetime.time, default None
+        start_time :
             Start time in UTC/Zulu (24 hour clock).
             Input types are  an HH:mm:ss string or datetime.time object
             where HH = hours, mm = minutes, ss = seconds.
             If None is given (and a datetime.datetime object is not supplied for `date_range`),
             a default of 00:00:00 is applied.
-        end_time : str, datetime.time, default None
+        end_time :
             End time in UTC/Zulu (24 hour clock).
             Input types are  an HH:mm:ss string or datetime.time object
             where HH = hours, mm = minutes, ss = seconds.
@@ -444,14 +461,14 @@ class Temporal:
                 "Your date range list is the wrong length. It should be of length 2, with start and end dates only."
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Start date and time: {0}\nEnd date and time: {1}".format(
             self._start.strftime("%Y-%m-%d %H:%M:%S"),
             self._end.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
     @property
-    def start(self):
+    def start(self) -> dt.datetime:
         """
         Return the start date and time of the Temporal object as a datetime.datetime object.
 
@@ -465,7 +482,7 @@ class Temporal:
         return self._start
 
     @property
-    def end(self):
+    def end(self) -> dt.datetime:
         """
         Return the end date and time of the Temporal object as a datetime.datetime object.
 

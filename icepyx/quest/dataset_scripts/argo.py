@@ -25,7 +25,7 @@ class Argo(DataSet):
         To search for all parameters, use `params=["all"]`;
         be careful using all for floats with BGC data, as this may be result in a large download.
     presRange : str, default None
-        The pressure range (which correllates with depth) to search for data within.
+        The pressure range (which correlates with depth) to search for data within.
         Input as a "shallow-limit,deep-limit" string.
 
     See Also
@@ -223,10 +223,10 @@ class Argo(DataSet):
             valid_params = self._valid_params()
             # checks that params are valid
             for i in params:
-                assert (
-                    i in valid_params
-                ), "Parameter '{0}' is not valid. Valid parameters are {1}".format(
-                    i, valid_params
+                assert i in valid_params, (
+                    "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+                        i, valid_params
+                    )
                 )
 
         return list(set(params))
@@ -252,7 +252,7 @@ class Argo(DataSet):
             To search for all parameters, use `params=["all"]`;
             be careful using all for floats with BGC data, as this may be result in a large download.
         presRange : str, default None
-            The pressure range (which correllates with depth) to search for data within.
+            The pressure range (which correlates with depth) to search for data within.
             This kwarg is used to replace the existing pressure range in `self.presRange`.
             Do not submit this kwarg if you would like to use the existing `self.presRange` values.
             Input as a "shallow-limit,deep-limit" string.
@@ -421,7 +421,7 @@ class Argo(DataSet):
             To search for all parameters, use `params=["all"]`.
             For a list of available parameters, see: `reg._valid_params`
         presRange : str, default None
-            The pressure range (which correllates with depth) to search for data within.
+            The pressure range (which correlates with depth) to search for data within.
             This kwarg is used to replace the existing pressure range in `self.presRange`.
             Do not submit this kwarg if you would like to use the existing `self.presRange` values.
             Input as a "shallow-limit,deep-limit" string.

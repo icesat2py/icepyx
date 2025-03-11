@@ -57,17 +57,16 @@ def _validate_OA_product(product):
     """
     if isinstance(product, str):
         product = str.upper(product)
-        assert (
-            product
-            in [
-                "ATL06",
-                "ATL07",
-                "ATL08",
-                "ATL10",
-                "ATL12",
-                "ATL13",
-            ]
-        ), "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
+        assert product in [
+            "ATL06",
+            "ATL07",
+            "ATL08",
+            "ATL10",
+            "ATL12",
+            "ATL13",
+        ], (
+            "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
+        )
     else:
         raise TypeError("Please enter a product string")
     return product
@@ -96,6 +95,7 @@ def _get_custom_options(session, product, version):
     """
     cust_options = {}
 
+    # flagging for update/removal given removal of `.earthdata_login()`
     if session is None:
         raise ValueError(
             "Don't forget to log in to Earthdata using query.earthdata_login()"

@@ -1,6 +1,9 @@
 name: "Integration test"
-# NOTE: We're just running the tests that require earthdata login here; we
-#       don't distinguish between unit and integration tests yet.
+# NOTE: This runs all integration tests except those that download data.
+# It will not automatically run integration tests (some of which require auth)
+# on PRs from forks.
+# Integration tests that download data are run separately.
+
 
 on:
   pull_request:
@@ -16,13 +19,11 @@ on:
       - "main"         # Releases
       - "development"  # Feature PR merges
 
-
 # When this workflow is queued, automatically cancel any previous running
 # or pending jobs from the same branch
 concurrency:
   group: "integration-tests-${{ github.ref }}"
   cancel-in-progress: true
-
 
 jobs:
   test:
@@ -74,14 +75,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: "Run tests"
+      - name: "Run auth tests"
         env:
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
           NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |
-          pytest icepyx/tests/integration --verbose --cov app
+          pytest icepyx/tests/integration --verbose --cov app -m "not downloads_data"
 
       - name: "Upload coverage report"
-        uses: "codecov/codecov-action@v4.5.0"
+        uses: "codecov/codecov-action@v5.4.0"
         with:
           token: "${{ secrets.CODECOV_TOKEN }}"

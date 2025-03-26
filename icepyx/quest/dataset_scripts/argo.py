@@ -55,7 +55,7 @@ class Argo(DataSet):
             "---Argo---\n"
             "Parameters: {0}\n"
             "Pressure range: {1}\n"
-            "Dataframe head: {2}".format(self.params, prange, df)
+            "Dataframe head: {2}".format(self._params, prange, df)
         )
 
         return s
@@ -70,7 +70,10 @@ class Argo(DataSet):
 
         The user may modify this list directly.
         """
-
+        # l = []
+        # for k,v in self._params.items():
+        #     l += [k, v]
+        # return l
         return self._params
 
     @params.setter
@@ -78,9 +81,11 @@ class Argo(DataSet):
         """
         Validate the input list/dict of parameters.
         """
-        new_params = self._validate_parameters(value)
-        for k,v in new_params.items():
-            self._params[v] = v
+
+        self._params = self._validate_parameters(value)
+        # new_params = self._validate_parameters(value)
+        # for k,v in new_params.items():
+        #     self._params[k] = v
 
     @property
     def presRange(self) -> str:
@@ -215,13 +220,13 @@ class Argo(DataSet):
 
         Returns
         -------
-        The dictionary keyed bt valid parameters: list of QC flags
+        The dictionary keyed by valid parameters: list of QC flags
         if no qc flags, value is the empty list
         """
 
-
+        good_params = {}
         if "all" in params:
-            self._params = {"all":[]}
+            good_params = {"all":[]}
         else:
             valid_params = self._valid_params()
             # checks that params are valid
@@ -233,16 +238,25 @@ class Argo(DataSet):
                 )
 
                 if isinstance(params, dict):
+                    # check valid QC flags
+                    assert(
+                        all([j in [1,2,3,4] for j in params[i]])
+                    ), (f"QC flag for parameter {i} is invalid. Valid QC flags are:\n"
+                        f"QC=1 means data is definitely good\n"
+                        f"QC=2 means data is probably good\n"
+                        f"QC=3 means data is probably bad\n"
+                        f"QC=4 means data is definitely bad")
                     if i.endswith('_argoqc'):
-                        self._params[i] = []
+                        good_params[i] = []
                     else:
-                        self._params[i] = params[i]
-                        self._params[i + '_argoqc'] = []
+                        good_params[i] = params[i]
+                        good_params[i + '_argoqc'] = []
 
                 else:
-                    self._params[i] = []
+                    # list of params with no QC flag
+                    good_params[i] = []
 
-        return self._params
+        return good_params
 
     # ----------------------------------------------------------------------
     # Querying and Getting Data
@@ -264,6 +278,11 @@ class Argo(DataSet):
             Only metadata for profiles with the requested parameters are returned.
             To search for all parameters, use `params=["all"]`;
             be careful using all for floats with BGC data, as this may be result in a large download.
+            Note: Argo QC legend
+                QC=1 means data is definitely good
+                QC=2 means data is probably good
+                QC=3 means data is probably bad
+                QC=4 means data is definitely bad
         presRange : str, default None
             The pressure range (which correllates with depth) to search for data within.
             This kwarg is used to replace the existing pressure range in `self.presRange`.
@@ -290,7 +309,7 @@ class Argo(DataSet):
             "startDate": self._temporal._start.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "endDate": self._temporal._end.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "polygon": [self._fmt_coordinates()],
-            "data": self.params,
+            "data": self.params, # todo: check that this is added to payload correctly
         }
 
         if self.presRange is not None:

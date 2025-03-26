@@ -47,6 +47,40 @@ def test_validate_parameters(argo_quest_instance):
         reg_a._validate_parameters(invalid_params)
 
 
+    valid_params = ['temperature', 'salinity']
+    result = {i:[] for i in valid_params}
+    assert result == reg_a._validate_parameters(valid_params)
+
+def test_validate_parameters_qc(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+
+    invalid_params = {"temp":[1,3], "temperature_files":[1]}
+
+    ermsg = re.escape(
+        "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+            "temp", reg_a._valid_params()
+        )
+    )
+
+    with pytest.raises(AssertionError, match=ermsg):
+        reg_a._validate_parameters(invalid_params)
+
+    valid_params = {"temperature":[1,3], "salinity":[]}
+    assert valid_params | {"temperature_argoqc":[], "salinity_argoqc":[]} == reg_a._validate_parameters(valid_params)
+
+    invalid_qcflag = {"temperature":[1,3,5], "salinity":[6]}
+
+    with pytest.raises(AssertionError):
+        reg_a._validate_parameters(invalid_qcflag)
+
+
+# ---------------------------------------------------
+# Test Getters
+
+def test_get_params():
+    pass
+
+
 # ---------------------------------------------------
 # Test Setters
 
@@ -54,14 +88,25 @@ def test_validate_parameters(argo_quest_instance):
 def test_param_setter(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
 
-    exp = ["temperature"]
+    exp = {"temperature":[]}
     assert reg_a.params == exp
 
     reg_a.params = ["temperature", "salinity"]
 
-    exp = {"temperature", "salinity"}
-    assert set(reg_a.params) == exp
+    exp = {"temperature":[], "salinity":[]}
+    assert reg_a.params == exp
 
+def test_param_setter_qcflag(argo_quest_instance):
+    reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
+
+    exp = {"temperature":[1]}
+    reg_a.params = exp
+    assert reg_a.params == exp | {i+'_argoqc':[] for i in exp}
+
+    exp = {"temperature":[1], "salinity":[3,4]}
+    reg_a.params = exp
+
+    assert reg_a.params == exp | {i+'_argoqc':[] for i in exp}
 
 def test_param_setter_invalid_inputs(argo_quest_instance):
     reg_a = argo_quest_instance([-154, 30, -143, 37], ["2022-04-12", "2022-04-26"])
@@ -245,3 +290,6 @@ def test_replace_presRange_download(argo_quest_instance):
 
 
 # second pressure range test where does have a higher max pressure because only the new data was presRange limited?
+
+if __name__ == '__main__':
+    test_param_setter(argo_quest_instance())

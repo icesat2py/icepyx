@@ -126,12 +126,21 @@ class Variables(EarthdataAuthMixin):
 
         if not hasattr(self, "_avail") or self._avail is None:
             if not hasattr(self, "path") or self.path.startswith("s3"):
-                # ToDo: add some error handling (ie for QL products or anything not in the json, and for any parsing issues with the json)
-                url = "https://raw.githubusercontent.com/icesat2py/is2_test_data/refs/heads/main/is2_test_data/data/is2variables.json"
-                response = requests.get(url, headers={"Accept": "application/json"})
-                response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-                vars_dict = json.loads(response.content)
-                self._avail = vars_dict[self.product]
+                try:
+                    url = "https://raw.githubusercontent.com/icesat2py/is2_test_data/refs/heads/main/is2_test_data/data/is2variables.json"
+                    response = requests.get(url, headers={"Accept": "application/json"})
+                    response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+                    vars_dict = json.loads(response.content)
+                except requests.HTTPError as e:
+                    raise e
+
+                try:
+                    self._avail = vars_dict[self.product]
+
+                except KeyError:
+                    print(
+                        f"{self.product} does not have a list of available variables."
+                    )
 
             else:
                 # If a path was given, use that file to read the variables

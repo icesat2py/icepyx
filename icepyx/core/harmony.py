@@ -5,10 +5,10 @@ from pathlib import Path
 import time
 from typing import Any, Dict, TypedDict, Union
 
-from _icepyx_version import version as ipx_version
 import harmony
 import requests
 
+from _icepyx_version import version as ipx_version
 from icepyx.core.auth import EarthdataAuthMixin
 
 # Sometimes harmony has problems (e.g., 500 bad gateway) and we need to retry.

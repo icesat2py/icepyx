@@ -11,12 +11,14 @@ can be renamed and the v1 versions removed.
 """
 
 import json
+import logging
 from pathlib import Path
 import pprint
 import sys
 import time
 from typing import Union
 
+from deprecated import deprecated
 import earthaccess
 import harmony
 
@@ -46,6 +48,8 @@ class Query(BaseQuery):
         # can just check for `None`.
         if not hasattr(self, "_temporal"):
             self._temporal = None  # type: ignore[reportIncompatibleVariableOverride]
+
+        logging.basicConfig(level=logging.WARNING)
 
         cycles = kwargs.get("cycles")
         tracks = kwargs.get("tracks")
@@ -146,13 +150,26 @@ class Query(BaseQuery):
             return None
 
     @property
-    def order_vars(self) -> Union[list[str], None]:
+    @deprecated(
+        version="1.4.0", reason="order_vars() is going away, use variables() instead"
+    )
+    def order_vars(self) -> Union[Variables, None]:
         """This used to print the list of vasriables for subsetting, Harmony doesn't provide that for IS2 datasets.
         we do need to implement a class that gets the variables even if it'sm only for listing.
         """
+        logging.warning(
+            "Deprecated: order_vars() is going away, use variables() instead"
+        )
         if self.product:
-            return Variables(product=self.product).avail()  # type: ignore[no-any-return]
-        return []
+            self._variables = Variables(product=self.product)  # type: ignore[no-any-return]
+            return self._variables
+        return None
+
+    @property
+    def variables(self) -> Variables:
+        if not hasattr(self, "_variables"):
+            self._variables = Variables(product=self.product)
+        return self._variables
 
     def show_custom_options(self) -> None:
         """
@@ -408,7 +425,7 @@ class Query(BaseQuery):
                 return self.last_order.resume()
 
     def order_granules(
-        self, subset: bool = True, skip_preview: bool = False
+        self, subset: bool = True, skip_preview: bool = False, path: str = "./"
     ) -> DataOrder:
         """
         Place an order for the available granules for the query object.
@@ -421,6 +438,8 @@ class Query(BaseQuery):
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
+        path :
+            The directory where granules should be saved, used when we order full granules.
         skip_preview : bool, default False
             If True, bypass the preview state when we order subsetting queries that exceed 300 granules.
 
@@ -445,7 +464,7 @@ class Query(BaseQuery):
             )
             return self.last_order
         else:
-            files = self._order_whole_granules()
+            files = self._order_whole_granules(path=path)
             self.last_order = DataOrder(None, "whole", files, self.harmony_api)
             return self.last_order
 

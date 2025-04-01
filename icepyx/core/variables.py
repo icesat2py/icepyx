@@ -1,6 +1,8 @@
+import json
 import os
 
 import numpy as np
+import requests
 
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.is2ref as is2ref
@@ -124,9 +126,22 @@ class Variables(EarthdataAuthMixin):
 
         if not hasattr(self, "_avail") or self._avail is None:
             if not hasattr(self, "path") or self.path.startswith("s3"):
-                self._avail = is2ref._get_custom_options(
-                    self.session, self.product, self.version
-                )["variables"]
+                try:
+                    url = "https://raw.githubusercontent.com/icesat2py/is2_test_data/refs/heads/main/is2_test_data/data/is2variables.json"
+                    response = requests.get(url, headers={"Accept": "application/json"})
+                    response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+                    vars_dict = json.loads(response.content)
+                except requests.HTTPError as e:
+                    raise e
+
+                try:
+                    self._avail = vars_dict[self.product]
+
+                except KeyError:
+                    print(
+                        f"{self.product} does not have a list of available variables."
+                    )
+
             else:
                 # If a path was given, use that file to read the variables
                 import h5py

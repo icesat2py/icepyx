@@ -7,7 +7,6 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 
 from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
@@ -444,19 +443,6 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
             return collections[0].concept_id()
         else:
             return None
-
-    @property
-    def dataset(self):
-        """
-        Legacy property included to provide deprecation warning.
-
-        See Also
-        --------
-        product
-        """
-        DeprecationError(
-            "In line with most common usage, 'dataset' has been replaced by 'product'.",
-        )
 
     @property
     def product(self):

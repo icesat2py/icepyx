@@ -1,3 +1,5 @@
+jupyterlab
+mypy
 pandas-stubs
 pre-commit
 pypistats

@@ -41,8 +41,6 @@ class Query(BaseQuery):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.harmony_api = HarmonyApi()
-
         # Ensure that the `_temporal` attr is set. This simplifies checking if
         # temporal parameters has been passed. Instead of using `hasattr`, we
         # can just check for `None`.
@@ -183,6 +181,8 @@ class Query(BaseQuery):
             variable paths.
 
         """
+        if not hasattr(self, "harmony_api"):
+            self.harmony_api = HarmonyApi()
         if self.concept_id:
             capabilities = self.harmony_api.get_capabilities(concept_id=self.concept_id)
             print(json.dumps(capabilities, indent=2))
@@ -457,6 +457,9 @@ class Query(BaseQuery):
         [if any were returned from the harmony subsetter, e.g. No data found that matched subset constraints.]
         Your harmony order is:  complete
         """
+
+        # only instantiate the client when we are about to order data
+        self.harmony_api = HarmonyApi()
         if subset:
             job_id = self._order_subset_granules(skip_preview=skip_preview)
             self.last_order = DataOrder(

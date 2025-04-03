@@ -19,6 +19,10 @@ from icepyx.core.orders import DataOrder
 
 @pytest.fixture(scope="module")
 def reg():
+    if os.environ.get("EARTHDATA_USERNAME") is None:
+        print("Warning: EARTHDATA_USERNAME not set. Using default for testing.")
+        os.environ["EARTHDATA_USERNAME"] = "icepyx_devteam"
+
     live_reg = ipx.Query("ATL06", [-55, 68, -48, 71], ["2019-02-22", "2019-02-28"])
     yield live_reg
     del live_reg

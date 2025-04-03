@@ -2,6 +2,7 @@
 
 import datetime as dt
 import logging
+import os
 from pathlib import Path
 import tempfile
 import time
@@ -16,6 +17,9 @@ from icepyx.core.query import Query
 
 @pytest.fixture()
 def spatial_extent(request):
+    if os.environ.get("EARTHDATA_USERNAME") is None:
+        print("Warning: EARTHDATA_USERNAME not set. Using default for testing.")
+        os.environ["EARTHDATA_USERNAME"] = "icepyx_devteam"
     extent_type = request.param
     xmin = -49.149
     ymin = 69.186

@@ -13,10 +13,10 @@ can be renamed and the v1 versions removed.
 import json
 import logging
 from pathlib import Path
-import pprint
+from pprint import pprint
 import sys
 import time
-from typing import Union
+from typing import Any, Dict, Union
 
 from deprecated import deprecated
 import earthaccess
@@ -169,7 +169,7 @@ class Query(BaseQuery):
             self._variables = Variables(product=self.product)
         return self._variables
 
-    def show_custom_options(self) -> None:
+    def show_custom_options(self) -> Dict[str, Any]:
         """
         Display customization/subsetting options available for this product.
 
@@ -181,12 +181,13 @@ class Query(BaseQuery):
             variable paths.
 
         """
+        capabilities: dict = {}
         if not hasattr(self, "harmony_api"):
             self.harmony_api = HarmonyApi()
         if self.concept_id:
             capabilities = self.harmony_api.get_capabilities(concept_id=self.concept_id)
             print(json.dumps(capabilities, indent=2))
-        return None
+        return capabilities
 
     @property
     def CMRparams(self) -> CMRParams:
@@ -204,8 +205,6 @@ class Query(BaseQuery):
 
         if not hasattr(self, "_CMRparams"):
             self._CMRparams = apifmt.Parameters("CMR")
-        # print(self._CMRparams)
-        # print(self._CMRparams.fmted_keys)
 
         # dictionary of optional CMR parameters
         kwargs = {}
@@ -229,7 +228,7 @@ class Query(BaseQuery):
                 **kwargs,
             )
 
-        return self._CMRparams.fmted_keys
+        return self._CMRparams.fmted_keys  # type: ignore[no-any-return]
 
     @property
     def granules(self):
@@ -379,6 +378,8 @@ class Query(BaseQuery):
 
     def get_granule_links(self, cloud_hosted=False) -> list[str]:
         links = []
+        if not hasattr(self.granules, "avail"):
+            self.granules.get_avail(self.CMRparams)
         for granule in self.granules.avail:
             for link in granule["links"]:
                 if (
@@ -475,7 +476,7 @@ class Query(BaseQuery):
         self,
         path: Path,
         overwrite: bool = False,
-    ) -> None:
+    ) -> Union[list[str], None]:
         """
         Download the granules for the order, blocking until they are ready if necessary.
 
@@ -493,6 +494,8 @@ class Query(BaseQuery):
         """
         # Order granules based on user selections if restart is False and there
         # are no job IDs registered by the harmony API
+        if hasattr(self, "last_order") is None:
+            raise ValueError("No order has been placed yet.")
         status = self.last_order.status()
         if status["status"] == "running" or status["status"] == "accepted":
             print(
@@ -512,7 +515,7 @@ class Query(BaseQuery):
 
         if status["status"] == "complete_with_errors" or status["status"] == "failed":
             print("Harmony provided these error messages:")
-            pprint.pprint(status["errors"])
-
+            pprint(status["errors"])
+            return None
         else:
-            self.last_order.download(path, overwrite=overwrite)
+            return self.last_order.download(path, overwrite=overwrite)

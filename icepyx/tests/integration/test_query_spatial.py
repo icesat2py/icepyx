@@ -1,8 +1,10 @@
 """Tests for the harmony/earthaccess-enabled `QueryV2` class"""
 
 import datetime as dt
+import logging
 from pathlib import Path
 import tempfile
+import time
 
 import geopandas as gpd
 import pytest
@@ -60,6 +62,7 @@ def test_spatial_and_temporal_subset(tmp_path, spatial_extent):
     does not accept geopackages as input, so we do a conversion to geojson
     behind the scenes!)
     """
+    print(f"Spatial extent: {spatial_extent}")
     q = Query(
         product="ATL06",
         version="006",
@@ -70,7 +73,25 @@ def test_spatial_and_temporal_subset(tmp_path, spatial_extent):
         },
     )
 
-    q.download_granules(tmp_path)
+    order = q.order_granules(subset=True)
+    assert order is not None
+    assert order.type == "subset"
+    while True:
+        status = order.status()
+        print(f"Order status: {status['status']}")
+        if (
+            status["status"] == "successful"
+            or status["status"] == "complete_with_errors"
+        ):
+            break
+        elif status["status"] == "failed":
+            raise Exception("Order failed")
+        else:
+            # Sleep for a bit to avoid hammering the server
+            logging.info("Order is still processing...")
+            time.sleep(5)
+    files = order.download_granules(path=tmp_path, overwrite=True)
+    assert isinstance(files, list)
 
     # Query should result in download of one subsetted granule.
     assert len(list(tmp_path.glob("*.h5"))) == 1

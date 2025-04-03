@@ -1,4 +1,3 @@
-jupyterlab
 mypy
 pandas-stubs
 pre-commit

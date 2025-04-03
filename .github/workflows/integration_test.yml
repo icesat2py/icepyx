@@ -60,7 +60,7 @@ jobs:
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
           NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |
-          pytest icepyx/tests/integration --verbose --cov app -m "not downloads_data"
+          pytest icepyx/tests/integration --verbose --cov app -m "integration tests"
 
       - name: "Upload coverage report"
         uses: "codecov/codecov-action@v5.4.0"

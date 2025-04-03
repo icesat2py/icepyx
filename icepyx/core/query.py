@@ -173,13 +173,6 @@ class Query(BaseQuery):
         """
         Display customization/subsetting options available for this product.
 
-        Parameters
-        ----------
-        dictview : boolean, default False
-            Show the variable portion of the custom options list as a dictionary with key:value
-            pairs representing variable:paths-to-variable rather than as a long list of full
-            variable paths.
-
         """
         capabilities: dict = {}
         if not hasattr(self, "harmony_api"):

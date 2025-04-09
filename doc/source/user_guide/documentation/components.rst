@@ -10,7 +10,7 @@ APIformatting
    :members:
    :undoc-members:
    :show-inheritance:
-   
+
 EarthdataAuthMixin
 ------------------
 
@@ -27,14 +27,6 @@ granules
    :undoc-members:
    :show-inheritance:
 
-is2cat
-------
-
-.. automodule:: icepyx.core.is2cat
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   
 is2ref
 ------
 
@@ -63,14 +55,6 @@ validate\_inputs
 ----------------
 
 .. automodule:: icepyx.core.validate_inputs
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-variables
----------
-
-.. automodule:: icepyx.core.variables
    :members:
    :undoc-members:
    :show-inheritance:

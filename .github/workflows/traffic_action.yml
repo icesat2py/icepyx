@@ -1,7 +1,7 @@
 # temporarily store GitHub traffic data
 # from: https://github.com/marketplace/actions/repository-traffic
 on:
-  schedule: 
+  schedule:
     # runs once a week on sunday
     - cron: "55 23 * * 0"
   # Trigger manually at https://github.com/icesat2py/icepyx/actions/workflows/publish_to_pypi.yml
@@ -17,22 +17,22 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: "traffic"
-    
+
     # Calculates traffic and clones and stores in CSV file
-    - name: GitHub traffic 
-      uses: sangonzal/repository-traffic-action@v0.1.4
+    - name: GitHub traffic
+      uses: sangonzal/repository-traffic-action@v.0.1.6
       env:
-        TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }} 
-    
+        TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
+
     # Custom steps to move files to another dir and format plot
     - name: Move files
       run: |
         pip install matplotlib pandas
         python ./doc/source/tracking/traffic/traffic_data_mgmt.py
-    
+
     # Commits files to repository
     - name: Commit changes
       uses: EndBug/add-and-commit@v9

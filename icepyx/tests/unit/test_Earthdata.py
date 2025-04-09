@@ -1,12 +1,13 @@
-#!/usr/bin/env python
 """
-test icepyx.core.query.Query.earthdata_login function
+test different Earthdata authentication methods
 """
+
 import netrc
 import os
-import pytest
 import shutil
-import warnings
+
+import pytest
+
 
 # PURPOSE: test different authentication methods
 @pytest.fixture(scope="module", autouse=True)
@@ -40,9 +41,9 @@ def test_netrc(username, password):
     assert earthdata_login(username, password)
 
 
-def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
+def earthdata_login(uid=None, pwd=None) -> bool:
     """
-    Mocks the icepyx.core.query.Query.earthdata_login function
+    Mocks passing credentials in various ways accepted by the `auth.EarthdataAuthMixin` class
 
     Parameters
     ----------
@@ -50,10 +51,6 @@ def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
         Earthdata login user ID
     pwd : string, default None
         Earthdata login password
-    email : string, default None
-        Deprecated keyword for backwards compatibility.
-    s3token : boolean, default False
-        Generate AWS s3 ICESat-2 data access credentials
 
     Returns
     -------
@@ -64,12 +61,8 @@ def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
     try:
         url = "urs.earthdata.nasa.gov"
         mock_uid, _, mock_pwd = netrc.netrc(netrc).authenticators(url)
-    except:
-
+    except Exception:
         mock_uid = os.environ.get("EARTHDATA_USERNAME")
         mock_pwd = os.environ.get("EARTHDATA_PASSWORD")
 
-    if (uid == mock_uid) & (pwd == mock_pwd):
-        return True
-    else:
-        return False
+    return bool((uid == mock_uid) & (pwd == mock_pwd))

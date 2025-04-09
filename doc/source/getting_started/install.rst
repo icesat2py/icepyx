@@ -1,8 +1,8 @@
 .. _`zipped file`: https://github.com/icesat2py/icepyx/archive/main.zip
 .. _`Fiona`: https://pypi.org/project/Fiona/
-.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/version.svg 
+.. |Conda install| image:: https://anaconda.org/conda-forge/icepyx/badges/version.svg
     :target: https://anaconda.org/conda-forge/icepyx
-    
+
 .. |Pypi install| image:: https://badge.fury.io/py/icepyx.svg
     :target: https://pypi.org/project/icepyx/
 
@@ -43,7 +43,7 @@ To upgrade an installed version of icepyx to the latest stable release, do::
 
 
 
-Using pip |Pypi install| 
+Using pip |Pypi install|
 ------------------------
 
 Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__.
@@ -79,7 +79,7 @@ To clone the repository:
 
 
 Provided the location of the repo is part of your $PYTHONPATH, you should simply be able to add `import icepyx` to your Python document.
-Alternatively, in a command line or terminal, navigate to the folder in your cloned repository containing setup.py and run
+Alternatively, in a command line or terminal, navigate to the folder in your cloned repository containing `pyproject.toml` and run
 
 .. code-block::
 

@@ -1,15 +1,14 @@
-import pytest
-import warnings
 import datetime as dt
-from shapely.geometry import Polygon
 
 import icepyx.core.APIformatting as apifmt
 
+# DevNote: is this a situation where you'd ideally build a test class,
+# since you're just repeating the test function with different inputs?
+# Especially for the _fmt_spaital, where there's >2 tests?
 
-# DevNote: is this a situation where you'd ideally build a test class, since you're just repeating the
-# test function with different inputs? Especially for the _fmt_spaital, where there's >2 tests?
+# CMR temporal and spatial formats --> what's the best way to compare formatted text?
+# character by character comparison of strings?
 
-# CMR temporal and spatial formats --> what's the best way to compare formatted text? character by character comparison of strings?
 
 ########## _fmt_temporal ##########
 def test_time_fmt():
@@ -45,7 +44,18 @@ def test_var_subset_list_fmt():
             "start_delta_time": ["ancillary_data/start_delta_time"],
         }
     )
-    exp = "/ancillary_data/atlas_sdp_gps_epoch,/ancillary_data/data_end_utc,/ancillary_data/data_start_utc,/ancillary_data/end_delta_time,/ancillary_data/granule_end_utc,/ancillary_data/granule_start_utc,/profile_2/high_rate/latitude,/profile_2/low_rate/latitude,/orbit_info/sc_orient,/ancillary_data/start_delta_time"
+    exp = (
+        "/ancillary_data/atlas_sdp_gps_epoch,"
+        "/ancillary_data/data_end_utc,"
+        "/ancillary_data/data_start_utc,"
+        "/ancillary_data/end_delta_time,"
+        "/ancillary_data/granule_end_utc,"
+        "/ancillary_data/granule_start_utc,"
+        "/profile_2/high_rate/latitude,"
+        "/profile_2/low_rate/latitude,"
+        "/orbit_info/sc_orient,"
+        "/ancillary_data/start_delta_time"
+    )
     assert obs == exp
 
 
@@ -91,18 +101,52 @@ def test_combine_params():
 ############ to_string #############
 def test_to_string():
     CMRparams = {
-        "short_name": "ATL06",
-        "version": "002",
         "temporal": "2019-02-20T00:00:00Z,2019-02-28T23:59:59Z",
         "bounding_box": "-55,68,-48,71",
     }
-    reqparams = {"page_size": 2000, "page_num": 1}
+    reqparams = {
+        "short_name": "ATL06",
+        "version": "002",
+        "page_size": 2000,
+        "page_num": 1,
+    }
     params = apifmt.combine_params(CMRparams, reqparams)
     obs = apifmt.to_string(params)
     expected = (
-        "short_name=ATL06&version=002"
-        "&temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z"
-        "&bounding_box=-55,68,-48,71&page_size=2000&page_num=1"
+        "temporal=2019-02-20T00:00:00Z,2019-02-28T23:59:59Z"
+        "&bounding_box=-55,68,-48,71"
+        "&short_name=ATL06&version=002"
+        "&page_size=2000&page_num=1"
+    )
+    assert obs == expected
+
+
+def test_to_string_with_list():
+    CMRparams = {
+        "options[readable_granule_name][pattern]": "true",
+        "options[spatial][or]": "true",
+        "readable_granule_name[]": [
+            "ATL06_??????????????_084903??_*",
+            "ATL06_??????????????_090203??_*",
+        ],
+        "bounding_box": "-55,68,-48,71",
+    }
+    reqparams = {
+        "short_name": "ATL06",
+        "version": "002",
+        "page_size": 2000,
+        "page_num": 1,
+    }
+    params = apifmt.combine_params(CMRparams, reqparams)
+    obs = apifmt.to_string(params)
+    expected = (
+        "options[readable_granule_name][pattern]=true"
+        "&options[spatial][or]=true"
+        "&readable_granule_name[]=ATL06_??????????????_084903??_*"
+        "&readable_granule_name[]=ATL06_??????????????_090203??_*"
+        "&bounding_box=-55,68,-48,71"
+        "&short_name=ATL06&version=002"
+        "&page_size=2000&page_num=1"
     )
     assert obs == expected
 
@@ -119,7 +163,6 @@ def test_CMRparams_no_other_inputs():
     CMRparams = apifmt.Parameters("CMR")
     # TestQuestion: the next statement essentially tests _get_possible_keys as well, so how would I test them independently?
     assert CMRparams.poss_keys == {
-        "default": ["short_name", "version"],
         "spatial": ["bounding_box", "polygon"],
         "optional": [
             "temporal",
@@ -131,14 +174,9 @@ def test_CMRparams_no_other_inputs():
     assert CMRparams.fmted_keys == {}
     assert CMRparams._check_valid_keys
     # Note: this test must be done before the next one
-    if CMRparams.partype == "required":
-        assert CMRparams.check_req_values() == False
-    else:
-        assert CMRparams.check_values() == False
+    assert CMRparams.check_values() is False
 
     CMRparams.build_params(
-        product="ATL06",
-        version="005",
         start=dt.datetime(2019, 2, 20, 0, 0),
         end=dt.datetime(2019, 2, 24, 23, 59, 59),
         extent_type="bounding_box",
@@ -146,8 +184,6 @@ def test_CMRparams_no_other_inputs():
     )
     obs_fmted_params = CMRparams.fmted_keys
     exp_fmted_params = {
-        "short_name": "ATL06",
-        "version": "005",
         "temporal": "2019-02-20T00:00:00Z,2019-02-24T23:59:59Z",
         "bounding_box": "-55.0,68.0,-48.0,71.0",
     }

@@ -18,7 +18,7 @@ New Features
   - Create `Granules` class to get/order/download granules and call as an attribute of the icesat2data object
   - Create `Variables` class to interface with ICESat-2 nested variables
   - Create `Parameters` class for managing API inputs within `APIformatting` module
-  
+
 - allow installation with pip and git
 
 Bug fixes

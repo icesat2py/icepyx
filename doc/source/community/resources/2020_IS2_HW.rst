@@ -2,20 +2,20 @@
 
 Second [Virtual] ICESat-2 Cryospheric Hackweek Facilitated by the University of Washington
 ------------------------------------------------------------------------------------------
-The `2020 ICESat-2 Cryospheric Science Hackweek <https://icesat-2hackweek.github.io/learning-resources/>`_ was the 
-first virtual Hackweek held by the University of Washington. 
-While originally planned as a five-day, in-person workshop, the event was shifted to a fully virtual/remote setting in light of 
-stay-at-home orders and travel restrictions in place to curb the spread of COVID-19. 
+The `2020 ICESat-2 Cryospheric Science Hackweek <https://icesat-2hackweek.github.io/learning-resources/>`_ was the
+first virtual Hackweek held by the University of Washington.
+While originally planned as a five-day, in-person workshop, the event was shifted to a fully virtual/remote setting in light of
+stay-at-home orders and travel restrictions in place to curb the spread of COVID-19.
 
-To accomodate multiple time zones and limit the daily duration of online tutorial sessions, the event was spread out over the course of ten days. 
-The first week had three half-days of interactive tutorials/lectures. 
-The second week had four days that included some interactive tutorials/lectures and scheduled times where instructors were 
+To accommodate multiple time zones and limit the daily duration of online tutorial sessions, the event was spread out over the course of ten days.
+The first week had three half-days of interactive tutorials/lectures.
+The second week had four days that included some interactive tutorials/lectures and scheduled times where instructors were
 available to help participants with a facilitated exploration of datasets and hands-on software development.
 
 
-This June 2020 event resulted in the production of a series of `tutorials <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_, 
+This June 2020 event resulted in the production of a series of `tutorials <https://github.com/ICESAT-2HackWeek/2020_ICESat-2_Hackweek_Tutorials>`_,
 developed by volunteer instructors and presented during the event.
-During the actual Hackweek, teams of researchers and data scientists developed a series of interesting 
+During the actual Hackweek, teams of researchers and data scientists developed a series of interesting
 `projects <https://github.com/ICESAT-2HackWeek/projects_2020>`_ related to their interests/research.
 
 .. |Zenodo badge| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3966463.svg
@@ -30,18 +30,18 @@ The published tutorial repo also includes links to presentation slides and video
 
 Tutorial Topics:
 
-1. Introductory Session 
-1. ICESat-2 Mission: Satellite, Sensor, and Data
-1. Git and GitHub 
-1. Jupyter and iPython
-1. Geospatial Analysis with Python
-1. Introduction to ICESat-2 Sea Ice and Land Ice Products and Data Access 
-1. Programmatic ICESat-2 data access 
-1. Introduction to HDF5 and ICESat-2 data files
-1. Land ice applications
-1. Sea ice applications
-1. Science data generation
-1. Machine learning
+1. Introductory Session
+2. ICESat-2 Mission: Satellite, Sensor, and Data
+3. Git and GitHub
+4. Jupyter and iPython
+5. Geospatial Analysis with Python
+6. Introduction to ICESat-2 Sea Ice and Land Ice Products and Data Access
+7. Programmatic ICESat-2 data access
+8. Introduction to HDF5 and ICESat-2 data files
+9. Land ice applications
+10. Sea ice applications
+11. Science data generation
+12. Machine learning
 
 Projects
 ^^^^^^^^

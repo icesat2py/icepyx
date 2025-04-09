@@ -4,15 +4,16 @@ icepyx Internals
 Authentication
 --------------
 Authentication in icepyx is handled using a Mixin class. A Mixin class is a class
-which defines functionality that may be desired by multiple other classes within 
-a library. For example, at this time both the Query and Variables classes need
+which defines functionality that may be desired by multiple other classes within
+a library.
+For example, at this time the Query, Variables, and Read classes need
 to be able to authenticate. Instead of defining the same properties and
 functionality twice, icepyx has an EarthdataAuthMixin class that is inherited
-by both modules.
+by any modules that need an Earthdata login.
 
 **Property Access**
 
-Even though they aren't explicity defined in the init method, properties
+Even though they aren't explicitly defined in the init method, properties
 like ``.session`` are accessible on a Query object because they are inherited. The
 code that indicates this to Python is ``EarthdataAuthMixin.__init__(self)``.
 

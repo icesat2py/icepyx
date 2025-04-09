@@ -1,7 +1,4 @@
 import pytest
-import warnings
-import datetime as dt
-import numpy as np
 
 import icepyx.core.validate_inputs as val
 
@@ -69,4 +66,36 @@ def test_tracks_valid():
     with pytest.warns(UserWarning) as record:
         val.tracks(1388)
     # check that warning message matches expected
+    assert record[0].message.args[0] == expmsg
+
+
+@pytest.mark.parametrize(
+    "filepath, expect",
+    [
+        ("./", "./"),
+        (
+            """s3://nsidc-cumulus-prod-protected/ATLAS/
+            ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5""",
+            """s3://nsidc-cumulus-prod-protected/ATLAS/
+            ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5""",
+        ),
+    ],
+)
+def test_check_s3bucket(filepath, expect):
+    verified_path = val.check_s3bucket(filepath)
+    assert verified_path == expect
+
+
+def test_wrong_s3bucket():
+    filepath = """s3://notnsidc-cumulus-prod-protected/ATLAS/
+            ATL03/006/2019/11/30/ATL03_20191130221008_09930503_006_01.h5"""
+
+    expmsg = (
+        "s3 data being read from outside the NSIDC data bucket. Icepyx can "
+        "read this data, but available data lists may not be accurate."
+    )
+
+    with pytest.warns(UserWarning) as record:
+        val.check_s3bucket(filepath)
+
     assert record[0].message.args[0] == expmsg

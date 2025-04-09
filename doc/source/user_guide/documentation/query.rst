@@ -23,7 +23,6 @@ Attributes
    Query.cycles
    Query.dates
    Query.end_time
-   Query.file_vars
    Query.granules
    Query.order_vars
    Query.product
@@ -44,7 +43,6 @@ Methods
 
    Query.avail_granules
    Query.download_granules
-   Query.earthdata_login
    Query.latest_version
    Query.order_granules
    Query.product_all_info

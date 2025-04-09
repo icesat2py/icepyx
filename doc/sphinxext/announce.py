@@ -17,9 +17,20 @@ Usage::
 
 The output is utf8 rst.
 
-Custom extension from the Pandas library: https://github.com/pandas-dev/pandas/blob/1.1.x/doc/sphinxext/announce.py
+Custom extension from the Pandas library:
+https://github.com/pandas-dev/pandas/blob/1.1.x/doc/sphinxext/announce.py
 Copied 10 August 2020 and subsequently modified.
-Specifically, get_authors was adjusted to check for a .mailmap file and use the git through the command line in order to utilize it if present. Using a mailmap file is currently not possible in gitpython (from git import Repo), and the recommended solution is to bring in the mailmap file yourself and use it to modify the author list (i.e. replicate the functionality that already exists in git). This felt a bit out of time-scope for right now. Alternatively, the git-fame library (imported as gitfame) uses the mailmap file and compiles statistics, but the python wrapper for this command line tool was taking forever. So, I've reverted to using os.system to use git behind the scenes instead.
+Specifically, get_authors was adjusted to check for a .mailmap file
+and use the git through the command line in order to utilize it if present.
+Using a mailmap file is currently not possible in gitpython
+(from git import Repo), and the recommended solution is to
+bring in the mailmap file yourself and use it to modify the author list
+(i.e. replicate the functionality that already exists in git).
+This felt a bit out of time-scope for right now.
+Alternatively, the git-fame library (imported as gitfame)
+uses the mailmap file and compiles statistics,
+but the python wrapper for this command line tool was taking forever.
+So, I've reverted to using os.system to use git behind the scenes instead.
 
 Dependencies
 ------------
@@ -37,6 +48,7 @@ From the bash command line with $GITHUB token.
     $ ./scripts/announce.py $GITHUB v1.11.0..v1.11.1 > announce.rst
 
 """
+
 import codecs
 import os
 import re
@@ -65,10 +77,7 @@ def get_authors(revision_range):
         # e.g. v1.0.1|HEAD
         maybe_tag, head = cur_release.split("|")
         assert head == "HEAD"
-        if maybe_tag in this_repo.tags:
-            cur_release = maybe_tag
-        else:
-            cur_release = head
+        cur_release = maybe_tag if maybe_tag in this_repo.tags else head
         revision_range = f"{lst_release}..{cur_release}"
 
     # authors, in current release and previous to current release.
@@ -76,7 +85,6 @@ def get_authors(revision_range):
     # "Co-authored by" commits, which come from backports by the bot,
     # and one for regular commits.
     if ".mailmap" in os.listdir(this_repo.git.working_dir):
-
         xpr = re.compile(r"Co-authored-by: (?P<name>[^<]+) ")
 
         gitcur = list(os.popen("git shortlog -s " + revision_range).readlines())
@@ -94,7 +102,6 @@ def get_authors(revision_range):
         pre = set(pre)
 
     else:
-
         xpr = re.compile(r"Co-authored-by: (?P<name>[^<]+) ")
         cur = set(
             xpr.findall(
@@ -115,7 +122,7 @@ def get_authors(revision_range):
     #     pre.discard("Homu")
 
     # Append '+' to new authors.
-    authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
+    authors = [s + " +" for s in cur - pre] + list(cur & pre)
     authors.sort()
     return authors
 

@@ -1,24 +1,24 @@
 """
 Interactive visualization of spatial extent and ICESat-2 elevations
 """
+
 import concurrent.futures
-import datetime
-import re
+import warnings
 
 import backoff
 import dask.array as da
 import dask.dataframe as dd
 import datashader as ds
 import holoviews as hv
+from holoviews.operation.datashader import rasterize
 import numpy as np
 import pandas as pd
 import requests
-from holoviews.operation.datashader import rasterize
 from tqdm import tqdm
 
 import icepyx as ipx
-import icepyx.core.is2ref as is2ref
 import icepyx.core.granules as granules
+import icepyx.core.is2ref as is2ref
 
 hv.extension("bokeh")
 
@@ -141,7 +141,6 @@ class Visualize:
         cycles=None,
         tracks=None,
     ):
-
         if query_obj:
             pass
         else:
@@ -240,7 +239,6 @@ class Visualize:
         is2_file_list = []
 
         for bbox_i in bbox_list:
-
             try:
                 region = ipx.Query(
                     self.product,
@@ -314,7 +312,13 @@ class Visualize:
         --------
         request_OA_data
         """
-        return requests.get(base_url, params=payload)
+        response = requests.get(base_url, params=payload)
+        if not response.ok:
+            raise RuntimeError(
+                f"Status {response.status_code} requesting url {response.request.url}"
+            )
+
+        return response
 
     def request_OA_data(self, paras) -> da.array:
         """
@@ -332,7 +336,12 @@ class Visualize:
             A dask array containing the ICESat-2 elevation data.
         """
 
-        base_url = "https://openaltimetry.org/data/api/icesat2/level3a"
+        warnings.warn(
+            "NOTICE: visualizations requiring the OpenAltimetry API are currently"
+            " (August 2024) unavailable until we can adapt to API changes."
+        )
+
+        base_url = "http://openaltimetry.earthdatacloud.nasa.gov/data/api/icesat2"
         trackId, Date, cycle, bbox, product = paras
 
         # Generate API
@@ -357,11 +366,10 @@ class Visualize:
 
         # get data we need (with the correct date)
         try:
-
             df_series = df.query(expr="date == @Date").iloc[0]
             beam_data = df_series.beams
 
-        except (NameError, KeyError, IndexError) as error:
+        except (NameError, KeyError, IndexError):
             beam_data = None
 
         if not beam_data:
@@ -414,9 +422,9 @@ class Visualize:
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
 
-        assert (
-            OA_para_list
-        ), "Your search returned no results; try different search parameters"
+        assert OA_para_list, (
+            "Your search returned no results; try different search parameters"
+        )
 
         url_number = len(OA_para_list)
 
@@ -458,7 +466,7 @@ class Visualize:
             OA_data_da = da.concatenate(requested_OA_data, axis=0)
             return OA_data_da
 
-    def viz_elevation(self) -> (hv.DynamicMap, hv.Layout):
+    def viz_elevation(self) -> tuple[hv.DynamicMap, hv.Layout]:
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles
         https://holoviz.org/tutorial/Large_Data.html
@@ -476,12 +484,13 @@ class Visualize:
             return (None,) * 2
 
         else:
-
             cols = (
                 ["lat", "lon", "elevation", "canopy", "rgt", "cycle"]
                 if self.product == "ATL08"
                 else ["lat", "lon", "elevation", "rgt", "cycle"]
             )
+            # this function is new deprecated and will need to be updated (24 Jan 2025)
+            # try dd.from_dask_array()
             ddf = dd.io.from_dask_array(OA_da, columns=cols).astype(
                 {
                     "lat": "float",

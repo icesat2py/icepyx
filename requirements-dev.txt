@@ -1,7 +1,10 @@
-black
-flake8
+pandas-stubs
 pre-commit
 pypistats
+pyright
 pytest>=4.6
 pytest-cov
 responses
+types-docutils
+types-requests
+types-tqdm

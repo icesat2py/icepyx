@@ -5,15 +5,18 @@ warnings.filterwarnings("ignore")
 
 
 class DataSet:
-
     """
     Template parent class for all QUEST supported datasets (i.e. ICESat-2, Argo BGC, Argo, MODIS, etc.).
     All sub-classes must support the following methods for use via the QUEST class.
     """
 
+<<<<<<< HEAD
     def __init__(
         self, spatial_extent=None, date_range=None, start_time=None, end_time=None
     ):
+=======
+    def __init__(self, spatial_extent, date_range, start_time=None, end_time=None):
+>>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
         """
         Complete any dataset specific initializations (i.e. beyond space and time) required here.
         For instance, ICESat-2 requires a product, and Argo requires parameters.
@@ -70,6 +73,15 @@ class DataSet:
         """
         raise NotImplementedError
 
+<<<<<<< HEAD
+=======
+    def save(self, filepath):
+        """
+        Save the downloaded data to a directory on your local machine.
+        """
+        raise NotImplementedError
+
+>>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
     # ----------------------------------------------------------------------
     # Working with Data
 

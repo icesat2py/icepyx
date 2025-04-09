@@ -1,20 +1,25 @@
 import json
-import numpy as np
-import requests
 import warnings
 from xml.etree import ElementTree as ET
 
+import earthaccess
+import h5py
+import numpy as np
+import requests
 
-import icepyx
+from icepyx.core.urls import COLLECTION_SEARCH_BASE_URL, EGI_BASE_URL
 
 # ICESat-2 specific reference functions
-# options to get customization options for ICESat-2 data (though could be used generally)
 
 
 def _validate_product(product):
     """
     Confirm a valid ICESat-2 product was specified
     """
+    error_msg = (
+        "A valid product string was not provided. "
+        "Check user input, if given, or file metadata."
+    )
     if isinstance(product, str):
         product = str.upper(product)
         assert product in [
@@ -40,13 +45,10 @@ def _validate_product(product):
             "ATL20",
             "ATL21",
             "ATL23",
-        ], "Please enter a valid product"
+        ], error_msg
     else:
-        raise TypeError("Please enter a product string")
+        raise TypeError(error_msg)
     return product
-
-
-# DevGoal: See if there's a way to dynamically get this list so it's automatically updated
 
 
 def _validate_OA_product(product):
@@ -62,7 +64,9 @@ def _validate_OA_product(product):
             "ATL10",
             "ATL12",
             "ATL13",
-        ], "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
+        ], (
+            "Oops! Elevation visualization only supports products ATL06, ATL07, ATL08, ATL10, ATL12, ATL13; please try another product."
+        )
     else:
         raise TypeError("Please enter a product string")
     return product
@@ -78,27 +82,26 @@ def about_product(prod):
     query.Query.product_all_info
     """
 
-    cmr_collections_url = "https://cmr.earthdata.nasa.gov/search/collections.json"
-    response = requests.get(cmr_collections_url, params={"short_name": prod})
+    response = requests.get(COLLECTION_SEARCH_BASE_URL, params={"short_name": prod})
     results = json.loads(response.content)
     return results
 
 
 # DevGoal: use a mock of this output to test later functions, such as displaying options and widgets, etc.
+# options to get customization options for ICESat-2 data (though could be used generally)
 def _get_custom_options(session, product, version):
     """
     Get lists of what customization options are available for the product from NSIDC.
     """
     cust_options = {}
 
+    # flagging for update/removal given removal of `.earthdata_login()`
     if session is None:
         raise ValueError(
             "Don't forget to log in to Earthdata using query.earthdata_login()"
         )
 
-    capability_url = (
-        f"https://n5eil02u.ecs.nsidc.org/egi/capabilities/{product}.{version}.xml"
-    )
+    capability_url = f"{EGI_BASE_URL}/capabilities/{product}.{version}.xml"
     response = session.get(capability_url)
     root = ET.fromstring(response.content)
 
@@ -109,7 +112,11 @@ def _get_custom_options(session, product, version):
     # reformatting
     formats = [Format.attrib for Format in root.iter("Format")]
     format_vals = [formats[i]["value"] for i in range(len(formats))]
-    format_vals.remove("")
+    try:
+        format_vals.remove("")
+    except KeyError:
+        # ATL23 does not have an empty value
+        pass
     cust_options.update({"fileformats": format_vals})
 
     # reprojection only applicable on ICESat-2 L3B products.
@@ -153,7 +160,7 @@ def _get_custom_options(session, product, version):
 
     get_varlist(root)
     vars_vals = [
-        v.replace(":", "/") if v.startswith("/") == False else v.replace("/:", "")
+        v.replace(":", "/") if v.startswith("/") is False else v.replace("/:", "")
         for v in vars_raw
     ]
     cust_options.update({"variables": vars_vals})
@@ -265,8 +272,15 @@ def _default_varlists(product):
         return common_list
 
 
-# dev goal: check and test this function
+# Currently this function is used one-off, but if it needs to be done for a series of values,
+# a faster version using pandas map (instead of apply) is available in SlideRule:
+# https://github.com/SlideRuleEarth/sliderule/issues/388
+# https://github.com/SlideRuleEarth/sliderule/commit/46cceac0e5f6d0a580933d399a6239bc911757f3
 def gt2spot(gt, sc_orient):
+    warnings.warn(
+        "icepyx versions 0.8.0 and earlier used an incorrect spot number calculation."
+        "As a result, computations depending on spot number may be incorrect and should be redone."
+    )
 
     assert gt in [
         "gt1l",
@@ -280,12 +294,13 @@ def gt2spot(gt, sc_orient):
     gr_num = np.uint8(gt[2])
     gr_lr = gt[3]
 
+    # spacecraft oriented forward
     if sc_orient == 1:
         if gr_num == 1:
             if gr_lr == "l":
-                spot = 2
+                spot = 6
             elif gr_lr == "r":
-                spot = 1
+                spot = 5
         elif gr_num == 2:
             if gr_lr == "l":
                 spot = 4
@@ -293,16 +308,17 @@ def gt2spot(gt, sc_orient):
                 spot = 3
         elif gr_num == 3:
             if gr_lr == "l":
-                spot = 6
+                spot = 2
             elif gr_lr == "r":
-                spot = 5
+                spot = 1
 
+    # spacecraft oriented backward
     elif sc_orient == 0:
         if gr_num == 1:
             if gr_lr == "l":
-                spot = 5
+                spot = 1
             elif gr_lr == "r":
-                spot = 6
+                spot = 2
         elif gr_num == 2:
             if gr_lr == "l":
                 spot = 3
@@ -310,11 +326,127 @@ def gt2spot(gt, sc_orient):
                 spot = 4
         elif gr_num == 3:
             if gr_lr == "l":
-                spot = 1
+                spot = 5
             elif gr_lr == "r":
-                spot = 2
+                spot = 6
 
     if "spot" not in locals():
         raise ValueError("Could not compute the spot number.")
 
     return np.uint8(spot)
+
+
+def latest_version(product):
+    """
+    Determine the most recent version available for the given product.
+
+    Examples
+    --------
+    >>> latest_version('ATL03')
+    '006'
+    """
+    _about_product = about_product(product)
+
+    return max([entry["version_id"] for entry in _about_product["feed"]["entry"]])
+
+
+def extract_product(filepath, auth=None):
+    """
+    Read the product type from the metadata of the file. Valid for local or s3 files, but must
+    provide an auth object if reading from s3. Return the product as a string.
+
+    Parameters
+    ----------
+    filepath: string
+        local or remote location of a file. Could be a local string or an s3 filepath
+    auth: earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Optional, but necessary if accessing data in an
+        s3 bucket.
+    """
+    # Generate a file reader object relevant for the file location
+    if filepath.startswith("s3"):
+        if not auth:
+            raise AttributeError(
+                "Must provide credentials to `auth` if accessing s3 data"
+            )
+        # Read the s3 file
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC")
+        f = h5py.File(s3.open(filepath, "rb"))
+    else:
+        # Otherwise assume a local filepath. Read with h5py.
+        f = h5py.File(filepath, "r")
+
+    # Extract the product information
+    try:
+        product = f.attrs["short_name"]
+        if isinstance(product, bytes):
+            # For most products the short name is stored in a bytes string
+            product = product.decode()
+        elif isinstance(product, np.ndarray):
+            # ATL14 saves the short_name as an array ['ATL14']
+            product = product[0]
+        product = _validate_product(product)
+    except KeyError as e:
+        raise Exception(
+            "Unable to parse the product name from file metadata"
+        ).with_traceback(e.__traceback__)
+
+    # Close the file reader
+    f.close()
+    return product
+
+
+def extract_version(filepath, auth=None):
+    """
+    Read the version from the metadata of the file. Valid for local or s3 files, but must
+    provide an auth object if reading from s3. Return the version as a string.
+
+    Parameters
+    ----------
+    filepath: string
+        local or remote location of a file. Could be a local string or an s3 filepath
+    auth: earthaccess.auth.Auth, default None
+        An earthaccess authentication object. Optional, but necessary if accessing data in an
+        s3 bucket.
+    """
+    # Generate a file reader object relevant for the file location
+    if filepath.startswith("s3"):
+        if not auth:
+            raise AttributeError(
+                "Must provide credentials to `auth` if accessing s3 data"
+            )
+        # Read the s3 file
+        s3 = earthaccess.get_s3fs_session(daac="NSIDC")
+        f = h5py.File(s3.open(filepath, "rb"))
+    else:
+        # Otherwise assume a local filepath. Read with h5py.
+        f = h5py.File(filepath, "r")
+
+    # Read the version information
+    try:
+        version = f["METADATA"]["DatasetIdentification"].attrs["VersionID"]
+        if isinstance(version, np.ndarray):
+            # ATL14 stores the version as an array ['00x']
+            version = version[0]
+        if isinstance(version, bytes):
+            version = version.decode()
+
+    except KeyError as e:
+        raise Exception(
+            "Unable to parse the version from file metadata"
+        ).with_traceback(e.__traceback__)
+
+    # catch cases where the version number is an invalid string
+    # e.g. a VersionID of "SET_BY_PGE", causing issues where version needs to be a valid number
+    try:
+        float(version)
+    except ValueError:
+        raise Exception(
+            "There is an underlying issue with the version information"
+            "provided in the metadata of this file."
+            "Consider setting the version manually for further processing."
+        )
+
+    # Close the file reader
+    f.close()
+    return version

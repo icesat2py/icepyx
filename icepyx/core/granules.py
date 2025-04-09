@@ -1,18 +1,28 @@
+from __future__ import annotations
+
 import datetime
-import requests
-import time
 import io
-import re
 import json
-import numpy as np
 import os
 import pprint
-import warnings
+import re
+import time
 from xml.etree import ElementTree as ET
 import zipfile
 
+import numpy as np
+import requests
+from requests.compat import unquote
+
 import icepyx.core.APIformatting as apifmt
+from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.exceptions
+from icepyx.core.types import (
+    CMRParams,
+    EGIRequiredParamsDownload,
+    EGIRequiredParamsSearch,
+)
+from icepyx.core.urls import DOWNLOAD_BASE_URL, GRANULE_SEARCH_BASE_URL, ORDER_BASE_URL
 
 
 def info(grans):
@@ -37,7 +47,8 @@ def info(grans):
 # DevNote: could add flag to separate ascending and descending orbits based on ATL03 granule region
 def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=False):
     """
-    Returns a list of granule information for each granule dictionary in the input list of granule dictionaries.
+    Returns a list of granule information for each granule dictionary
+    in the input list of granule dictionaries.
     Granule info may be from a list of those available from NSIDC (for ordering/download)
     or a list of granules present on the file system.
 
@@ -71,15 +82,16 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
         producer_granule_id = gran["producer_granule_id"]
         gran_ids.append(producer_granule_id)
 
-        if cloud == True:
+        if cloud is True:
             try:
                 for link in gran["links"]:
-                    if link["href"].startswith("s3") and link["href"].endswith(".h5"):
-                        gran_s3urls.append(link["href"])
+                    href = link["href"]
+                    if href.startswith("s3") and href.endswith((".h5", "nc")):
+                        gran_s3urls.append(href)
             except KeyError:
                 pass
 
-        if any([param == True for param in [cycles, tracks, dates]]):
+        if any(param is True for param in [cycles, tracks, dates]):
             # PRD: ICESat-2 product
             # HEM: Sea Ice Hemisphere flag
             # YY,MM,DD,HH,MN,SS: Year, Month, Day, Hour, Minute, Second
@@ -137,7 +149,7 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
 # DevGoal: this will be a great way/place to manage data from the local file system
 # where the user already has downloaded data!
 # DevNote: currently this class is not tested
-class Granules:
+class Granules(EarthdataAuthMixin):
     """
     Interact with ICESat-2 data granules. This includes finding,
     ordering, and downloading them as well as (not yet implemented) getting already
@@ -155,7 +167,9 @@ class Granules:
         # files=[],
         # session=None
     ):
-        pass
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
+
         # self.avail = avail
         # self.orderIDs = orderIDs
         # self.files = files
@@ -164,24 +178,32 @@ class Granules:
     # ----------------------------------------------------------------------
     # Methods
 
-    def get_avail(self, CMRparams, reqparams, cloud=False):
+    def get_avail(
+        self,
+        CMRparams: CMRParams,
+        reqparams: EGIRequiredParamsSearch,
+        cloud: bool = False,
+    ):
         """
         Get a list of available granules for the query object's parameters.
         Generates the `avail` attribute of the granules object.
 
         Parameters
         ----------
-        CMRparams : dictionary
+        CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams : dictionary
+        reqparams :
             Dictionary of properly formatted parameters required for searching, ordering,
             or downloading from NSIDC.
-        cloud : deprecated, boolean, default False
+        cloud :
             CMR metadata is always collected for the cloud system.
+
+            .. deprecated:: 1.2
+                This parameter is ignored.
 
         Notes
         -----
-        This function is used by query.Query.avail_granules(), which automatically
+        This function is used by ``query.Query.avail_granules()``, which automatically
         feeds in the required parameters.
 
         See Also
@@ -190,21 +212,20 @@ class Granules:
         query.Query.avail_granules
         """
 
-        assert (
-            CMRparams is not None and reqparams is not None
-        ), "Missing required input parameter dictionaries"
+        assert CMRparams is not None and reqparams is not None, (
+            "Missing required input parameter dictionaries"
+        )
 
         # if not hasattr(self, 'avail'):
         self.avail = []
 
-        granule_search_url = "https://cmr.earthdata.nasa.gov/search/granules"
-
         headers = {"Accept": "application/json", "Client-Id": "icepyx"}
-        # note we should also check for errors whenever we ping NSIDC-API - make a function to check for errors
+        # note we should also check for errors whenever we ping NSIDC-API -
+        # make a function to check for errors
 
         params = apifmt.combine_params(
             CMRparams,
-            {k: reqparams[k] for k in ["page_size"]},
+            {k: reqparams[k] for k in ["short_name", "version", "page_size"]},
             {"provider": "NSIDC_CPRD"},
         )
 
@@ -215,7 +236,7 @@ class Granules:
                 headers["CMR-Search-After"] = cmr_search_after
 
             response = requests.get(
-                granule_search_url,
+                GRANULE_SEARCH_BASE_URL,
                 headers=headers,
                 params=apifmt.to_string(params),
             )
@@ -239,30 +260,30 @@ class Granules:
 
             results = json.loads(response.content)
             if not results["feed"]["entry"]:
-                assert len(self.avail) == int(
-                    response.headers["CMR-Hits"]
-                ), "Search failure - unexpected number of results"
+                assert len(self.avail) == int(response.headers["CMR-Hits"]), (
+                    "Search failure - unexpected number of results"
+                )
                 break
 
             # Collect results
             self.avail.extend(results["feed"]["entry"])
 
-        assert (
-            len(self.avail) > 0
-        ), "Your search returned no results; try different search parameters"
+        assert len(self.avail) > 0, (
+            "Your search returned no results; try different search parameters"
+        )
 
-    # DevNote: currently, default subsetting DOES NOT include variable subsetting, only spatial and temporal
+    # DevNote: currently, default subsetting DOES NOT include variable subsetting,
+    # only spatial and temporal
     # DevGoal: add kwargs to allow subsetting and more control over request options.
     def place_order(
         self,
-        CMRparams,
-        reqparams,
+        CMRparams: CMRParams,
+        reqparams: EGIRequiredParamsDownload,
         subsetparams,
         verbose,
         subset=True,
-        session=None,
         geom_filepath=None,
-    ):  # , **kwargs):
+    ):
         """
         Place an order for the available granules for the query object.
         Adds the list of zipped files (orders) to the granules data object (which is
@@ -271,11 +292,11 @@ class Granules:
 
         Parameters
         ----------
-        CMRparams : dictionary
+        CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        reqparams : dictionary
+        reqparams :
             Dictionary of properly formatted parameters required for searching, ordering,
-            or downloading from NSIDC.
+            or downloading from NSIDC (via their EGI system).
         subsetparams : dictionary
             Dictionary of properly formatted subsetting parameters. An empty dictionary
             is passed as input here when subsetting is set to False in query methods.
@@ -284,14 +305,12 @@ class Granules:
             Progress information is automatically printed regardless of the value of verbose.
         subset : boolean, default True
             Apply subsetting to the data order from the NSIDC, returning only data that meets the
-            subset parameters. Spatial and temporal subsetting based on the input parameters happens
+            subset parameters.
+            Spatial and temporal subsetting based on the input parameters happens
             by default when subset=True, but additional subsetting options are available.
-            Spatial subsetting returns all data that are within the area of interest (but not complete
-            granules. This eliminates false-positive granules returned by the metadata-level search)
-        session : requests.session object
-            A session object authenticating the user to order data using their Earthdata login information.
-            The session object will automatically be passed from the query object if you
-            have successfully logged in there.
+            Spatial subsetting returns all data that are within the area of interest
+            (but not complete granules.
+            This eliminates false-positive granules returned by the metadata-level search)
         geom_filepath : string, default None
             String of the full filename and path when the spatial input is a file.
 
@@ -304,13 +323,6 @@ class Granules:
         --------
         query.Query.order_granules
         """
-
-        if session is None:
-            raise ValueError(
-                "Don't forget to log in to Earthdata using query.earthdata_login()"
-            )
-
-        base_url = "https://n5eil02u.ecs.nsidc.org/egi/request"
 
         self.get_avail(CMRparams, reqparams)
 
@@ -345,17 +357,14 @@ class Granules:
                 total_pages,
                 " is submitting to NSIDC",
             )
-            request_params = apifmt.combine_params(CMRparams, reqparams, subsetparams)
             request_params.update({"page_num": page_num})
 
-            # DevNote: earlier versions of the code used a file upload+post rather than putting the geometries
-            # into the parameter dictionaries. However, this wasn't working with shapefiles, but this more general
-            # solution does, so the geospatial parameters are included in the parameter dictionaries.
-            request = session.get(base_url, params=request_params)
+            request = self.session.get(ORDER_BASE_URL, params=request_params)
 
-            # DevGoal: use the request response/number to do some error handling/give the user better messaging for failures
+            # DevGoal: use the request response/number to do some error handling/
+            # give the user better messaging for failures
             # print(request.content)
-            root = ET.fromstring(request.content)
+            # root = ET.fromstring(request.content)
             # print([subset_agent.attrib for subset_agent in root.iter('SubsetAgent')])
 
             if verbose is True:
@@ -366,7 +375,7 @@ class Granules:
             request.raise_for_status()
             esir_root = ET.fromstring(request.content)
             if verbose is True:
-                print("Order request URL: ", requests.utils.unquote(request.url))
+                print("Order request URL: ", unquote(request.url))
                 print(
                     "Order request response XML content: ",
                     request.content.decode("utf-8"),
@@ -382,12 +391,12 @@ class Granules:
             print("order ID: ", orderID)
 
             # Create status URL
-            statusURL = base_url + "/" + orderID
+            statusURL = f"{ORDER_BASE_URL}/{orderID}"
             if verbose is True:
                 print("status URL: ", statusURL)
 
             # Find order status
-            request_response = session.get(statusURL)
+            request_response = self.session.get(statusURL)
             if verbose is True:
                 print(
                     "HTTP response from order response URL: ",
@@ -403,6 +412,12 @@ class Granules:
             status = statuslist[0]
             print("Initial status of your order request at NSIDC is: ", status)
 
+            loop_root = None
+            # If status is already finished without going into pending/processing
+            if status.startswith("complete"):
+                loop_response = self.session.get(statusURL)
+                loop_root = ET.fromstring(loop_response.content)
+
             # Continue loop while request is still processing
             while status == "pending" or status == "processing":
                 print(
@@ -412,7 +427,7 @@ class Granules:
                 )
                 # print('Status is not complete. Trying again')
                 time.sleep(10)
-                loop_response = session.get(statusURL)
+                loop_response = self.session.get(statusURL)
 
                 # Raise bad request: Loop will stop for bad response code.
                 loop_response.raise_for_status()
@@ -426,6 +441,12 @@ class Granules:
                 # print('Retry request status is: ', status)
                 if status == "pending" or status == "processing":
                     continue
+
+            if not isinstance(loop_root, ET.Element):
+                # The typechecker needs help knowing that at this point loop_root is
+                # set, as it can't tell that the conditionals above are supposed to be
+                # exhaustive.
+                raise icepyx.core.exceptions.ExhaustiveTypeGuardException
 
             # Order can either complete, complete_with_errors, or fail:
             # Provide complete_with_errors error message:
@@ -452,10 +473,10 @@ class Granules:
             else:
                 print("Request failed.")
 
-            # DevGoal: save orderIDs more frequently than just at the end for large orders (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
+            # DevGoal: save orderIDs more frequently than just at the end for large orders
+            # (e.g. for len(reqparams['page_num']) > 5 or 10 or something)
             # Save orderIDs to file to avoid resubmitting order in case kernel breaks down.
             # save orderIDs for every 5 orders when more than 10 orders are submitted.
-            # DevNote: These numbers are hard coded for now. Consider to allow user to set them in future?
             if reqparams["page_num"] >= 10:
                 with open(order_fn, "w") as fid:
                     json.dump({"orderIDs": self.orderIDs}, fid)
@@ -466,7 +487,7 @@ class Granules:
 
         return self.orderIDs
 
-    def download(self, verbose, path, session=None, restart=False):
+    def download(self, verbose, path, restart=False):
         """
         Downloads the data for the object's orderIDs, which are generated by ordering data
         from the NSIDC.
@@ -478,13 +499,10 @@ class Granules:
             Progress information is automatically printed regardless of the value of verbose.
         path : string
             String with complete path to desired download directory and location.
-        session : requests.session object
-            A session object authenticating the user to download data using their Earthdata login information.
-            The session object will automatically be passed from the query object if you
-            have successfully logged in there.
         restart : boolean, default False
-            Restart your download if it has been interrupted. If the kernel has been restarted, but you successfully
-            completed your order, you will need to re-initialize your query class object and log in to Earthdata
+            Restart your download if it has been interrupted.
+            If the kernel has been restarted, but you successfully
+            completed your order, you will need to re-initialize your query class object
             and can then skip immediately to the download_granules method with restart=True.
 
         Notes
@@ -501,14 +519,8 @@ class Granules:
             Unzip the downloaded granules.
         """
 
-        # Note: need to test these checks still
-        if session is None:
-            raise ValueError(
-                "Don't forget to log in to Earthdata using query.earthdata_login()"
-            )
-            # DevGoal: make this a more robust check for an active session
-
-        # DevNote: this will replace any existing orderIDs with the saved list (could create confusion depending on whether download was interrupted or kernel restarted)
+        # DevNote: this will replace any existing orderIDs with the saved list
+        # (could create confusion depending on whether download was interrupted or kernel restarted)
         order_fn = ".order_restart"
         if os.path.exists(order_fn):
             with open(order_fn, "r") as fid:
@@ -520,7 +532,8 @@ class Granules:
                 "Please confirm that you have submitted a valid order and it has successfully completed."
             )
 
-        # DevNote: Temporary. Hard code the orderID info files here. order_fn should be consistent with place_order.
+        # DevNote: Temporary. Hard code the orderID info files here.
+        # order_fn should be consistent with place_order.
 
         downid_fn = ".download_ID"
 
@@ -535,7 +548,7 @@ class Granules:
                 i_order = self.orderIDs.index(order_start) + 1
 
         for order in self.orderIDs[i_order:]:
-            downloadURL = "https://n5eil02u.ecs.nsidc.org/esir/" + order + ".zip"
+            downloadURL = f"{DOWNLOAD_BASE_URL}/{order}.zip"
             # DevGoal: get the download_url from the granules
 
             if verbose is True:
@@ -543,7 +556,7 @@ class Granules:
             print("Beginning download of zipped output...")
 
             try:
-                zip_response = session.get(downloadURL)
+                zip_response = self.session.get(downloadURL)
                 # Raise bad request: Loop will stop for bad response code.
                 zip_response.raise_for_status()
                 print(
@@ -557,7 +570,8 @@ class Granules:
                 print(
                     "Unable to download ", order, ". Check granule order for messages."
                 )
-            # DevGoal: move this option back out to the is2class level and implement it in an alternate way?
+            # DevGoal: move this option back out to the is2class level
+            # and implement it in an alternate way?
             #         #Note: extract the data to save it locally
             else:
                 with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:

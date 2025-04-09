@@ -1,6 +1,8 @@
 import os
-import pytest
 from unittest import mock
+
+import pytest
+
 
 # PURPOSE: mock environmental variables
 @pytest.fixture(scope="session", autouse=True)

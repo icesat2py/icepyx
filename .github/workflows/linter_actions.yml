@@ -1,0 +1,17 @@
+name: Run linters on PRs
+
+on:
+  pull_request:
+    branches:
+      - development
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Use the Ruff linter to annotate code style / best-practice issues
+      # NOTE: More config provided in pyproject.toml
+      - name: Lint and annotate PR
+        uses: astral-sh/ruff-action@v3

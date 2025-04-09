@@ -711,11 +711,11 @@ class Read:
         Xarray dataset with the specified group.
 
         """
-
+        print('using h5coro to read into xarray...')
         return xr.open_dataset(
             file,
             group=grp_path,
-            engine="h5netcdf",
+            engine="h5coro",
             backend_kwargs={"phony_dims": "access"},
         )
 
@@ -785,7 +785,7 @@ class Read:
             )
 
             while wanted_groups_list:
-                # print(wanted_groups_list)
+                print(wanted_groups_list)
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
                 ds = self._read_single_grp(file, grp_path)

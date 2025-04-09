@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-import sys
-sys.path.append("/home/jovyan/")
-
-from icepyx_personal.icepyx.core.query import Query, GenQuery
-from icepyx_personal.icepyx.core.read import Read
-from icepyx_personal.icepyx.quest.quest import Quest
-=======
 from warnings import warn
 
 deprecation_msg = """icepyx v1.x is being deprecated; the back-end systems on which it relies
@@ -18,8 +10,6 @@ information!
 # code changes warning filters. If this is done after the imports, the warning won't
 # work.
 warn(deprecation_msg, FutureWarning, stacklevel=2)
-
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
 
 from _icepyx_version import version as __version__
 

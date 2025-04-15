@@ -27,8 +27,6 @@ class DataOrder:
         Resumes the order if it has been paused due to exceeding granule limits.
     pause()
         Pauses the order.
-    cancel()
-        Cancels the order.
     status()
         Retrieves the status of the order.
     download_granules(path, overwrite=False)

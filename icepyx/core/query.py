@@ -390,7 +390,7 @@ class Query(BaseQuery):
                     links.append(link["href"])
         return links
 
-    def _order_whole_granules(self, cloud_hosted=False, path="./") -> list[str]:
+    def _order_whole_granules(self, cloud_hosted=False) -> list[str]:
         """
         Downloads the whole granules for the query object. This is not an asnc operation
         and will block until the download is complete.
@@ -406,8 +406,7 @@ class Query(BaseQuery):
         """
 
         links = self.get_granule_links(cloud_hosted=cloud_hosted)
-        files = earthaccess.download(links, local_path=path)
-        return files
+        return links
 
     def skip_preview(self):
         """
@@ -461,7 +460,7 @@ class Query(BaseQuery):
             )
             return self.last_order
         else:
-            files = self._order_whole_granules(path=path)
+            files = self._order_whole_granules()
             self.last_order = DataOrder(None, "whole", files, self.harmony_api)
             return self.last_order
 

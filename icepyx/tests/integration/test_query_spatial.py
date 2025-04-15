@@ -98,7 +98,7 @@ def test_spatial_and_temporal_subset(tmp_path, spatial_extent):
 
     # Ensure that the result is readable by the `Read` class
     reader = ipx.Read(tmp_path)
-    reader.vars.append(
+    reader.variables.append(
         beam_list=["gt1l", "gt3r"], var_list=["h_li", "latitude", "longitude"]
     )
 

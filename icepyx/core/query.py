@@ -41,14 +41,8 @@ class Query(BaseQuery):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Ensure that the `_temporal` attr is set. This simplifies checking if
-        # temporal parameters has been passed. Instead of using `hasattr`, we
-        # can just check for `None`.
         if not hasattr(self, "_temporal"):
             self._temporal = None  # type: ignore[reportIncompatibleVariableOverride]
-
-        logging.basicConfig(level=logging.WARNING)
-
         cycles = kwargs.get("cycles")
         tracks = kwargs.get("tracks")
         if cycles or tracks:
@@ -60,85 +54,12 @@ class Query(BaseQuery):
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
-    # Properties
-
-    def __str__(self):
-        str = "Product {2} v{3}\n{0}\nDate range {1}".format(
-            self.spatial_extent, self.dates, self.product, self.product_version
-        )
-        return str
-
-    @property
-    def product(self):
-        """
-        Return the short name product ID string associated with the query object.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.product
-        'ATL06'
-        """
-        return self._prod
-
-    @property
-    def product_version(self):
-        """
-        Return the product version of the data object.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.product_version
-        '006'
-
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='4')
-        >>> reg_a.product_version
-        '004'
-        """
-        return self._version
-
-    @property
-    def cycles(self):
-        """
-        Return the unique ICESat-2 orbital cycle.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.cycles
-        ['No orbital parameters set']
-
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71], cycles=['03','04'], tracks=['0849','0902'])
-        >>> reg_a.cycles
-        ['03', '04']
-        """
-        if not hasattr(self, "_cycles"):
-            return ["No orbital parameters set"]
-        else:
-            return sorted(set(self._cycles))
-
-    @property
-    def tracks(self):
-        """
-        Return the unique ICESat-2 Reference Ground Tracks
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.tracks
-        ['No orbital parameters set']
-
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71], cycles=['03','04'], tracks=['0849','0902'])
-        >>> reg_a.tracks
-        ['0849', '0902']
-        """
-        if not hasattr(self, "_tracks"):
-            return ["No orbital parameters set"]
-        else:
-            return sorted(set(self._tracks))
+        logging.basicConfig(level=logging.WARNING)
 
     def _get_concept_id(self, product, version) -> Union[str, None]:
+        """
+        Get the concept ID for the specified product and version. Note that we are forcing CMR to use the cloud copy.
+        """
         collections = earthaccess.search_datasets(
             short_name=product, version=version, cloud_hosted=True
         )

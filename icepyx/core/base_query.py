@@ -474,6 +474,46 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
         """
         return self._version
 
+    @property
+    def cycles(self):
+        """
+        Return the unique ICESat-2 orbital cycle.
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.cycles
+        ['No orbital parameters set']
+
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71], cycles=['03','04'], tracks=['0849','0902'])
+        >>> reg_a.cycles
+        ['03', '04']
+        """
+        if not hasattr(self, "_cycles"):
+            return ["No orbital parameters set"]
+        else:
+            return sorted(set(self._cycles))
+
+    @property
+    def tracks(self):
+        """
+        Return the unique ICESat-2 Reference Ground Tracks
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.tracks
+        ['No orbital parameters set']
+
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71], cycles=['03','04'], tracks=['0849','0902'])
+        >>> reg_a.tracks
+        ['0849', '0902']
+        """
+        if not hasattr(self, "_tracks"):
+            return ["No orbital parameters set"]
+        else:
+            return sorted(set(self._tracks))
+
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the product level
 

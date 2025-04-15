@@ -492,8 +492,11 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
         ['03', '04']
         """
         if not hasattr(self, "_cycles"):
-            return ["No orbital parameters set"]
+            return ["No orbital[cycle] parameters set"]
         else:
+            if self._cycles is None:
+                return ["No orbital[cycle] parameters set"]
+
             return sorted(set(self._cycles))
 
     @property
@@ -512,8 +515,10 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
         ['0849', '0902']
         """
         if not hasattr(self, "_tracks"):
-            return ["No orbital parameters set"]
+            return ["No orbital[tracks] parameters set"]
         else:
+            if self._tracks is None:
+                return ["No orbital[tracks] parameters set"]
             return sorted(set(self._tracks))
 
     # ----------------------------------------------------------------------

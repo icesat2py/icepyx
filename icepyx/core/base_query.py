@@ -413,6 +413,8 @@ class BaseQuery(GenQuery, EarthdataAuthMixin):
         super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
         self._version = val.prod_version(is2ref.latest_version(self._prod), version)
+        self._cycles = cycles
+        self._tracks = tracks
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)

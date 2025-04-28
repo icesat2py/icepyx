@@ -628,7 +628,11 @@ class Read(EarthdataAuthMixin):
                 # If path is an s3 path create an s3fs filesystem to reference the file
                 # TODO would it be better to be able to generate an s3fs session from the Mixin?
                 s3 = earthaccess.get_s3fs_session(daac="NSIDC")
-                file = s3.open(file, "rb")
+                fsspec_params = {
+                    "cache_type": "blockcache", 
+                    "block_size": 8*1024*1024
+                }
+                file = s3.open(file, "rb", **fsspec_params)
 
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)

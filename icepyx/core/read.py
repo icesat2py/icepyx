@@ -629,8 +629,8 @@ class Read(EarthdataAuthMixin):
                 # TODO would it be better to be able to generate an s3fs session from the Mixin?
                 s3 = earthaccess.get_s3fs_session(daac="NSIDC")
                 fsspec_params = {
-                    "cache_type": "blockcache", 
-                    "block_size": 8*1024*1024
+                    "cache_type": "blockcache",
+                    "block_size": 8 * 1024 * 1024,
                 }
                 file = s3.open(file, "rb", **fsspec_params)
 

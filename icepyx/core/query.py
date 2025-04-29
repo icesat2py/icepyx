@@ -697,7 +697,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
         if not hasattr(self, "_about_product"):
             self._about_product = is2ref.about_product(self._prod)
-        pprint.pprint(self._about_product)
+        pprint(self._about_product)
 
     def latest_version(self):
         """

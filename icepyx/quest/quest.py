@@ -1,5 +1,4 @@
-from icepyx.core.base_query import GenQuery
-from icepyx.core.query import Query
+from icepyx.core.query import GenQuery, Query
 from icepyx.quest.dataset_scripts.argo import Argo
 
 

@@ -38,7 +38,7 @@ def test_harmony_custom_options_output(reg):
 @pytest.mark.downloads_data
 def test_download_granules_with_subsetting(reg):
     path = "./downloads_subset"
-    reg.order_granules(path)
+    reg.order_granules(subset=True)
     files = reg.download_granules(path)
     assert isinstance(files, list)
     assert len(files) == 3
@@ -52,7 +52,7 @@ def test_download_granules_without_subsetting(reg):
     """
     path = "./downloads"
 
-    order = reg.order_granules(subset=False, path=path)
+    order = reg.order_granules(subset=False)
     assert isinstance(order, DataOrder)
     status = order.status()
     assert isinstance(status, dict)

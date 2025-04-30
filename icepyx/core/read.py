@@ -653,7 +653,7 @@ class Read(EarthdataAuthMixin):
         Xarray dataset with the specified group.
 
         """
-        print('using h5coro to read into xarray...')
+        print("using h5coro to read into xarray...")
         return xr.open_dataset(
             file,
             group=grp_path,

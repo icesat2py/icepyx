@@ -1,5 +1,4 @@
 import pytest
-import re
 
 import icepyx as ipx
 from icepyx.quest.quest import Quest
@@ -14,6 +13,7 @@ def quest_instance(scope="module", autouse=True):
 
 
 ########## PER-DATASET ADDITION TESTS ##########
+
 
 # Paramaterize these add_dataset tests once more datasets are added
 def test_add_is2(quest_instance):
@@ -67,6 +67,7 @@ def test_add_is2(quest_instance):
 #     # my_quest.download_all()
 
 ########## ALL DATASET METHODS TESTS ##########
+
 
 # is successful execution enough here?
 # each of the query functions should be tested in their respective modules

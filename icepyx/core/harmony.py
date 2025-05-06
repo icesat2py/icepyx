@@ -5,7 +5,7 @@ from pathlib import Path
 import time
 from typing import Any, Dict, TypedDict, Union
 
-from _icepyx_version import version as ipx_version
+from _icepyx_version import version as _ipx_version
 import harmony
 import requests
 

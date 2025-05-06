@@ -90,7 +90,7 @@ class DataOrder:
     def __repr__(self) -> str:
         return self.__str__()
 
-    def id(self) -> str:
+    def job_id(self) -> str:
         """
         Get the job ID of the order.
 

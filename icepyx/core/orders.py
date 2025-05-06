@@ -19,20 +19,6 @@ class DataOrder:
     harmony_client : object
         The Harmony API client used for interacting with the service.
 
-    Methods
-    -------
-    id()
-        Returns the job ID of the order.
-    resume()
-        Resumes the order if it has been paused due to exceeding granule limits.
-    pause()
-        Pauses the order.
-    status()
-        Retrieves the status of the order.
-    download_granules(path, overwrite=False)
-        Downloads the granules associated with the order.
-    download(path, overwrite=False)
-        Downloads the granules, waiting until they are ready if necessary.
     """
 
     HARMONY_BASE_URL = "https://harmony.earthdata.nasa.gov/workflow-ui/"

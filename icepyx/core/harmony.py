@@ -48,7 +48,7 @@ class HarmonyApi(EarthdataAuthMixin):
 
     def __init__(self):
         # initialize authentication properties
-        self.ipx_version = ipx_version
+        self._ipx_version = _ipx_version
         EarthdataAuthMixin.__init__(self)
         self.harmony_client = harmony.Client(
             auth=(

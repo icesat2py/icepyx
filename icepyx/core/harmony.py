@@ -220,7 +220,7 @@ class HarmonyApi(EarthdataAuthMixin):
         """
         status = self.check_order_status(job_id)
         if status["status"] == "paused" or status["status"] == "previewing":
-            # we cannot skip after the facvt but pausing and resuming the order does the trick
+            # we cannot skip after the fact but pausing and resuming the order does the trick
             self.pause_order(job_id)
             self.resume_order(job_id)
             return self.check_order_status(job_id)

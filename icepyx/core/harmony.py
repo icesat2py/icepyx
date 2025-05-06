@@ -135,7 +135,7 @@ class HarmonyApi(EarthdataAuthMixin):
 
         job_id = self.harmony_client.submit(request)
         label_req = harmony.AddLabelsRequest(
-            labels=["icepyx", f"icepyx-{self.ipx_version}"], job_ids=[job_id]
+            labels=["icepyx", f"icepyx-{self._ipx_version}"], job_ids=[job_id]
         )
         self.harmony_client.submit(label_req)
         return job_id

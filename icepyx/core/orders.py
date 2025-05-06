@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
 import earthaccess
 
@@ -23,7 +23,9 @@ class DataOrder:
 
     HARMONY_BASE_URL = "https://harmony.earthdata.nasa.gov/workflow-ui/"
 
-    def __init__(self, job_id, type, granules, harmony_client):
+    def __init__(
+        self, job_id: str, type: str, granules: List[Any], harmony_client: Any
+    ):
         """
         Initialize a DataOrder object.
 
@@ -38,13 +40,13 @@ class DataOrder:
         harmony_client : object
             The Harmony API client.
         """
-        self.job_id = job_id
+        self._job_id = job_id
         self.harmony_api = harmony_client
         self.granules = granules
         self.type = type
 
     def __str__(self) -> str:
-        return f"DataOrder(job_id={self.job_id}, type={self.type}, granules={self.granules})"
+        return f"DataOrder(job_id={self._job_id}, type={self.type}, granules={self.granules})"
 
     def _repr_html_(self) -> str:
         # Create a link using the <a> tag
@@ -63,7 +65,7 @@ class DataOrder:
             </thead>
             <tbody>
                 <tr>
-                    <td>{self.job_id}</td>
+                    <td>{self._job_id}</td>
                     <td>{self.type}</td>
                     <td>{status["status"]}</td>
                     <td>{link_html}</td>
@@ -85,7 +87,7 @@ class DataOrder:
         str
             The Harmony job ID.
         """
-        return self.job_id
+        return self._job_id
 
     def resume(self) -> Union[Dict[str, Any], None]:
         """
@@ -97,7 +99,7 @@ class DataOrder:
             The response from the Harmony API if the order is resumed, otherwise None.
         """
         if self.type == "subset":
-            return self.harmony_api.resume_order(self.job_id)
+            return self.harmony_api.resume_order(self._job_id)
         return None
 
     def skip_preview(self) -> Union[Dict[str, Any], None]:
@@ -110,7 +112,7 @@ class DataOrder:
             The response from the Harmony API if the order is resumed, otherwise None.
         """
         if self.type == "subset":
-            return self.harmony_api.skip_preview(self.job_id)
+            return self.harmony_api.skip_preview(self._job_id)
         return None
 
     def pause(self) -> Union[Dict[str, Any], None]:
@@ -123,7 +125,7 @@ class DataOrder:
             The response from the Harmony API if the order is paused, otherwise None.
         """
         if self.type == "subset":
-            return self.harmony_api.pause_order(self.job_id)
+            return self.harmony_api.pause_order(self._job_id)
         return None
 
     def status(self) -> Dict[str, Any]:
@@ -136,10 +138,10 @@ class DataOrder:
             A dictionary containing the order status and related metadata.
         """
         if self.type == "subset":
-            status = self.harmony_api.check_order_status(self.job_id)
+            status = self.harmony_api.check_order_status(self._job_id)
             # so users don't accidentally order again
             status.pop("request")
-            status["order_url"] = self.HARMONY_BASE_URL + str(self.job_id)
+            status["order_url"] = self.HARMONY_BASE_URL + str(self._job_id)
             return status
         return {"status": "complete"}
 

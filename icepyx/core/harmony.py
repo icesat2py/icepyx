@@ -34,16 +34,6 @@ class HarmonyApi(EarthdataAuthMixin):
     job_ids : list of str
         List of job IDs that have been placed with the Harmony API.
 
-    Methods
-    -------
-    get_capabilities(concept_id)
-        Retrieves the capabilities of a given dataset.
-    check_order_status(job_id)
-        Checks the status of a submitted Harmony job.
-    place_order(...)
-        Submits an order to Harmony and waits for completion.
-    download_granules(download_dir, overwrite)
-        Downloads all granules associated with past orders.
     """
 
     def __init__(self):

@@ -8,10 +8,6 @@ from typing_extensions import Never
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
 import icepyx.core.granules as granules
-<<<<<<< HEAD
-# QUESTION: why doesn't from granules import Granules work, since granules=icepyx.core.granules?
-=======
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
 from icepyx.core.granules import Granules
 import icepyx.core.is2ref as is2ref
 import icepyx.core.spatial as spat
@@ -162,11 +158,7 @@ class GenQuery:
     # Properties
 
     @property
-<<<<<<< HEAD
-    def temporal(self):
-=======
     def temporal(self) -> Union[tp.Temporal, list[str]]:
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
         """
         Return the Temporal object containing date/time range information for the query object.
 
@@ -226,12 +218,8 @@ class GenQuery:
         Return an array showing the spatial extent of the query object.
         Spatial extent is returned as an input type (which depends on how
         you initially entered your spatial data) followed by the geometry data.
-<<<<<<< HEAD
-        Bounding box data is [lower-left-longitude, lower-left-latitute, upper-right-longitude, upper-right-latitude].
-=======
         Bounding box data is [lower-left-longitude, lower-left-latitute,
                             ... upper-right-longitude, upper-right-latitude].
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
         Polygon data is [longitude1, latitude1, longitude2, latitude2,
                         ... longitude_n,latitude_n, longitude1,latitude1].
 
@@ -267,18 +255,11 @@ class GenQuery:
         return (self._spatial._ext_type, self._spatial._spatial_ext)
 
     @property
-<<<<<<< HEAD
-    def dates(self):
-        """
-        Return an array showing the date range of the query object.
-        Dates are returned as an array containing the start and end datetime objects, inclusive, in that order.
-=======
     def dates(self) -> list[str]:
         """
         Return an array showing the date range of the query object.
         Dates are returned as an array containing the start and end datetime
         objects, inclusive, in that order.
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
 
         Examples
         --------
@@ -299,11 +280,7 @@ class GenQuery:
             ]  # could also use self._start.date()
 
     @property
-<<<<<<< HEAD
-    def start_time(self):
-=======
     def start_time(self) -> Union[list[str], str]:
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
         """
         Return the start time specified for the start date.
 
@@ -327,11 +304,7 @@ class GenQuery:
             return self._temporal._start.strftime("%H:%M:%S")
 
     @property
-<<<<<<< HEAD
-    def end_time(self):
-=======
     def end_time(self) -> Union[list[str], str]:
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
         """
         Return the end time specified for the end date.
 

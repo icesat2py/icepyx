@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-import matplotlib.pyplot as plt
-
-from icepyx.core.query import GenQuery, Query
-
-# from icepyx.quest.dataset_scripts.argo import Argo
-=======
 from icepyx.core.query import GenQuery, Query
 from icepyx.quest.dataset_scripts.argo import Argo
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
 
 
 class Quest(GenQuery):
@@ -67,10 +59,7 @@ class Quest(GenQuery):
         """
         Tells QUEST to initialize data given the user input spatiotemporal data.
         """
-<<<<<<< HEAD
-=======
 
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
         super().__init__(spatial_extent, date_range, start_time, end_time)
         self.datasets = {}
 
@@ -93,11 +82,7 @@ class Quest(GenQuery):
 
     def add_icesat2(
         self,
-<<<<<<< HEAD
-        product=None,
-=======
         product,
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
         start_time=None,
         end_time=None,
         version=None,
@@ -105,11 +90,6 @@ class Quest(GenQuery):
         tracks=None,
         files=None,
         **kwargs,
-<<<<<<< HEAD
-    ):
-        """
-        Adds ICESat-2 datasets to QUEST structure.
-=======
     ) -> None:
         """
         Adds ICESat-2 datasets to QUEST structure.
@@ -126,7 +106,6 @@ class Quest(GenQuery):
         --------
         icepyx.core.GenQuery
         icepyx.core.Query
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
         """
 
         query = Query(
@@ -144,12 +123,6 @@ class Quest(GenQuery):
 
         self.datasets["icesat2"] = query
 
-<<<<<<< HEAD
-    # def add_argo(self, params=["temperature"], presRange=None):
-
-    #     argo = Argo(self._spatial, self._temporal, params, presRange)
-    #     self.datasets["argo"] = argo
-=======
     def add_argo(self, params=["temperature"], presRange=None) -> None:
         """
         Adds Argo (including Argo-BGC) to QUEST structure.
@@ -176,51 +149,10 @@ class Quest(GenQuery):
 
         argo = Argo(self._spatial, self._temporal, params, presRange)
         self.datasets["argo"] = argo
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1
 
     # ----------------------------------------------------------------------
     # Methods (on all datasets)
 
-<<<<<<< HEAD
-    # error handling? what happens when one of i fails...
-    def search_all(self):
-        """
-        Searches for requred dataset within platform (i.e. ICESat-2, Argo) of interest.
-        """
-        print("\nSearching all datasets...")
-
-        for i in self.datasets.values():
-            print()
-            try:
-                # querying ICESat-2 data
-                if isinstance(i, Query):
-                    print("---ICESat-2---")
-                    msg = i.avail_granules()
-                    print(msg)
-                else: # querying all other data sets
-                    print(i)
-                    i.search_data()
-            except:
-                dataset_name = type(i).__name__
-                print("Error querying data from {0}".format(dataset_name))
-
-    # error handling? what happens when one of i fails...
-    def download_all(self, path=""):
-        ' ' 'Downloads requested dataset(s).' ' '
-        print("\nDownloading all datasets...")
-
-        for i in self.datasets.values():
-            print()
-            if isinstance(i, Query):
-                print("---ICESat-2---")
-                msg = i.download_granules(path)
-                print(msg)
-            else:
-                i.download()
-                print(i)
-
-    # DEVNOTE: see colocated data branch and phyto team files for code that expands quest functionality
-=======
     # error handling? what happens when the user tries to re-query?
     def search_all(self, **kwargs):
         """
@@ -314,4 +246,3 @@ class Quest(GenQuery):
             else:
                 print("Saving " + k)
                 v.save(path)
->>>>>>> 386d73f69512d13ebb92ef32bb9e83006ada29f1

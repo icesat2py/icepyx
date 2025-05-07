@@ -1,10 +1,9 @@
 import glob
 import os
 import sys
-import warnings
 import time  # TODO Remove this at end
+import warnings
 
-import earthaccess
 import numpy as np
 import xarray as xr
 
@@ -773,9 +772,16 @@ class Read(EarthdataAuthMixin):
             while wanted_groups_list:
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
-                print('Starting group', grp_path, time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+                print(
+                    "Starting group",
+                    grp_path,
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),
+                )
                 ds = self._read_single_grp(file, grp_path)
-                print('Finished group', time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+                print(
+                    "Finished group",
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),
+                )
                 is2ds, ds = Read._add_vars_to_ds(
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )

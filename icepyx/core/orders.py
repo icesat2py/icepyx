@@ -3,6 +3,8 @@ from typing import Any, Dict, List, Union
 
 import earthaccess
 
+from icepyx.core.granules import Granules
+
 
 class DataOrder:
     """
@@ -24,7 +26,11 @@ class DataOrder:
     HARMONY_BASE_URL = "https://harmony.earthdata.nasa.gov/workflow-ui/"
 
     def __init__(
-        self, job_id: str, type: str, granules: List[Any], harmony_client: Any
+        self,
+        job_id: str,
+        type: str,
+        granules: Union[List[Any], Granules],
+        harmony_client: Any,
     ):
         """
         Initialize a DataOrder object.
@@ -186,4 +192,7 @@ class DataOrder:
                 download_dir=str(path), overwrite=overwrite
             )
         else:
-            return earthaccess.download(self.granules, local_path=path)
+            if self.granules is None:
+                raise ValueError("No granules to download.")
+            if not isinstance(self.granules, Granules):
+                return earthaccess.download(self.granules, local_path=path)

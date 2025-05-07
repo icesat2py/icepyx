@@ -998,7 +998,7 @@ class Query(GenQuery, EarthdataAuthMixin):
             return self.last_order
         else:
             files = self._order_whole_granules()
-            self.last_order = DataOrder(None, "whole", files, self.harmony_api)
+            self.last_order = DataOrder("nosubset", "whole", files, self.harmony_api)
             return self.last_order
 
     def download_granules(

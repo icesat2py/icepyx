@@ -1,9 +1,9 @@
 import glob
 import os
 import sys
+import time  # TODO Remove this at end
 import warnings
 
-import earthaccess
 import numpy as np
 import xarray as xr
 
@@ -590,8 +590,9 @@ class Read(EarthdataAuthMixin):
             if file.startswith("s3"):
                 # If path is an s3 path create an s3fs filesystem to reference the file
                 # TODO would it be better to be able to generate an s3fs session from the Mixin?
-                s3 = earthaccess.get_s3fs_session(daac="NSIDC")
-                file = s3.open(file, "rb")
+                # s3 = earthaccess.get_s3fs_session(daac="NSIDC")
+                # file = s3.open(file, "rb")
+                file = file[5:]  # Remove s3:// from filepath (h5coro's needed input)
 
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
@@ -653,12 +654,13 @@ class Read(EarthdataAuthMixin):
         Xarray dataset with the specified group.
 
         """
-
+        print("using h5coro to read into xarray...")
         return xr.open_dataset(
             file,
             group=grp_path,
-            engine="h5netcdf",
-            backend_kwargs={"phony_dims": "access"},
+            engine="h5coro",
+            credentials=self.s3login_credentials,
+            # backend_kwargs={"phony_dims": "access"},
         )
 
     def _build_single_file_dataset(self, file, groups_list):
@@ -739,7 +741,7 @@ class Read(EarthdataAuthMixin):
             wanted_groups_list = ["ancillary_data"] + sorted(wanted_groups_set)
 
             while wanted_groups_list:
-                # print(wanted_groups_list)
+                print(wanted_groups_list)
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
                 ds = self._read_single_grp(file, grp_path)
@@ -770,7 +772,16 @@ class Read(EarthdataAuthMixin):
             while wanted_groups_list:
                 grp_path = wanted_groups_list[0]
                 wanted_groups_list = wanted_groups_list[1:]
+                print(
+                    "Starting group",
+                    grp_path,
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),
+                )
                 ds = self._read_single_grp(file, grp_path)
+                print(
+                    "Finished group",
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),
+                )
                 is2ds, ds = Read._add_vars_to_ds(
                     is2ds, ds, grp_path, wanted_groups_tiered, wanted_dict
                 )

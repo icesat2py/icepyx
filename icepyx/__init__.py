@@ -11,7 +11,6 @@ information!
 # work.
 warn(deprecation_msg, FutureWarning, stacklevel=2)
 
-
 from _icepyx_version import version as __version__
 
 from icepyx.core.query import GenQuery, Query

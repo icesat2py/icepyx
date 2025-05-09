@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosectionlabel",
+    "sphinx.ext.intersphinx",
     "numpydoc",
     # "sphinx.ext.autosummary",
     "myst_nb",
@@ -107,6 +108,10 @@ always_use_bars_union = True
 typehints_defaults = "comma"
 typehints_use_return = True
 
+# Options for intersphinx.
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+}
 
 # -- Options for HTML output -------------------------------------------------
 

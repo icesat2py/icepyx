@@ -163,7 +163,7 @@ class Visualize:
                 latmin,
                 lonmax,
                 latmax,
-            ) = query_obj.spatial.extent_as_gdf.geometry.unary_union.bounds
+            ) = query_obj.spatial.extent_as_gdf.geometry.union_all().bounds
 
             self.bbox = [lonmin, latmin, lonmax, latmax]
 

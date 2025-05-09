@@ -33,7 +33,7 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
 
     Returns
     -------
-    gdf : GeoDataFrame
+    gdf : geopandas.GeoDataFrame
         Returns a GeoPandas GeoDataFrame containing the spatial extent.
         The GeoDataFrame will have only one entry unless a geospatial file
         was submitted.
@@ -537,7 +537,7 @@ class Spatial:
 
         Returns
         -------
-        extent_gdf : GeoDataframe
+        extent_gdf : geopandas.GeoDataFrame
             A GeoDataframe containing the spatial region of interest.
         """
 

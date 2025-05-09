@@ -110,6 +110,7 @@ typehints_use_return = True
 
 # Options for intersphinx.
 intersphinx_mapping = {
+    "geopandas": ("https://geopandas.org/en/stable/", None),
     "python": ("https://docs.python.org/3/", None),
 }
 

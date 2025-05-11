@@ -47,9 +47,9 @@ def earthdata_login(uid=None, pwd=None) -> bool:
 
     Parameters
     ----------
-    uid : string, default None
+    uid : str, default None
         Earthdata login user ID
-    pwd : string, default None
+    pwd : str, default None
         Earthdata login password
 
     Returns

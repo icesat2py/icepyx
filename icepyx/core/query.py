@@ -82,7 +82,7 @@ class GenQuery:
         a default of 23:59:59 is applied.
         If a datetime.datetime object was created without times,
         the datetime package defaults will apply over those of icepyx
-    xdateline : boolean, default None
+    xdateline : bool, default None
         Keyword argument to enforce spatial inputs that cross the International Date Line.
         Internally, this will translate your longitudes to 0 to 360 to construct the
         correct, valid Shapely geometry.
@@ -346,17 +346,17 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     Parameters
     ----------
-    product : string
+    product : str
         ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
-    version : string, default most recent version
+    version : str, default most recent version
         Product version, given as a 3 digit string.
         If no version is given, the current version is used. Example: "006"
-    cycles : string or a list of strings, default all available orbital cycles
-        Product cycle, given as a 2 digit string.
+    cycles : str or list[str], default all available orbital cycles
+        Product cycle, given as a 2 digit string, or a list of 2-digit strings.
         If no cycle is given, all available cycles are used. Example: "04"
-    tracks : string or a list of strings, default all available reference ground tracks (RGTs)
-        Product track, given as a 4 digit string.
+    tracks : str or list[str], default all available reference ground tracks (RGTs)
+        Product track, given as a 4 digit string, or a list of 4-digit strings.
         If no track is given, all available reference ground tracks are used.
         Example: "0594"
     auth : earthaccess.auth.Auth, default None
@@ -787,16 +787,16 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         Parameters
         ----------
-        ids : boolean, default False
+        ids : bool, default False
             Indicates whether the function should return a list of granule IDs.
 
-        cycles : boolean, default False
+        cycles : bool, default False
             Indicates whether the function should return a list of orbital cycles.
 
-        tracks : boolean, default False
+        tracks : bool, default False
             Indicates whether the function should return a list of RGTs.
 
-        cloud : boolean, default False
+        cloud : bool, default False
             Indicates whether the function should return data available in the cloud.
             Note: except in rare cases while data is in the process of being appended to,
             data available in the cloud and for download via on-premesis will be identical.
@@ -964,7 +964,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         Parameters
         ----------
-        subset :
+        subset : bool, default True
             Apply subsetting to the data order using harmony, returning only data that meets the
             subset parameters. Spatial and temporal subsetting based on the input parameters happens
             by default when subset=True, but additional subsetting options are available.

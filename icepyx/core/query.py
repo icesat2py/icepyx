@@ -1,25 +1,29 @@
-import pprint
-from typing import Optional, Union, cast
+from functools import cached_property
+import json
+import logging
+from pathlib import Path
+from pprint import pprint
+import sys
+import time
+from typing import Any, Dict, Union
 
+from deprecated import deprecated
+import earthaccess
 import geopandas as gpd
+import harmony
 import matplotlib.pyplot as plt
-from typing_extensions import Never
 
 import icepyx.core.APIformatting as apifmt
 from icepyx.core.auth import EarthdataAuthMixin
-import icepyx.core.granules as granules
-from icepyx.core.granules import Granules
+from icepyx.core.granules import Granules, gran_IDs
+from icepyx.core.harmony import HarmonyApi, HarmonyTemporal
 import icepyx.core.is2ref as is2ref
+from icepyx.core.orders import DataOrder
 import icepyx.core.spatial as spat
 import icepyx.core.temporal as tp
-from icepyx.core.types import (
-    CMRParams,
-    EGIParamsSubset,
-    EGIRequiredParams,
-    EGIRequiredParamsDownload,
-)
+from icepyx.core.types import CMRParams
 import icepyx.core.validate_inputs as val
-from icepyx.core.variables import Variables as Variables
+from icepyx.core.variables import Variables
 from icepyx.core.visualization import Visualize
 
 
@@ -180,7 +184,7 @@ class GenQuery:
         ['No temporal parameters set']
         """
 
-        if hasattr(self, "_temporal"):
+        if hasattr(self, "_temporal") and self._temporal is not None:
             return self._temporal
         else:
             return ["No temporal parameters set"]
@@ -271,7 +275,7 @@ class GenQuery:
         >>> reg_a.dates
         ['No temporal parameters set']
         """
-        if not hasattr(self, "_temporal"):
+        if not hasattr(self, "_temporal") or self._temporal is None:
             return ["No temporal parameters set"]
         else:
             return [
@@ -298,7 +302,7 @@ class GenQuery:
         >>> reg_a.start_time
         ['No temporal parameters set']
         """
-        if not hasattr(self, "_temporal"):
+        if not hasattr(self, "_temporal") or self._temporal is None:
             return ["No temporal parameters set"]
         else:
             return self._temporal._start.strftime("%H:%M:%S")
@@ -322,14 +326,12 @@ class GenQuery:
         >>> reg_a.end_time
         ['No temporal parameters set']
         """
-        if not hasattr(self, "_temporal"):
+        if not hasattr(self, "_temporal") or self._temporal is None:
             return ["No temporal parameters set"]
         else:
             return self._temporal._end.strftime("%H:%M:%S")
 
 
-# DevGoal: update docs throughout to allow for polygon spatial extent
-# DevNote: currently this class is not tested
 class Query(GenQuery, EarthdataAuthMixin):
     """
     Query and get ICESat-2 data
@@ -402,9 +404,9 @@ class Query(GenQuery, EarthdataAuthMixin):
     GenQuery
     """
 
+    _temporal: Union[tp.Temporal, None]
     _CMRparams: apifmt.CMRParameters
-    _reqparams: apifmt.RequiredParameters
-    _subsetparams: Optional[apifmt.SubsetParameters]
+    REQUEST_RETRY_INTERVAL_SECONDS = 3
 
     # ----------------------------------------------------------------------
     # Constructors
@@ -422,44 +424,151 @@ class Query(GenQuery, EarthdataAuthMixin):
         auth=None,
         **kwargs,
     ):
-        # Check necessary combination of input has been specified
-        if (product is None or spatial_extent is None) or (
-            (date_range is None and cycles is None and tracks is None)
-            and int(product[-2:]) <= 13
-        ):
-            raise ValueError(
-                "Please provide the required inputs. Use help([function]) to view the function's documentation"
-            )
-
         self._prod = is2ref._validate_product(product)
 
         super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
         self._version = val.prod_version(is2ref.latest_version(self._prod), version)
+        self._cycles = cycles
+        self._tracks = tracks
 
-        # build list of available CMR parameters if reducing by cycle or RGT
-        # or a list of explicitly named files (full or partial names)
-        # DevGoal: add file name search to optional queries
+        # initialize authentication properties
+        EarthdataAuthMixin.__init__(self)
+
+        if not hasattr(self, "_temporal"):
+            self._temporal = None  # type: ignore[reportIncompatibleVariableOverride]
         if cycles or tracks:
             # get lists of available ICESat-2 cycles and tracks
-            self._cycles = val.cycles(cycles)
-            self._tracks = val.tracks(tracks)
             # create list of CMR parameters for granule name
             self._readable_granule_name = apifmt._fmt_readable_granules(
                 self._prod, cycles=self.cycles, tracks=self.tracks
             )
 
-        # initialize authentication properties
-        EarthdataAuthMixin.__init__(self)
+        logging.basicConfig(level=logging.WARNING)
 
     # ----------------------------------------------------------------------
     # Properties
 
-    def __str__(self):
-        str = "Product {2} v{3}\n{0}\nDate range {1}".format(
-            self.spatial_extent, self.dates, self.product, self.product_version
+    @property
+    @deprecated(
+        version="1.4.0", reason="order_vars() is going away, use variables() instead"
+    )
+    def order_vars(self) -> Union[Variables, None]:
+        """This used to print the list of vasriables for subsetting, Harmony doesn't provide that for IS2 datasets.
+        we do need to implement a class that gets the variables even if it'sm only for listing.
+        """
+        logging.warning(
+            "Deprecated: order_vars() is going away, use variables() instead"
         )
-        return str
+        if self.product:
+            self._variables = Variables(product=self.product)  # type: ignore[no-any-return]
+            return self._variables
+        return None
+
+    @property
+    def variables(self) -> Variables:
+        if not hasattr(self, "_variables"):
+            self._variables = Variables(product=self.product)
+        return self._variables
+
+    def show_custom_options(self) -> Dict[str, Any]:
+        """
+        Display customization/subsetting options available for this product.
+
+        """
+        capabilities: dict = {}
+        if not hasattr(self, "harmony_api"):
+            self.harmony_api = HarmonyApi()
+        if self.concept_id:
+            capabilities = self.harmony_api.get_capabilities(concept_id=self.concept_id)
+            print(json.dumps(capabilities, indent=2))
+        return capabilities
+
+    @property
+    def CMRparams(self) -> CMRParams:
+        """
+        Display the CMR key:value pairs that will be submitted.
+        It generates the dictionary if it does not already exist.
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
+        >>> reg_a.CMRparams
+        {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+        'bounding_box': '-55.0,68.0,-48.0,71.0'}
+        """
+
+        if not hasattr(self, "_CMRparams"):
+            self._CMRparams = apifmt.Parameters("CMR")
+
+        # dictionary of optional CMR parameters
+        kwargs = {}
+        kwargs["concept_id"] = self._get_concept_id(self.product, None)
+
+        # temporal CMR parameters
+        if hasattr(self, "_temporal") and self.product != "ATL11" and self._temporal:
+            kwargs["start"] = self._temporal._start
+            kwargs["end"] = self._temporal._end
+        # granule name CMR parameters (orbital or file name)
+        # DevGoal: add to file name search to optional queries
+        if hasattr(self, "_readable_granule_name"):
+            kwargs["options[readable_granule_name][pattern]"] = "true"
+            kwargs["options[spatial][or]"] = "true"
+            kwargs["readable_granule_name[]"] = self._readable_granule_name
+
+        if self._CMRparams.fmted_keys == {}:
+            self._CMRparams.build_params(
+                extent_type=self._spatial._ext_type,
+                spatial_extent=self._spatial.fmt_for_CMR(),
+                **kwargs,
+            )
+
+        return self._CMRparams.fmted_keys  # type: ignore[no-any-return]
+
+    @property
+    def granules(self):
+        """
+        Return the granules object, which provides the underlying functionality for searching, ordering,
+        and downloading granules for the specified product.
+        Users are encouraged to use the built-in wrappers
+        rather than trying to access the granules object themselves.
+
+        See Also
+        --------
+        avail_granules
+        order_granules
+        download_granules
+        granules.Granules
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.granules # doctest: +SKIP
+        <icepyx.core.granules.Granules at [location]>
+        """
+
+        if not hasattr(self, "_granules") or self._granules is None:
+            self._granules = Granules()
+
+        return self._granules
+
+    @cached_property
+    def concept_id(self) -> Union[str, None]:
+        if hasattr(self, "product"):
+            short_name = self.product
+        else:
+            raise ValueError("Product not defined")
+        if hasattr(self, "_version"):
+            version = self._version
+        else:
+            version = is2ref.latest_version(short_name)
+        collections = earthaccess.search_datasets(
+            short_name=short_name, version=version, cloud_hosted=True
+        )
+        if collections:
+            return collections[0].concept_id()
+        else:
+            return None
 
     @property
     def product(self):
@@ -507,8 +616,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         ['03', '04']
         """
         if not hasattr(self, "_cycles"):
-            return ["No orbital parameters set"]
+            return ["No orbital[cycle] parameters set"]
         else:
+            if self._cycles is None:
+                return ["No orbital[cycle] parameters set"]
+
             return sorted(set(self._cycles))
 
     @property
@@ -527,228 +639,19 @@ class Query(GenQuery, EarthdataAuthMixin):
         ['0849', '0902']
         """
         if not hasattr(self, "_tracks"):
-            return ["No orbital parameters set"]
+            return ["No orbital[tracks] parameters set"]
         else:
+            if self._tracks is None:
+                return ["No orbital[tracks] parameters set"]
             return sorted(set(self._tracks))
-
-    @property
-    def CMRparams(self) -> CMRParams:
-        """
-        Display the CMR key:value pairs that will be submitted.
-        It generates the dictionary if it does not already exist.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.CMRparams
-        {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
-        'bounding_box': '-55.0,68.0,-48.0,71.0'}
-        """
-
-        if not hasattr(self, "_CMRparams"):
-            self._CMRparams = apifmt.Parameters("CMR")
-        # print(self._CMRparams)
-        # print(self._CMRparams.fmted_keys)
-
-        # dictionary of optional CMR parameters
-        kwargs = {}
-        # temporal CMR parameters
-        if hasattr(self, "_temporal") and self.product != "ATL11":
-            kwargs["start"] = self._temporal._start
-            kwargs["end"] = self._temporal._end
-        # granule name CMR parameters (orbital or file name)
-        # DevGoal: add to file name search to optional queries
-        if hasattr(self, "_readable_granule_name"):
-            kwargs["options[readable_granule_name][pattern]"] = "true"
-            kwargs["options[spatial][or]"] = "true"
-            kwargs["readable_granule_name[]"] = self._readable_granule_name
-
-        if self._CMRparams.fmted_keys == {}:
-            self._CMRparams.build_params(
-                extent_type=self._spatial._ext_type,
-                spatial_extent=self._spatial.fmt_for_CMR(),
-                **kwargs,
-            )
-
-        return self._CMRparams.fmted_keys
-
-    @property
-    def reqparams(self) -> EGIRequiredParams:
-        """
-        Display the required key:value pairs that will be submitted.
-        It generates the dictionary if it does not already exist.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.reqparams
-        {'short_name': 'ATL06', 'version': '006', 'page_size': 2000}
-
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.order_granules() # doctest: +SKIP
-        >>> reg_a.reqparams # doctest: +SKIP
-        {'short_name': 'ATL06', 'version': '006', 'page_size': 2000, 'page_num': 1, 'request_mode': 'async', 'include_meta': 'Y', 'client_string': 'icepyx'}
-        """
-
-        if not hasattr(self, "_reqparams"):
-            self._reqparams = apifmt.Parameters("required", reqtype="search")
-            self._reqparams.build_params(product=self.product, version=self._version)
-
-        return self._reqparams.fmted_keys
-
-    # @property
-    # DevQuestion: if I make this a property, I get a "dict" object is not callable
-    # when I try to give input kwargs... what approach should I be taking?
-    def subsetparams(self, **kwargs) -> Union[EGIParamsSubset, dict[Never, Never]]:
-        """
-        Display the subsetting key:value pairs that will be submitted.
-        It generates the dictionary if it does not already exist
-        and returns an empty dictionary if subsetting is set to False during ordering.
-
-        Parameters
-        ----------
-        **kwargs : key-value pairs
-            Additional parameters to be passed to the subsetter.
-            By default temporal and spatial subset keys are passed.
-            Acceptable key values are
-            ['format','projection','projection_parameters','Coverage'].
-            At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
-
-        See Also
-        --------
-        order_granules
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.subsetparams()
-        {'time': '2019-02-20T00:00:00,2019-02-28T23:59:59',
-        'bbox': '-55.0,68.0,-48.0,71.0'}
-        """
-        if not hasattr(self, "_subsetparams"):
-            self._subsetparams = apifmt.Parameters("subset")
-
-        # temporal subsetting parameters
-        if hasattr(self, "_temporal") and self.product != "ATL11":
-            kwargs["start"] = self._temporal._start
-            kwargs["end"] = self._temporal._end
-
-        if self._subsetparams is None and not kwargs:
-            return {}
-        else:
-            # If the user has supplied a subset list of variables, append the
-            # icepyx required variables to the Coverage dict
-            if "Coverage" in kwargs:
-                var_list = [
-                    "orbit_info/sc_orient",
-                    "orbit_info/sc_orient_time",
-                    "ancillary_data/atlas_sdp_gps_epoch",
-                    "orbit_info/cycle_number",
-                    "orbit_info/rgt",
-                    "ancillary_data/data_start_utc",
-                    "ancillary_data/data_end_utc",
-                    "ancillary_data/granule_start_utc",
-                    "ancillary_data/granule_end_utc",
-                    "ancillary_data/start_delta_time",
-                    "ancillary_data/end_delta_time",
-                ]
-                # Add any variables from var_list to Coverage that are not already included
-                for var in var_list:
-                    if var not in kwargs["Coverage"]:
-                        kwargs["Coverage"][var.split("/")[-1]] = [var]
-
-            if self._subsetparams is None:
-                self._subsetparams = apifmt.Parameters("subset")
-            if self._spatial._geom_file is not None:
-                self._subsetparams.build_params(
-                    geom_filepath=self._spatial._geom_file,
-                    extent_type=self._spatial._ext_type,
-                    spatial_extent=self._spatial.fmt_for_EGI(),
-                    **kwargs,
-                )
-            else:
-                self._subsetparams.build_params(
-                    extent_type=self._spatial._ext_type,
-                    spatial_extent=self._spatial.fmt_for_EGI(),
-                    **kwargs,
-                )
-
-            return self._subsetparams.fmted_keys
-
-    # DevGoal: add to tests
-    # DevGoal: add statements to the following vars properties to let the user know if they've got a mismatched source and vars type
-    @property
-    def order_vars(self):
-        """
-        Return the order variables object.
-        This instance is generated when data is ordered from the NSIDC.
-
-        See Also
-        --------
-        variables.Variables
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.order_vars # doctest: +SKIP
-        <icepyx.core.variables.Variables at [location]>
-        """
-
-        if not hasattr(self, "_order_vars"):
-            # DevGoal: check for active session here
-            if hasattr(self, "_cust_options"):
-                self._order_vars = Variables(
-                    product=self.product,
-                    version=self._version,
-                    avail=self._cust_options["variables"],
-                    auth=self.auth,
-                )
-            else:
-                self._order_vars = Variables(
-                    product=self.product,
-                    version=self._version,
-                    auth=self.auth,
-                )
-
-        # I think this is where property setters come in, and one should be used here?
-        # Right now order_vars.avail is only filled in
-        # if _cust_options exists when the class is initialized,
-        # but not if _cust_options is filled in prior to another call to order_vars
-        # if self._order_vars.avail == None and hasattr(self, '_cust_options'):
-        #     print('got into the loop')
-        #     self._order_vars.avail = self._cust_options['variables']
-
-        return self._order_vars
-
-    @property
-    def granules(self):
-        """
-        Return the granules object, which provides the underlying functionality for searching, ordering,
-        and downloading granules for the specified product.
-        Users are encouraged to use the built-in wrappers
-        rather than trying to access the granules object themselves.
-
-        See Also
-        --------
-        avail_granules
-        order_granules
-        download_granules
-        granules.Granules
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.granules # doctest: +SKIP
-        <icepyx.core.granules.Granules at [location]>
-        """
-
-        if not hasattr(self, "_granules") or self._granules is None:
-            self._granules = Granules()
-
-        return self._granules
 
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the product level
+    def __str__(self):
+        str = "Product {2} v{3}\n{0}\nDate range {1}".format(
+            self.spatial_extent, self.dates, self.product, self.product_version
+        )
+        return str
 
     def product_summary_info(self):
         """
@@ -794,7 +697,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
         if not hasattr(self, "_about_product"):
             self._about_product = is2ref.about_product(self._prod)
-        pprint.pprint(self._about_product)
+        pprint(self._about_product)
 
     def latest_version(self):
         """
@@ -810,80 +713,69 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
         return is2ref.latest_version(self.product)
 
-    def show_custom_options(self, dictview=False):
+    # DevGoal: add testing? What do we test, and how, given this is a visualization.
+    # DevGoal(long term): modify this to accept additional inputs, etc.
+    # DevGoal: move this to it's own module for visualizing, etc.
+    # DevGoal: see Amy's data access notebook for a zoomed in map - implement here?
+    def visualize_spatial_extent(
+        self,
+    ):  # additional args, basemap, zoom level, cmap, export
         """
-        Display customization/subsetting options available for this product.
-
-        Parameters
-        ----------
-        dictview : boolean, default False
-            Show the variable portion of the custom options list as a dictionary with key:value
-            pairs representing variable:paths-to-variable rather than as a long list of full
-            variable paths.
+        Creates a map displaying the input spatial extent
 
         Examples
         --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.show_custom_options(dictview=True) # doctest: +SKIP
-        Subsetting options
-        [{'id': 'ICESAT2',
-        'maxGransAsyncRequest': '2000',
-        'maxGransSyncRequest': '100',
-        'spatialSubsetting': 'true',
-        'spatialSubsettingShapefile': 'true',
-        'temporalSubsetting': 'true',
-        'type': 'both'}]
-        Data File Formats (Reformatting Options)
-        ['TABULAR_ASCII', 'NetCDF4-CF', 'Shapefile', 'NetCDF-3']
-        Reprojection Options
-        []
-        Data File (Reformatting) Options Supporting Reprojection
-        ['TABULAR_ASCII', 'NetCDF4-CF', 'Shapefile', 'NetCDF-3', 'No reformatting']
-        Data File (Reformatting) Options NOT Supporting Reprojection
-        []
-        Data Variables (also Subsettable)
-        ['ancillary_data/atlas_sdp_gps_epoch',
-        'ancillary_data/control',
-        'ancillary_data/data_end_utc',
-        .
-        .
-        .
-        'quality_assessment/gt3r/signal_selection_source_fraction_3']
+        >>> reg_a = ipx.Query('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.visualize_spatial_extent # doctest: +SKIP
+        [visual map output]
         """
-        headers = [
-            "Subsetting options",
-            "Data File Formats (Reformatting Options)",
-            "Reprojection Options",
-            "Data File (Reformatting) Options Supporting Reprojection",
-            "Data File (Reformatting) Options NOT Supporting Reprojection",
-            "Data Variables (also Subsettable)",
-        ]
-        keys = [
-            "options",
-            "fileformats",
-            "reprojectionONLY",
-            "formatreproj",
-            "noproj",
-            "variables",
-        ]
+
+        gdf = self._spatial.extent_as_gdf
 
         try:
-            all(key in self._cust_options for key in keys)
-        except (AttributeError, KeyError):
-            self._cust_options = is2ref._get_custom_options(
-                self.session, self.product, self._version
-            )
+            import geoviews as gv  # type: ignore[import]
+            from shapely.geometry import Polygon  # noqa: F401
 
-        for h, k in zip(headers, keys):
-            print(h)
-            if k == "variables" and dictview:
-                vgrp, paths = Variables.parse_var_list(self._cust_options[k])
-                pprint.pprint(vgrp)
-            else:
-                pprint.pprint(self._cust_options[k])
+            gv.extension("bokeh")  # pyright: ignore[reportCallIssue]
 
-    # ----------------------------------------------------------------------
-    # Methods - Granules (NSIDC-API)
+            bbox_poly = gv.Path(gdf["geometry"]).opts(color="red", line_color="red")
+            tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
+            return tile * bbox_poly  # pyright: ignore[reportOperatorIssue]
+
+        except ImportError:
+            legacy_url = "https://github.com/geopandas/geopandas/raw/refs/heads/0.8.x/geopandas/datasets/naturalearth_lowres/naturalearth_lowres.shp"
+            world = gpd.read_file(legacy_url)  # pyright: ignore[reportAttributeAccessIssue]
+            f, ax = plt.subplots(1, figsize=(12, 8))
+            world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
+            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7, aspect="equal")
+            plt.show()
+
+    def visualize_elevation(self):
+        """
+        Visualize elevation requested from OpenAltimetry API using datashader based on cycles
+        https://holoviz.org/tutorial/Large_Data.html
+
+        Returns
+        -------
+        map_cycle, map_rgt + lineplot_rgt : Holoviews objects
+            Holoviews data visualization elements
+        """
+        viz = Visualize(self)
+        cycle_map, rgt_map = viz.viz_elevation()
+
+        return cycle_map, rgt_map
+
+    def _get_concept_id(self, product, version) -> Union[str, None]:
+        """
+        Get the concept ID for the specified product and version. Note that we are forcing CMR to use the cloud copy.
+        """
+        collections = earthaccess.search_datasets(
+            short_name=product, version=version, cloud_hosted=True
+        )
+        if collections:
+            return collections[0].concept_id()
+        else:
+            return None
 
     # DevGoal: check to make sure the see also bits of the docstrings work properly in RTD
     def avail_granules(self, ids=False, cycles=False, tracks=False, cloud=False):
@@ -932,11 +824,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         try:
             self.granules.avail
         except AttributeError:
-            self.granules.get_avail(self.CMRparams, self.reqparams)
+            self.granules.get_avail(self.CMRparams)
 
         if ids or cycles or tracks or cloud:
             # list of outputs in order of ids, cycles, tracks, cloud
-            return granules.gran_IDs(
+            return gran_IDs(
                 self.granules.avail,
                 ids=ids,
                 cycles=cycles,
@@ -944,221 +836,215 @@ class Query(GenQuery, EarthdataAuthMixin):
                 cloud=cloud,
             )
         else:
-            return granules.info(self.granules.avail)
+            return self.granules.avail
 
-    # DevGoal: display output to indicate number of granules successfully ordered (and number of errors)
-    # DevGoal: deal with subset=True for variables now, and make sure that if a variable subset
-    # Coverage kwarg is input it's successfully passed through all other functions even if this is the only one run.
-    def order_granules(self, verbose=False, subset=True, email=False, **kwargs):
+    def _order_subset_granules(self, skip_preview: bool = False) -> str:
+        concept_id = self._get_concept_id(
+            product=self._prod,
+            version=self._version,
+        )
+
+        if concept_id is None:
+            raise ValueError(
+                f"Could not find concept ID for {self._prod} v{self._version}"
+            )
+
+        readable_granule_name = self.CMRparams.get("readable_granule_name[]", [])
+        harmony_temporal = None
+        harmony_spatial = None
+        if self._temporal:
+            # TODO: this assumes there will always be a start and stop
+            # temporal range. Harmony can accept start without stop and
+            # vice versa.
+            harmony_temporal = HarmonyTemporal(
+                start=self._temporal.start,
+                stop=self._temporal.end,
+            )
+        if self.spatial:
+            if self.spatial.extent_type == "bounding_box":
+                # Bounding box case.
+
+                # TODO: think more about how this can be DRYed out. We call
+                # `place_order` based on the user spatial input. The bounding box case
+                # is simple, but polygons are more complicated because `harmony-py`
+                # expects a shapefile (e.g,. geojson) to exist on disk.
+                harmony_spatial = harmony.BBox(
+                    w=self.spatial.extent[0],
+                    s=self.spatial.extent[1],
+                    e=self.spatial.extent[2],
+                    n=self.spatial.extent[3],
+                )
+            elif self.spatial.extent_file or self.spatial.extent_type == "polygon":
+                harmony_spatial = self.spatial.extent_as_gdf.iloc[0].geometry.wkt
+                # Polygons must be passed to `harmony-py` as a path to a valid
+                # shapefile (json, geojson, kml, shz, or zip). Create a temporary
+                # directory to store this file for the harmony order.
+            else:
+                raise NotImplementedError(
+                    "Only bounding box and polygon spatial subsetting is supported."
+                )
+        else:
+            if harmony_temporal is None:
+                raise ValueError("No temporal or spatial parameters provided.")
+
+        job_id = self.harmony_api.place_order(
+            concept_id=concept_id,
+            temporal=harmony_temporal,
+            spatial=harmony_spatial,
+            granule_name=list(readable_granule_name),
+            skip_preview=skip_preview,
+        )
+        return job_id
+
+    def _get_granule_links(self, cloud_hosted=False) -> list[str]:
+        """
+        Get the links to the granules for the query object. This is a blocking call
+
+        Parameters
+        ----------
+        cloud_hosted : bool, default False
+            If True, download the cloud-hosted version of the granules. Otherwise, download
+            the on-premises version. We need to run the code in the AWS cloud (us-west-2)
+
+        """
+        links = []
+        if not hasattr(self.granules, "avail"):
+            self.granules.get_avail(self.CMRparams)
+        for granule in self.granules.avail:
+            for link in granule["links"]:
+                if (
+                    cloud_hosted
+                    and link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#"
+                    or (
+                        (link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#")
+                        and (
+                            "type" in link
+                            and link["type"]
+                            in ["application/x-hdf5", "application/x-hdfeos"]
+                        )
+                    )
+                ):
+                    links.append(link["href"])
+        return links
+
+    def _order_whole_granules(self, cloud_hosted=False) -> list[str]:
+        """
+        Downloads the whole granules for the query object. This is not an asnc operation
+        and will block until the download is complete.
+
+        Parameters
+        ----------
+        cloud_hosted : bool, default False
+            If True, download the cloud-hosted version of the granules. Otherwise, download
+            the on-premises version. We need to run the code in the AWS cloud (us-west-2)
+        path : str, default "./"
+            The local directory to download the granules to.
+
+        """
+
+        links = self._get_granule_links(cloud_hosted=cloud_hosted)
+        return links
+
+    def skip_preview(self):
+        """
+        Skips preview for current order, if it is in preview state.
+        Orders with more than 300 granules are automatically put into preview state, which pauses the processing (subsetting).
+
+        """
+        if self.last_order and self.last_order.type == "subset":
+            status = self.last_order.status()
+            if status["status"] == "PREVIEW":
+                return self.last_order.resume()
+
+    def order_granules(
+        self, subset: bool = True, skip_preview: bool = False
+    ) -> DataOrder:
         """
         Place an order for the available granules for the query object.
 
         Parameters
         ----------
-        verbose : boolean, default False
-            Print out all feedback available from the order process.
-            Progress information is automatically printed regardless of the value of verbose.
-        subset : boolean, default True
-            Apply subsetting to the data order from the NSIDC, returning only data that meets the
+        subset :
+            Apply subsetting to the data order using harmony, returning only data that meets the
             subset parameters. Spatial and temporal subsetting based on the input parameters happens
             by default when subset=True, but additional subsetting options are available.
             Spatial subsetting returns all data that are within the area of interest (but not complete
             granules. This eliminates false-positive granules returned by the metadata-level search)
-        email: boolean, default False
-            Have NSIDC auto-send order status email updates to indicate order status as pending/completed.
-            The emails are sent to the account associated with your Earthdata account.
-        **kwargs : key-value pairs
-            Additional parameters to be passed to the subsetter.
-            By default temporal and spatial subset keys are passed.
-            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
-            The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
-            At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
+        skip_preview : bool, default False
+            If True, bypass the preview state when we order subsetting queries that exceed 300 granules.
 
         See Also
         --------
-        granules.place_order
+        harmony.place_order
 
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
         >>> reg_a.order_granules() # doctest: +SKIP
-        order ID: [###############]
+        Harmony job ID:  931355e8-0005-4dff-9c76-7903a5be283d
         [order status output]
-        error messages:
-        [if any were returned from the NSIDC subsetter, e.g. No data found that matched subset constraints.]
-        .
-        .
-        .
-        Retry request status is: complete
+        Harmony provided these error messages:
+        [if any were returned from the harmony subsetter, e.g. No data found that matched subset constraints.]
+        Your harmony order is:  complete
         """
 
-        if not hasattr(self, "reqparams"):
-            self.reqparams
-
-        if self._reqparams._reqtype == "search":
-            self._reqparams._reqtype = "download"
-
-        if "email" in self._reqparams.fmted_keys or email is False:
-            self._reqparams.build_params(**self._reqparams.fmted_keys)
-        elif email is True:
-            user_profile = self.auth.get_user_profile()  # pyright: ignore[reportAttributeAccessIssue]
-            self._reqparams.build_params(
-                **self._reqparams.fmted_keys, email=user_profile["email_address"]
+        # only instantiate the client when we are about to order data
+        self.harmony_api = HarmonyApi()
+        if subset:
+            job_id = self._order_subset_granules(skip_preview=skip_preview)
+            self.last_order = DataOrder(
+                job_id, "subset", self.granules, self.harmony_api
             )
-
-        if subset is False:
-            self._subsetparams = None
-        elif (
-            subset is True
-            and hasattr(self, "_subsetparams")
-            and self._subsetparams is None
-        ):
-            del self._subsetparams
-
-        # REFACTOR: add checks here to see if the granules object has been created,
-        # and also if it already has a list of avail granules (if not, need to create one and add session)
-        if not hasattr(self, "_granules"):
-            self.granules
-
-        # Place multiple orders, one per granule, if readable_granule_name is used.
-        if "readable_granule_name[]" in self.CMRparams:
-            gran_name_list = self.CMRparams["readable_granule_name[]"]
-            tempCMRparams = self.CMRparams
-            if len(gran_name_list) > 1:
-                print(
-                    "NSIDC only allows ordering of one granule by name at a time; your orders will be placed accordingly."
-                )
-            for gran in gran_name_list:
-                tempCMRparams["readable_granule_name[]"] = gran
-                self._granules.place_order(
-                    tempCMRparams,
-                    cast(EGIRequiredParamsDownload, self.reqparams),
-                    self.subsetparams(**kwargs),
-                    verbose,
-                    subset,
-                    geom_filepath=self._spatial._geom_file,
-                )
-
+            return self.last_order
         else:
-            self._granules.place_order(
-                self.CMRparams,
-                cast(EGIRequiredParamsDownload, self.reqparams),
-                self.subsetparams(**kwargs),
-                verbose,
-                subset,
-                geom_filepath=self._spatial._geom_file,
-            )
+            files = self._order_whole_granules()
+            self.last_order = DataOrder("nosubset", "whole", files, self.harmony_api)
+            return self.last_order
 
-    # DevGoal: put back in the kwargs here so that people can just call download granules with subset=False!
     def download_granules(
-        self, path, verbose=False, subset=True, restart=False, **kwargs
-    ):  # , extract=False):
+        self,
+        path: Path,
+        overwrite: bool = False,
+    ) -> Union[list[str], None]:
         """
-        Downloads the data ordered using order_granules.
+        Download the granules for the order, blocking until they are ready if necessary.
 
         Parameters
         ----------
-        path : string
-            String with complete path to desired download location.
-        verbose : boolean, default False
-            Print out all feedback available from the order process.
-            Progress information is automatically printed regardless of the value of verbose.
-        subset : boolean, default True
-            Apply subsetting to the data order from the NSIDC, returning only data that meets the
-            subset parameters. Spatial and temporal subsetting based on the input parameters happens
-            by default when subset=True, but additional subsetting options are available.
-            Spatial subsetting returns all data that are within the area of interest (but not complete
-            granules. This eliminates false-positive granules returned by the metadata-level search)
-        restart : boolean, default false
-            If previous download was terminated unexpectedly. Run again with restart set to True to continue.
-        **kwargs : key-value pairs
-            Additional parameters to be passed to the subsetter.
-            By default temporal and spatial subset keys are passed.
-            Acceptable key values are ['format','projection','projection_parameters','Coverage'].
-            The variable 'Coverage' list should be constructed using the `order_vars.wanted` attribute of the object.
-            At this time (2020-05), only variable ('Coverage') parameters will be automatically formatted.
-
-        See Also
-        --------
-        granules.download
-        """
-        """
-        extract : boolean, default False
-            Unzip the downloaded granules.
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.download_granules('/path/to/download/folder') # doctest: +SKIP
-        Beginning download of zipped output...
-        Data request [##########] of x order(s) is complete.
-        """
-
-        # if not os.path.exists(path):
-        #     os.mkdir(path)
-        # os.chdir(path)
-
-        if not hasattr(self, "_granules"):
-            self.granules
-
-        if restart is True:
-            pass
-        else:
-            if (
-                not hasattr(self._granules, "orderIDs")
-                or len(self._granules.orderIDs) == 0
-            ):
-                self.order_granules(verbose=verbose, subset=subset, **kwargs)
-
-        self._granules.download(verbose, path, restart=restart)
-
-    # DevGoal: add testing? What do we test, and how, given this is a visualization.
-    # DevGoal(long term): modify this to accept additional inputs, etc.
-    # DevGoal: move this to it's own module for visualizing, etc.
-    # DevGoal: see Amy's data access notebook for a zoomed in map - implement here?
-    def visualize_spatial_extent(
-        self,
-    ):  # additional args, basemap, zoom level, cmap, export
-        """
-        Creates a map displaying the input spatial extent
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06','path/spatialfile.shp',['2019-02-22','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.visualize_spatial_extent # doctest: +SKIP
-        [visual map output]
-        """
-
-        gdf = self._spatial.extent_as_gdf
-
-        try:
-            import geoviews as gv
-            from shapely.geometry import Polygon  # noqa: F401
-
-            gv.extension("bokeh")  # pyright: ignore[reportCallIssue]
-
-            bbox_poly = gv.Path(gdf["geometry"]).opts(color="red", line_color="red")
-            tile = gv.tile_sources.EsriImagery.opts(width=500, height=500)
-            return tile * bbox_poly  # pyright: ignore[reportOperatorIssue]
-
-        except ImportError:
-            world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))  # pyright: ignore[reportAttributeAccessIssue]
-            f, ax = plt.subplots(1, figsize=(12, 6))
-            world.plot(ax=ax, facecolor="lightgray", edgecolor="gray")
-            gdf.plot(ax=ax, color="#FF8C00", alpha=0.7)
-            plt.show()
-
-    def visualize_elevation(self):
-        """
-        Visualize elevation requested from OpenAltimetry API using datashader based on cycles
-        https://holoviz.org/tutorial/Large_Data.html
+        path : str or Path
+            The directory where granules should be saved.
+        overwrite : bool, optional
+            Whether to overwrite existing files (default is False).
 
         Returns
         -------
-        map_cycle, map_rgt + lineplot_rgt : Holoviews objects
-            Holoviews data visualization elements
+        list or None
+            A list of the downloaded file paths if successful, otherwise None.
         """
-        viz = Visualize(self)
-        cycle_map, rgt_map = viz.viz_elevation()
+        # Order granules based on user selections if restart is False and there
+        # are no job IDs registered by the harmony API
+        if hasattr(self, "last_order") is None:
+            raise ValueError("No order has been placed yet.")
+        status = self.last_order.status()
+        if status["status"] == "running" or status["status"] == "accepted":
+            print(
+                (
+                    "Your harmony job status is still "
+                    f"{status['status']}. Please continue waiting... this may take a few moments."
+                )
+            )
+            while (
+                status["status"].startswith("running") or status["status"] == "accepted"
+            ):
+                sys.stdout.write(".")
+                sys.stdout.flush()
+                # Requesting the status too often can result in a 500 error.
+                time.sleep(self.REQUEST_RETRY_INTERVAL_SECONDS)
+                status = self.last_order.status()
 
-        return cycle_map, rgt_map
+        if status["status"] == "complete_with_errors" or status["status"] == "failed":
+            print("Harmony provided these error messages:")
+            pprint(status["errors"])
+            return None
+        else:
+            return self.last_order.download(path, overwrite=overwrite)

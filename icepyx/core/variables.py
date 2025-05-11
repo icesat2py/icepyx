@@ -113,7 +113,7 @@ class Variables(EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='5') # doctest: +SKIP
-        >>> reg_a.order_vars.avail() # doctest: +SKIP
+        >>> reg_a.variables.avail() # doctest: +SKIP
         ['ancillary_data/atlas_sdp_gps_epoch',
         'ancillary_data/control',
         'ancillary_data/data_end_utc',
@@ -195,7 +195,7 @@ class Variables(EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1') # doctest: +SKIP
-        >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail()) # doctest: +SKIP
+        >>> var_dict, paths = reg_a.variables.parse_var_list(reg_a.variables.avail()) # doctest: +SKIP
         >>> var_dict # doctest: +SKIP
         {'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],
         .
@@ -461,19 +461,19 @@ class Variables(EarthdataAuthMixin):
 
         To add all variables related to a specific ICESat-2 beam
 
-        >>> reg_a.order_vars.append(beam_list=['gt1r']) # doctest: +SKIP
+        >>> reg_a.variables.append(beam_list=['gt1r']) # doctest: +SKIP
 
         To include the default variables:
 
-        >>> reg_a.order_vars.append(defaults=True) # doctest: +SKIP
+        >>> reg_a.variables.append(defaults=True) # doctest: +SKIP
 
         To add specific variables in orbit_info
 
-        >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
+        >>> reg_a.variables.append(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
 
         To add all variables and paths in ancillary_data
 
-        >>> reg_a.order_vars.append(keyword_list=['ancillary_data']) # doctest: +SKIP
+        >>> reg_a.variables.append(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
         assert not (
@@ -556,19 +556,19 @@ class Variables(EarthdataAuthMixin):
 
         To clear the list of wanted variables
 
-        >>> reg_a.order_vars.remove(all=True) # doctest: +SKIP
+        >>> reg_a.variables.remove(all=True) # doctest: +SKIP
 
         To remove all variables related to a specific ICESat-2 beam
 
-        >>> reg_a.order_vars.remove(beam_list=['gt1r']) # doctest: +SKIP
+        >>> reg_a.variables.remove(beam_list=['gt1r']) # doctest: +SKIP
 
         To remove specific variables in orbit_info
 
-        >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
+        >>> reg_a.variables.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
 
         To remove all variables and paths in ancillary_data
 
-        >>> reg_a.order_vars.remove(keyword_list=['ancillary_data']) # doctest: +SKIP
+        >>> reg_a.variables.remove(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
         if not hasattr(self, "wanted") or self.wanted is None:

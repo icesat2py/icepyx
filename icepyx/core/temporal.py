@@ -12,7 +12,7 @@ def convert_string_to_date(date: str) -> dt.date:
 
     Parameters
     ----------
-    date: string
+    date: str
         A string representation for the date value. Current supported date formats are:
             * "YYYY-MM-DD"
             * "YYYY-DOY"
@@ -63,7 +63,7 @@ def check_valid_date_range(start: dt.date, end: dt.date) -> None:
 
     Returns
     -------
-    boolean (true if date range is valid, false otherwise)
+    bool (True if date range is valid, False otherwise)
 
     Examples
     --------
@@ -96,7 +96,7 @@ def validate_times(
 
     Parameters
     ----------
-    start_time: string, datetime.time, None
+    start_time: str, datetime.time, None
     end_time:  string, datetime.time, None
 
     Returns

@@ -31,7 +31,7 @@ def files_in_latest_n_cycles(files, cycles, n=1) -> list:
     ----------
     files : list
         A list of file names.
-    cycles: list
+    cycles : list
         A list of available ICESat-2 cycles
     n: int, default 1
         Number of latest ICESat-2 cycles to pick
@@ -68,7 +68,7 @@ def gran_paras(filename) -> list:
 
     Parameters
     ----------
-    filename: String
+    filename : str
         ICESat-2 file name
 
     Returns
@@ -95,7 +95,7 @@ def user_check(message):
 
     Parameters
     ----------
-    message : string
+    message : str
         Message to indicate users the options
     """
     check = input(message)
@@ -116,15 +116,15 @@ class Visualize:
     ----------
     query_obj : icepyx.Query, default None
         icepy Query class object.
-    product : string
+    product : str
         ICESat-2 product ID
-    spatial_extent: list or string, default None
+    spatial_extent : list or str, default None
         as in the :class:`icepyx.Query` object
     date_range : list of 'YYYY-MM-DD' strings, default None
         as in the :class:`icepyx.Query` object
-    cycle : string, default all available orbital cycles, default None
+    cycle : str, default all available orbital cycles, default None
         as in the :class:`icepyx.Query` object
-    track : string, default all available reference ground tracks (RGTs), default None
+    track : str, default all available reference ground tracks (RGTs), default None
         as in the :class:`icepyx.Query` object
 
     See Also
@@ -305,7 +305,7 @@ class Visualize:
 
         Parameters
         ----------
-        base_url : string
+        base_url : str
             OpenAltimetry URL
 
         See Also

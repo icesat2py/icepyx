@@ -114,22 +114,22 @@ class Visualize:
 
     Parameters
     ----------
-    query_obj : ipx.Query object, default None
+    query_obj : icepyx.Query, default None
         icepy Query class object.
     product : string
         ICESat-2 product ID
     spatial_extent: list or string, default None
-        as in the ipx.Query object
+        as in the :class:`icepyx.Query` object
     date_range : list of 'YYYY-MM-DD' strings, default None
-        as in the ipx.Query object
+        as in the :class:`icepyx.Query` object
     cycle : string, default all available orbital cycles, default None
-        as in the ipx.Query object
+        as in the :class:`icepyx.Query` object
     track : string, default all available reference ground tracks (RGTs), default None
-        as in the ipx.Query object
+        as in the :class:`icepyx.Query` object
 
     See Also
     --------
-    ipx.Query
+    icepyx.Query
     """
 
     def __init__(

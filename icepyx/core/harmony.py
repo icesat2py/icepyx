@@ -85,7 +85,7 @@ class HarmonyApi(EarthdataAuthMixin):
         ----------
         concept_id : str
             The concept ID of the dataset.
-        spatial : harmony.BBox, str, harmony.WKT, or None, optional
+        spatial : harmony.BBox, str, harmony.request.WKT, or None, optional
             The spatial extent for the order.
         temporal : HarmonyTemporal or None, optional
             The temporal range for the order.
@@ -234,7 +234,7 @@ class HarmonyApi(EarthdataAuthMixin):
         ----------
         concept_id : str
             The concept ID of the dataset.
-        spatial : harmony.BBox, str, harmony.WKT, or None, optional
+        spatial : harmony.BBox, str, harmony.request.WKT, or None, optional
             The spatial extent for the order.
         temporal : HarmonyTemporal or None, optional
             The temporal range for the order.

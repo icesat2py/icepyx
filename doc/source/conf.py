@@ -112,6 +112,7 @@ typehints_use_return = True
 intersphinx_mapping = {
     "earthaccess": ("https://earthaccess.readthedocs.io/en/stable/", None),
     "geopandas": ("https://geopandas.org/en/stable/", None),
+    "harmony": ("https://harmony-py.readthedocs.io/en/stable/", None),
     "python": ("https://docs.python.org/3/", None),
     "xarray": ("https://docs.xarray.dev/en/stable/", None),
 }

@@ -331,9 +331,9 @@ class Read(EarthdataAuthMixin):
 
         Parameters
         ----------
-        is2ds : Xarray dataset
+        is2ds : xarray.Dataset
             Template dataset to add new variables to.
-        ds : Xarray dataset
+        ds : xarray.Dataset
             Dataset containing the group to add
         grp_path : str
             hdf5 group path read into ds
@@ -474,9 +474,9 @@ class Read(EarthdataAuthMixin):
 
         Parameters
         ----------
-        is2ds : Xarray dataset
+        is2ds : xarray.Dataset
             Dataset to add deeply nested variables to.
-        ds : Xarray dataset
+        ds : xarray.Dataset
             Dataset containing improper dimensions for the variables being added
         grp_path : str
             hdf5 group path read into ds

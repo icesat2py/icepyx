@@ -181,7 +181,7 @@ class Read(EarthdataAuthMixin):
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
-        Currently, only xarray.Dataset objects (default) are available.
+        Currently, only :class:`xarray.Dataset` objects (default) are available.
         Please ask us how to help enable usage of other data objects!
 
     Returns

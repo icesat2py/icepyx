@@ -1,0 +1,78 @@
+What's new in 2.0.0 (16 MAY 2025)
+-----------------------------------
+
+These are the changes in icepyx 2.0.0 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+.. warning::
+    This is major release and contains a few breaking changes. Full details will be
+    described in the documentation.
+
+    NSIDC (the NASA DAAC that hosts ICESat-2 data) is transitioning their
+    API endpoint from the on-premises EGI system to the cloud-based Harmony services.
+    icepyx has been updated to access these new services; Certain capabilities are temporarily going away
+    * Data reformatting: users will only get HDF5 files back from the new API.
+    * Variable subsetting: The new cloud subsetter doesn't support variable subsetting (yet), therefore all variables will be included
+      in subsetted orders.
+
+    Find more details on all these changes, including their progress, on GitHub issues and discussions.
+
+
+New Features
+~~~~~~~~~~~~
+
+- Adding support for NASA's Harmony subsetter #657
+  - Data orders can be previewed, stopped and resumed using the library or the Harmony UI.
+  - The Harmony trajectory subsetter automatically pauses orders with more than 300 granules, we need to manually resume them or pass the `skip_preview=True` parameter to the order.
+  - Reference: https://harmony.earthdata.nasa.gov/
+
+- Order class: when an order is placed, icepyx will return an order class instance that will help us keep track of the order progress, pause and eventually download the data.
+  We can still use the Query class to download, however using the order instance is probably simpler and more intuitive. (#657)
+
+Bug fixes
+~~~~~~~~~
+
+- None
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- EGI API is deprecated (Closes #530)
+  - PR #657 implements NASA Harmony support to replace the on-premises EGI service.
+  - data reformatting and variable subsetting are not supported in the new API.
+    - Users will only get HDF5 files back from the new API.
+  - `order_vars()` is deprecated in favor of `variables()`.
+  - `fmt_for_EGI()` is deprecated.
+  - Any EGI specific code is deprecated and has been removed in this release.
+
+- Drop support for Python 3.9 and 3.10 (#655)
+- Removed existing deprecations for v1.x (#640)
+
+
+Maintenance
+^^^^^^^^^^^
+
+- Separate CI unit tests and integration tests with their own conftest #657
+- Fixed some integration tests that were failing due to the new Harmony API #657
+- Updated ruff action #654
+
+
+Documentation
+^^^^^^^^^^^^^
+
+- Updated notebooks to reflect the new Harmony API usage (#657)
+  - The updated notebooks have full and subset orders, and show how to use the new Harmony API.
+  - The top level API works the same, users only need to update to v2.0.0 and the code should work (unless using variable subsetting or reformatting)
+  - Notebooks are in the `examples` folder, and are also available in the documentation.
+
+Other
+^^^^^
+
+- None
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v1.3.0..v2.0.0|HEAD

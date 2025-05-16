@@ -40,6 +40,7 @@ Deprecations
 ~~~~~~~~~~~~
 
 - EGI API is deprecated (Closes #530)
+
   - PR #657 implements NASA Harmony support to replace the on-premises EGI service.
   - data reformatting and variable subsetting are not supported in the new API.
     - Users will only get HDF5 files back from the new API.

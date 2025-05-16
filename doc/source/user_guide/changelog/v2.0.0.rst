@@ -1,5 +1,5 @@
-What's new in 2.0.0 (16 MAY 2025)
------------------------------------
+What's new in 2.0.0 (16 May 2025)
+---------------------------------
 
 These are the changes in icepyx 2.0.0 See :ref:`release` for a full changelog
 including other versions of icepyx.

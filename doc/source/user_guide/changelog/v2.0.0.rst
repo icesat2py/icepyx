@@ -22,7 +22,7 @@ including other versions of icepyx.
 New Features
 ~~~~~~~~~~~~
 
-- Adding support for NASA's Harmony subsetter #657
+- Adding support for NASA's Harmony subsetter (#657)
   - Data orders can be previewed, stopped and resumed using the library or the Harmony UI.
   - The Harmony trajectory subsetter automatically pauses orders with more than 300 granules, we need to manually resume them or pass the `skip_preview=True` parameter to the order.
   - Reference: https://harmony.earthdata.nasa.gov/

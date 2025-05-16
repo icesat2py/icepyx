@@ -67,7 +67,7 @@ Documentation
 
   - The updated notebooks include instructions for making full and subset orders, and show how to use the new Harmony API.
   - The top level API works the same, users only need to update to v2.0.0 and the code should work (unless using variable subsetting or reformatting)
-  - Notebooks are in the `examples` folder, and are also available in the documentation.
+  - Notebooks are in the `doc/source/example_notebooks` folder, and are also available on the Readthedocs documentation page.
 
 Other
 ^^^^^

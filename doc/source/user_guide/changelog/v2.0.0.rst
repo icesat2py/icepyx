@@ -11,6 +11,7 @@ including other versions of icepyx.
     NSIDC (the NASA DAAC that hosts ICESat-2 data) is transitioning their
     API endpoint from the on-premises EGI system to the cloud-based Harmony services.
     icepyx has been updated to access these new services; Certain capabilities are temporarily going away
+
     * Data reformatting: users will only get HDF5 files back from the new API.
     * Variable subsetting: The new cloud subsetter doesn't support variable subsetting (yet), therefore all variables will be included
       in subsetted orders.

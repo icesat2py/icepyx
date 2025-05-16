@@ -55,9 +55,9 @@ Deprecations
 Maintenance
 ^^^^^^^^^^^
 
-- Separate CI unit tests and integration tests with their own conftest #657
-- Fixed some integration tests that were failing due to the new Harmony API #657
-- Updated ruff action #654
+- Separate CI unit tests and integration tests with their own conftest (#657)
+- Fixed some integration tests that were failing due to the new Harmony API #(657)
+- Updated ruff action (#654)
 
 
 Documentation

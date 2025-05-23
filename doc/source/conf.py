@@ -32,13 +32,17 @@ copyright = "2019-{}, The icepyx Development Team".format(year)
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    # IMPORTANT: napoleon must be loaded before sphinx_autodoc_typehints
+    # https://github.com/tox-dev/sphinx-autodoc-typehints/issues/15
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
     "sphinx.ext.autosectionlabel",
     "numpydoc",
     # "sphinx.ext.autosummary",
     "myst_nb",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
-    "sphinx_panels",
+    "sphinx_design",
     # "sphinx.ext.imgconverter", # this extension should help the latex svg warning, but results in an error instead
 ]
 myst_enable_extensions = [
@@ -78,6 +82,31 @@ autosummary_generate = True
 numpydoc_show_class_members = False
 nb_execution_mode = "off"
 suppress_warnings = ["myst.header"]  # suppress non-consecutive header warning
+
+
+# -- Options for Napoleon docstring parsing ----------------------------------
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+napoleon_use_admonition_for_examples = True
+napoleon_use_admonition_for_notes = True
+
+
+# -- Options for autodoc -----------------------------------------------------
+
+# Show the typehints in the description of each object instead of the signature.
+autodoc_typehints = "description"
+
+
+# -- Options for autodoc typehints--------------------------------------------
+
+# Replace Union annotations with union operator "|"
+always_use_bars_union = True
+# always_document_param_types = True
+
+# Show the default value for a parameter after its type
+typehints_defaults = "comma"
+typehints_use_return = True
+
 
 # -- Options for HTML output -------------------------------------------------
 

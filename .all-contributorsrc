@@ -505,6 +505,15 @@
         "test",
         "infra"
       ]
+    },
+    {
+      "login": "chuckwondo",
+      "name": "Chuck Daniels",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5607545?v=4",
+      "profile": "https://developmentseed.org/",
+      "contributions": [
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,

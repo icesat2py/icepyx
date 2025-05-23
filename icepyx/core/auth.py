@@ -3,8 +3,6 @@ import datetime
 
 import earthaccess
 
-from icepyx.core.exceptions import DeprecationError
-
 
 class AuthenticationError(Exception):
     """
@@ -26,7 +24,6 @@ class EarthdataAuthMixin:
     This class can be inherited by any other class that requires authentication.
     For example, the `Query` class inherits this one, and so a Query object has the
     `.session` property.
-    The method `earthdata_login()` is included for backwards compatibility.
 
     The class can be created without any initialization parameters, and the properties will
     be populated when they are called.
@@ -54,7 +51,7 @@ class EarthdataAuthMixin:
         self._s3login_credentials = None
         self._s3_initial_ts = None  # timer for 1h expiration on s3 credentials
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.session:
             repr_string = "EarthdataAuth obj with session initialized"
         else:
@@ -111,40 +108,3 @@ class EarthdataAuthMixin:
         ) >= datetime.timedelta(hours=1):
             set_s3_creds()
         return self._s3login_credentials
-
-    def earthdata_login(self, uid=None, email=None, s3token=None, **kwargs) -> None:
-        """
-        Authenticate with NASA Earthdata to enable data ordering and download.
-        Credential storage details are described in the
-        EathdataAuthMixin class section.
-
-        **Note:** This method is deprecated and will be removed in a future release.
-        It is no longer required to explicitly run `.earthdata_login()`.
-        Authentication will be performed by the module as needed.
-
-        Parameters
-        ----------
-        uid : string, default None
-            Deprecated keyword for Earthdata login user ID.
-        email : string, default None
-            Deprecated keyword for backwards compatibility.
-        s3token : boolean, default None
-            Deprecated keyword to generate AWS s3 ICESat-2
-            data access credentials
-        kwargs : key:value pairs
-            Keyword arguments to be passed into earthaccess.login().
-
-        Examples
-        --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
-        >>> reg_a.earthdata_login() # doctest: +SKIP
-        Enter your Earthdata Login username: ___________________
-
-        EARTHDATA_USERNAME and EARTHDATA_PASSWORD are not set in the current environment, try setting them or use a different strategy (netrc, interactive)
-        No .netrc found in /Users/username
-
-        """
-        raise DeprecationError(
-            "It is no longer required to explicitly run the `.earthdata_login()` method."
-            "Authentication will be performed by the module as needed.",
-        )

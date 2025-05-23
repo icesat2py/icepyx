@@ -422,9 +422,9 @@ class Visualize:
         # generate parameter lists for OA requesting
         OA_para_list = self.generate_OA_parameters()
 
-        assert (
-            OA_para_list
-        ), "Your search returned no results; try different search parameters"
+        assert OA_para_list, (
+            "Your search returned no results; try different search parameters"
+        )
 
         url_number = len(OA_para_list)
 
@@ -466,7 +466,7 @@ class Visualize:
             OA_data_da = da.concatenate(requested_OA_data, axis=0)
             return OA_data_da
 
-    def viz_elevation(self) -> (hv.DynamicMap, hv.Layout):
+    def viz_elevation(self) -> tuple[hv.DynamicMap, hv.Layout]:
         """
         Visualize elevation requested from OpenAltimetry API using datashader based on cycles
         https://holoviz.org/tutorial/Large_Data.html
@@ -489,6 +489,8 @@ class Visualize:
                 if self.product == "ATL08"
                 else ["lat", "lon", "elevation", "rgt", "cycle"]
             )
+            # this function is new deprecated and will need to be updated (24 Jan 2025)
+            # try dd.from_dask_array()
             ddf = dd.io.from_dask_array(OA_da, columns=cols).astype(
                 {
                     "lat": "float",

@@ -1,5 +1,5 @@
 """
-test icepyx.core.query.Query.earthdata_login function
+test different Earthdata authentication methods
 """
 
 import netrc
@@ -41,9 +41,9 @@ def test_netrc(username, password):
     assert earthdata_login(username, password)
 
 
-def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
+def earthdata_login(uid=None, pwd=None) -> bool:
     """
-    Mocks the icepyx.core.query.Query.earthdata_login function
+    Mocks passing credentials in various ways accepted by the `auth.EarthdataAuthMixin` class
 
     Parameters
     ----------
@@ -51,10 +51,6 @@ def earthdata_login(uid=None, pwd=None, email=None, s3token=False) -> bool:
         Earthdata login user ID
     pwd : string, default None
         Earthdata login password
-    email : string, default None
-        Deprecated keyword for backwards compatibility.
-    s3token : boolean, default False
-        Generate AWS s3 ICESat-2 data access credentials
 
     Returns
     -------

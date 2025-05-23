@@ -8,7 +8,6 @@ import numpy as np
 import xarray as xr
 
 from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 from icepyx.core.variables import Variables as Variables
 from icepyx.core.variables import list_of_dict_vals
@@ -49,10 +48,10 @@ def _make_np_datetime(df, keyword):
     if df[keyword].str.endswith("Z"):
         # manually remove 'Z' from datetime to allow conversion to np.datetime64 object
         # (support for timezones is deprecated and causes a seg fault)
-        df.update({keyword: df[keyword].str[:-1].astype(np.datetime64)})
+        df.update({keyword: df[keyword].str[:-1].astype("datetime64[ns]")})
 
     else:
-        df[keyword] = df[keyword].astype(np.datetime64)
+        df[keyword] = df[keyword].astype("datetime64[ns]")
 
     return df
 
@@ -185,22 +184,6 @@ class Read(EarthdataAuthMixin):
         Currently, only xarray.Dataset objects (default) are available.
         Please ask us how to help enable usage of other data objects!
 
-    product : string
-        ICESat-2 data product ID, also known as "short name" (e.g. ATL03).
-        Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
-        **Deprecation warning:** This argument is no longer required and has been deprecated.
-        The dataset product is read from the file metadata.
-
-    filename_pattern : string, default None
-        String that shows the filename pattern as previously required for Intake's path_as_pattern argument.
-        The default describes files downloaded directly from NSIDC (subsetted and non-subsetted) for most products (e.g. ATL06).
-        The ATL11 filename pattern from NSIDC is: 'ATL{product:2}_{rgt:4}{orbitsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5'.
-        **Deprecation warning:** This argument is no longer required and has been deprecated.
-    catalog : string, default None
-        Full path to an Intake catalog for reading in data.
-        If you still need to create a catalog, leave as default.
-        **Deprecation warning:** This argument has been deprecated. Please use the data_source argument to pass in valid data.
-
     Returns
     -------
     read object
@@ -234,29 +217,9 @@ class Read(EarthdataAuthMixin):
         data_source,
         glob_kwargs={},
         out_obj_type=None,  # xr.Dataset,
-        # deprecated arguments
-        product=None,
-        filename_pattern=None,
-        catalog=None,
     ):
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
-
-        # Raise errors for deprecated arguments
-        if filename_pattern:
-            raise DeprecationError(
-                "The `filename_pattern` argument is deprecated. Instead please provide a "
-                "string, list, or glob string to the `data_source` argument."
-            )
-
-        if product:
-            raise DeprecationError("The `product` argument is no longer required.")
-
-        if catalog:
-            raise DeprecationError(
-                "The `catalog` argument has been deprecated and intake is no longer supported. "
-                "Please use the `data_source` argument to specify your dataset instead."
-            )
 
         self._filelist = _parse_source(data_source, glob_kwargs)
 
@@ -312,7 +275,7 @@ class Read(EarthdataAuthMixin):
     # Properties
 
     @property
-    def vars(self):
+    def variables(self):
         """
         Return the variables object associated with the data being read in.
         This instance is generated from the source file or first file in a list of input files
@@ -325,7 +288,7 @@ class Read(EarthdataAuthMixin):
         Examples
         --------
         >>> reader = ipx.Read(path_root, "ATL06", pattern) # doctest: +SKIP
-        >>> reader.vars  # doctest: +SKIP
+        >>> reader.variables  # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 
@@ -553,6 +516,8 @@ class Read(EarthdataAuthMixin):
             pass
 
         ds = ds[grp_spec_vars].swap_dims({"delta_time": "photon_idx"})
+        # add the rest of the dimensions of length 1 from is2ds to ds
+        ds = ds.expand_dims(dim=[dim for dim in is2ds.dims if is2ds[dim].size == 1])
         is2ds = is2ds.assign(ds)
 
         return is2ds
@@ -581,14 +546,14 @@ class Read(EarthdataAuthMixin):
         # this means we need to get/track from each dataset we open some of the metadata,
         # which we include as mandatory variables when constructing the wanted list
 
-        if not self.vars.wanted:
+        if not self.variables.wanted:
             raise AttributeError(
-                "No variables listed in self.vars.wanted. Please use the Variables class "
-                "via self.vars to search for desired variables to read and self.vars.append(...) "
+                "No variables listed in self.variables.wanted. Please use the Variables class "
+                "via self.variables to search for desired variables to read and self.variables.append(...) "
                 "to add variables to the wanted variables list."
             )
 
-        if self.is_s3 is True and len(self.vars.wanted) > 3:
+        if self.is_s3 is True and len(self.variables.wanted) > 3:
             warnings.warn(
                 "Loading more than 3 variables from an s3 object can be prohibitively slow"
                 "Approximate access time (using `.load()`) can exceed 6 minutes per data "
@@ -612,10 +577,10 @@ class Read(EarthdataAuthMixin):
             if self.product == "ATL11":
                 var_list.remove("sc_orient")
 
-            self.vars.append(defaults=False, var_list=var_list)
+            self.variables.append(defaults=False, var_list=var_list)
 
         try:
-            groups_list = list_of_dict_vals(self.vars.wanted)
+            groups_list = list_of_dict_vals(self.variables.wanted)
         except AttributeError:
             pass
 
@@ -812,7 +777,7 @@ class Read(EarthdataAuthMixin):
 
                 # if there are any deeper nested variables,
                 # get those so they have actual coordinates and add them
-                # this may apply to (at a minimum): ATL08
+                # this may apply to (at a minimum): ATL06, ATL08
                 if any(grp_path in grp_path2 for grp_path2 in wanted_groups_list):
                     for grp_path2 in wanted_groups_list:
                         if grp_path in grp_path2:

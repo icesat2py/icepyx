@@ -23,7 +23,7 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
         A list containing the spatial extent OR a string containing a filename.
         If file is False, spatial_extent should be a
         list of coordinates in decimal degrees of [lower-left-longitude,
-        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
+        lower-left-latitude, upper-right-longitude, upper-right-latitude] or
         [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
 
         If file is True, spatial_extent is a string containing the full file path and filename to the
@@ -477,7 +477,7 @@ class Spatial:
             )
 
             # TODO: assess if it's necessary to have a value for _spatial_extent if the input is a file (since it can be plotted from the gdf)
-            extpoly = self._gdf_spat.geometry.unary_union.boundary
+            extpoly = self._gdf_spat.geometry.union_all().boundary
 
             try:
                 arrpoly = (
@@ -628,7 +628,7 @@ class Spatial:
             ):
                 poly = poly.convex_hull
 
-            poly = poly.unary_union
+            poly = poly.union_all()
 
             # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
             poly = poly.simplify(0.05, preserve_topology=True)

@@ -275,7 +275,7 @@ class Read(EarthdataAuthMixin):
     # Properties
 
     @property
-    def vars(self):
+    def variables(self):
         """
         Return the variables object associated with the data being read in.
         This instance is generated from the source file or first file in a list of input files
@@ -288,7 +288,7 @@ class Read(EarthdataAuthMixin):
         Examples
         --------
         >>> reader = ipx.Read(path_root, "ATL06", pattern) # doctest: +SKIP
-        >>> reader.vars  # doctest: +SKIP
+        >>> reader.variables  # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 
@@ -546,14 +546,14 @@ class Read(EarthdataAuthMixin):
         # this means we need to get/track from each dataset we open some of the metadata,
         # which we include as mandatory variables when constructing the wanted list
 
-        if not self.vars.wanted:
+        if not self.variables.wanted:
             raise AttributeError(
-                "No variables listed in self.vars.wanted. Please use the Variables class "
-                "via self.vars to search for desired variables to read and self.vars.append(...) "
+                "No variables listed in self.variables.wanted. Please use the Variables class "
+                "via self.variables to search for desired variables to read and self.variables.append(...) "
                 "to add variables to the wanted variables list."
             )
 
-        if self.is_s3 is True and len(self.vars.wanted) > 3:
+        if self.is_s3 is True and len(self.variables.wanted) > 3:
             warnings.warn(
                 "Loading more than 3 variables from an s3 object can be prohibitively slow"
                 "Approximate access time (using `.load()`) can exceed 6 minutes per data "
@@ -577,10 +577,10 @@ class Read(EarthdataAuthMixin):
             if self.product == "ATL11":
                 var_list.remove("sc_orient")
 
-            self.vars.append(defaults=False, var_list=var_list)
+            self.variables.append(defaults=False, var_list=var_list)
 
         try:
-            groups_list = list_of_dict_vals(self.vars.wanted)
+            groups_list = list_of_dict_vals(self.variables.wanted)
         except AttributeError:
             pass
 

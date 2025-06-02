@@ -336,7 +336,7 @@ def validate_polygon_file(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: str
+    spatial_extent : str
                      A string representing a geospatial polygon file (kml, shp, gpkg)
                      * must provide full file path
                      * recommended for file to only contain 1 polygon.

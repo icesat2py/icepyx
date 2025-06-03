@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosectionlabel",
+    "sphinx.ext.intersphinx",
     "numpydoc",
     # "sphinx.ext.autosummary",
     "myst_nb",
@@ -107,6 +108,14 @@ always_use_bars_union = True
 typehints_defaults = "comma"
 typehints_use_return = True
 
+# Options for intersphinx.
+intersphinx_mapping = {
+    "earthaccess": ("https://earthaccess.readthedocs.io/en/stable/", None),
+    "geopandas": ("https://geopandas.org/en/stable/", None),
+    "harmony": ("https://harmony-py.readthedocs.io/en/stable/", None),
+    "python": ("https://docs.python.org/3/", None),
+    "xarray": ("https://docs.xarray.dev/en/stable/", None),
+}
 
 # -- Options for HTML output -------------------------------------------------
 

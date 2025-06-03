@@ -26,7 +26,7 @@ def _fmt_temporal(start, end, key):
         Start date and time for the period of interest.
     end : date time object
         End date and time for the period of interest.
-    key : string
+    key : str
         Dictionary key, entered as a string, indicating which temporal format is needed.
         Must be one of ['temporal','time'] for data searching and subsetting, respectively.
 
@@ -108,7 +108,7 @@ def _fmt_var_subset_list(vdict):
 
     Parameters
     ----------
-    vdict : dictionary
+    vdict : dict
         Dictionary containing variable names as keys with values containing a list of
         paths to those variables (so each variable key may have multiple paths, e.g. for
         multiple beams)
@@ -163,7 +163,7 @@ def to_string(params):
 
     Parameters
     ----------
-    params : dictionary
+    params : dict
 
     Returns
     -------
@@ -223,14 +223,14 @@ class Parameters(Generic[T]):
 
     Parameters
     ----------
-    partype : string
+    partype : str
         Type of parameter list. Must be one of ['CMR','required','subset']
 
-    values : dictionary, default None
+    values : dict, default None
         Dictionary of already-formatted parameters, if there are any, to avoid
         re-creating them.
 
-    reqtype : string, default None
+    reqtype : str, default None
         For `partype=='required'`, indicates which parameters are required based
         on the type of query. Must be one of ['search','download']
     """

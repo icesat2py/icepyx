@@ -167,7 +167,7 @@ class Read(EarthdataAuthMixin):
 
     Parameters
     ----------
-    data_source : str, Path, list
+    data_source : str, pathlib.Path, list
         A string, pathlib.Path object, or list which specifies the files to be read.
         The string can be either:
         1) the path of a single file

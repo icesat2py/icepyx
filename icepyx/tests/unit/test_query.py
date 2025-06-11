@@ -49,11 +49,3 @@ def test_temporal_properties_cycles_tracks():
     )
     exp = ["No temporal parameters set"]
     assert [obs == exp for obs in (reg_a.dates, reg_a.start_time, reg_a.end_time)]
-
-
-# Tests need to add (given can't do them within docstrings/they're behind NSIDC login)
-# reqparams post-order
-# product_all_info
-# show_custom_options
-# any other skipped test in Query...
-# note that download_granules doesn't show up as skipped in VS testing...

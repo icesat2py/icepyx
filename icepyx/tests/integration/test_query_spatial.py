@@ -1,4 +1,12 @@
-"""Tests for the harmony/earthaccess-enabled `QueryV2` class"""
+"""
+Integration tests for the spatial inputs and subsetting
+within the Query class (and passed to Harmony)
+
+See Also
+--------
+
+./test_query
+"""
 
 import datetime as dt
 import logging

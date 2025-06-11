@@ -1,5 +1,10 @@
 """
-Integration tests
+Integration tests for the Query class
+
+See Also
+--------
+
+./test_query_spatial
 """
 
 import glob
@@ -9,12 +14,6 @@ import pytest
 
 import icepyx as ipx
 from icepyx.core.orders import DataOrder
-
-# Misc notes and needed tests
-# test avail data and subsetting success for each input type
-# (kml, shp, list of coords, bbox)
-# check that downloaded data is subset?
-# or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
 @pytest.fixture(scope="module")

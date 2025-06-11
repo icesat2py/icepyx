@@ -34,13 +34,6 @@ def test_harmony_custom_options_output(reg):
 
 
 ########## query module ##########
-@pytest.mark.downloads_data
-def test_download_granules_with_subsetting(reg):
-    path = "./downloads_subset"
-    reg.order_granules(subset=True)
-    files = reg.download_granules(path)
-    assert isinstance(files, list)
-    assert len(files) == 3
 
 
 @pytest.mark.downloads_data

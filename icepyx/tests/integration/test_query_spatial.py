@@ -55,6 +55,7 @@ def spatial_extent(request):
 
 
 # https://docs.pytest.org/en/8.3.x/example/parametrize.html#indirect-parametrization
+@pytest.mark.downloads_data
 @pytest.mark.parametrize(
     "spatial_extent", ["bounding_box", "polygon", "polygon_file"], indirect=True
 )

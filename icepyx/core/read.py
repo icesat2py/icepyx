@@ -105,7 +105,7 @@ def _parse_source(data_source, glob_kwargs={}) -> list:
 
     Returns
     -------
-    filelist : list of str
+    filelist : list[str]
         List of granule (filenames) to be read in
     """
 
@@ -167,7 +167,7 @@ class Read(EarthdataAuthMixin):
 
     Parameters
     ----------
-    data_source : string, Path, List
+    data_source : str, pathlib.Path, list
         A string, pathlib.Path object, or list which specifies the files to be read.
         The string can be either:
         1) the path of a single file
@@ -181,7 +181,7 @@ class Read(EarthdataAuthMixin):
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
-        Currently, only xarray.Dataset objects (default) are available.
+        Currently, only :class:`xarray.Dataset` objects (default) are available.
         Please ask us how to help enable usage of other data objects!
 
     Returns
@@ -331,9 +331,9 @@ class Read(EarthdataAuthMixin):
 
         Parameters
         ----------
-        is2ds : Xarray dataset
+        is2ds : xarray.Dataset
             Template dataset to add new variables to.
-        ds : Xarray dataset
+        ds : xarray.Dataset
             Dataset containing the group to add
         grp_path : str
             hdf5 group path read into ds
@@ -474,9 +474,9 @@ class Read(EarthdataAuthMixin):
 
         Parameters
         ----------
-        is2ds : Xarray dataset
+        is2ds : xarray.Dataset
             Dataset to add deeply nested variables to.
-        ds : Xarray dataset
+        ds : xarray.Dataset
             Dataset containing improper dimensions for the variables being added
         grp_path : str
             hdf5 group path read into ds
@@ -673,7 +673,7 @@ class Read(EarthdataAuthMixin):
             Currently tested for locally downloaded files;
             untested but hopefully works for s3 stored cloud files.
 
-        groups_list : list of strings
+        groups_list : list[str]
             List of full paths to data variables within the file.
             e.g. ['orbit_info/sc_orient', 'gt1l/land_ice_segments/h_li',
             'gt1l/land_ice_segments/latitude', 'gt1l/land_ice_segments/longitude']

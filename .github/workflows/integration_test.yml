@@ -53,7 +53,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: "Run auth tests"
+      - name: "Run integration tests"
         env:
           EARTHDATA_USERNAME: "icepyx_devteam"
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"

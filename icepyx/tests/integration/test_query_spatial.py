@@ -1,4 +1,12 @@
-"""Tests for the harmony/earthaccess-enabled `QueryV2` class"""
+"""
+Integration tests for the spatial inputs and subsetting
+within the Query class (and passed to Harmony)
+
+See Also
+--------
+
+./test_query
+"""
 
 import datetime as dt
 import logging
@@ -47,6 +55,7 @@ def spatial_extent(request):
 
 
 # https://docs.pytest.org/en/8.3.x/example/parametrize.html#indirect-parametrization
+@pytest.mark.downloads_data
 @pytest.mark.parametrize(
     "spatial_extent", ["bounding_box", "polygon", "polygon_file"], indirect=True
 )

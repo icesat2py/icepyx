@@ -1,8 +1,7 @@
 name: "Integration test"
-# NOTE: This runs all integration tests except those that download data.
+# NOTE: This runs all integration tests, including some that download data.
 # It will not automatically run integration tests (some of which require auth)
 # on PRs from forks.
-# Integration tests that download data are run separately.
 
 
 on:
@@ -54,13 +53,15 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: "Run auth tests"
+      - name: "Run integration tests"
         env:
           EARTHDATA_USERNAME: "icepyx_devteam"
           EARTHDATA_PASSWORD: "${{ secrets.EARTHDATA_PASSWORD }}"
           NSIDC_LOGIN: "${{ secrets.EARTHDATA_PASSWORD }}"
         run: |
           pytest -s icepyx/tests/integration --verbose --cov app
+        # Only run tests that [do not] download data
+        # pytest icepyx/tests/integration --verbose --cov app -m "[not] downloads_data"
 
       - name: "Upload coverage report"
         uses: "codecov/codecov-action@v5.4.3"

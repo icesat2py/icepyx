@@ -31,7 +31,7 @@ class HarmonyApi(EarthdataAuthMixin):
     ----------
     harmony_client : harmony.Client
         The Harmony API client.
-    job_ids : list of str
+    job_ids : list[str]
         List of job IDs that have been placed with the Harmony API.
 
     """
@@ -85,13 +85,13 @@ class HarmonyApi(EarthdataAuthMixin):
         ----------
         concept_id : str
             The concept ID of the dataset.
-        spatial : harmony.BBox, str, harmony.WKT, or None, optional
+        spatial : harmony.BBox, str, harmony.request.WKT, or None, optional
             The spatial extent for the order.
         temporal : HarmonyTemporal or None, optional
             The temporal range for the order.
         shape : str or None, optional
             A spatial shape file for filtering.
-        granule_name : list of str, optional
+        granule_name : list[str], optional
             Specific granule names to include in the order.
         skip_preview : bool, optional
             Whether to bypass preview mode if the order exceeds 300 granules.
@@ -234,13 +234,13 @@ class HarmonyApi(EarthdataAuthMixin):
         ----------
         concept_id : str
             The concept ID of the dataset.
-        spatial : harmony.BBox, str, harmony.WKT, or None, optional
+        spatial : harmony.BBox, str, harmony.request.WKT, or None, optional
             The spatial extent for the order.
         temporal : HarmonyTemporal or None, optional
             The temporal range for the order.
         shape : str or None, optional
             A spatial shape file for filtering.
-        granule_name : list of str, optional
+        granule_name : list[str], optional
             Specific granule names to include in the order.
         skip_preview : bool, optional
             Whether to bypass preview mode if the order exceeds 300 granules.

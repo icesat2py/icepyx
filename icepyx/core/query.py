@@ -454,12 +454,10 @@ class Query(GenQuery, EarthdataAuthMixin):
         version="1.4.0", reason="order_vars() is going away, use variables() instead"
     )
     def order_vars(self) -> Union[Variables, None]:
-        """This used to print the list of vasriables for subsetting, Harmony doesn't provide that for IS2 datasets.
-        we do need to implement a class that gets the variables even if it'sm only for listing.
+        """This used to print the list of variables for subsetting,
+        Harmony doesn't provide that for IS2 datasets.
         """
-        logging.warning(
-            "Deprecated: order_vars() is going away, use variables() instead"
-        )
+        logging.warning("Deprecated: order_vars is going away, use variables instead")
         if self.product:
             self._variables = Variables(product=self.product)  # type: ignore[no-any-return]
             return self._variables
@@ -467,6 +465,20 @@ class Query(GenQuery, EarthdataAuthMixin):
 
     @property
     def variables(self) -> Variables:
+        """
+        Return the order variables object.
+        This instance is generated when data is ordered from the NSIDC.
+
+        See Also
+        --------
+        variables.Variables
+
+        Examples
+        --------
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28']) # doctest: +SKIP
+        >>> reg_a.variables # doctest: +SKIP
+        <icepyx.core.variables.Variables at [location]>
+        """
         if not hasattr(self, "_variables"):
             self._variables = Variables(product=self.product)
         return self._variables

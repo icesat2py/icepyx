@@ -57,7 +57,7 @@ class DataOrder:
     def _repr_html_(self) -> str:
         # Create a link using the <a> tag
         status = self.status()
-        link_html = f'<a target="_blank" href="{self.HARMONY_BASE_URL}{self.job_id}">View Details</a>'
+        link_html = f'<a target="_blank" href="{self.HARMONY_BASE_URL.rstrip("/")}/{self.job_id}">View Details</a>'
         # Create a self-contained HTML table with a single row
         html = f"""
         <table border="1">

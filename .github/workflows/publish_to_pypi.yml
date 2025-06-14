@@ -60,13 +60,13 @@ jobs:
 
   publish-to-testpypi:
     name: Publish Python 🐍 distribution 📦 to TestPyPI
-    if: github.repository == 'GenericMappingTools/pygmt'
+    if: github.repository == 'GenericMappingTools/icepyx'
     needs:
       - build
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/project/pygmt
+      url: https://test.pypi.org/project/icepyx
     permissions:
       id-token: write # IMPORTANT: mandatory for trusted OIDC publishing
 

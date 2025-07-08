@@ -19,13 +19,13 @@ class Argo(DataSet):
         area of interest supplied via the spatial parameter of the QUEST object
     toi :
         time period of interest supplied via the temporal parameter of the QUEST object
-    params : list of str, default ["temperature"]
+    params : list[str], default ["temperature"]
         A list of strings, where each string is a requested parameter.
         Only metadata for profiles with the requested parameters are returned.
         To search for all parameters, use `params=["all"]`;
         be careful using all for floats with BGC data, as this may be result in a large download.
     presRange : str, default None
-        The pressure range (which correllates with depth) to search for data within.
+        The pressure range (which correlates with depth) to search for data within.
         Input as a "shallow-limit,deep-limit" string.
 
     See Also
@@ -223,10 +223,10 @@ class Argo(DataSet):
             valid_params = self._valid_params()
             # checks that params are valid
             for i in params:
-                assert (
-                    i in valid_params
-                ), "Parameter '{0}' is not valid. Valid parameters are {1}".format(
-                    i, valid_params
+                assert i in valid_params, (
+                    "Parameter '{0}' is not valid. Valid parameters are {1}".format(
+                        i, valid_params
+                    )
                 )
 
         return list(set(params))
@@ -244,7 +244,7 @@ class Argo(DataSet):
 
         Parameters
         ---------
-        params : list of str, default None
+        params : list[str], default None
             A list of strings, where each string is a requested parameter.
             This kwarg is used to replace the existing list in `self.params`.
             Do not submit this kwarg if you would like to use the existing `self.params` list.
@@ -252,11 +252,11 @@ class Argo(DataSet):
             To search for all parameters, use `params=["all"]`;
             be careful using all for floats with BGC data, as this may be result in a large download.
         presRange : str, default None
-            The pressure range (which correllates with depth) to search for data within.
+            The pressure range (which correlates with depth) to search for data within.
             This kwarg is used to replace the existing pressure range in `self.presRange`.
             Do not submit this kwarg if you would like to use the existing `self.presRange` values.
             Input as a "shallow-limit,deep-limit" string.
-        printURL : boolean, default False
+        printURL : bool, default False
             Print the URL of the data request. Useful for debugging and when no data is returned.
 
         Returns
@@ -332,7 +332,7 @@ class Argo(DataSet):
         ---------
         profile_number: str
             String containing the argo profile ID of the data being downloaded.
-        printURL: boolean, default False
+        printURL: bool, default False
             Print the URL of the data request. Useful for debugging and when no data is returned.
 
         Returns
@@ -413,7 +413,7 @@ class Argo(DataSet):
 
         Parameters
         ----------
-        params : list of str, default None
+        params : list[str], default None
             A list of strings, where each string is a requested parameter.
             This kwarg is used to replace the existing list in `self.params`.
             Do not submit this kwarg if you would like to use the existing `self.params` list.
@@ -421,11 +421,11 @@ class Argo(DataSet):
             To search for all parameters, use `params=["all"]`.
             For a list of available parameters, see: `reg._valid_params`
         presRange : str, default None
-            The pressure range (which correllates with depth) to search for data within.
+            The pressure range (which correlates with depth) to search for data within.
             This kwarg is used to replace the existing pressure range in `self.presRange`.
             Do not submit this kwarg if you would like to use the existing `self.presRange` values.
             Input as a "shallow-limit,deep-limit" string.
-        keep_existing : boolean, default True
+        keep_existing : bool, default True
             Provides the option to clear any existing downloaded data before downloading more.
 
         Returns

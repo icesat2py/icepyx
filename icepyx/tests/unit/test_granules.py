@@ -14,10 +14,6 @@ from icepyx.core.granules import Granules as Granules
 
 # #@patch('my_module.__get_input', return_value='y')
 
-# @pytest.fixture
-# def session(reg_a):
-#     return reg_a.earthdata_login(os.getenv('NSIDC_LOGIN'))
-
 # check that agent key is added in event of no subsetting
 
 
@@ -641,5 +637,5 @@ def test_avail_granule_CMR_error():
     ermsg = "An error was returned from NSIDC in regards to your query: temporal start datetime is invalid: [badinput] is not a valid datetime."
     with pytest.raises(NsidcQueryError, match=re.escape(ermsg)):
         CMRparams = {"temporal": "badinput"}
-        reqparams = {"version": "003", "short_name": "ATL08", "page_size": 1}
-        Granules().get_avail(CMRparams=CMRparams, reqparams=reqparams)
+        # reqparams = {"version": "003", "short_name": "ATL08", "page_size": 1} deprecated
+        Granules().get_avail(CMRparams=CMRparams)

@@ -1,9 +1,10 @@
+import json
 import os
 
 import numpy as np
+import requests
 
 from icepyx.core.auth import EarthdataAuthMixin
-from icepyx.core.exceptions import DeprecationError
 import icepyx.core.is2ref as is2ref
 import icepyx.core.validate_inputs as val
 
@@ -28,23 +29,18 @@ class Variables(EarthdataAuthMixin):
 
     Parameters
     ----------
-    vartype : string
-        This argument is deprecated. The vartype will be inferred from data_source.
-        One of ['order', 'file'] to indicate the source of the input variables.
-        This field will be auto-populated when a variable object is created as an
-        attribute of a query object.
-    path : string, default None
+    path : str, default None
         The path to a local Icesat-2 file. The variables list will contain the variables
         present in this file. Either path or product are required input arguments.
-    product : string, default None
+    product : str, default None
         Properly formatted string specifying a valid ICESat-2 product. The variables list will
         contain all available variables for this product. Either product or path are required
         input arguments.
-    version : string, default None
+    version : str, default None
         Properly formatted string specifying a valid version of the ICESat-2 product.
-    avail : dictionary, default None
+    avail : dict, default None
         Dictionary (key:values) of available variable names (keys) and paths (values).
-    wanted : dictionary, default None
+    wanted : dict, default None
         As avail, but for the desired list of variables
     auth : earthaccess.auth.Auth, default None
         An earthaccess authentication object. Available as an argument so an existing
@@ -54,7 +50,6 @@ class Variables(EarthdataAuthMixin):
 
     def __init__(
         self,
-        vartype=None,
         path=None,
         product=None,
         version=None,
@@ -62,14 +57,6 @@ class Variables(EarthdataAuthMixin):
         wanted=None,
         auth=None,
     ):
-        # Deprecation error
-        if vartype in ["order", "file"]:
-            raise DeprecationError(
-                "It is no longer required to specify the variable type `vartype`. Instead please ",
-                "provide either the path to a local file (arg: `path`) or the product you would ",
-                "like variables for (arg: `product`).",
-            )
-
         if path and product:
             raise TypeError(
                 "Please provide either a path or a product. If a path is provided ",
@@ -126,7 +113,7 @@ class Variables(EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='5') # doctest: +SKIP
-        >>> reg_a.order_vars.avail() # doctest: +SKIP
+        >>> reg_a.variables.avail() # doctest: +SKIP
         ['ancillary_data/atlas_sdp_gps_epoch',
         'ancillary_data/control',
         'ancillary_data/data_end_utc',
@@ -139,9 +126,22 @@ class Variables(EarthdataAuthMixin):
 
         if not hasattr(self, "_avail") or self._avail is None:
             if not hasattr(self, "path") or self.path.startswith("s3"):
-                self._avail = is2ref._get_custom_options(
-                    self.session, self.product, self.version
-                )["variables"]
+                try:
+                    url = "https://raw.githubusercontent.com/icesat2py/is2_test_data/refs/heads/main/is2_test_data/data/is2variables.json"
+                    response = requests.get(url, headers={"Accept": "application/json"})
+                    response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+                    vars_dict = json.loads(response.content)
+                except requests.HTTPError as e:
+                    raise e
+
+                try:
+                    self._avail = vars_dict[self.product]
+
+                except KeyError:
+                    print(
+                        f"{self.product} does not have a list of available variables."
+                    )
+
             else:
                 # If a path was given, use that file to read the variables
                 import h5py
@@ -179,15 +179,15 @@ class Variables(EarthdataAuthMixin):
 
         Parameters
         ----------
-        varlist : list of strings
+        varlist : list[str]
             List of full variable paths to be parsed.
 
-        tiered : boolean, default True
+        tiered : bool, default True
             Whether to return the paths (sans variable name) as a nested list of component strings
             (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments']])
             or a single list of path strings (e.g. ['orbit_info','ancillary_data','gt1l/land_ice_segments'])
 
-        tiered_vars : boolean, default False
+        tiered_vars : bool, default False
             Whether or not to append a list of the variable names to the nested list of component strings
             (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments'],
                 ['sc_orient','atlas_sdp_gps_epoch','h_li']]))
@@ -195,7 +195,7 @@ class Variables(EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1') # doctest: +SKIP
-        >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail()) # doctest: +SKIP
+        >>> var_dict, paths = reg_a.variables.parse_var_list(reg_a.variables.avail()) # doctest: +SKIP
         >>> var_dict # doctest: +SKIP
         {'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],
         .
@@ -302,13 +302,13 @@ class Variables(EarthdataAuthMixin):
         allpaths : list
             List of all potential path keywords
 
-        var_list : list of strings, default None
+        var_list : list[str], default None
             List of user requested variables
 
-        beam_list : list of strings, default None
+        beam_list : list[str], default None
             List of user requested beams
 
-        keyword_list : list of strings, default None
+        keyword_list : list[str], default None
             List of user requested variable path keywords
 
         """
@@ -429,22 +429,22 @@ class Variables(EarthdataAuthMixin):
 
         Parameters
         ----------
-        defaults : boolean, default False
+        defaults : bool, default False
             Include the variables in the default variable list. Defaults are defined per-data product.
             When specified in conjunction with a var_list, default variables not on the user-
             specified list will be added to the order.
 
-        var_list : list of strings, default None
+        var_list : list[str], default None
             A list of variables to request, if not all available variables are wanted.
             A list of available variables can be obtained by entering `var_list=['']` into the function.
 
-        beam_list : list of strings, default None
+        beam_list : list[str], default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
             For ATL11, acceptable values are ['pt1','pt2','pt3'].
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
-        keyword_list : list of strings, default None
+        keyword_list : list[str], default None
             A list of subdirectory names (keywords), from any hierarchy level within the data structure, to select variables within
             the product that include that keyword in their path. A list of available keywords can be obtained by
             entering `keyword_list=['']` into the function.
@@ -461,19 +461,19 @@ class Variables(EarthdataAuthMixin):
 
         To add all variables related to a specific ICESat-2 beam
 
-        >>> reg_a.order_vars.append(beam_list=['gt1r']) # doctest: +SKIP
+        >>> reg_a.variables.append(beam_list=['gt1r']) # doctest: +SKIP
 
         To include the default variables:
 
-        >>> reg_a.order_vars.append(defaults=True) # doctest: +SKIP
+        >>> reg_a.variables.append(defaults=True) # doctest: +SKIP
 
         To add specific variables in orbit_info
 
-        >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
+        >>> reg_a.variables.append(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
 
         To add all variables and paths in ancillary_data
 
-        >>> reg_a.order_vars.append(keyword_list=['ancillary_data']) # doctest: +SKIP
+        >>> reg_a.variables.append(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
         assert not (
@@ -481,7 +481,9 @@ class Variables(EarthdataAuthMixin):
             and var_list is None
             and beam_list is None
             and keyword_list is None
-        ), "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
+        ), (
+            "You must enter parameters to add to a variable subset list. If you do not want to subset by variable, ensure your is2.subsetparams dictionary does not contain the key 'Coverage'."
+        )
 
         final_vars = {}
 
@@ -525,20 +527,20 @@ class Variables(EarthdataAuthMixin):
 
         Parameters
         ----------
-        all : boolean, default False
+        all : bool, default False
             Remove all variables and paths from the wanted list.
 
-        var_list : list of strings, default None
+        var_list : list[str], default None
             A list of variables to request, if not all available variables are wanted.
             A list of available variables can be obtained by entering `var_list=['']` into the function.
 
-        beam_list : list of strings, default None
+        beam_list : list[str], default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
             For ATL11, acceptable values are ['pt1','pt2','pt3'].
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
-        keyword_list : list of strings, default None
+        keyword_list : list[str], default None
             A list of subdirectory names (keywords), from any hierarchy level within the data structure, to select variables within
             the product that include that keyword in their path.
 
@@ -554,19 +556,19 @@ class Variables(EarthdataAuthMixin):
 
         To clear the list of wanted variables
 
-        >>> reg_a.order_vars.remove(all=True) # doctest: +SKIP
+        >>> reg_a.variables.remove(all=True) # doctest: +SKIP
 
         To remove all variables related to a specific ICESat-2 beam
 
-        >>> reg_a.order_vars.remove(beam_list=['gt1r']) # doctest: +SKIP
+        >>> reg_a.variables.remove(beam_list=['gt1r']) # doctest: +SKIP
 
         To remove specific variables in orbit_info
 
-        >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
+        >>> reg_a.variables.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
 
         To remove all variables and paths in ancillary_data
 
-        >>> reg_a.order_vars.remove(keyword_list=['ancillary_data']) # doctest: +SKIP
+        >>> reg_a.variables.remove(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
         if not hasattr(self, "wanted") or self.wanted is None:
@@ -579,7 +581,9 @@ class Variables(EarthdataAuthMixin):
             and var_list is None
             and beam_list is None
             and keyword_list is None
-        ), "You must specify which variables/paths/beams you would like to remove from your wanted list."
+        ), (
+            "You must specify which variables/paths/beams you would like to remove from your wanted list."
+        )
 
         # if not hasattr(self, 'avail'): self.get_avail()
         # vgrp, paths = self.parse_var_list(self.avail)

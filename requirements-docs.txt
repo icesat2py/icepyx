@@ -2,7 +2,6 @@ gitpython
 jupyterlab
 linkify-it-py
 myst-nb
-myst-parser
 nbsphinx
 numpydoc
 pybtex

@@ -41,6 +41,7 @@ extensions = [
     "numpydoc",
     # "sphinx.ext.autosummary",
     "myst_nb",
+    "myst_parser",
     "contributors",  # custom extension, from pandas
     "sphinxcontrib.bibtex",
     "sphinx_design",

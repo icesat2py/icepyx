@@ -30,7 +30,7 @@ jobs:
       matrix:
         python-version: ["3.11", "3.13"] #NOTE: min and max Python versions supported by icepyx
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v5"
         with:
           fetch-depth: 0
 
@@ -43,6 +43,6 @@ jobs:
           pytest icepyx/tests/unit --verbose --cov app
 
       - name: "Upload coverage report"
-        uses: "codecov/codecov-action@v5.4.3"
+        uses: "codecov/codecov-action@v5.5.0"
         with:
           token: "${{ secrets.CODECOV_TOKEN }}"

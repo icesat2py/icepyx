@@ -1,5 +1,10 @@
 """
-Integration tests
+Integration tests for the Query class
+
+See Also
+--------
+
+./test_query_spatial
 """
 
 import glob
@@ -9,12 +14,6 @@ import pytest
 
 import icepyx as ipx
 from icepyx.core.orders import DataOrder
-
-# Misc notes and needed tests
-# test avail data and subsetting success for each input type
-# (kml, shp, list of coords, bbox)
-# check that downloaded data is subset?
-# or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
 @pytest.fixture(scope="module")
@@ -35,13 +34,6 @@ def test_harmony_custom_options_output(reg):
 
 
 ########## query module ##########
-@pytest.mark.downloads_data
-def test_download_granules_with_subsetting(reg):
-    path = "./downloads_subset"
-    reg.order_granules(subset=True)
-    files = reg.download_granules(path)
-    assert isinstance(files, list)
-    assert len(files) == 3
 
 
 @pytest.mark.downloads_data

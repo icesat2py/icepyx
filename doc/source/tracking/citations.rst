@@ -43,8 +43,10 @@ Presentations that feature or explain icepyx
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
 
+    2024_IS2HW
     quest2023agu
     selper2023
+    2023_IS2HW
     js2022agu
     2022_IS2-HW-tutorials
     js2021agu

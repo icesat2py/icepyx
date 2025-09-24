@@ -429,8 +429,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         super().__init__(spatial_extent, date_range, start_time, end_time, **kwargs)
 
         self._version = val.prod_version(is2ref.latest_version(self._prod), version)
-        self._cycles = cycles
-        self._tracks = tracks
+        self._cycles = val.cycles(cycles)
+        self._tracks = val.tracks(tracks)
 
         # initialize authentication properties
         EarthdataAuthMixin.__init__(self)
@@ -438,7 +438,6 @@ class Query(GenQuery, EarthdataAuthMixin):
         if not hasattr(self, "_temporal"):
             self._temporal = None  # type: ignore[reportIncompatibleVariableOverride]
         if cycles or tracks:
-            # get lists of available ICESat-2 cycles and tracks
             # create list of CMR parameters for granule name
             self._readable_granule_name = apifmt._fmt_readable_granules(
                 self._prod, cycles=self.cycles, tracks=self.tracks

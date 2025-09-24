@@ -440,7 +440,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         if cycles or tracks:
             # create list of CMR parameters for granule name
             self._readable_granule_name = apifmt._fmt_readable_granules(
-                self._prod, cycles=self.cycles, tracks=self.tracks
+                self._prod, cycles=self._cycles, tracks=self._tracks
             )
 
         logging.basicConfig(level=logging.WARNING)
@@ -614,13 +614,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a.cycles
         ['03', '04']
         """
-        if not hasattr(self, "_cycles"):
-            return ["No orbital[cycle] parameters set"]
-        else:
-            if self._cycles is None:
-                return ["No orbital[cycle] parameters set"]
 
-            return sorted(set(self._cycles))
+        if self._cycles is None:
+            return ["No orbital[cycle] parameters set"]
+
+        return sorted(set(self._cycles))
 
     @property
     def tracks(self):
@@ -637,12 +635,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         >>> reg_a.tracks
         ['0849', '0902']
         """
-        if not hasattr(self, "_tracks"):
+
+        if self._tracks is None:
             return ["No orbital[tracks] parameters set"]
-        else:
-            if self._tracks is None:
-                return ["No orbital[tracks] parameters set"]
-            return sorted(set(self._tracks))
+
+        return sorted(set(self._tracks))
 
     # ----------------------------------------------------------------------
     # Methods - Get and display neatly information at the product level

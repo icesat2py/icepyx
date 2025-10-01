@@ -66,6 +66,6 @@ jobs:
         # pytest icepyx/tests/integration --verbose --cov app -m "[not] downloads_data"
 
       - name: "Upload coverage report"
-        uses: "codecov/codecov-action@v5.5.0"
+        uses: "codecov/codecov-action@v5.5.1"
         with:
           token: "${{ secrets.CODECOV_TOKEN }}"

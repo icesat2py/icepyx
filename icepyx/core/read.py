@@ -105,7 +105,7 @@ def _parse_source(data_source, glob_kwargs={}) -> list:
 
     Returns
     -------
-    filelist : list of str
+    filelist : list[str]
         List of granule (filenames) to be read in
     """
 
@@ -167,7 +167,7 @@ class Read(EarthdataAuthMixin):
 
     Parameters
     ----------
-    data_source : string, Path, List
+    data_source : str, pathlib.Path, list
         A string, pathlib.Path object, or list which specifies the files to be read.
         The string can be either:
         1) the path of a single file
@@ -181,7 +181,7 @@ class Read(EarthdataAuthMixin):
 
     out_obj_type : object, default xarray.Dataset
         The desired format for the data to be read in.
-        Currently, only xarray.Dataset objects (default) are available.
+        Currently, only :class:`xarray.Dataset` objects (default) are available.
         Please ask us how to help enable usage of other data objects!
 
     Returns
@@ -275,7 +275,7 @@ class Read(EarthdataAuthMixin):
     # Properties
 
     @property
-    def vars(self):
+    def variables(self):
         """
         Return the variables object associated with the data being read in.
         This instance is generated from the source file or first file in a list of input files
@@ -288,7 +288,7 @@ class Read(EarthdataAuthMixin):
         Examples
         --------
         >>> reader = ipx.Read(path_root, "ATL06", pattern) # doctest: +SKIP
-        >>> reader.vars  # doctest: +SKIP
+        >>> reader.variables  # doctest: +SKIP
         <icepyx.core.variables.Variables at [location]>
         """
 
@@ -331,9 +331,9 @@ class Read(EarthdataAuthMixin):
 
         Parameters
         ----------
-        is2ds : Xarray dataset
+        is2ds : xarray.Dataset
             Template dataset to add new variables to.
-        ds : Xarray dataset
+        ds : xarray.Dataset
             Dataset containing the group to add
         grp_path : str
             hdf5 group path read into ds
@@ -474,9 +474,9 @@ class Read(EarthdataAuthMixin):
 
         Parameters
         ----------
-        is2ds : Xarray dataset
+        is2ds : xarray.Dataset
             Dataset to add deeply nested variables to.
-        ds : Xarray dataset
+        ds : xarray.Dataset
             Dataset containing improper dimensions for the variables being added
         grp_path : str
             hdf5 group path read into ds
@@ -546,14 +546,14 @@ class Read(EarthdataAuthMixin):
         # this means we need to get/track from each dataset we open some of the metadata,
         # which we include as mandatory variables when constructing the wanted list
 
-        if not self.vars.wanted:
+        if not self.variables.wanted:
             raise AttributeError(
-                "No variables listed in self.vars.wanted. Please use the Variables class "
-                "via self.vars to search for desired variables to read and self.vars.append(...) "
+                "No variables listed in self.variables.wanted. Please use the Variables class "
+                "via self.variables to search for desired variables to read and self.variables.append(...) "
                 "to add variables to the wanted variables list."
             )
 
-        if self.is_s3 is True and len(self.vars.wanted) > 3:
+        if self.is_s3 is True and len(self.variables.wanted) > 3:
             warnings.warn(
                 "Loading more than 3 variables from an s3 object can be prohibitively slow"
                 "Approximate access time (using `.load()`) can exceed 6 minutes per data "
@@ -577,10 +577,10 @@ class Read(EarthdataAuthMixin):
             if self.product == "ATL11":
                 var_list.remove("sc_orient")
 
-            self.vars.append(defaults=False, var_list=var_list)
+            self.variables.append(defaults=False, var_list=var_list)
 
         try:
-            groups_list = list_of_dict_vals(self.vars.wanted)
+            groups_list = list_of_dict_vals(self.variables.wanted)
         except AttributeError:
             pass
 
@@ -591,7 +591,13 @@ class Read(EarthdataAuthMixin):
                 # If path is an s3 path create an s3fs filesystem to reference the file
                 # TODO would it be better to be able to generate an s3fs session from the Mixin?
                 s3 = earthaccess.get_s3fs_session(daac="NSIDC")
-                file = s3.open(file, "rb")
+                # Goal: delegate most of the granule reading logic to earthaccess (xref https://github.com/icesat2py/icepyx/issues/575)
+                # See also: https://github.com/icesat2py/icepyx/pull/677/files#r2083622039
+                fsspec_params = {
+                    "cache_type": "blockcache",
+                    "block_size": 8 * 1024 * 1024,
+                }
+                file = s3.open(file, "rb", **fsspec_params)
 
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
@@ -673,7 +679,7 @@ class Read(EarthdataAuthMixin):
             Currently tested for locally downloaded files;
             untested but hopefully works for s3 stored cloud files.
 
-        groups_list : list of strings
+        groups_list : list[str]
             List of full paths to data variables within the file.
             e.g. ['orbit_info/sc_orient', 'gt1l/land_ice_segments/h_li',
             'gt1l/land_ice_segments/latitude', 'gt1l/land_ice_segments/longitude']

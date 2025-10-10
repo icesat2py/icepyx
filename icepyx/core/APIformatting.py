@@ -1,13 +1,13 @@
 """Generate and format information for submitting to API (CMR and NSIDC)."""
 
 import datetime as dt
-from typing import Any, Generic, Literal, Optional, TypeVar, Union, overload
+from typing import Any, Generic, Literal, Optional, TypeVar, Union
 
 from icepyx.core.exceptions import ExhaustiveTypeGuardException, TypeGuardException
 from icepyx.core.types import (
     CMRParams,
-    EGIParamsSubset,
-    EGIRequiredParams,
+    CMRParamsWithBbox,
+    CMRParamsWithPolygon,
 )
 
 # ----------------------------------------------------------------------
@@ -26,7 +26,7 @@ def _fmt_temporal(start, end, key):
         Start date and time for the period of interest.
     end : date time object
         End date and time for the period of interest.
-    key : string
+    key : str
         Dictionary key, entered as a string, indicating which temporal format is needed.
         Must be one of ['temporal','time'] for data searching and subsetting, respectively.
 
@@ -108,7 +108,7 @@ def _fmt_var_subset_list(vdict):
 
     Parameters
     ----------
-    vdict : dictionary
+    vdict : dict
         Dictionary containing variable names as keys with values containing a list of
         paths to those variables (so each variable key may have multiple paths, e.g. for
         multiple beams)
@@ -163,7 +163,7 @@ def to_string(params):
 
     Parameters
     ----------
-    params : dictionary
+    params : dict
 
     Returns
     -------
@@ -200,32 +200,11 @@ class _FmtedKeysDescriptor:
     See: https://github.com/microsoft/pyright/issues/3071#issuecomment-1043978070
     """
 
-    @overload
-    def __get__(
-        self,
-        instance: 'Parameters[Literal["CMR"]]',
-        owner: Any,
-    ) -> CMRParams: ...
-
-    @overload
-    def __get__(
-        self,
-        instance: 'Parameters[Literal["required"]]',
-        owner: Any,
-    ) -> EGIRequiredParams: ...
-
-    @overload
-    def __get__(
-        self,
-        instance: 'Parameters[Literal["subset"]]',
-        owner: Any,
-    ) -> EGIParamsSubset: ...
-
     def __get__(
         self,
         instance: "Parameters",
         owner: Any,
-    ) -> Union[CMRParams, EGIRequiredParams, EGIParamsSubset]:
+    ) -> Union[CMRParams, CMRParamsWithBbox, CMRParamsWithPolygon, dict[str, Any]]:
         """
         Returns the dictionary of formatted keys associated with the
         parameter object.
@@ -244,14 +223,14 @@ class Parameters(Generic[T]):
 
     Parameters
     ----------
-    partype : string
+    partype : str
         Type of parameter list. Must be one of ['CMR','required','subset']
 
-    values : dictionary, default None
+    values : dict, default None
         Dictionary of already-formatted parameters, if there are any, to avoid
         re-creating them.
 
-    reqtype : string, default None
+    reqtype : str, default None
         For `partype=='required'`, indicates which parameters are required based
         on the type of query. Must be one of ['search','download']
     """
@@ -259,7 +238,6 @@ class Parameters(Generic[T]):
     partype: T
     _reqtype: Optional[Literal["search", "download"]]
     fmted_keys = _FmtedKeysDescriptor()
-    # _fmted_keys: Union[CMRParams, EGISpecificRequiredParams, EGIParamsSubset]
 
     def __init__(
         self,
@@ -425,6 +403,9 @@ class Parameters(Generic[T]):
             kwargs = {}
         else:
             self._check_valid_keys()
+
+        if "concept_id" in kwargs:
+            self._fmted_keys.update({"concept_id": kwargs["concept_id"]})
 
         if self.partype == "required":
             if not self._reqtype:

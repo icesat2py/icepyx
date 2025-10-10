@@ -29,18 +29,18 @@ class Variables(EarthdataAuthMixin):
 
     Parameters
     ----------
-    path : string, default None
+    path : str, default None
         The path to a local Icesat-2 file. The variables list will contain the variables
         present in this file. Either path or product are required input arguments.
-    product : string, default None
+    product : str, default None
         Properly formatted string specifying a valid ICESat-2 product. The variables list will
         contain all available variables for this product. Either product or path are required
         input arguments.
-    version : string, default None
+    version : str, default None
         Properly formatted string specifying a valid version of the ICESat-2 product.
-    avail : dictionary, default None
+    avail : dict, default None
         Dictionary (key:values) of available variable names (keys) and paths (values).
-    wanted : dictionary, default None
+    wanted : dict, default None
         As avail, but for the desired list of variables
     auth : earthaccess.auth.Auth, default None
         An earthaccess authentication object. Available as an argument so an existing
@@ -113,7 +113,7 @@ class Variables(EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='5') # doctest: +SKIP
-        >>> reg_a.order_vars.avail() # doctest: +SKIP
+        >>> reg_a.variables.avail() # doctest: +SKIP
         ['ancillary_data/atlas_sdp_gps_epoch',
         'ancillary_data/control',
         'ancillary_data/data_end_utc',
@@ -179,15 +179,15 @@ class Variables(EarthdataAuthMixin):
 
         Parameters
         ----------
-        varlist : list of strings
+        varlist : list[str]
             List of full variable paths to be parsed.
 
-        tiered : boolean, default True
+        tiered : bool, default True
             Whether to return the paths (sans variable name) as a nested list of component strings
             (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments']])
             or a single list of path strings (e.g. ['orbit_info','ancillary_data','gt1l/land_ice_segments'])
 
-        tiered_vars : boolean, default False
+        tiered_vars : bool, default False
             Whether or not to append a list of the variable names to the nested list of component strings
             (e.g. [['orbit_info', 'ancillary_data', 'gt1l'],['none','none','land_ice_segments'],
                 ['sc_orient','atlas_sdp_gps_epoch','h_li']]))
@@ -195,7 +195,7 @@ class Variables(EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='1') # doctest: +SKIP
-        >>> var_dict, paths = reg_a.order_vars.parse_var_list(reg_a.order_vars.avail()) # doctest: +SKIP
+        >>> var_dict, paths = reg_a.variables.parse_var_list(reg_a.variables.avail()) # doctest: +SKIP
         >>> var_dict # doctest: +SKIP
         {'atlas_sdp_gps_epoch': ['ancillary_data/atlas_sdp_gps_epoch'],
         .
@@ -302,13 +302,13 @@ class Variables(EarthdataAuthMixin):
         allpaths : list
             List of all potential path keywords
 
-        var_list : list of strings, default None
+        var_list : list[str], default None
             List of user requested variables
 
-        beam_list : list of strings, default None
+        beam_list : list[str], default None
             List of user requested beams
 
-        keyword_list : list of strings, default None
+        keyword_list : list[str], default None
             List of user requested variable path keywords
 
         """
@@ -429,22 +429,22 @@ class Variables(EarthdataAuthMixin):
 
         Parameters
         ----------
-        defaults : boolean, default False
+        defaults : bool, default False
             Include the variables in the default variable list. Defaults are defined per-data product.
             When specified in conjunction with a var_list, default variables not on the user-
             specified list will be added to the order.
 
-        var_list : list of strings, default None
+        var_list : list[str], default None
             A list of variables to request, if not all available variables are wanted.
             A list of available variables can be obtained by entering `var_list=['']` into the function.
 
-        beam_list : list of strings, default None
+        beam_list : list[str], default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
             For ATL11, acceptable values are ['pt1','pt2','pt3'].
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
-        keyword_list : list of strings, default None
+        keyword_list : list[str], default None
             A list of subdirectory names (keywords), from any hierarchy level within the data structure, to select variables within
             the product that include that keyword in their path. A list of available keywords can be obtained by
             entering `keyword_list=['']` into the function.
@@ -461,19 +461,19 @@ class Variables(EarthdataAuthMixin):
 
         To add all variables related to a specific ICESat-2 beam
 
-        >>> reg_a.order_vars.append(beam_list=['gt1r']) # doctest: +SKIP
+        >>> reg_a.variables.append(beam_list=['gt1r']) # doctest: +SKIP
 
         To include the default variables:
 
-        >>> reg_a.order_vars.append(defaults=True) # doctest: +SKIP
+        >>> reg_a.variables.append(defaults=True) # doctest: +SKIP
 
         To add specific variables in orbit_info
 
-        >>> reg_a.order_vars.append(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
+        >>> reg_a.variables.append(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
 
         To add all variables and paths in ancillary_data
 
-        >>> reg_a.order_vars.append(keyword_list=['ancillary_data']) # doctest: +SKIP
+        >>> reg_a.variables.append(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
         assert not (
@@ -527,20 +527,20 @@ class Variables(EarthdataAuthMixin):
 
         Parameters
         ----------
-        all : boolean, default False
+        all : bool, default False
             Remove all variables and paths from the wanted list.
 
-        var_list : list of strings, default None
+        var_list : list[str], default None
             A list of variables to request, if not all available variables are wanted.
             A list of available variables can be obtained by entering `var_list=['']` into the function.
 
-        beam_list : list of strings, default None
+        beam_list : list[str], default None
             A list of beam strings, if only selected beams are wanted (the default value of None will automatically
             include all beams). For ATL09, acceptable values are ['profile_1', 'profile_2', 'profile_3'].
             For ATL11, acceptable values are ['pt1','pt2','pt3'].
             For all other products, acceptable values are ['gt1l', 'gt1r', 'gt2l', 'gt2r', 'gt3l', 'gt3r'].
 
-        keyword_list : list of strings, default None
+        keyword_list : list[str], default None
             A list of subdirectory names (keywords), from any hierarchy level within the data structure, to select variables within
             the product that include that keyword in their path.
 
@@ -556,19 +556,19 @@ class Variables(EarthdataAuthMixin):
 
         To clear the list of wanted variables
 
-        >>> reg_a.order_vars.remove(all=True) # doctest: +SKIP
+        >>> reg_a.variables.remove(all=True) # doctest: +SKIP
 
         To remove all variables related to a specific ICESat-2 beam
 
-        >>> reg_a.order_vars.remove(beam_list=['gt1r']) # doctest: +SKIP
+        >>> reg_a.variables.remove(beam_list=['gt1r']) # doctest: +SKIP
 
         To remove specific variables in orbit_info
 
-        >>> reg_a.order_vars.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
+        >>> reg_a.variables.remove(keyword_list=['orbit_info'],var_list=['sc_orient_time']) # doctest: +SKIP
 
         To remove all variables and paths in ancillary_data
 
-        >>> reg_a.order_vars.remove(keyword_list=['ancillary_data']) # doctest: +SKIP
+        >>> reg_a.variables.remove(keyword_list=['ancillary_data']) # doctest: +SKIP
         """
 
         if not hasattr(self, "wanted") or self.wanted is None:

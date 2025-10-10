@@ -1,6 +1,7 @@
 import os
 import warnings
 
+from deprecated import deprecated
 import geopandas as gpd
 import numpy as np
 from shapely.geometry import Polygon, box
@@ -15,25 +16,25 @@ def geodataframe(extent_type, spatial_extent, file=False, xdateline=None):
 
     Parameters
     ----------
-    extent_type : string
+    extent_type : str
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
-    spatial_extent : string or list
+    spatial_extent : str or list
         A list containing the spatial extent OR a string containing a filename.
         If file is False, spatial_extent should be a
         list of coordinates in decimal degrees of [lower-left-longitude,
-        lower-left-latitute, upper-right-longitude, upper-right-latitude] or
+        lower-left-latitude, upper-right-longitude, upper-right-latitude] or
         [longitude1, latitude1, longitude2, latitude2, ... longitude_n,latitude_n, longitude1,latitude1].
 
         If file is True, spatial_extent is a string containing the full file path and filename to the
         file containing the desired spatial extent.
 
-    file : boolean, default False
+    file : bool, default False
         Indication for whether the spatial_extent string is a filename or coordinate list
 
     Returns
     -------
-    gdf : GeoDataFrame
+    gdf : geopandas.GeoDataFrame
         Returns a GeoPandas GeoDataFrame containing the spatial extent.
         The GeoDataFrame will have only one entry unless a geospatial file
         was submitted.
@@ -125,7 +126,7 @@ def check_dateline(extent_type, spatial_extent):
 
     Parameters
     ----------
-    extent_type : string
+    extent_type : str
         One of 'bounding_box' or 'polygon', indicating what type of input the spatial extent is
 
     spatial_extent : list
@@ -181,7 +182,7 @@ def validate_bounding_box(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: list or np.ndarray
+    spatial_extent : list or np.ndarray
                     A list or np.ndarray of strings, numerics, or tuples
                     representing bounding box coordinates in decimal degrees.
 
@@ -224,7 +225,7 @@ def validate_polygon_pairs(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: list or np.ndarray
+    spatial_extent : list or np.ndarray
 
                     A list or np.ndarray of tuples representing polygon coordinate pairs in decimal degrees in the order:
                     [(longitude1, latitude1), (longitude2, latitude2), ...
@@ -280,7 +281,7 @@ def validate_polygon_list(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: list or np.ndarray
+    spatial_extent : list or np.ndarray
                     A list or np.ndarray of strings, numerics, or tuples representing polygon coordinates,
                     provided as coordinate pairs in decimal degrees in the order:
                     [longitude1, latitude1, longitude2, latitude2, ...
@@ -335,7 +336,7 @@ def validate_polygon_file(spatial_extent):
 
     Parameters
     ----------
-    spatial_extent: string
+    spatial_extent : str
                      A string representing a geospatial polygon file (kml, shp, gpkg)
                      * must provide full file path
                      * recommended for file to only contain 1 polygon.
@@ -373,7 +374,7 @@ class Spatial:
 
         Parameters
         ----------
-        spatial_extent : list or string
+        spatial_extent : list or str
             * list of coordinates
              (stored in a list of strings, list of numerics, list of tuples, OR np.ndarray) as one of:
                 * bounding box
@@ -391,7 +392,7 @@ class Spatial:
                 * full file path
                 * recommended for file to only contain 1 polygon; if multiple, only selects first polygon rn
 
-        xdateline : boolean, default None
+        xdateline : bool, default None
             Optional keyword argument to let user specify whether the spatial input crosses the dateline or not.
 
 
@@ -476,7 +477,7 @@ class Spatial:
             )
 
             # TODO: assess if it's necessary to have a value for _spatial_extent if the input is a file (since it can be plotted from the gdf)
-            extpoly = self._gdf_spat.geometry.unary_union.boundary
+            extpoly = self._gdf_spat.geometry.union_all().boundary
 
             try:
                 arrpoly = (
@@ -537,7 +538,7 @@ class Spatial:
 
         Returns
         -------
-        extent_gdf : GeoDataframe
+        extent_gdf : geopandas.GeoDataFrame
             A GeoDataframe containing the spatial region of interest.
         """
 
@@ -627,7 +628,7 @@ class Spatial:
             ):
                 poly = poly.convex_hull
 
-            poly = poly.unary_union
+            poly = poly.union_all()
 
             # Simplify polygon. The larger the tolerance value, the more simplified the polygon. See Bruce Wallin's function to do this
             poly = poly.simplify(0.05, preserve_topology=True)
@@ -648,8 +649,10 @@ class Spatial:
 
         return cmr_extent
 
+    @deprecated("Use fmt_for_CMR instead")
     def fmt_for_EGI(self):
         """
+        WARNING: This method is deprecated. Use fmt_for_CMR instead.
         Format the spatial extent input into a subsetting key value for submission to EGI (the NSIDC DAAC API).
 
         EGI spatial inputs must be formatted a specific way.
@@ -660,18 +663,6 @@ class Spatial:
         Returns
         -------
         string
-            Properly formatted json string for submission to EGI (NSIDC API).
+            Properly formatted json string for submission to CMR
         """
-
-        # subsetting keywords: ['bbox','Boundingshape'] - these are set in APIformatting
-        if self._ext_type == "bounding_box":
-            egi_extent = ",".join(map(str, self._spatial_ext))
-
-        # TODO: add handling for polygons that cross the dateline
-        elif self._ext_type == "polygon":
-            poly = self.extent_as_gdf.geometry[0]
-            poly = orient(poly, sign=1.0)
-            egi_extent = gpd.GeoSeries(poly).to_json()
-            egi_extent = egi_extent.replace(" ", "")  # remove spaces for API call
-
-        return egi_extent
+        return self.fmt_for_CMR()

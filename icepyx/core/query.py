@@ -493,7 +493,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.CMRparams
-        {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+        {'concept_id': 'C2670138092-NSIDC_CPRD',
+        'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
         'bounding_box': '-55.0,68.0,-48.0,71.0'}
         """
 
@@ -595,7 +596,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='6')
         >>> reg_a.product_version
-        '006'
+        '007'
         """
         return self._version
 
@@ -663,7 +664,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         version_id :  007
         time_start :  2018-10-14T00:00:00.000Z
         coordinate_system :  CARTESIAN
-        summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
+        summary :  ATL06 contains geolocated land-ice surface heights above the WGS84 ellipsoid, plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the ICESat-2 observatory.
         orbit_parameters :  {}
         """
         if not hasattr(self, "_about_product"):

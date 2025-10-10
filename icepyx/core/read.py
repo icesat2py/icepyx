@@ -78,6 +78,8 @@ def _get_track_type_str(grp_path) -> (str, str, str):
 
     import re
 
+    track_str = "Unknown"
+
     # e.g. for ATL03, ATL06, etc.
     if re.match(r"gt[1-3]['r','l']", grp_path):
         track_str = re.match(r"gt[1-3]['r','l']", grp_path).group()
@@ -590,7 +592,7 @@ class Read(EarthdataAuthMixin):
             if file.startswith("s3"):
                 # If path is an s3 path create an s3fs filesystem to reference the file
                 # TODO would it be better to be able to generate an s3fs session from the Mixin?
-                s3 = earthaccess.get_s3fs_session(daac="NSIDC")
+                s3 = earthaccess.get_s3_filesystem(daac="NSIDC")
                 # Goal: delegate most of the granule reading logic to earthaccess (xref https://github.com/icesat2py/icepyx/issues/575)
                 # See also: https://github.com/icesat2py/icepyx/pull/677/files#r2083622039
                 fsspec_params = {

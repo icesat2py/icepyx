@@ -351,7 +351,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : str, default most recent version
         Product version, given as a 3 digit string.
-        If no version is given, the current version is used. Example: "006"
+        If no version is given, the current version is used. Example: "007"
     cycles : str or list[str], default all available orbital cycles
         Product cycle, given as a 2 digit string, or a list of 2-digit strings.
         If no cycle is given, all available cycles are used. Example: "04"
@@ -376,7 +376,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
     >>> print(reg_a)
-    Product ATL06 v006
+    Product ATL06 v007
     ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
     Date range ['2019-02-20', '2019-02-28']
 
@@ -395,7 +395,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = Query('ATL06', str(aoi), reg_a_dates)
     >>> print(reg_a)
-    Product ATL06 v006
+    Product ATL06 v007
     ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
     Date range ['2019-02-22', '2019-02-28']
 
@@ -591,11 +591,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_version
-        '006'
+        '007'
 
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='4')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='6')
         >>> reg_a.product_version
-        '004'
+        '006'
         """
         return self._version
 
@@ -608,7 +608,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.cycles
-        ['No orbital parameters set']
+        ['No orbital[cycle] parameters set']
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71], cycles=['03','04'], tracks=['0849','0902'])
         >>> reg_a.cycles
@@ -629,7 +629,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.tracks
-        ['No orbital parameters set']
+        ['No orbital[tracks] parameters set']
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71], cycles=['03','04'], tracks=['0849','0902'])
         >>> reg_a.tracks
@@ -656,11 +656,11 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         Examples
         --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='006')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='007')
         >>> reg_a.product_summary_info()
-        title :  ATLAS/ICESat-2 L3A Land Ice Height V006
+        title :  ATLAS/ICESat-2 L3A Land Ice Height V007
         short_name :  ATL06
-        version_id :  006
+        version_id :  007
         time_start :  2018-10-14T00:00:00.000Z
         coordinate_system :  CARTESIAN
         summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
@@ -705,7 +705,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.latest_version()
-        '006'
+        '007'
         """
         return is2ref.latest_version(self.product)
 
@@ -807,7 +807,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-23'])
         >>> reg_a.avail_granules(ids=True)
-        [['ATL06_20190221121851_08410203_006_01.h5', 'ATL06_20190222010344_08490205_006_01.h5']]
+        [['ATL06_20190221121851_08410203_007_01.h5', 'ATL06_20190222010344_08490205_007_01.h5']]
         >>> reg_a.avail_granules(cycles=True)
         [['02', '02']]
         >>> reg_a.avail_granules(tracks=True)

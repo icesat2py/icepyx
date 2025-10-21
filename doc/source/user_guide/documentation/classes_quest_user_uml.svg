@@ -16,8 +16,8 @@
 <text text-anchor="start" x="209" y="-129.3" font-family="Times,serif" font-size="14.00">Argo</text>
 <polyline fill="none" stroke="black" points="0,-121.5 452,-121.5 "/>
 <text text-anchor="start" x="106.5" y="-106.3" font-family="Times,serif" font-size="14.00">argodata : DataFrame, NoneType</text>
-<text text-anchor="start" x="106.5" y="-91.3" font-family="Times,serif" font-size="14.00">params</text>
-<text text-anchor="start" x="106.5" y="-76.3" font-family="Times,serif" font-size="14.00">presRange</text>
+<text text-anchor="start" x="106.5" y="-91.3" font-family="Times,serif" font-size="14.00">params : list</text>
+<text text-anchor="start" x="106.5" y="-76.3" font-family="Times,serif" font-size="14.00">presRange : str</text>
 <text text-anchor="start" x="106.5" y="-61.3" font-family="Times,serif" font-size="14.00">prof_ids : list</text>
 <polyline fill="none" stroke="black" points="0,-53.5 452,-53.5 "/>
 <text text-anchor="start" x="8" y="-38.3" font-family="Times,serif" font-size="14.00">download(params, presRange, keep_existing): pd.DataFrame</text>

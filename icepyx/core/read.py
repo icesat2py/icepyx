@@ -79,6 +79,8 @@ def _get_track_type_str(grp_path) -> (str, str, str):
     import re
 
     track_str = "Unknown"
+    spot_dim_name = "Unknown"
+    spot_var_name = "Unknown"
 
     # e.g. for ATL03, ATL06, etc.
     if re.match(r"gt[1-3]['r','l']", grp_path):

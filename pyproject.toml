@@ -1,18 +1,20 @@
 [project]
 name = "icepyx"
 description = "Python tools for obtaining and working with ICESat-2 data"
-license = { file = "LICENSE" }
+license = {file = "LICENSE"}
 readme = "README.rst"
 
 requires-python = ">=3.11"
 dynamic = ["version", "dependencies"]
 
-authors = [{ name = "The icepyx Developers", email = "jbscheick@gmail.com" }]
+authors = [
+  {name = "The icepyx Developers", email = "jbscheick@gmail.com"},
+]
 maintainers = [
-  { name = "The icepyx Developers", email = "jbscheick@gmail.com" },
+  {name = "The icepyx Developers", email = "jbscheick@gmail.com"},
 ]
 
-classifiers = [
+classifiers=[
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
   "License :: OSI Approved :: BSD License",
@@ -42,7 +44,7 @@ requires = ["setuptools>=66", "wheel", "setuptools_scm"]
 py-modules = ["_icepyx_version"]
 
 [tool.setuptools.dynamic]
-dependencies = { file = ["requirements.txt"] }
+dependencies = {file = ["requirements.txt"]}
 
 [project.optional-dependencies]
 viz = ["geoviews >= 1.9.0", "cartopy >= 0.18.0", "scipy"]
@@ -74,27 +76,27 @@ extend-exclude = ["*.ipynb"]
 select = [
   # "ARG",  # flake8-unused-arguments
   # "B",    # flake8-bugbear
-  "C4", # flake8-comprehensions
-  "E",  # pycodestyle
+  "C4",   # flake8-comprehensions
+  "E",    # pycodestyle
   # "EM",   # flake8-errmsg
-  "EXE", # flake8-executable
-  "F",   # pyflakes
-  "G",   # flake8-logging-format
-  "I",   # isort
-  "ICN", # flake8-import-conventions
-  "NPY", # NumPy specific rules
+  "EXE",  # flake8-executable
+  "F",    # pyflakes
+  "G",    # flake8-logging-format
+  "I",    # isort
+  "ICN",  # flake8-import-conventions
+  "NPY",  # NumPy specific rules
   # "PD",   # pandas-vet
-  "PGH", # pygrep-hooks
-  "PIE", # flake8-pie
+  "PGH",  # pygrep-hooks
+  "PIE",  # flake8-pie
   # "PL",   # pylint
   # "PT",   # flake8-pytest-style
   # "PTH",  # flake8-use-pathlib
   # "RET",  # flake8-return
   # "RUF",  # Ruff-specific
-  "SIM", # flake8-simplify
+  "SIM",  # flake8-simplify
   # "T20",  # flake8-print
   # "UP",   # pyupgrade
-  "YTT", # flake8-2020
+  "YTT",  # flake8-2020
 ]
 ignore = [
   # Line too long
@@ -104,7 +106,7 @@ ignore = [
   # overlong comments.
   # See: https://github.com/psf/black/issues/1713#issuecomment-1357045092
   "E501",
-  "SIM105", # suppressible-exception
+  "SIM105",  # suppressible-exception
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -127,8 +129,13 @@ force-sort-within-sections = true
 pythonVersion = "3.11"
 # DevGoal: "strict"
 typeCheckingMode = "standard"
-include = ["icepyx"]
-exclude = ["**/__pycache__", "icepyx/tests"]
+include = [
+  "icepyx",
+]
+exclude = [
+  "**/__pycache__",
+  "icepyx/tests",
+]
 # DevGoal: Remove all ignores
 ignore = [
   "icepyx/quest/*",

@@ -129,12 +129,12 @@
 <text text-anchor="start" x="1857.5" y="-1293.3" font-family="Times,serif" font-size="14.00">REQUEST_RETRY_INTERVAL_SECONDS : int</text>
 <text text-anchor="start" x="1857.5" y="-1278.3" font-family="Times,serif" font-size="14.00">_CMRparams</text>
 <text text-anchor="start" x="1857.5" y="-1263.3" font-family="Times,serif" font-size="14.00">_about_product</text>
-<text text-anchor="start" x="1857.5" y="-1248.3" font-family="Times,serif" font-size="14.00">_cycles : NoneType</text>
+<text text-anchor="start" x="1857.5" y="-1248.3" font-family="Times,serif" font-size="14.00">_cycles : NoneType, list</text>
 <text text-anchor="start" x="1857.5" y="-1233.3" font-family="Times,serif" font-size="14.00">_granules</text>
 <text text-anchor="start" x="1857.5" y="-1218.3" font-family="Times,serif" font-size="14.00">_prod : NoneType, str</text>
 <text text-anchor="start" x="1857.5" y="-1203.3" font-family="Times,serif" font-size="14.00">_readable_granule_name : list</text>
 <text text-anchor="start" x="1857.5" y="-1188.3" font-family="Times,serif" font-size="14.00">_temporal : Union[tp.Temporal, None]</text>
-<text text-anchor="start" x="1857.5" y="-1173.3" font-family="Times,serif" font-size="14.00">_tracks : NoneType</text>
+<text text-anchor="start" x="1857.5" y="-1173.3" font-family="Times,serif" font-size="14.00">_tracks : NoneType, list</text>
 <text text-anchor="start" x="1857.5" y="-1158.3" font-family="Times,serif" font-size="14.00">_variables</text>
 <text text-anchor="start" x="1857.5" y="-1143.3" font-family="Times,serif" font-size="14.00">_version</text>
 <text text-anchor="start" x="1857.5" y="-1128.3" font-family="Times,serif" font-size="14.00">concept_id : Union[str, None]</text>

@@ -60,3 +60,22 @@ def test_download_granules_without_subsetting(reg):
         65120027,  # 62.1 MiB
         49749227,  # 47.4 MiB
     ]
+
+
+def test_tracks_only():
+    """
+    Test that a Query can be created with only tracks specified (no cycles).
+    """
+
+    reg = ipx.Query(
+        "ATL06", [151, -81, 158, -80], ["2019-12-02", "2019-12-02"], tracks=["1022"]
+    )
+    assert reg.tracks == ["1022"]
+    assert reg.cycles == ["No orbital[cycle] parameters set"]
+
+    assert reg.CMRparams["options[readable_granule_name][pattern]"] == "true"
+    assert reg.CMRparams["readable_granule_name[]"] == [
+        "ATL06_??????????????_1022????_*"
+    ]
+
+    assert reg.avail_granules(ids=True) == [["ATL06_20191202203649_10220511_006_01.h5"]]

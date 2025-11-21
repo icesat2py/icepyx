@@ -23,19 +23,19 @@ Deprecations
 
 
 Maintenance
-^^^^^^^^^^^
+~~~~~~~~~~~
 
 - None
 
 
 Documentation
-^^^^^^^^^^^^^
+~~~~~~~~~~~~~
 
 - None
 
 
 Other
-^^^^^
+~~~~~
 
 - None
 

@@ -30,7 +30,7 @@ Bug fixes
 
 
 Maintenance
-^^^^^^^^^^^
+~~~~~~~~~~~
 
 - [pre-commit.ci] pre-commit autoupdate (#671)
 - [pre-commit.ci] pre-commit autoupdate (#693)
@@ -49,7 +49,7 @@ Maintenance
 
 
 Documentation
-^^^^^^^^^^^^^
+~~~~~~~~~~~~~
 
 - docs: add chuckwondo as a contributor for review (#667)
 - Add intersphinx mappings (#680)
@@ -60,7 +60,7 @@ Documentation
 
 
 Other
-^^^^^
+~~~~~
 
 - Separate jobs for publishing to TestPyPI and PyPI (#687)
 

@@ -1,7 +1,7 @@
-What's new in 0.4.0 (DD MONTH YYYY)
+What's new in 2.0.0 (DD MONTH YYYY)
 -----------------------------------
 
-These are the changes in icepyx 0.4.0 See :ref:`release` for a full changelog
+These are the changes in icepyx 2.0.0 See :ref:`release` for a full changelog
 including other versions of icepyx.
 
 
@@ -43,4 +43,4 @@ Other
 Contributors
 ~~~~~~~~~~~~
 
-.. contributors:: v0.4.0..v0.4.1|HEAD
+.. contributors:: v2.0.0..v2.0.1|HEAD

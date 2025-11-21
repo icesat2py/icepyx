@@ -47,15 +47,15 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
     ----------
     grans : list of dictionaries
         List of input granule json dictionaries. Must have key "producer_granule_id"
-    ids: boolean, default True
+    ids: bool, default True
         Return a list of the available granule IDs for the granule dictionary
-    cycles : boolean, default False
+    cycles : bool, default False
         Return a list of the available orbital cycles for the granule dictionary
-    tracks : boolean, default False
+    tracks : bool, default False
         Return a list of the available Reference Ground Tracks (RGTs) for the granule dictionary
-    dates : boolean, default False
+    dates : bool, default False
         Return a list of the available dates for the granule dictionary.
-    cloud : boolean, default False
+    cloud : bool, default False
         Return a a list of AWS s3 urls for the available granules in the granule dictionary.
     """
     assert len(grans) > 0, "Your data object has no granules associated with it"
@@ -272,13 +272,13 @@ class Granules(EarthdataAuthMixin):
         ----------
         CMRparams :
             Dictionary of properly formatted CMR search parameters.
-        subsetparams : dictionary
+        subsetparams : dict
             Dictionary of properly formatted subsetting parameters. An empty dictionary
             is passed as input here when subsetting is set to False in query methods.
-        verbose : boolean, default False
+        verbose : bool, default False
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
-        subset : boolean, default True
+        subset : bool, default True
             Apply subsetting to the data order from the NSIDC, returning only data that meets the
             subset parameters.
             Spatial and temporal subsetting based on the input parameters happens
@@ -286,7 +286,7 @@ class Granules(EarthdataAuthMixin):
             Spatial subsetting returns all data that are within the area of interest
             (but not complete granules.
             This eliminates false-positive granules returned by the metadata-level search)
-        geom_filepath : string, default None
+        geom_filepath : str, default None
             String of the full filename and path when the spatial input is a file.
 
         Notes
@@ -312,12 +312,12 @@ class Granules(EarthdataAuthMixin):
 
         Parameters
         ----------
-        verbose : boolean, default False
+        verbose : bool, default False
             Print out all feedback available from the order process.
             Progress information is automatically printed regardless of the value of verbose.
-        path : string
+        path : str
             String with complete path to desired download directory and location.
-        restart : boolean, default False
+        restart : bool, default False
             Restart your download if it has been interrupted.
             If the kernel has been restarted, but you successfully
             completed your order, you will need to re-initialize your query class object

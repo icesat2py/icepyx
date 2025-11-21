@@ -290,7 +290,7 @@ def extract_product(filepath, auth=None):
 
     Parameters
     ----------
-    filepath: string
+    filepath: str
         local or remote location of a file. Could be a local string or an s3 filepath
     auth: earthaccess.auth.Auth, default None
         An earthaccess authentication object. Optional, but necessary if accessing data in an
@@ -336,7 +336,7 @@ def extract_version(filepath, auth=None):
 
     Parameters
     ----------
-    filepath: string
+    filepath: str
         local or remote location of a file. Could be a local string or an s3 filepath
     auth: earthaccess.auth.Auth, default None
         An earthaccess authentication object. Optional, but necessary if accessing data in an

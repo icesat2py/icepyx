@@ -1,5 +1,10 @@
 """
-Integration tests
+Integration tests for the Query class
+
+See Also
+--------
+
+./test_query_spatial
 """
 
 import glob
@@ -9,12 +14,6 @@ import pytest
 
 import icepyx as ipx
 from icepyx.core.orders import DataOrder
-
-# Misc notes and needed tests
-# test avail data and subsetting success for each input type
-# (kml, shp, list of coords, bbox)
-# check that downloaded data is subset?
-# or is this an NSIDC level test so long as we verify the right info is submitted?
 
 
 @pytest.fixture(scope="module")
@@ -35,13 +34,6 @@ def test_harmony_custom_options_output(reg):
 
 
 ########## query module ##########
-@pytest.mark.downloads_data
-def test_download_granules_with_subsetting(reg):
-    path = "./downloads_subset"
-    reg.order_granules(subset=True)
-    files = reg.download_granules(path)
-    assert isinstance(files, list)
-    assert len(files) == 3
 
 
 @pytest.mark.downloads_data
@@ -68,3 +60,22 @@ def test_download_granules_without_subsetting(reg):
         65120027,  # 62.1 MiB
         49749227,  # 47.4 MiB
     ]
+
+
+def test_tracks_only():
+    """
+    Test that a Query can be created with only tracks specified (no cycles).
+    """
+
+    reg = ipx.Query(
+        "ATL06", [151, -81, 158, -80], ["2019-12-02", "2019-12-02"], tracks=["1022"]
+    )
+    assert reg.tracks == ["1022"]
+    assert reg.cycles == ["No orbital[cycle] parameters set"]
+
+    assert reg.CMRparams["options[readable_granule_name][pattern]"] == "true"
+    assert reg.CMRparams["readable_granule_name[]"] == [
+        "ATL06_??????????????_1022????_*"
+    ]
+
+    assert reg.avail_granules(ids=True) == [["ATL06_20191202203649_10220511_006_01.h5"]]

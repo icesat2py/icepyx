@@ -27,6 +27,7 @@ Peer-reviewed publications about icepyx software
     :style: mystyle
 
     joss2023
+    quest2025
 
 icepyx in the open-source landscape
 

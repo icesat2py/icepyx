@@ -9,7 +9,7 @@ trackpath = f"{cwd}/doc/source/tracking/pypistats/"
 downloadfn = "downloads_data.csv"
 sysdownloadfn = "sys_downloads_data.csv"
 
-downloads = pypistats.overall("icepyx", total=True, format="pandas").drop(
+downloads = pypistats.overall("icepyx", total="daily", format="pandas").drop(
     columns=["percent"]
 )
 downloads = downloads[downloads.category != "Total"]
@@ -27,7 +27,7 @@ dl_data.sort_values(["category", "date"], ignore_index=True).to_csv(
     trackpath + downloadfn, index=False
 )
 
-sysdownloads = pypistats.system("icepyx", total=True, format="pandas").drop(
+sysdownloads = pypistats.system("icepyx", total="daily", format="pandas").drop(
     columns=["percent"]
 )
 sysdownloads = sysdownloads[sysdownloads.category != "Total"]

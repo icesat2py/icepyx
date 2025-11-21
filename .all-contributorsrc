@@ -512,7 +512,17 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/5607545?v=4",
       "profile": "https://developmentseed.org/",
       "contributions": [
-        "infra"
+        "infra",
+        "review"
+      ]
+    },
+    {
+      "login": "emmanuel-ferdman",
+      "name": "Emmanuel Ferdman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35470921?v=4",
+      "profile": "https://github.com/emmanuel-ferdman",
+      "contributions": [
+        "code"
       ]
     }
   ],

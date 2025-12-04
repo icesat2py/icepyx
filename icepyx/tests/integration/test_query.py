@@ -78,4 +78,4 @@ def test_tracks_only():
         "ATL06_??????????????_1022????_*"
     ]
 
-    assert reg.avail_granules(ids=True) == [["ATL06_20191202203649_10220511_006_01.h5"]]
+    assert reg.avail_granules(ids=True) == [["ATL06_20191202203649_10220511_007_01.h5"]]

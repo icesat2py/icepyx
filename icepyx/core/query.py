@@ -1001,6 +1001,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         self,
         path: Path,
         overwrite: bool = False,
+        subset: bool = True,
+        skip_preview: bool = False,
     ) -> Union[list[str], None]:
         """
         Download the granules for the order, blocking until they are ready if necessary.
@@ -1011,6 +1013,15 @@ class Query(GenQuery, EarthdataAuthMixin):
             The directory where granules should be saved.
         overwrite : bool, optional
             Whether to overwrite existing files (default is False).
+        subset : bool, default True
+            Apply subsetting to the data order using harmony, returning only data that meets the
+            subset parameters. Spatial and temporal subsetting based on the input parameters happens
+            by default when subset=True, but additional subsetting options are available.
+            Spatial subsetting returns all data that are within the area of interest (but not complete
+            granules. This eliminates false-positive granules returned by the metadata-level search)
+        skip_preview : bool, default False
+            If True, bypass the preview state when we order subsetting queries that exceed 300 granules.
+
 
         Returns
         -------
@@ -1019,8 +1030,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         """
         # Order granules based on user selections if restart is False and there
         # are no job IDs registered by the harmony API
-        if hasattr(self, "last_order") is None:
-            raise ValueError("No order has been placed yet.")
+        if not hasattr(self, "last_order"):
+            self.order_granules(subset=subset, skip_preview=skip_preview)
         status = self.last_order.status()
         if status["status"] == "running" or status["status"] == "accepted":
             print(

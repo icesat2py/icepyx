@@ -26,6 +26,8 @@ body:
 
         Example: While searching for data using `ipx.Query()` using the `spatial_extent` filter but upon
         opening my files I see that some of the granules are located outside the specified spatial extent.
+    validations:
+      required: true
 
   - type: textarea
     id: expected
@@ -77,7 +79,13 @@ body:
       label: Relevant log output
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
-
+  
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: screenshots
+      description: If applicable, add screenshots to help explain your problem.
+  
   - type: checkboxes
     id: terms
     attributes:

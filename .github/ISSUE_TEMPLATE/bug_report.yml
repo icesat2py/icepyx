@@ -1,0 +1,88 @@
+name: Bug Report
+description: Create a report about an error to help us improve
+title: ""
+labels: ""
+projects: ""
+assignees: ""
+
+type: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to contribute to icepyx by filling out this bug report! We appreciate 
+        your help in improving icepyx and making data more accessible.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Describe the bug
+      description: |
+        A clear and concise description of what the problem is. In 1-3 sentences, summarize what you were 
+        trying to accomplish and what happened instead.
+      placeholder: |
+        Example: While attempting to download 2 granules using `region.download_granules()` I got an error 
+        informing me that I needed to login, but I had already provided my login information.
+        
+        Example: While searching for data using `ipx.Query()` using the `spatial_extent` filter but upon
+        opening my files I see that some of the granules are located outside the specified spatial extent. 
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: |
+        A clear and concise description of what you expected to happen.
+      placeholder: |
+        I expected 12 granules. The granules ids I expected were ...
+  
+  - type: textarea
+    id: sample-code
+    attributes:
+      label: Reproducible Example
+      description: |
+        Minimal, contained code snippet that describes the problem (also known as an MRE, or Minimal Reproducible Example). 
+        See more about creating MREs [here](https://matthewrocklin.com/minimal-bug-reports/#do_3). If you're not sure how to 
+        create an MRE just paste your best version of an MRE and if we will discuss your example in the issue comments. Be
+        sure to include granule ids if your issue pertains to a specific granule.
+
+        This will be automatically formatted into code, so no need for markdown backticks.
+      render: Python
+      value: |
+        import icepyx as ipx
+
+        # your minimal reproducible code ...
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: |
+        What version of icepyx are you using?
+
+        If you're not sure what version of icepyx you're using, run `ipx.__version__` from a Python file
+        after importing icepyx
+      placeholder: v2.0.1
+
+  - type: input
+    id: sys-info
+    attributes:
+      label: System Information
+      description: What type of operating system are you using?
+      placeholder: Ex. Apple, Dell, Cryocloud, ...
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://icepyx.readthedocs.io/en/latest/contributing/code_of_conduct_link.html).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

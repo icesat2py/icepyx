@@ -56,6 +56,25 @@ def test_download_granules_without_subsetting(reg):
     h5_paths = sorted(glob.glob(pathname=f"{path}/ATL06_201902*.h5"))
     assert len(h5_paths) == 3
     assert [os.path.getsize(filename=p) for p in h5_paths] == [
+        67108864,
+        67108864,
+        58720256,
+    ]
+
+
+@pytest.mark.downloads_data
+def test_download_granules_without_ordering(reg):
+    """
+    Test that granules are automatically ordered by the download function.
+    """
+    path = "./downloads"
+
+    files = reg.download_granules(path=path)
+    assert isinstance(files, list)
+    # check that there are the right number of files of the correct size
+    h5_paths = sorted(glob.glob(pathname=f"{path}/ATL06_201902*.h5"))
+    assert len(h5_paths) == 3
+    assert [os.path.getsize(filename=p) for p in h5_paths] == [
         53228429,  # 50.8 MiB
         65120027,  # 62.1 MiB
         49749227,  # 47.4 MiB
@@ -78,4 +97,4 @@ def test_tracks_only():
         "ATL06_??????????????_1022????_*"
     ]
 
-    assert reg.avail_granules(ids=True) == [["ATL06_20191202203649_10220511_006_01.h5"]]
+    assert reg.avail_granules(ids=True) == [["ATL06_20191202203649_10220511_007_01.h5"]]

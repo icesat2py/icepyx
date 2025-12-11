@@ -62,6 +62,25 @@ def test_download_granules_without_subsetting(reg):
     ]
 
 
+@pytest.mark.downloads_data
+def test_download_granules_without_ordering(reg):
+    """
+    Test that granules are automatically ordered by the download function.
+    """
+    path = "./downloads"
+
+    files = reg.download_granules(path=path)
+    assert isinstance(files, list)
+    # check that there are the right number of files of the correct size
+    h5_paths = sorted(glob.glob(pathname=f"{path}/ATL06_201902*.h5"))
+    assert len(h5_paths) == 3
+    assert [os.path.getsize(filename=p) for p in h5_paths] == [
+        53228429,  # 50.8 MiB
+        65120027,  # 62.1 MiB
+        49749227,  # 47.4 MiB
+    ]
+
+
 def test_tracks_only():
     """
     Test that a Query can be created with only tracks specified (no cycles).

@@ -5,7 +5,7 @@ type: bug
 body:
   - type: markdown
     attributes:
-      value: |
+      value: >
         Thanks for taking the time to contribute to icepyx by filling out this bug report! We appreciate
         your help in improving icepyx and making data more accessible.
 

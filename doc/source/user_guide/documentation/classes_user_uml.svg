@@ -60,39 +60,39 @@
 <!-- icepyx.core.query.Query -->
 <g id="node14" class="node">
 <title>icepyx.core.query.Query</title>
-<polygon fill="none" stroke="black" points="1052,-527.5 1052,-896.5 1569,-896.5 1569,-527.5 1052,-527.5"/>
-<text text-anchor="start" x="1288.5" y="-881.3" font-family="Times,serif" font-size="14.00">Query</text>
-<polyline fill="none" stroke="black" points="1052,-873.5 1569,-873.5 "/>
-<text text-anchor="start" x="1148" y="-858.3" font-family="Times,serif" font-size="14.00">CMRparams : CMRParams</text>
-<text text-anchor="start" x="1148" y="-843.3" font-family="Times,serif" font-size="14.00">REQUEST_RETRY_INTERVAL_SECONDS : int</text>
-<text text-anchor="start" x="1148" y="-828.3" font-family="Times,serif" font-size="14.00">concept_id : Union[str, None]</text>
-<text text-anchor="start" x="1148" y="-813.3" font-family="Times,serif" font-size="14.00">cycles</text>
-<text text-anchor="start" x="1148" y="-798.3" font-family="Times,serif" font-size="14.00">granules</text>
-<text text-anchor="start" x="1148" y="-783.3" font-family="Times,serif" font-size="14.00">harmony_api</text>
-<text text-anchor="start" x="1148" y="-768.3" font-family="Times,serif" font-size="14.00">last_order</text>
-<text text-anchor="start" x="1148" y="-753.3" font-family="Times,serif" font-size="14.00">order_vars : Union[Variables, None]</text>
-<text text-anchor="start" x="1148" y="-738.3" font-family="Times,serif" font-size="14.00">product</text>
-<text text-anchor="start" x="1148" y="-723.3" font-family="Times,serif" font-size="14.00">product_version</text>
-<text text-anchor="start" x="1148" y="-708.3" font-family="Times,serif" font-size="14.00">tracks</text>
-<text text-anchor="start" x="1148" y="-693.3" font-family="Times,serif" font-size="14.00">variables : Variables</text>
-<polyline fill="none" stroke="black" points="1052,-685.5 1569,-685.5 "/>
-<text text-anchor="start" x="1060" y="-670.3" font-family="Times,serif" font-size="14.00">avail_granules(ids, cycles, tracks, cloud)</text>
-<text text-anchor="start" x="1060" y="-655.3" font-family="Times,serif" font-size="14.00">download_granules(path: Path, overwrite: bool): Union[list[str], None]</text>
-<text text-anchor="start" x="1060" y="-640.3" font-family="Times,serif" font-size="14.00">latest_version()</text>
-<text text-anchor="start" x="1060" y="-625.3" font-family="Times,serif" font-size="14.00">order_granules(subset: bool, skip_preview: bool): DataOrder</text>
-<text text-anchor="start" x="1060" y="-610.3" font-family="Times,serif" font-size="14.00">product_all_info()</text>
-<text text-anchor="start" x="1060" y="-595.3" font-family="Times,serif" font-size="14.00">product_summary_info()</text>
-<text text-anchor="start" x="1060" y="-580.3" font-family="Times,serif" font-size="14.00">show_custom_options(): Dict[str, Any]</text>
-<text text-anchor="start" x="1060" y="-565.3" font-family="Times,serif" font-size="14.00">skip_preview()</text>
-<text text-anchor="start" x="1060" y="-550.3" font-family="Times,serif" font-size="14.00">visualize_elevation()</text>
-<text text-anchor="start" x="1060" y="-535.3" font-family="Times,serif" font-size="14.00">visualize_spatial_extent()</text>
+<polygon fill="none" stroke="black" points="832,-527.5 832,-896.5 1585,-896.5 1585,-527.5 832,-527.5"/>
+<text text-anchor="start" x="1186.5" y="-881.3" font-family="Times,serif" font-size="14.00">Query</text>
+<polyline fill="none" stroke="black" points="832,-873.5 1585,-873.5 "/>
+<text text-anchor="start" x="1046" y="-858.3" font-family="Times,serif" font-size="14.00">CMRparams : CMRParams</text>
+<text text-anchor="start" x="1046" y="-843.3" font-family="Times,serif" font-size="14.00">REQUEST_RETRY_INTERVAL_SECONDS : int</text>
+<text text-anchor="start" x="1046" y="-828.3" font-family="Times,serif" font-size="14.00">concept_id : Union[str, None]</text>
+<text text-anchor="start" x="1046" y="-813.3" font-family="Times,serif" font-size="14.00">cycles</text>
+<text text-anchor="start" x="1046" y="-798.3" font-family="Times,serif" font-size="14.00">granules</text>
+<text text-anchor="start" x="1046" y="-783.3" font-family="Times,serif" font-size="14.00">harmony_api</text>
+<text text-anchor="start" x="1046" y="-768.3" font-family="Times,serif" font-size="14.00">last_order</text>
+<text text-anchor="start" x="1046" y="-753.3" font-family="Times,serif" font-size="14.00">order_vars : Union[Variables, None]</text>
+<text text-anchor="start" x="1046" y="-738.3" font-family="Times,serif" font-size="14.00">product</text>
+<text text-anchor="start" x="1046" y="-723.3" font-family="Times,serif" font-size="14.00">product_version</text>
+<text text-anchor="start" x="1046" y="-708.3" font-family="Times,serif" font-size="14.00">tracks</text>
+<text text-anchor="start" x="1046" y="-693.3" font-family="Times,serif" font-size="14.00">variables : Variables</text>
+<polyline fill="none" stroke="black" points="832,-685.5 1585,-685.5 "/>
+<text text-anchor="start" x="840" y="-670.3" font-family="Times,serif" font-size="14.00">avail_granules(ids, cycles, tracks, cloud)</text>
+<text text-anchor="start" x="840" y="-655.3" font-family="Times,serif" font-size="14.00">download_granules(path: Path, overwrite: bool, subset: bool, skip_preview: bool): Union[list[str], None]</text>
+<text text-anchor="start" x="840" y="-640.3" font-family="Times,serif" font-size="14.00">latest_version()</text>
+<text text-anchor="start" x="840" y="-625.3" font-family="Times,serif" font-size="14.00">order_granules(subset: bool, skip_preview: bool): DataOrder</text>
+<text text-anchor="start" x="840" y="-610.3" font-family="Times,serif" font-size="14.00">product_all_info()</text>
+<text text-anchor="start" x="840" y="-595.3" font-family="Times,serif" font-size="14.00">product_summary_info()</text>
+<text text-anchor="start" x="840" y="-580.3" font-family="Times,serif" font-size="14.00">show_custom_options(): Dict[str, Any]</text>
+<text text-anchor="start" x="840" y="-565.3" font-family="Times,serif" font-size="14.00">skip_preview()</text>
+<text text-anchor="start" x="840" y="-550.3" font-family="Times,serif" font-size="14.00">visualize_elevation()</text>
+<text text-anchor="start" x="840" y="-535.3" font-family="Times,serif" font-size="14.00">visualize_spatial_extent()</text>
 </g>
 <!-- icepyx.core.orders.DataOrder&#45;&gt;icepyx.core.query.Query -->
 <g id="edge11" class="edge">
 <title>icepyx.core.orders.DataOrder&#45;&gt;icepyx.core.query.Query</title>
-<path fill="none" stroke="black" d="M751.52,-471.92C754.53,-473.29 757.53,-474.65 760.5,-476 851.19,-517.06 951.1,-560.33 1040.59,-598.39"/>
-<polygon fill="black" stroke="black" points="1040.69,-598.43 1047.78,-597.1 1051.74,-603.13 1044.65,-604.46 1040.69,-598.43"/>
-<text text-anchor="middle" x="857" y="-497.8" font-family="Times,serif" font-size="14.00" fill="green">last_order</text>
+<path fill="none" stroke="black" d="M746.97,-475.69C775.92,-490.45 806.48,-506.03 837.54,-521.87"/>
+<polygon fill="black" stroke="black" points="837.85,-522.03 845.02,-521.19 848.54,-527.48 841.38,-528.32 837.85,-522.03"/>
+<text text-anchor="middle" x="837" y="-497.8" font-family="Times,serif" font-size="14.00" fill="green">last_order</text>
 </g>
 <!-- icepyx.core.exceptions.DeprecationError -->
 <g id="node5" class="node">
@@ -106,14 +106,14 @@
 <!-- icepyx.core.auth.EarthdataAuthMixin -->
 <g id="node6" class="node">
 <title>icepyx.core.auth.EarthdataAuthMixin</title>
-<polygon fill="none" stroke="black" points="1585,-957 1585,-1056 1748,-1056 1748,-957 1585,-957"/>
-<text text-anchor="start" x="1593" y="-1040.8" font-family="Times,serif" font-size="14.00">EarthdataAuthMixin</text>
-<polyline fill="none" stroke="black" points="1585,-1033 1748,-1033 "/>
-<text text-anchor="start" x="1597" y="-1017.8" font-family="Times,serif" font-size="14.00">auth</text>
-<text text-anchor="start" x="1597" y="-1002.8" font-family="Times,serif" font-size="14.00">s3login_credentials</text>
-<text text-anchor="start" x="1597" y="-987.8" font-family="Times,serif" font-size="14.00">session</text>
-<polyline fill="none" stroke="black" points="1585,-980 1748,-980 "/>
-<text text-anchor="start" x="1664" y="-964.8" font-family="Times,serif" font-size="14.00"> </text>
+<polygon fill="none" stroke="black" points="1600,-957 1600,-1056 1763,-1056 1763,-957 1600,-957"/>
+<text text-anchor="start" x="1608" y="-1040.8" font-family="Times,serif" font-size="14.00">EarthdataAuthMixin</text>
+<polyline fill="none" stroke="black" points="1600,-1033 1763,-1033 "/>
+<text text-anchor="start" x="1612" y="-1017.8" font-family="Times,serif" font-size="14.00">auth</text>
+<text text-anchor="start" x="1612" y="-1002.8" font-family="Times,serif" font-size="14.00">s3login_credentials</text>
+<text text-anchor="start" x="1612" y="-987.8" font-family="Times,serif" font-size="14.00">session</text>
+<polyline fill="none" stroke="black" points="1600,-980 1763,-980 "/>
+<text text-anchor="start" x="1679" y="-964.8" font-family="Times,serif" font-size="14.00"> </text>
 </g>
 <!-- icepyx.core.exceptions.ExhaustiveTypeGuardException -->
 <g id="node7" class="node">
@@ -142,17 +142,17 @@
 <!-- icepyx.core.query.GenQuery -->
 <g id="node8" class="node">
 <title>icepyx.core.query.GenQuery</title>
-<polygon fill="none" stroke="black" points="1162.5,-934.5 1162.5,-1078.5 1458.5,-1078.5 1458.5,-934.5 1162.5,-934.5"/>
-<text text-anchor="start" x="1274" y="-1063.3" font-family="Times,serif" font-size="14.00">GenQuery</text>
-<polyline fill="none" stroke="black" points="1162.5,-1055.5 1458.5,-1055.5 "/>
-<text text-anchor="start" x="1170.5" y="-1040.3" font-family="Times,serif" font-size="14.00">dates : list[str]</text>
-<text text-anchor="start" x="1170.5" y="-1025.3" font-family="Times,serif" font-size="14.00">end_time : Union[list[str], str]</text>
-<text text-anchor="start" x="1170.5" y="-1010.3" font-family="Times,serif" font-size="14.00">spatial</text>
-<text text-anchor="start" x="1170.5" y="-995.3" font-family="Times,serif" font-size="14.00">spatial_extent</text>
-<text text-anchor="start" x="1170.5" y="-980.3" font-family="Times,serif" font-size="14.00">start_time : Union[list[str], str]</text>
-<text text-anchor="start" x="1170.5" y="-965.3" font-family="Times,serif" font-size="14.00">temporal : Union[tp.Temporal, list[str]]</text>
-<polyline fill="none" stroke="black" points="1162.5,-957.5 1458.5,-957.5 "/>
-<text text-anchor="start" x="1308" y="-942.3" font-family="Times,serif" font-size="14.00"> </text>
+<polygon fill="none" stroke="black" points="1060.5,-934.5 1060.5,-1078.5 1356.5,-1078.5 1356.5,-934.5 1060.5,-934.5"/>
+<text text-anchor="start" x="1172" y="-1063.3" font-family="Times,serif" font-size="14.00">GenQuery</text>
+<polyline fill="none" stroke="black" points="1060.5,-1055.5 1356.5,-1055.5 "/>
+<text text-anchor="start" x="1068.5" y="-1040.3" font-family="Times,serif" font-size="14.00">dates : list[str]</text>
+<text text-anchor="start" x="1068.5" y="-1025.3" font-family="Times,serif" font-size="14.00">end_time : Union[list[str], str]</text>
+<text text-anchor="start" x="1068.5" y="-1010.3" font-family="Times,serif" font-size="14.00">spatial</text>
+<text text-anchor="start" x="1068.5" y="-995.3" font-family="Times,serif" font-size="14.00">spatial_extent</text>
+<text text-anchor="start" x="1068.5" y="-980.3" font-family="Times,serif" font-size="14.00">start_time : Union[list[str], str]</text>
+<text text-anchor="start" x="1068.5" y="-965.3" font-family="Times,serif" font-size="14.00">temporal : Union[tp.Temporal, list[str]]</text>
+<polyline fill="none" stroke="black" points="1060.5,-957.5 1356.5,-957.5 "/>
+<text text-anchor="start" x="1206" y="-942.3" font-family="Times,serif" font-size="14.00"> </text>
 </g>
 <!-- icepyx.core.granules.Granules -->
 <g id="node9" class="node">
@@ -176,8 +176,8 @@
 <!-- icepyx.core.granules.Granules&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
 <g id="edge3" class="edge">
 <title>icepyx.core.granules.Granules&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1220.9,-143.93C1610.41,-184.97 2220.66,-252.02 2237.5,-271 2359.86,-408.9 2174.98,-835.02 2109.5,-897 2059.47,-944.35 1872.8,-977.46 1758.34,-993.81"/>
-<polygon fill="none" stroke="black" points="1757.59,-990.38 1748.18,-995.25 1758.57,-997.31 1757.59,-990.38"/>
+<path fill="none" stroke="black" d="M1220.9,-143.93C1610.41,-184.97 2220.66,-252.02 2237.5,-271 2352.39,-400.48 2194.52,-828.51 2124.5,-897 2075.25,-945.17 1888.3,-977.98 1773.58,-994.06"/>
+<polygon fill="none" stroke="black" points="1772.82,-990.63 1763.4,-995.47 1773.78,-997.57 1772.82,-990.63"/>
 </g>
 <!-- icepyx.core.harmony.HarmonyApi -->
 <g id="node10" class="node">
@@ -199,15 +199,15 @@
 <!-- icepyx.core.harmony.HarmonyApi&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
 <g id="edge4" class="edge">
 <title>icepyx.core.harmony.HarmonyApi&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1550.4,-460.5C1560.94,-481.63 1570.85,-504.62 1577.5,-527 1624.61,-685.5 1572.65,-737.57 1616.5,-897 1621.17,-913.97 1628.23,-931.61 1635.59,-947.61"/>
-<polygon fill="none" stroke="black" points="1632.51,-949.28 1639.95,-956.82 1638.84,-946.29 1632.51,-949.28"/>
+<path fill="none" stroke="black" d="M1561.81,-460.65C1574.23,-481.49 1585.8,-504.32 1593.5,-527 1646.66,-683.53 1587.87,-737.55 1631.5,-897 1636.14,-913.97 1643.2,-931.62 1650.56,-947.62"/>
+<polygon fill="none" stroke="black" points="1647.48,-949.28 1654.92,-956.83 1653.81,-946.29 1647.48,-949.28"/>
 </g>
 <!-- icepyx.core.harmony.HarmonyApi&#45;&gt;icepyx.core.query.Query -->
 <g id="edge10" class="edge">
 <title>icepyx.core.harmony.HarmonyApi&#45;&gt;icepyx.core.query.Query</title>
-<path fill="none" stroke="black" d="M1451.07,-460.72C1441.25,-478.22 1430.54,-497.28 1419.56,-516.82"/>
-<polygon fill="black" stroke="black" points="1419.5,-516.94 1420.05,-524.13 1413.62,-527.4 1413.07,-520.21 1419.5,-516.94"/>
-<text text-anchor="middle" x="1473.5" y="-497.8" font-family="Times,serif" font-size="14.00" fill="green">harmony_api</text>
+<path fill="none" stroke="black" d="M1424.94,-460.72C1409.46,-478.62 1392.56,-498.16 1375.25,-518.17"/>
+<polygon fill="black" stroke="black" points="1375.13,-518.32 1374.23,-525.48 1367.28,-527.4 1368.18,-520.24 1375.13,-518.32"/>
+<text text-anchor="middle" x="1435.5" y="-497.8" font-family="Times,serif" font-size="14.00" fill="green">harmony_api</text>
 </g>
 <!-- icepyx.core.harmony.HarmonyTemporal -->
 <g id="node11" class="node">
@@ -263,33 +263,33 @@
 <!-- icepyx.core.query.Query&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
 <g id="edge5" class="edge">
 <title>icepyx.core.query.Query&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1533.94,-896.58C1557.51,-915.95 1579.95,-934.39 1599.43,-950.4"/>
-<polygon fill="none" stroke="black" points="1597.37,-953.23 1607.31,-956.87 1601.81,-947.82 1597.37,-953.23"/>
+<path fill="none" stroke="black" d="M1505.37,-896.58C1537.39,-916.38 1567.83,-935.2 1594.11,-951.46"/>
+<polygon fill="none" stroke="black" points="1592.52,-954.59 1602.86,-956.87 1596.2,-948.63 1592.52,-954.59"/>
 </g>
 <!-- icepyx.core.query.Query&#45;&gt;icepyx.core.query.GenQuery -->
 <g id="edge6" class="edge">
 <title>icepyx.core.query.Query&#45;&gt;icepyx.core.query.GenQuery</title>
-<path fill="none" stroke="black" d="M1310.5,-896.58C1310.5,-906.07 1310.5,-915.33 1310.5,-924.2"/>
-<polygon fill="none" stroke="black" points="1307,-924.41 1310.5,-934.41 1314,-924.41 1307,-924.41"/>
+<path fill="none" stroke="black" d="M1208.5,-896.58C1208.5,-906.07 1208.5,-915.33 1208.5,-924.2"/>
+<polygon fill="none" stroke="black" points="1205,-924.41 1208.5,-934.41 1212,-924.41 1205,-924.41"/>
 </g>
 <!-- icepyx.core.read.Read -->
 <g id="node16" class="node">
 <title>icepyx.core.read.Read</title>
-<polygon fill="none" stroke="black" points="1625.5,-655 1625.5,-769 1707.5,-769 1707.5,-655 1625.5,-655"/>
-<text text-anchor="start" x="1648" y="-753.8" font-family="Times,serif" font-size="14.00">Read</text>
-<polyline fill="none" stroke="black" points="1625.5,-746 1707.5,-746 "/>
-<text text-anchor="start" x="1633.5" y="-730.8" font-family="Times,serif" font-size="14.00">filelist</text>
-<text text-anchor="start" x="1633.5" y="-715.8" font-family="Times,serif" font-size="14.00">is_s3</text>
-<text text-anchor="start" x="1633.5" y="-700.8" font-family="Times,serif" font-size="14.00">product</text>
-<text text-anchor="start" x="1633.5" y="-685.8" font-family="Times,serif" font-size="14.00">variables</text>
-<polyline fill="none" stroke="black" points="1625.5,-678 1707.5,-678 "/>
-<text text-anchor="start" x="1646" y="-662.8" font-family="Times,serif" font-size="14.00">load()</text>
+<polygon fill="none" stroke="black" points="1640.5,-655 1640.5,-769 1722.5,-769 1722.5,-655 1640.5,-655"/>
+<text text-anchor="start" x="1663" y="-753.8" font-family="Times,serif" font-size="14.00">Read</text>
+<polyline fill="none" stroke="black" points="1640.5,-746 1722.5,-746 "/>
+<text text-anchor="start" x="1648.5" y="-730.8" font-family="Times,serif" font-size="14.00">filelist</text>
+<text text-anchor="start" x="1648.5" y="-715.8" font-family="Times,serif" font-size="14.00">is_s3</text>
+<text text-anchor="start" x="1648.5" y="-700.8" font-family="Times,serif" font-size="14.00">product</text>
+<text text-anchor="start" x="1648.5" y="-685.8" font-family="Times,serif" font-size="14.00">variables</text>
+<polyline fill="none" stroke="black" points="1640.5,-678 1722.5,-678 "/>
+<text text-anchor="start" x="1661" y="-662.8" font-family="Times,serif" font-size="14.00">load()</text>
 </g>
 <!-- icepyx.core.read.Read&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
 <g id="edge7" class="edge">
 <title>icepyx.core.read.Read&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1666.5,-769.05C1666.5,-820.06 1666.5,-895.09 1666.5,-946.88"/>
-<polygon fill="none" stroke="black" points="1663,-946.92 1666.5,-956.92 1670,-946.92 1663,-946.92"/>
+<path fill="none" stroke="black" d="M1681.5,-769.05C1681.5,-820.06 1681.5,-895.09 1681.5,-946.88"/>
+<polygon fill="none" stroke="black" points="1678,-946.92 1681.5,-956.92 1685,-946.92 1678,-946.92"/>
 </g>
 <!-- icepyx.core.spatial.Spatial -->
 <g id="node17" class="node">
@@ -319,24 +319,24 @@
 <!-- icepyx.core.variables.Variables -->
 <g id="node20" class="node">
 <title>icepyx.core.variables.Variables</title>
-<polygon fill="none" stroke="black" points="1726,-632.5 1726,-791.5 2101,-791.5 2101,-632.5 1726,-632.5"/>
-<text text-anchor="start" x="1880" y="-776.3" font-family="Times,serif" font-size="14.00">Variables</text>
-<polyline fill="none" stroke="black" points="1726,-768.5 2101,-768.5 "/>
-<text text-anchor="start" x="1826" y="-753.3" font-family="Times,serif" font-size="14.00">path</text>
-<text text-anchor="start" x="1826" y="-738.3" font-family="Times,serif" font-size="14.00">product</text>
-<text text-anchor="start" x="1826" y="-723.3" font-family="Times,serif" font-size="14.00">version</text>
-<text text-anchor="start" x="1826" y="-708.3" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
-<polyline fill="none" stroke="black" points="1726,-700.5 2101,-700.5 "/>
-<text text-anchor="start" x="1734" y="-685.3" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list)</text>
-<text text-anchor="start" x="1734" y="-670.3" font-family="Times,serif" font-size="14.00">avail(options, internal)</text>
-<text text-anchor="start" x="1734" y="-655.3" font-family="Times,serif" font-size="14.00">parse_var_list(varlist, tiered, tiered_vars)</text>
-<text text-anchor="start" x="1734" y="-640.3" font-family="Times,serif" font-size="14.00">remove(all, var_list, beam_list, keyword_list)</text>
+<polygon fill="none" stroke="black" points="1741,-632.5 1741,-791.5 2116,-791.5 2116,-632.5 1741,-632.5"/>
+<text text-anchor="start" x="1895" y="-776.3" font-family="Times,serif" font-size="14.00">Variables</text>
+<polyline fill="none" stroke="black" points="1741,-768.5 2116,-768.5 "/>
+<text text-anchor="start" x="1841" y="-753.3" font-family="Times,serif" font-size="14.00">path</text>
+<text text-anchor="start" x="1841" y="-738.3" font-family="Times,serif" font-size="14.00">product</text>
+<text text-anchor="start" x="1841" y="-723.3" font-family="Times,serif" font-size="14.00">version</text>
+<text text-anchor="start" x="1841" y="-708.3" font-family="Times,serif" font-size="14.00">wanted : NoneType, dict</text>
+<polyline fill="none" stroke="black" points="1741,-700.5 2116,-700.5 "/>
+<text text-anchor="start" x="1749" y="-685.3" font-family="Times,serif" font-size="14.00">append(defaults, var_list, beam_list, keyword_list)</text>
+<text text-anchor="start" x="1749" y="-670.3" font-family="Times,serif" font-size="14.00">avail(options, internal)</text>
+<text text-anchor="start" x="1749" y="-655.3" font-family="Times,serif" font-size="14.00">parse_var_list(varlist, tiered, tiered_vars)</text>
+<text text-anchor="start" x="1749" y="-640.3" font-family="Times,serif" font-size="14.00">remove(all, var_list, beam_list, keyword_list)</text>
 </g>
 <!-- icepyx.core.variables.Variables&#45;&gt;icepyx.core.auth.EarthdataAuthMixin -->
 <g id="edge8" class="edge">
 <title>icepyx.core.variables.Variables&#45;&gt;icepyx.core.auth.EarthdataAuthMixin</title>
-<path fill="none" stroke="black" d="M1846.98,-791.77C1805.06,-841.41 1751.92,-904.34 1714.19,-949.03"/>
-<polygon fill="none" stroke="black" points="1711.34,-946.98 1707.56,-956.87 1716.69,-951.49 1711.34,-946.98"/>
+<path fill="none" stroke="black" d="M1861.98,-791.77C1820.06,-841.41 1766.92,-904.34 1729.19,-949.03"/>
+<polygon fill="none" stroke="black" points="1726.34,-946.98 1722.56,-956.87 1731.69,-951.49 1726.34,-946.98"/>
 </g>
 <!-- icepyx.core.visualization.Visualize -->
 <g id="node21" class="node">

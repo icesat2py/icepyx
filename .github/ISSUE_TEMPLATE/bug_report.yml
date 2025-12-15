@@ -38,10 +38,10 @@ body:
     id: sample-code
     attributes:
       label: Reproducible Example
-      description: |
+      description: >
         Minimal, contained code snippet that describes the problem (also known as an MRE, or Minimal Reproducible Example).
         See more about creating MREs [here](https://matthewrocklin.com/minimal-bug-reports/#do_3). If you're not sure how to
-        create an MRE just paste your best version of an MRE and if we will discuss your example in the issue comments. Be
+        create an MRE just paste your best version of an MRE and we will discuss your example in the issue comments. Be
         sure to include granule ids if your issue pertains to a specific granule.
 
         This will be automatically formatted into code, so no need for markdown backticks.

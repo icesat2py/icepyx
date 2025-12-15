@@ -38,3 +38,12 @@ body:
       label: Additional context
       description: |
         Add any other context or screenshots about the feature request here.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://icepyx.readthedocs.io/en/latest/contributing/code_of_conduct_link.html).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

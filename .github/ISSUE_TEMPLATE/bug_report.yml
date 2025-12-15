@@ -1,9 +1,5 @@
 name: Bug Report
 description: Create a report about an error to help us improve
-title: ""
-labels: ""
-projects: ""
-assignees: ""
 
 type: bug
 body:

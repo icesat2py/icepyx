@@ -3,7 +3,7 @@
 Contact Us
 ==========
 
-* Need help installing, running, or using `icepyx`? Ask for help on `Discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_ or `GitHub Discussions <https://github.com/icesat2py/icepyx/discussions>`_.
+* Need help installing, running, or using `icepyx`? Ask for help through `GitHub Discussions <https://github.com/icesat2py/icepyx/discussions>`_.
 * Found a bug? Post an issue on `GitHub <https://github.com/icesat2py/icepyx/issues>`_!
 * Want to request or contribute a feature? Share your idea on `GitHub Discussions <https://github.com/icesat2py/icepyx/discussions>`_.
 * Have a question or want to know more? Join us for a virtual meeting (see below).

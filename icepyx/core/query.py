@@ -596,7 +596,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='6')
         >>> reg_a.product_version
-        '007'
+        '006'
         """
         return self._version
 

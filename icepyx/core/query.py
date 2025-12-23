@@ -502,7 +502,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         # dictionary of optional CMR parameters
         kwargs = {}
-        kwargs["concept_id"] = self._get_concept_id(self.product, None)
+        kwargs["concept_id"] = self._get_concept_id(self.product, self._version)
 
         # temporal CMR parameters
         if hasattr(self, "_temporal") and self.product != "ATL11" and self._temporal:

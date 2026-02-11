@@ -600,7 +600,7 @@ def test_no_granules_in_search_results():
     ermsg = "Your search returned no results; try different search parameters"
     with pytest.raises(AssertionError, match=ermsg):
         ipx.Query(
-            "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-20"], version="2"
+            "ATL06", [-55, 68, -55.001, 68.001], ["2019-02-20", "2019-02-20"]
         ).avail_granules()
 
 

@@ -351,7 +351,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         Available data products can be found at: https://nsidc.org/data/icesat-2/data-sets
     version : str, default most recent version
         Product version, given as a 3 digit string.
-        If no version is given, the current version is used. Example: "006"
+        If no version is given, the current version is used. Example: "007"
     cycles : str or list[str], default all available orbital cycles
         Product cycle, given as a 2 digit string, or a list of 2-digit strings.
         If no cycle is given, all available cycles are used. Example: "04"
@@ -376,7 +376,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     >>> reg_a_dates = ['2019-02-20','2019-02-28']
     >>> reg_a = Query('ATL06', reg_a_bbox, reg_a_dates)
     >>> print(reg_a)
-    Product ATL06 v006
+    Product ATL06 v007
     ('bounding_box', [-55.0, 68.0, -48.0, 71.0])
     Date range ['2019-02-20', '2019-02-28']
 
@@ -395,7 +395,7 @@ class Query(GenQuery, EarthdataAuthMixin):
     >>> reg_a_dates = ['2019-02-22','2019-02-28']
     >>> reg_a = Query('ATL06', str(aoi), reg_a_dates)
     >>> print(reg_a)
-    Product ATL06 v006
+    Product ATL06 v007
     ('polygon', [-55.0, 68.0, -55.0, 71.0, -48.0, 71.0, -48.0, 68.0, -55.0, 68.0])
     Date range ['2019-02-22', '2019-02-28']
 
@@ -493,7 +493,8 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.CMRparams
-        {'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
+        {'concept_id': 'C2670138092-NSIDC_CPRD',
+        'temporal': '2019-02-20T00:00:00Z,2019-02-28T23:59:59Z',
         'bounding_box': '-55.0,68.0,-48.0,71.0'}
         """
 
@@ -502,7 +503,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         # dictionary of optional CMR parameters
         kwargs = {}
-        kwargs["concept_id"] = self._get_concept_id(self.product, None)
+        kwargs["concept_id"] = self.concept_id
 
         # temporal CMR parameters
         if hasattr(self, "_temporal") and self.product != "ATL11" and self._temporal:
@@ -552,9 +553,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._granules
 
     @cached_property
-    def concept_id(self) -> Union[str, None]:
-        if hasattr(self, "product"):
-            short_name = self.product
+    def concept_id(self) -> str:
+        if hasattr(self, "_prod"):
+            short_name = self._prod
         else:
             raise ValueError("Product not defined")
         if hasattr(self, "_version"):
@@ -567,7 +568,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         if collections:
             return collections[0].concept_id()
         else:
-            return None
+            raise ValueError(
+                f"Could not find concept ID for {self._prod} v{self._version}"
+            )
 
     @property
     def product(self):
@@ -591,11 +594,11 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.product_version
-        '006'
+        '007'
 
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='4')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='6')
         >>> reg_a.product_version
-        '004'
+        '006'
         """
         return self._version
 
@@ -608,7 +611,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.cycles
-        ['No orbital parameters set']
+        ['No orbital[cycle] parameters set']
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71], cycles=['03','04'], tracks=['0849','0902'])
         >>> reg_a.cycles
@@ -629,7 +632,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.tracks
-        ['No orbital parameters set']
+        ['No orbital[tracks] parameters set']
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71], cycles=['03','04'], tracks=['0849','0902'])
         >>> reg_a.tracks
@@ -656,14 +659,14 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         Examples
         --------
-        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='006')
+        >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'], version='007')
         >>> reg_a.product_summary_info()
-        title :  ATLAS/ICESat-2 L3A Land Ice Height V006
+        title :  ATLAS/ICESat-2 L3A Land Ice Height V007
         short_name :  ATL06
-        version_id :  006
+        version_id :  007
         time_start :  2018-10-14T00:00:00.000Z
         coordinate_system :  CARTESIAN
-        summary :  This data set (ATL06) provides geolocated, land-ice surface heights (above the WGS 84 ellipsoid, ITRF2014 reference frame), plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory.
+        summary :  ATL06 contains geolocated land-ice surface heights above the WGS84 ellipsoid, plus ancillary parameters that can be used to interpret and assess the quality of the height estimates. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the ICESat-2 observatory.
         orbit_parameters :  {}
         """
         if not hasattr(self, "_about_product"):
@@ -705,7 +708,7 @@ class Query(GenQuery, EarthdataAuthMixin):
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
         >>> reg_a.latest_version()
-        '006'
+        '007'
         """
         return is2ref.latest_version(self.product)
 
@@ -761,8 +764,11 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         return cycle_map, rgt_map
 
+    @deprecated
     def _get_concept_id(self, product, version) -> Union[str, None]:
         """
+        Replaced by the cached property `concept_id`, which otherwise partially duplicated this function
+
         Get the concept ID for the specified product and version. Note that we are forcing CMR to use the cloud copy.
         """
         collections = earthaccess.search_datasets(
@@ -800,14 +806,14 @@ class Query(GenQuery, EarthdataAuthMixin):
         Examples
         --------
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-28'])
-        >>> reg_a.avail_granules()
+        >>> reg_a.avail_granules() # doctest: +SKIP
         {'Number of available granules': 4,
         'Average size of granules (MB)': np.float64(55.166646003723145),
         'Total size of all granules (MB)': 220.66658401489258}
 
         >>> reg_a = ipx.Query('ATL06',[-55, 68, -48, 71],['2019-02-20','2019-02-23'])
         >>> reg_a.avail_granules(ids=True)
-        [['ATL06_20190221121851_08410203_006_01.h5', 'ATL06_20190222010344_08490205_006_01.h5']]
+        [['ATL06_20190221121851_08410203_007_01.h5', 'ATL06_20190222010344_08490205_007_01.h5']]
         >>> reg_a.avail_granules(cycles=True)
         [['02', '02']]
         >>> reg_a.avail_granules(tracks=True)
@@ -835,16 +841,6 @@ class Query(GenQuery, EarthdataAuthMixin):
             return self.granules.avail
 
     def _order_subset_granules(self, skip_preview: bool = False) -> str:
-        concept_id = self._get_concept_id(
-            product=self._prod,
-            version=self._version,
-        )
-
-        if concept_id is None:
-            raise ValueError(
-                f"Could not find concept ID for {self._prod} v{self._version}"
-            )
-
         readable_granule_name = self.CMRparams.get("readable_granule_name[]", [])
         harmony_temporal = None
         harmony_spatial = None
@@ -884,7 +880,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 raise ValueError("No temporal or spatial parameters provided.")
 
         job_id = self.harmony_api.place_order(
-            concept_id=concept_id,
+            concept_id=self.concept_id,
             temporal=harmony_temporal,
             spatial=harmony_spatial,
             granule_name=list(readable_granule_name),

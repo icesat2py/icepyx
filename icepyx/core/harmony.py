@@ -5,10 +5,10 @@ from pathlib import Path
 import time
 from typing import Any, Dict, TypedDict, Union
 
-from _icepyx_version import version as _ipx_version
 import harmony
 import requests
 
+from _icepyx_version import version as _ipx_version
 from icepyx.core.auth import EarthdataAuthMixin
 
 # Sometimes harmony has problems (e.g., 500 bad gateway) and we need to retry.
@@ -40,10 +40,16 @@ class HarmonyApi(EarthdataAuthMixin):
         # initialize authentication properties
         self._ipx_version = _ipx_version
         EarthdataAuthMixin.__init__(self)
+
+        # inline type assertions to satisfy pyright that these types are correct
+        # an alternative would be a type stub file (py.typed) with type stubs for earthaccess
+        username: str = self.auth.username
+        password: str = self.auth.password
+
         self.harmony_client = harmony.Client(
             auth=(
-                self.auth.username,
-                self.auth.password,
+                username,
+                password,
             ),
         )
 

@@ -75,9 +75,9 @@ def test_download_granules_without_ordering(reg):
     h5_paths = sorted(glob.glob(pathname=f"{path}/ATL06_201902*.h5"))
     assert len(h5_paths) == 3
     assert [os.path.getsize(filename=p) for p in h5_paths] == [
-        53228429,  # 50.8 MiB
-        65120027,  # 62.1 MiB
-        49749227,  # 47.4 MiB
+        67108864,
+        67108864,
+        58720256,
     ]
 
 

@@ -3,7 +3,7 @@ import datetime as dt
 import json
 from pathlib import Path
 import time
-from typing import Any, Dict, TypedDict, Union
+from typing import Any, Dict, TypedDict, Union, cast
 
 from _icepyx_version import version as _ipx_version
 import harmony
@@ -40,10 +40,16 @@ class HarmonyApi(EarthdataAuthMixin):
         # initialize authentication properties
         self._ipx_version = _ipx_version
         EarthdataAuthMixin.__init__(self)
+
+        # inline type assertions to satisfy pyright that these types are correct
+        # an alternative would be a type stub file (py.typed) with type stubs for earthaccess
+        username: str = cast(str, self.auth.username)
+        password: str = cast(str, self.auth.password)
+
         self.harmony_client = harmony.Client(
             auth=(
-                self.auth.username,
-                self.auth.password,
+                username,
+                password,
             ),
         )
 

@@ -276,7 +276,7 @@ def latest_version(product):
     Examples
     --------
     >>> latest_version('ATL03')
-    '006'
+    '007'
     """
     _about_product = about_product(product)
 

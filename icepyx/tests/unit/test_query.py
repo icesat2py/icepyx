@@ -60,34 +60,38 @@ def test_cmrparams_concept_id_matches_version():
     Regression test for: https://github.com/icesat2py/icepyx/issues/723
     """
     # Concept IDs for ATL06 versions
-    v006_concept_id = "C2670138092-NSIDC_CPRD"
-    v007_concept_id = "C3564876127-NSIDC_CPRD"
+    vprev_concept_id = "C2670138092-NSIDC_CPRD" # v006
+    vcurr_concept_id = "C3564876127-NSIDC_CPRD" # v007
 
-    # Test 1: Explicit version 006
-    reg_v006 = ipx.Query(
+    # Previous and Current version numbers
+    vprev = "006"
+    vcurr = "007"
+
+    # Test 1: Explicit previous version
+    reg_vprev = ipx.Query(
         "ATL06",
         [-45, 58, -35, 75],
         ["2019-11-30", "2019-11-30"],
-        version="006",
+        version=vprev,
     )
-    assert reg_v006.product_version == "006"
-    assert reg_v006.CMRparams["concept_id"] == v006_concept_id
+    assert reg_vprev.product_version == vprev
+    assert reg_vprev.CMRparams["concept_id"] == vprev_concept_id
 
-    # Test 2: Explicit version 007
-    reg_v007 = ipx.Query(
+    # Test 2: Explicit current version
+    reg_vcurr = ipx.Query(
         "ATL06",
         [-45, 58, -35, 75],
         ["2019-11-30", "2019-11-30"],
-        version="007",
+        version=vcurr,
     )
-    assert reg_v007.product_version == "007"
-    assert reg_v007.CMRparams["concept_id"] == v007_concept_id
+    assert reg_vcurr.product_version == vcurr
+    assert reg_vcurr.CMRparams["concept_id"] == vcurr_concept_id
 
-    # Test 3: Default version (should use latest, which is 007)
+    # Test 3: Default version (should use latest)
     reg_default = ipx.Query(
         "ATL06",
         [-45, 58, -35, 75],
         ["2019-11-30", "2019-11-30"],
     )
-    assert reg_default.product_version == "007"
-    assert reg_default.CMRparams["concept_id"] == v007_concept_id
+    assert reg_default.product_version == vcurr
+    assert reg_default.CMRparams["concept_id"] == vcurr_concept_id

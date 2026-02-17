@@ -54,14 +54,10 @@ def test_temporal_properties_cycles_tracks():
 def test_cmrparams_concept_id_matches_version():
     """
     Test that CMRparams uses the correct concept_id for the specified version.
-    This test ensures that when building CMR search parameters, the concept_id
-    retrieved matches the query's product version. A mismatch would result in
-    querying granules from the wrong version.
+    Ensures that when building CMR search parameters, the concept_id retrieved matches the query's product version.
+    A mismatch would result in querying granules from the wrong version (e.g. the first listed).
 
-    Regression test for: https://github.com/icesat2py/icepyx/issues/XXX
-    When version=None was passed to _get_concept_id, earthaccess would return
-    the first available collection, causing version 006 to be used instead of
-    the intended version 007 or user-specified version.
+    Regression test for: https://github.com/icesat2py/icepyx/issues/723
     """
     # Concept IDs for ATL06 versions
     v006_concept_id = "C2670138092-NSIDC_CPRD"

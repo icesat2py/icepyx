@@ -60,8 +60,8 @@ def test_cmrparams_concept_id_matches_version():
     Regression test for: https://github.com/icesat2py/icepyx/issues/723
     """
     # Concept IDs for ATL06 versions
-    vprev_concept_id = "C2670138092-NSIDC_CPRD" # v006
-    vcurr_concept_id = "C3564876127-NSIDC_CPRD" # v007
+    vprev_concept_id = "C2670138092-NSIDC_CPRD"  # v006
+    vcurr_concept_id = "C3564876127-NSIDC_CPRD"  # v007
 
     # Previous and Current version numbers
     vprev = "006"

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, Optional, TypedDict, Union
+from typing import Literal, TypedDict, Union
 
 from typing_extensions import NotRequired
 
@@ -32,7 +32,7 @@ ICESat2ProductShortName = Literal[
 CMRParamsBase = TypedDict(
     "CMRParamsBase",
     {
-        "concept_id": Optional[str],
+        "concept_id": NotRequired[str],
         "temporal": NotRequired[str],
         "options[readable_granule_name][pattern]": NotRequired[str],
         "options[spatial][or]": NotRequired[str],

@@ -503,7 +503,7 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         # dictionary of optional CMR parameters
         kwargs = {}
-        kwargs["concept_id"] = self._get_concept_id(self.product, None)
+        kwargs["concept_id"] = self.concept_id
 
         # temporal CMR parameters
         if hasattr(self, "_temporal") and self.product != "ATL11" and self._temporal:
@@ -553,9 +553,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         return self._granules
 
     @cached_property
-    def concept_id(self) -> Union[str, None]:
-        if hasattr(self, "product"):
-            short_name = self.product
+    def concept_id(self) -> str:
+        if hasattr(self, "_prod"):
+            short_name = self._prod
         else:
             raise ValueError("Product not defined")
         if hasattr(self, "_version"):
@@ -568,7 +568,9 @@ class Query(GenQuery, EarthdataAuthMixin):
         if collections:
             return collections[0].concept_id()
         else:
-            return None
+            raise ValueError(
+                f"Could not find concept ID for {self._prod} v{self._version}"
+            )
 
     @property
     def product(self):
@@ -762,8 +764,11 @@ class Query(GenQuery, EarthdataAuthMixin):
 
         return cycle_map, rgt_map
 
+    @deprecated
     def _get_concept_id(self, product, version) -> Union[str, None]:
         """
+        Replaced by the cached property `concept_id`, which otherwise partially duplicated this function
+
         Get the concept ID for the specified product and version. Note that we are forcing CMR to use the cloud copy.
         """
         collections = earthaccess.search_datasets(
@@ -836,16 +841,6 @@ class Query(GenQuery, EarthdataAuthMixin):
             return self.granules.avail
 
     def _order_subset_granules(self, skip_preview: bool = False) -> str:
-        concept_id = self._get_concept_id(
-            product=self._prod,
-            version=self._version,
-        )
-
-        if concept_id is None:
-            raise ValueError(
-                f"Could not find concept ID for {self._prod} v{self._version}"
-            )
-
         readable_granule_name = self.CMRparams.get("readable_granule_name[]", [])
         harmony_temporal = None
         harmony_spatial = None
@@ -885,7 +880,7 @@ class Query(GenQuery, EarthdataAuthMixin):
                 raise ValueError("No temporal or spatial parameters provided.")
 
         job_id = self.harmony_api.place_order(
-            concept_id=concept_id,
+            concept_id=self.concept_id,
             temporal=harmony_temporal,
             spatial=harmony_spatial,
             granule_name=list(readable_granule_name),

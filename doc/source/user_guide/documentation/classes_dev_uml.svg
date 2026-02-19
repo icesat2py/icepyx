@@ -137,7 +137,7 @@
 <text text-anchor="start" x="1871.5" y="-1173.3" font-family="Times,serif" font-size="14.00">_tracks : NoneType, list</text>
 <text text-anchor="start" x="1871.5" y="-1158.3" font-family="Times,serif" font-size="14.00">_variables</text>
 <text text-anchor="start" x="1871.5" y="-1143.3" font-family="Times,serif" font-size="14.00">_version</text>
-<text text-anchor="start" x="1871.5" y="-1128.3" font-family="Times,serif" font-size="14.00">concept_id : Union[str, None]</text>
+<text text-anchor="start" x="1871.5" y="-1128.3" font-family="Times,serif" font-size="14.00">concept_id : str</text>
 <text text-anchor="start" x="1871.5" y="-1113.3" font-family="Times,serif" font-size="14.00">cycles</text>
 <text text-anchor="start" x="1871.5" y="-1098.3" font-family="Times,serif" font-size="14.00">granules</text>
 <text text-anchor="start" x="1871.5" y="-1083.3" font-family="Times,serif" font-size="14.00">harmony_api</text>

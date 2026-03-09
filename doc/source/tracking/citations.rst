@@ -35,6 +35,9 @@ icepyx in the open-source landscape
     :style: mystyle
 
     Bednar2023
+    Shean2023
+    chudley2024
+    tankersley2024
 
 Presentations and Materials Featuring icepyx
 --------------------------------------------
@@ -61,11 +64,19 @@ Research that utilizes icepyx for ICESat-2 data
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
 
+    al-attabi2026
+    narin2026
+    fair2025
+    leite2025
+    tian2025
+    eidam2024
+    golin2024
+    kamath2024
+    malambo2024
     Tian2024
     Freer2023
     Idestrom2023
     Mallinis2023
-    Shean2023
     Snellink2023
     Eidam2022
     Leeuwen:2022

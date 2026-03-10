@@ -44,29 +44,45 @@ variables.append(
     beam_list=["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"],
 )
 
+
+all_varpaths = list_of_dict_vals(variables.wanted)
+vgrp, paths = Variables.parse_var_list(all_varpaths, tiered=True, tiered_vars=False)
 print(list_of_dict_vals(variables.wanted))
 print(Variables.parse_var_list(variables.wanted, tiered=False, tiered_vars=False))
 
 
-def read_granule(FILENAME, ATTRIBUTES=False, **kwargs):
+def read_granule(
+    FILENAME, ATTRIBUTES=False, variables_obj=None, var_dict=None, **kwargs
+):
     """
-    Reads ICESat-2 ATL03 Global Geolocated Photons data files
+    Reads ICESat-2 data files with configurable variable selection.
+
+    Uses outputs from Variables.parse_var_list() to flexibly select and read
+    specific variables from granule files.
 
     Parameters
     ----------
-    FILENAME: str
-        full path to ATL03 file
+    FILENAME: str or file-like object
+        Full path to ICESat-2 file or an open file object
     ATTRIBUTES: bool, default False
-        read file, group and variable attributes
+        If True, read and return file, group, and variable attributes
+    variables_obj: Variables, optional
+        An icepyx.core.variables.Variables object with populated `wanted` attribute.
+        If provided, var_dict will be extracted from variables_obj.wanted.
+        Either variables_obj or var_dict should be provided.
+    var_dict: dict, optional
+        Dictionary of variable names (keys) to list of full paths (values),
+        as returned by Variables.parse_var_list(tiered=False).
+        If not provided, will be extracted from variables_obj.wanted.
 
     Returns
     -------
-    IS2_atl03_mds: dict
-        ATL03 variables
-    IS2_atl03_attrs: dict
-        ATL03 attributes
-    IS2_atl03_beams: list
-        valid ICESat-2 beams within ATL03 file
+    IS2_mds: dict
+        Variables organized hierarchically matching HDF5 group structure
+    IS2_attrs: dict
+        Attributes (if ATTRIBUTES=True), otherwise empty dict
+    IS2_beams: list
+        Valid ICESat-2 beams available in the file
     """
     # Open the HDF5 file for reading
     if isinstance(FILENAME, io.IOBase):
@@ -78,206 +94,192 @@ def read_granule(FILENAME, ATTRIBUTES=False, **kwargs):
     logging.info(fileID.filename)
     logging.info(list(fileID.keys()))
 
-    # allocate python dictionaries for ICESat-2 ATL03 variables and attributes
-    IS2_atl03_mds = {}
-    IS2_atl03_attrs = {}
+    # Determine which variables to read
+    if variables_obj is not None:
+        # Extract var_dict from Variables object
+        if variables_obj.wanted:
+            var_dict_parsed, _ = Variables.parse_var_list(
+                list_of_dict_vals(variables_obj.wanted), tiered=False
+            )
+            var_dict = var_dict_parsed
+        else:
+            raise ValueError(
+                "variables_obj.wanted is empty. Please select variables first."
+            )
+
+    if var_dict is None:
+        raise ValueError(
+            "Must provide either variables_obj with selected variables or "
+            "var_dict from Variables.parse_var_list()"
+        )
+
+    # allocate python dictionaries for variables and attributes
+    IS2_mds = {}
+    IS2_attrs = {}
 
     # read each input beam within the file
-    IS2_atl03_beams = []
+    IS2_beams = []
     for gtx in [k for k in fileID if bool(re.match(r"gt\d[lr]", k))]:
-        # check if subsetted beam contains data
-        # check in both the geolocation and heights groups
-        try:
-            fileID[gtx]["geolocation"]["segment_id"]
-            fileID[gtx]["heights"]["delta_time"]
-        except KeyError:
-            pass
-        else:
-            IS2_atl03_beams.append(gtx)
+        # Check if this beam group exists and has any of the requested variables
+        if gtx not in fileID:
+            continue
+
+        # Check if beam contains any of the requested variables
+        has_data = False
+        for var_name, paths in var_dict.items():
+            for path in paths:
+                if path.startswith(f"{gtx}/"):
+                    try:
+                        fileID[path]
+                        has_data = True
+                        break
+                    except KeyError:
+                        pass
+            if has_data:
+                break
+
+        if has_data:
+            IS2_beams.append(gtx)
 
     # for each included beam
-    for gtx in IS2_atl03_beams:
-        # -------------------------------------------
-        # 1. make sure the beam-level dict exists
-        IS2_atl03_attrs.setdefault(gtx, {})
-        # 2. always save the two “must-have” attributes
-        for key in ("atlas_beam_type", "atlas_spot_number"):
-            IS2_atl03_attrs[gtx][key] = fileID[gtx].attrs[key]
+    for gtx in IS2_beams:
+        # Initialize beam-level data structures
+        IS2_attrs.setdefault(gtx, {})
+        IS2_mds.setdefault(gtx, {})
 
-        # get each HDF5 variable
-        IS2_atl03_mds[gtx] = {}
-        IS2_atl03_mds[gtx]["heights"] = {}
-        IS2_atl03_mds[gtx]["geolocation"] = {}
-        IS2_atl03_mds[gtx]["bckgrd_atlas"] = {}
-        IS2_atl03_mds[gtx]["geophys_corr"] = {}
-        # ICESat-2 Measurement Group
-        for key, val in fileID[gtx]["heights"].items():
-            IS2_atl03_mds[gtx]["heights"][key] = val[:]
-        # ICESat-2 Geolocation Group
-        for key, val in fileID[gtx]["geolocation"].items():
-            IS2_atl03_mds[gtx]["geolocation"][key] = val[:]
-        # ICESat-2 Background Photon Rate Group
-        for key, val in fileID[gtx]["bckgrd_atlas"].items():
-            IS2_atl03_mds[gtx]["bckgrd_atlas"][key] = val[:]
-        # ICESat-2 Geophysical Corrections Group: Values for tides (ocean,
-        # solid earth, pole, load, and equilibrium), inverted barometer (IB)
-        # effects, and range corrections for tropospheric delays
-        for key, val in fileID[gtx]["geophys_corr"].items():
-            IS2_atl03_mds[gtx]["geophys_corr"][key] = val[:]
+        # Save beam-level attributes if present
+        try:
+            for key in ("atlas_beam_type", "atlas_spot_number"):
+                if key in fileID[gtx].attrs:
+                    IS2_attrs[gtx][key] = fileID[gtx].attrs[key]
+        except (KeyError, AttributeError):
+            pass
 
-        # Getting attributes of included variables
+        # Read requested variables for this beam
+        for var_name, paths in var_dict.items():
+            for full_path in paths:
+                if not full_path.startswith(f"{gtx}/"):
+                    continue
+
+                try:
+                    var_data = fileID[full_path][:]
+
+                    # Parse the group hierarchy from the path
+                    # e.g., "gt1l/heights/h_ph" -> groups = ["heights"], var = "h_ph"
+                    sub_path = full_path[len(gtx) + 1 :]  # Remove "gtXx/" prefix
+                    path_parts = sub_path.split("/")
+
+                    if len(path_parts) == 1:
+                        # Top-level variable in beam
+                        IS2_mds[gtx][var_name] = var_data
+                    else:
+                        # Nested variable - reconstruct hierarchy
+                        current = IS2_mds[gtx]
+                        for group in path_parts[:-1]:
+                            if group not in current:
+                                current[group] = {}
+                            current = current[group]
+                        current[var_name] = var_data
+
+                    # Read attributes if requested
+                    if ATTRIBUTES:
+                        var_attrs = {}
+                        try:
+                            for att_name, att_val in fileID[full_path].attrs.items():
+                                var_attrs[att_name] = att_val
+
+                            # Store attributes in corresponding location
+                            current_attr = IS2_attrs[gtx]
+                            for group in path_parts[:-1]:
+                                if group not in current_attr:
+                                    current_attr[group] = {}
+                                current_attr = current_attr[group]
+                            if var_name not in current_attr:
+                                current_attr[var_name] = {}
+                            current_attr[var_name] = var_attrs
+                        except (KeyError, AttributeError):
+                            pass
+
+                except KeyError:
+                    logging.warning(
+                        "Variable %s not found in file %s", full_path, fileID.filename
+                    )
+                    continue
+
+        # Read group-level attributes if requested
         if ATTRIBUTES:
-            # Getting attributes of IS2_atl03_mds beam variables
-            IS2_atl03_attrs[gtx] = {}
-            IS2_atl03_attrs[gtx]["heights"] = {}
-            IS2_atl03_attrs[gtx]["geolocation"] = {}
-            IS2_atl03_attrs[gtx]["bckgrd_atlas"] = {}
-            IS2_atl03_attrs[gtx]["geophys_corr"] = {}
+            try:
+                for att_name, att_val in fileID[gtx].attrs.items():
+                    if att_name not in IS2_attrs[gtx]:
+                        IS2_attrs[gtx][att_name] = att_val
+            except (KeyError, AttributeError):
+                pass
 
-            # Global Group Attributes
-            for att_name, att_val in fileID[gtx].attrs.items():
-                IS2_atl03_attrs[gtx][att_name] = att_val
-            # ICESat-2 Measurement Group
-            for key, val in fileID[gtx]["heights"].items():
-                IS2_atl03_attrs[gtx]["heights"][key] = {}
-                for att_name, att_val in val.attrs.items():
-                    IS2_atl03_attrs[gtx]["heights"][key][att_name] = att_val
-            # ICESat-2 Geolocation Group
-            for key, val in fileID[gtx]["geolocation"].items():
-                IS2_atl03_attrs[gtx]["geolocation"][key] = {}
-                for att_name, att_val in val.attrs.items():
-                    IS2_atl03_attrs[gtx]["geolocation"][key][att_name] = att_val
-            # ICESat-2 Background Photon Rate Group
-            for key, val in fileID[gtx]["bckgrd_atlas"].items():
-                IS2_atl03_attrs[gtx]["bckgrd_atlas"][key] = {}
-                for att_name, att_val in val.attrs.items():
-                    IS2_atl03_attrs[gtx]["bckgrd_atlas"][key][att_name] = att_val
-            # ICESat-2 Geophysical Corrections Group
-            for key, val in fileID[gtx]["geophys_corr"].items():
-                IS2_atl03_attrs[gtx]["geophys_corr"][key] = {}
-                for att_name, att_val in val.attrs.items():
-                    IS2_atl03_attrs[gtx]["geophys_corr"][key][att_name] = att_val
+    # Read non-beam variables (orbit_info, ancillary_data, etc.)
+    for var_name, paths in var_dict.items():
+        for full_path in paths:
+            # Skip beam-specific variables
+            if any(full_path.startswith(f"{beam}/") for beam in IS2_beams):
+                continue
 
-    # ICESat-2 spacecraft orientation at time
-    IS2_atl03_mds["orbit_info"] = {}
-    IS2_atl03_attrs["orbit_info"] = {}
-    for key, val in fileID["orbit_info"].items():
-        IS2_atl03_mds["orbit_info"][key] = val[:]
-        # Getting attributes of group and included variables
-        if ATTRIBUTES:
-            # Global Group Attributes
-            for att_name, att_val in fileID["orbit_info"].attrs.items():
-                IS2_atl03_attrs["orbit_info"][att_name] = att_val
-            # Variable Attributes
-            IS2_atl03_attrs["orbit_info"][key] = {}
-            for att_name, att_val in val.attrs.items():
-                IS2_atl03_attrs["orbit_info"][key][att_name] = att_val
+            try:
+                var_data = fileID[full_path][:]
 
-    # information ancillary to the data product
-    # number of GPS seconds between the GPS epoch (1980-01-06T00:00:00Z UTC)
-    # and ATLAS Standard Data Product (SDP) epoch (2018-01-01T00:00:00Z UTC)
-    # Add this value to delta time parameters to compute full gps_seconds
-    # could alternatively use the Julian day of the ATLAS SDP epoch: 2458119.5
-    # and add leap seconds since 2018-01-01T00:00:00Z UTC (ATLAS SDP epoch)
-    IS2_atl03_mds["ancillary_data"] = {}
-    IS2_atl03_attrs["ancillary_data"] = {}
-    ancillary_keys = [
-        "atlas_sdp_gps_epoch",
-        "data_end_utc",
-        "data_start_utc",
-        "end_cycle",
-        "end_geoseg",
-        "end_gpssow",
-        "end_gpsweek",
-        "end_orbit",
-        "end_region",
-        "end_rgt",
-        "granule_end_utc",
-        "granule_start_utc",
-        "release",
-        "start_cycle",
-        "start_geoseg",
-        "start_gpssow",
-        "start_gpsweek",
-        "start_orbit",
-        "start_region",
-        "start_rgt",
-        "version",
-    ]
-    for key in ancillary_keys:
-        # get each HDF5 variable
-        IS2_atl03_mds["ancillary_data"][key] = fileID["ancillary_data"][key][:]
-        # Getting attributes of group and included variables
-        if ATTRIBUTES:
-            # Variable Attributes
-            IS2_atl03_attrs["ancillary_data"][key] = {}
-            for att_name, att_val in fileID["ancillary_data"][key].attrs.items():
-                IS2_atl03_attrs["ancillary_data"][key][att_name] = att_val
+                # Parse path and build hierarchy
+                path_parts = full_path.split("/")
 
-    # transmit-echo-path (tep) parameters
-    IS2_atl03_mds["ancillary_data"]["tep"] = {}
-    IS2_atl03_attrs["ancillary_data"]["tep"] = {}
-    for key, val in fileID["ancillary_data"]["tep"].items():
-        # get each HDF5 variable
-        IS2_atl03_mds["ancillary_data"]["tep"][key] = val[:]
-        # Getting attributes of group and included variables
-        if ATTRIBUTES:
-            # Variable Attributes
-            IS2_atl03_attrs["ancillary_data"]["tep"][key] = {}
-            for att_name, att_val in val.attrs.items():
-                IS2_atl03_attrs["ancillary_data"]["tep"][key][att_name] = att_val
+                if len(path_parts) == 1:
+                    # Top-level variable
+                    IS2_mds[var_name] = var_data
+                else:
+                    # Nested variable
+                    current = IS2_mds
+                    for group in path_parts[:-1]:
+                        if group not in current:
+                            current[group] = {}
+                        current = current[group]
+                    current[var_name] = var_data
 
-    # channel dead time and first photon bias derived from ATLAS calibration
-    cal1, cal2 = ("ancillary_data", "calibrations")
-    for var in ["dead_time", "first_photon_bias"]:
-        IS2_atl03_mds[cal1][var] = {}
-        IS2_atl03_attrs[cal1][var] = {}
-        for key, val in fileID[cal1][cal2][var].items():
-            # get each HDF5 variable
-            if isinstance(val, h5py.Dataset):
-                IS2_atl03_mds[cal1][var][key] = val[:]
-            elif isinstance(val, h5py.Group):
-                IS2_atl03_mds[cal1][var][key] = {}
-                for k, v in val.items():
-                    IS2_atl03_mds[cal1][var][key][k] = v[:]
-            # Getting attributes of group and included variables
-            if ATTRIBUTES:
-                # Variable Attributes
-                IS2_atl03_attrs[cal1][var][key] = {}
-                for att_name, att_val in val.attrs.items():
-                    IS2_atl03_attrs[cal1][var][key][att_name] = att_val
-                if isinstance(val, h5py.Group):
-                    for k, v in val.items():
-                        IS2_atl03_attrs[cal1][var][key][k] = {}
-                        for att_name, att_val in val.attrs.items():
-                            IS2_atl03_attrs[cal1][var][key][k][att_name] = att_val
+                # Read attributes if requested
+                if ATTRIBUTES:
+                    var_attrs = {}
+                    try:
+                        for att_name, att_val in fileID[full_path].attrs.items():
+                            var_attrs[att_name] = att_val
 
-    # get ATLAS impulse response variables for the transmitter echo path (TEP)
-    tep1, tep2 = ("atlas_impulse_response", "tep_histogram")
-    IS2_atl03_mds[tep1] = {}
-    IS2_atl03_attrs[tep1] = {}
-    for pce in ["pce1_spot1", "pce2_spot3"]:
-        IS2_atl03_mds[tep1][pce] = {tep2: {}}
-        IS2_atl03_attrs[tep1][pce] = {tep2: {}}
-        # for each TEP variable
-        for key, val in fileID[tep1][pce][tep2].items():
-            IS2_atl03_mds[tep1][pce][tep2][key] = val[:]
-            # Getting attributes of included variables
-            if ATTRIBUTES:
-                # Global Group Attributes
-                for att_name, att_val in fileID[tep1][pce][tep2].attrs.items():
-                    IS2_atl03_attrs[tep1][pce][tep2][att_name] = att_val
-                # Variable Attributes
-                IS2_atl03_attrs[tep1][pce][tep2][key] = {}
-                for att_name, att_val in val.attrs.items():
-                    IS2_atl03_attrs[tep1][pce][tep2][key][att_name] = att_val
+                        # Store attributes
+                        current_attr = IS2_attrs
+                        for group in path_parts[:-1]:
+                            if group not in current_attr:
+                                current_attr[group] = {}
+                            current_attr = current_attr[group]
+                        if var_name not in current_attr:
+                            current_attr[var_name] = {}
+                        current_attr[var_name] = var_attrs
+                    except (KeyError, AttributeError):
+                        pass
 
-    # Global File Attributes
+            except KeyError:
+                logging.warning(
+                    "Variable %s not found in file %s", full_path, fileID.filename
+                )
+                continue
+
+    # Read group-level attributes for non-beam groups if requested
     if ATTRIBUTES:
-        for att_name, att_val in fileID.attrs.items():
-            IS2_atl03_attrs[att_name] = att_val
+        for group_name in ["orbit_info", "ancillary_data"]:
+            if group_name in fileID:
+                if group_name not in IS2_attrs:
+                    IS2_attrs[group_name] = {}
+                try:
+                    for att_name, att_val in fileID[group_name].attrs.items():
+                        if att_name not in IS2_attrs[group_name]:
+                            IS2_attrs[group_name][att_name] = att_val
+                except (KeyError, AttributeError):
+                    pass
 
     # Closing the HDF5 file
     fileID.close()
+
     # Return the datasets and variables
-    return (IS2_atl03_mds, IS2_atl03_attrs, IS2_atl03_beams)
+    return (IS2_mds, IS2_attrs, IS2_beams)

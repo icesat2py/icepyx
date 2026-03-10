@@ -32,6 +32,7 @@ ICESat2ProductShortName = Literal[
 CMRParamsBase = TypedDict(
     "CMRParamsBase",
     {
+        "concept_id": NotRequired[str],
         "temporal": NotRequired[str],
         "options[readable_granule_name][pattern]": NotRequired[str],
         "options[spatial][or]": NotRequired[str],

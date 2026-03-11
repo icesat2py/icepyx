@@ -75,7 +75,11 @@ def test_cmrparams_concept_id_matches_version():
         version=vprev,
     )
     assert reg_vprev.product_version == vprev
-    assert reg_vprev.CMRparams["concept_id"] == vprev_concept_id
+
+    try:
+        assert reg_vprev.CMRparams["concept_id"] == vprev_concept_id
+    except ValueError as e:  # for when the previous version is retired at data center
+        assert str(e) == f"Could not find concept ID for ATL06 v{vprev}"
 
     # Test 2: Explicit current version
     reg_vcurr = ipx.Query(

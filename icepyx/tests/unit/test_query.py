@@ -18,7 +18,7 @@ def test_icepyx_boundingbox_query():
         ["2019-02-22", "2019-02-28"],
         start_time="03:30:00",
         end_time="21:30:00",
-        version="6",
+        version="7",
     )
     obs_tuple = (
         reg_a.product,
@@ -33,7 +33,7 @@ def test_icepyx_boundingbox_query():
         ["2019-02-22", "2019-02-28"],
         "03:30:00",
         "21:30:00",
-        "006",
+        "007",
         ("bounding_box", [-64.0, 66.0, -55.0, 72.0]),
     )
 

@@ -600,7 +600,7 @@ def test_no_granules_in_search_results():
     ermsg = "Your search returned no results; try different search parameters"
     with pytest.raises(AssertionError, match=ermsg):
         ipx.Query(
-            "ATL06", [-55, 68, -48, 71], ["2019-02-20", "2019-02-20"], version="2"
+            "ATL06", [-55, 68, -54.999, 68.001], ["2019-02-20", "2019-02-20"]
         ).avail_granules()
 
 
@@ -609,15 +609,15 @@ def test_correct_granule_list_returned():
         "ATL06",
         [-55, 68, -48, 71],
         ["2019-02-20", "2019-02-28"],
-        version="6",
+        version="7",
     )
 
     (obs_grans,) = reg_a.avail_granules(ids=True)
     exp_grans = [
-        "ATL06_20190221121851_08410203_006_02.h5",
-        "ATL06_20190222010344_08490205_006_02.h5",
-        "ATL06_20190225121032_09020203_006_02.h5",
-        "ATL06_20190226005526_09100205_006_02.h5",
+        "ATL06_20190221121851_08410203_007_01.h5",
+        "ATL06_20190222010344_08490205_007_01.h5",
+        "ATL06_20190225121032_09020203_007_01.h5",
+        "ATL06_20190226005526_09100205_007_01.h5",
     ]
     assert set(obs_grans) == set(exp_grans)
 

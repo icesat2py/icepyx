@@ -1,0 +1,71 @@
+What's new in 2.0.1 (21 November 2025)
+-----------------------------------
+
+These are the changes in icepyx 2.0.1 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+-  Update fsspec parameters for cloud reads (#677)
+
+Bug fixes
+~~~~~~~~~
+
+- Resolve GeoPandas library unary_union warnings (#681)
+- update kwargs in pypistats calls to get the script working again (#714)
+- [bug fix] remove incorrect passing of "no orbital parameters set" string to "readable_granule_name" (#712)
+
+    - re-add cycle and track validation removed in #657
+    - simplify track and cycle properties
+    - change cycle and track return to None if None is input
+    - add test for track submission
+
+- Updating earthaccess and fixing a few minor bugs. (#715)
+
+    - update earthaccess to latest version
+    - fix order url generation
+    - fix deprecated calls to `vars` in data read-in notebook
+
+
+Maintenance
+~~~~~~~~~~~
+
+- [pre-commit.ci] pre-commit autoupdate (#671)
+- [pre-commit.ci] pre-commit autoupdate (#693)
+- Bump codecov/codecov-action from 5.4.0 to 5.4.2 in the github-actions group (#679)
+- [pre-commit.ci] pre-commit autoupdate (#700)
+- Bump the github-actions group with 3 updates (#707)
+- [pre-commit.ci] pre-commit autoupdate and add fetch depth to integration test action (#702)
+- Test actions updates and cleanup (#696)
+- Bump the github-actions group, remove composite action, pin actions to full length commit SHA (#710)
+
+    - Remove composite action, inline into workflows directly: Dependabot did not update the actions/setup-python version in the composite action
+    - Pin actions to full length commit SHA version (more secure): Xref [https://docs.zizmor.sh/audits/#unpinned-uses](https://docs.zizmor.sh/audits/#unpinned-uses) and [https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions](https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions)[pre-commit.ci] pre-commit autoupdate (#711)
+
+- Bump the github-actions group with 2 updates (#718)
+- [pre-commit.ci] pre-commit autoupdate (#719)
+
+
+Documentation
+~~~~~~~~~~~~~
+
+- docs: add chuckwondo as a contributor for review (#667)
+- Add intersphinx mappings (#680)
+- docs: add emmanuel-ferdman as a contributor for code (#697)
+- migrate IS2 resource guide to central community page (#706)
+- add quest paper to docs (#709)
+- [docs] traffic updates Apr-Oct 2025 (#716)
+
+
+Other
+~~~~~
+
+- Separate jobs for publishing to TestPyPI and PyPI (#687)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v2.0.0..v2.0.1|HEAD

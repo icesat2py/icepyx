@@ -74,7 +74,7 @@ def test_spatial_and_temporal_subset(tmp_path, spatial_extent):
     print(f"Spatial extent: {spatial_extent}")
     q = Query(
         product="ATL06",
-        version="006",
+        version="007",
         spatial_extent=spatial_extent,
         date_range={
             "start_date": dt.datetime(2024, 4, 1, 0, 0, 0),

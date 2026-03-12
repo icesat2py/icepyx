@@ -26,19 +26,20 @@ Peer-reviewed publications about icepyx software
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
 
-    joss2023
     quest2025
+    joss2023
+    
 
 icepyx in the open-source landscape
 
 .. bibliography:: icepyx_pubs.bib
     :style: mystyle
 
-    Bednar2023
-    Shean2023
     chudley2024
     tankersley2024
-
+    Bednar2023
+    Shean2023
+    
 Presentations and Materials Featuring icepyx
 --------------------------------------------
 Presentations that feature or explain icepyx

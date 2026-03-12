@@ -1,0 +1,57 @@
+What's new in 2.0.2 (13 March 2026)
+-----------------------------------
+
+These are the changes in icepyx 2.0.2 See :ref:`release` for a full changelog
+including other versions of icepyx.
+
+
+New Features
+~~~~~~~~~~~~
+
+- add issue templates for bugs and features (#728)
+
+Bug fixes
+~~~~~~~~~
+
+- fix tests failing due to version updates at NSIDC and update requirements (#727)
+- fix download function to order granules if needed (#726)
+
+    - updates the download function to first order data if the user has not explicitly run the order function, returning to the intended behavior of icepyx, as in v1.
+
+- fix version in query, add tests (#741)
+
+
+Deprecations
+~~~~~~~~~~~~
+
+- None
+
+
+Maintenance
+~~~~~~~~~~~
+
+- [pre-commit.ci] pre-commit autoupdate (#725)
+- Bump the github-actions group with 2 updates (#724)
+- [pre-commit.ci] pre-commit autoupdate (#738)
+- Bump the github-actions group across 1 directory with 6 updates (#739)
+- modify tests to handle retired data product versions (#746)
+- [pre-commit.ci] pre-commit autoupdate (#743)
+
+
+Documentation
+~~~~~~~~~~~~~
+
+- update references citing icepyx through Feb 2026 (#745)
+- update traffic through March 2026 (#747)
+
+
+Other
+~~~~~
+
+- get doctests running as part of test actions and update to v007 in tests (#713)
+
+
+Contributors
+~~~~~~~~~~~~
+
+.. contributors:: v2.0.0..v2.0.1|HEAD

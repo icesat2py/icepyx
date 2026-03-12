@@ -28,7 +28,7 @@ Peer-reviewed publications about icepyx software
 
     quest2025
     joss2023
-    
+
 
 icepyx in the open-source landscape
 
@@ -39,7 +39,7 @@ icepyx in the open-source landscape
     tankersley2024
     Bednar2023
     Shean2023
-    
+
 Presentations and Materials Featuring icepyx
 --------------------------------------------
 Presentations that feature or explain icepyx

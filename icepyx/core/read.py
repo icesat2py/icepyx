@@ -664,12 +664,21 @@ class Read(EarthdataAuthMixin):
 
         """
 
-        return xr.open_dataset(
-            file,
-            group=grp_path,
-            engine="h5netcdf",
-            backend_kwargs={"phony_dims": "access"},
-        )
+        if self.is_s3:
+            return xr.open_dataset(
+                file,
+                group=grp_path,
+                engine="h5coro",
+                backend_kwargs={"phony_dims": "access"},
+            )
+
+        else:
+            return xr.open_dataset(
+                file,
+                group=grp_path,
+                engine="h5netcdf",
+                backend_kwargs={"phony_dims": "access"},
+            )
 
     def _build_single_file_dataset(self, file, groups_list):
         """

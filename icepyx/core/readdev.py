@@ -47,8 +47,8 @@ variables.append(
 
 all_varpaths = list_of_dict_vals(variables.wanted)
 vgrp, paths = Variables.parse_var_list(all_varpaths, tiered=True, tiered_vars=False)
-print(list_of_dict_vals(variables.wanted))
-print(Variables.parse_var_list(variables.wanted, tiered=False, tiered_vars=False))
+# print(list_of_dict_vals(variables.wanted))
+# print(Variables.parse_var_list(variables.wanted, tiered=False, tiered_vars=False))
 
 
 def read_granule(

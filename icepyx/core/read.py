@@ -254,7 +254,7 @@ class Read(EarthdataAuthMixin):
                 "variable.",
                 stacklevel=2,
             )
-            _confirm_proceed()
+            # _confirm_proceed()
 
         # Raise error if multiple products given
         all_products = list(set(product_dict.values()))
@@ -563,7 +563,7 @@ class Read(EarthdataAuthMixin):
                 "Approximate access time (using `.load()`) can exceed 6 minutes per data "
                 "variable."
             )
-            _confirm_proceed()
+            # _confirm_proceed()
 
         # Append the minimum variables needed for icepyx to merge the datasets
         # Skip products which do not contain required variables
@@ -591,17 +591,17 @@ class Read(EarthdataAuthMixin):
         all_dss = []
 
         for file in self.filelist:
-            if file.startswith("s3"):
-                # If path is an s3 path create an s3fs filesystem to reference the file
-                # TODO would it be better to be able to generate an s3fs session from the Mixin?
-                s3 = earthaccess.get_s3_filesystem(daac="NSIDC")
-                # Goal: delegate most of the granule reading logic to earthaccess (xref https://github.com/icesat2py/icepyx/issues/575)
-                # See also: https://github.com/icesat2py/icepyx/pull/677/files#r2083622039
-                fsspec_params = {
-                    "cache_type": "blockcache",
-                    "block_size": 8 * 1024 * 1024,
-                }
-                file = s3.open(file, "rb", **fsspec_params)
+            # if file.startswith("s3"):
+            #     # If path is an s3 path create an s3fs filesystem to reference the file
+            #     # TODO would it be better to be able to generate an s3fs session from the Mixin?
+            #     s3 = earthaccess.get_s3_filesystem(daac="NSIDC")
+            #     # Goal: delegate most of the granule reading logic to earthaccess (xref https://github.com/icesat2py/icepyx/issues/575)
+            #     # See also: https://github.com/icesat2py/icepyx/pull/677/files#r2083622039
+            #     fsspec_params = {
+            #         "cache_type": "blockcache",
+            #         "block_size": 8 * 1024 * 1024,
+            #     }
+            #     file = s3.open(file, "rb", **fsspec_params)
 
             all_dss.append(
                 self._build_single_file_dataset(file, groups_list)
@@ -665,12 +665,42 @@ class Read(EarthdataAuthMixin):
         """
 
         if self.is_s3:
-            return xr.open_dataset(
-                file,
-                group=grp_path,
-                engine="h5coro",
-                backend_kwargs={"phony_dims": "access"},
-            )
+
+            # TODO: use s3pathlib or something more robust to strip the s3 prefix
+            no_prefix_file = file.lstrip("s3://")
+            
+            # print(grp_path)
+
+            # written for ATL06; needs to be generalize and only works because
+            # the picked variables are all length 1
+            if grp_path in ["orbit_info"]:
+                return xr.open_dataset(
+                    no_prefix_file,
+                    group=grp_path,
+                    pick_variables=["sc_orient", "cycle_number","rgt"],
+                    engine="h5coro",
+                    credentials = self.auth.get_s3_credentials(daac='NSIDC'),
+                )
+                
+            # elif grp_path in ["ancillary_data"]:
+            #     return xr.open_dataset(
+            #         no_prefix_file,
+            #         group=grp_path,
+            #         pick_variables=["atlas_sdp_gps_epoch", "data_start_utc", "data_end_utc"],
+            #         engine="h5coro",
+            #         credentials = self.auth.get_s3_credentials(daac='NSIDC'),
+            #     )
+
+            try:
+                return xr.open_dataset(
+                    no_prefix_file,
+                    group=grp_path,
+                    engine="h5coro",
+                    credentials = self.auth.get_s3_credentials(daac='NSIDC'),
+                )
+
+            except ValueError:
+                pass
 
         else:
             return xr.open_dataset(
@@ -785,6 +815,10 @@ class Read(EarthdataAuthMixin):
             wanted_groups_list = ["orbit_info", "ancillary_data"] + sorted(
                 wanted_groups_set
             )
+
+            # since having issues getting ancillary_data using h5coro engine
+            if self.is_s3 == True:
+                wanted_groups_list.remove("ancillary_data")
 
             while wanted_groups_list:
                 grp_path = wanted_groups_list[0]

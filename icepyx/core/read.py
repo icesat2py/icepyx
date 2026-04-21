@@ -268,6 +268,22 @@ class Read(EarthdataAuthMixin):
         # Assign the identified product to the property
         self._product = all_products[0]
 
+        # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21, 23
+        if self._product in [
+            "ATL14",
+            "ATL15",
+            "ATL16",
+            "ATL17",
+            "ATL18",
+            "ATL19",
+            "ATL20",
+            "ATL21",
+            "ATL23",
+        ]:
+            self._is_gridded = True
+        else:
+            self._is_gridded = False
+
         if out_obj_type is not None:
             print(
                 "Output object type will be an xarray DataSet - "
@@ -700,20 +716,8 @@ class Read(EarthdataAuthMixin):
         # DEVNOTE: elif does not actually apply wanted variable list,
         # and has not been tested for merging multiple files into one ds
         # of a gridded product
-        # TODO: all products need to be tested, and quicklook products added or explicitly excluded
-        # consider looking for netcdf file extension instead of using product
         # Level 3b, gridded (netcdf): ATL14, 15, 16, 17, 18, 19, 20, 21
-        if self.product in [
-            "ATL14",
-            "ATL15",
-            "ATL16",
-            "ATL17",
-            "ATL18",
-            "ATL19",
-            "ATL20",
-            "ATL21",
-            "ATL23",
-        ]:
+        if self._is_gridded:
             wanted_grouponly_set = set(wanted_groups_tiered[0])
             wanted_groups_list = sorted(wanted_grouponly_set)
             if len(wanted_groups_list) == 1:
@@ -759,7 +763,7 @@ class Read(EarthdataAuthMixin):
 
             return is2ds
 
-        # Level 2 and 3a Products: ATL03, 06, 07, 08, 09, 10, 12, 13
+        # Level 2 and 3a Products: ATL03, 06, 07, 08, 09, 10, 12, 13, 24
         else:
             is2ds = self._build_dataset_template(file)
 

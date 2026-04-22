@@ -13,13 +13,13 @@ on:
     types:
       - completed
 
-
 # When this workflow is queued, automatically cancel any previous running
 # or pending jobs from the same branch
 concurrency:
   group: "unit-tests-${{ github.ref }}"
   cancel-in-progress: true
 
+permissions: {}
 
 jobs:
   test:

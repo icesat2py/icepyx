@@ -10,8 +10,7 @@ on:
       - "development"
   workflow_run:
     workflows: [Update UML diagrams]
-    types:
-      - completed
+    types: [completed]
 
 # When this workflow is queued, automatically cancel any previous running
 # or pending jobs from the same branch

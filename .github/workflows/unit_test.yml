@@ -10,9 +10,7 @@ on:
       - "development"
   workflow_run:
     workflows: [Update UML diagrams]
-    types:
-      - completed
-
+    types: [completed]
 
 # When this workflow is queued, automatically cancel any previous running
 # or pending jobs from the same branch
@@ -20,6 +18,7 @@ concurrency:
   group: "unit-tests-${{ github.ref }}"
   cancel-in-progress: true
 
+permissions: {}
 
 jobs:
   test:
@@ -33,6 +32,7 @@ jobs:
       - uses: "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd" # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0

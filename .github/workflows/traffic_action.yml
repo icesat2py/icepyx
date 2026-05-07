@@ -7,11 +7,15 @@ on:
   # Trigger manually at https://github.com/icesat2py/icepyx/actions/workflows/publish_to_pypi.yml
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   # This workflow contains a single job called "traffic"
   traffic:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # for Git to git push
     if: github.repository_owner == 'icesat2py'
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -20,10 +24,11 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: "traffic"
+        persist-credentials: true
 
     # Calculates traffic and clones and stores in CSV file
     - name: GitHub traffic
-      uses: sangonzal/repository-traffic-action@v.0.1.6
+      uses: sangonzal/repository-traffic-action@404df77a0bfb110f8977fe14ddba62451ec868b7 # v.0.1.6
       env:
         TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
 

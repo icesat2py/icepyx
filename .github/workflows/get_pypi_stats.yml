@@ -6,11 +6,15 @@ on:
   # Trigger manually at https://github.com/icesat2py/icepyx/actions/workflows/get_pypi_stats.yml
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   # This workflow contains a single job called "pypi_stats"
   pypi_stats:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # for Git to git push
     if: github.repository_owner == 'icesat2py'
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -19,6 +23,7 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: "traffic"
+        persist-credentials: false
 
     # Calculates pypi stats and clones and stores in CSV file
     - name: Update pypi stats files

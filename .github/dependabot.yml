@@ -13,6 +13,6 @@ updates:
       interval: monthly
     ignore:
       - dependency-name: "sangonzal/repository-traffic-action"
-        versions: "v1"
+        versions: ["v1"]
     cooldown:
       default-days: 7

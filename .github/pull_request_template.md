@@ -34,7 +34,7 @@ Please review our [How to Contribute](https://icepyx.readthedocs.io/en/latest/co
 
 
 #### Tips and Tricks
-Include `/binder` in a comment to add a Binder badge that will launch a binder notebook for the most recent commit in the PR.  
+Include `/binder` in a comment to add a [Binder](https://mybinder.readthedocs.io) badge that will launch a binder notebook for the most recent commit in the PR.  
 
 > **Need help?** We welcome contributions at every experience level. You don't have to
 > write tests alone — open your PR and ask for help. It's fine to let GitHub run tests

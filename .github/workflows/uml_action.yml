@@ -1,16 +1,15 @@
 name: Update UML diagrams
 
 on:
-  pull_request_review:
-    types: [submitted]
-    branches: development
-  workflow_dispatch:
+  issue_comment: # issues and PRs are equivalent in terms of comments for the GitHub API
+  workflow_dispatch: # trigger using 'Run workflow' button on Actions tab
 
 permissions: {}
 
 jobs:
   diagrams:
-    if: github.event.review.state == 'approved'
+    # Make sure the comment is on a PR, and contains the command "/update-uml"
+    if: ((github.event.issue.pull_request != null) && contains(github.event.comment.body, '/update-uml')) || github.event.workflow_dispatch
     name: Update UML diagrams
     runs-on: ubuntu-latest
     permissions:
@@ -20,14 +19,16 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.ref || '' }}
           persist-credentials: true
+
       - name: set up environment
         run: |
           pip install -U pip
           pip install -r requirements.txt
           pip install icepyx pylint
           sudo apt-get install graphviz
+
       - name: run pyreverse
         run: |
           pyreverse ./icepyx/core -p user_uml -o svg
@@ -35,6 +36,7 @@ jobs:
           pyreverse ./icepyx/core ./icepyx/quest -f ALL -p dev_uml -o svg
           rm ./packages_dev_uml.svg
           mv ./*.svg ./doc/source/user_guide/documentation/
+
       - name: Commit changes
         uses: EndBug/add-and-commit@290ea2c423ad77ca9c62ae0f5b224379612c0321 # v10.0.0
         with:

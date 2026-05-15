@@ -61,6 +61,7 @@ fallback_version = "unknown"
 
 [tool.codespell]
 ignore-words-list = "aas,socio-economic,toi"
+ignore-regex = "[A-Za-z0-9+/]{100,}" # Source - https://stackoverflow.com/a/78867222
 
 [tool.ruff]
 # DevGoal: Lint and format all Jupyter Notebooks, remove below.

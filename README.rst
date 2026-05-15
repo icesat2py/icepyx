@@ -78,15 +78,15 @@ It also improves interoperability for ICESat-2 datasets with other open-source t
 Installation
 ------------
 
-The simplest way to install icepyx is by using the
-`conda <https://docs.conda.io/projects/conda/en/latest/user-guide/index.html>`__
-package manager. |Conda install|
+The simplest way to install icepyx is by using the conda package manager:
 
-    conda install icepyx
+Conda Install:
+conda install icepyx
 
-Alternatively, you can also install icepyx using `pip <https://pip.pypa.io/en/stable/>`__. |Pypi install|
+Alternatively, you can install icepyx using pip:
 
-    pip install icepyx
+PyPI Install:
+pip install icepyx
 
 More detailed instructions for installing `icepyx` can be found at
 https://icepyx.readthedocs.io/en/latest/getting_started/install.html

@@ -1,0 +1,44 @@
+# temporarily store GitHub traffic data
+# from: https://github.com/marketplace/actions/repository-traffic
+name: Get Read the Docs (RTD) analytics
+on:
+  schedule:
+    # runs once a month on the first
+    - cron: "55 20 1 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  # This workflow contains a single job called "rtd_stats"
+  rtd_stats:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # for Git to git push
+    if: github.repository_owner == 'icesat2py'
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        ref: "traffic"
+        persist-credentials: true
+
+    # Pulls RTD stats, adds them to existing CSV file
+    - name: Update rtd stats files
+      env:
+        RTD_API_TOKEN: ${{ secrets.RTD_API_TOKEN }}
+      run: |
+        pip install -U pip
+        pip install -r requirements.txt
+        python ./doc/source/tracking/rtdstats/get_rtd_stats.py
+
+    # Commits files to repository
+    - name: Commit changes
+      uses: EndBug/add-and-commit@290ea2c423ad77ca9c62ae0f5b224379612c0321 # v10.0.0
+      with:
+        author_name: Jessica Scheick
+        message: "RTD analytics auto-update"
+        add: "./doc/source/tracking/rtdstats/*"

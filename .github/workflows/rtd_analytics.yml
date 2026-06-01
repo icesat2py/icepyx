@@ -1,10 +1,9 @@
-# temporarily store GitHub traffic data
-# from: https://github.com/marketplace/actions/repository-traffic
+# holder action for if/when RTD Analytics has an API endpoint (not implemented as of June 2026)
 name: Get Read the Docs (RTD) analytics
 on:
-  schedule:
-    # runs once a month on the first
-    - cron: "55 20 1 * *"
+  # schedule:
+  #   # runs once a month on the first
+  #   - cron: "55 20 1 * *"
   workflow_dispatch:
 
 permissions: {}

@@ -1,7 +1,6 @@
 import os
 
 import pandas as pd
-import requests
 
 cwd = os.getcwd()
 
@@ -9,46 +8,44 @@ trackpath = f"{cwd}/doc/source/tracking/rtdstats/"
 pageviewfn = "pageview_data.csv"
 searchfn = "searches_data.csv"
 
-rtd_token = os.environ["RTD_API_TOKEN"]
-headers = {"Authorization": f"Token {rtd_token}"}
-base = "https://app.readthedocs.org"
+# rtd_token = os.environ["RTD_API_TOKEN"]
+# headers = {"Authorization": f"Token {rtd_token}"}
+# base = "https://app.readthedocs.org"
 
 
 # Turns out you cannot yet get the analytics data from the API, only the UI
-def fetch_rtd_analytics(url, headers, output_path=None):
-    """Fetch analytics from a Read the Docs URL and return a DataFrame."""
-    try:
-        resp = requests.get(url, headers=headers, timeout=30)
-    except Exception:
-        return None
+# This function has the scaffolding to get the data if it's ever implemented
+# def fetch_rtd_analytics(url, headers, output_path=None):
+#     """Fetch analytics from a Read the Docs URL and return a DataFrame."""
+#     try:
+#         resp = requests.get(url, headers=headers, timeout=30)
+#         data = resp.json()
+#     except Exception:
+#         return None
 
-    if not resp.ok:
-        return None
+#     if not resp.ok:
+#         return None
 
-    try:
-        data = resp.json()
-    except Exception:
-        return None
+#     if isinstance(data, dict) and "results" in data:
+#         results = data.get("results", [])
+#         if results:
+#             df = pd.json_normalize(results)
+#             if output_path:
+#                 df.to_csv(output_path, index=False)
+#             return df
+#         return None
 
-    if isinstance(data, dict) and "results" in data:
-        results = data.get("results", [])
-        if results:
-            df = pd.json_normalize(results)
-            if output_path:
-                df.to_csv(output_path, index=False)
-            return df
-        return None
+#     if isinstance(data, list):
+#         df = pd.json_normalize(data)
+#         if output_path:
+#             df.to_csv(output_path, index=False)
+#         return df
 
-    if isinstance(data, list):
-        df = pd.json_normalize(data)
-        if output_path:
-            df.to_csv(output_path, index=False)
-        return df
-
-    return None
+#     return None
 
 
-### WIP to collect the analytics data and combine it with whatever already exists
+### Collect the analytics data and combine it with whatever already exists
+### must manually download the csv and rename it to `pageview.csv`
 # pageviews = fetch_rtd_analytics(
 #     f"{base}/api/v3/projects/icepyx/", headers
 # )
@@ -69,7 +66,7 @@ pageviews.sort_values(["Date"], ignore_index=True).to_csv(
 )
 
 # see which pages have most views
-pageviews.groupby("Path").sum().sort_values(["Views"], ascending=False)
+print(pageviews.groupby("Path").sum().sort_values(["Views"], ascending=False))
 
 
 # searches = fetch_rtd_analytics(f"{base}/api/v3/projects/icepyx/search-terms/", headers)
@@ -86,4 +83,4 @@ searches.sort_values(["Query"], ignore_index=True).to_csv(
 )
 
 # print out what most common query words are
-searches.groupby("Query").count()
+print(searches.groupby("Query").count())

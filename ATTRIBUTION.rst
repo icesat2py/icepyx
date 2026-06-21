@@ -102,7 +102,7 @@ This document is an effort to describe icepyx's policies, with an awareness that
 to accommodate community growth, best practices, and feedback.
 
 We do not attempt to identify contribution levels through the number of commits made to the repository (e.g. ``git shortlog -sne``)
-or active engagement on GitHub (e.g. through issues, discussions, and pull requests) and Discourse.
+or active engagement on GitHub (e.g. through issues, discussions, and pull requests).
 The latter is difficult to quantify, and the use of squash merges into the development branch can mask the relative complexity
 of various contributions and does not necessarily capture significant conceptual contributions.
 

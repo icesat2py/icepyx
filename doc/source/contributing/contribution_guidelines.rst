@@ -34,7 +34,7 @@ Find the *Issues* tab at the top of GitHub repository and click the *New Issue* 
 Questions and Help
 ------------------
 
-Please do not create issues to ask for help. A faster way to reach the community is through our Science/ICESat-2 subcategory on the `Pangeo discourse <https://discourse.pangeo.io/c/science/icesat-2/16>`_ page. We are excited to have you join an existing conversation or start a new post! Please note that a GitHub login is required to post on the discourse page.
+Please do not create issues to ask for help. A faster way to reach the community is through `Github Discussions <https://github.com/icesat2py/icepyx/discussions>`_ page. We are excited to have you join an existing conversation or start a new post!
 
 Other Resources
 ^^^^^^^^^^^^^^^

@@ -16,7 +16,7 @@ class EarthdataAuthMixin:
     including for NASA Earthdata cloud access.
     Authentication is completed using the [earthaccess library](https://nsidc.github.io/earthaccess/).
     Methods for authenticating are:
-        1. Storing credentials as environment variables ($EARTHDATA_LOGIN and $EARTHDATA_PASSWORD)
+        1. Storing credentials as environment variables ($EARTHDATA_USERNAME and $EARTHDATA_PASSWORD)
         2. Entering credentials interactively
         3. Storing credentials in a .netrc file (not recommended for security reasons)
     More details on using these methods is available in the [earthaccess documentation](https://nsidc.github.io/earthaccess/tutorials/restricted-datasets/#auth).

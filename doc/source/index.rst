@@ -161,6 +161,7 @@ To further enhance data discovery, we have developed the QUEST module to facilit
 
    getting_started/origin_purpose
    getting_started/install
+   getting_started/cheatsheet
    getting_started/citation_link
 
 .. toctree::

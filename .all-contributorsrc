@@ -524,6 +524,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "louisschlegel",
+      "name": "Louis Schlegel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/118974583?v=4",
+      "profile": "https://github.com/louisschlegel",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

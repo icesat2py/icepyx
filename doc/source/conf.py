@@ -10,7 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import datetime
+import datetime as dt
 import os
 import sys
 
@@ -22,7 +22,7 @@ import icepyx
 # -- Project information -----------------------------------------------------
 
 project = "icepyx"
-year = datetime.date.today().year
+year = dt.date.today().year
 copyright = "2019-{}, The icepyx Development Team".format(year)
 
 # -- General configuration ---------------------------------------------------

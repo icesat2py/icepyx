@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 import json
 import logging
 import re
@@ -113,7 +113,7 @@ def gran_IDs(grans, ids=False, cycles=False, tracks=False, dates=False, cloud=Fa
             gran_cycles.append(CYCL)
             gran_tracks.append(TRK)
             gran_dates.append(
-                str(datetime.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
+                str(dt.datetime(year=int(YY), month=int(MM), day=int(DD)).date())
             )
 
     # list of granule parameters

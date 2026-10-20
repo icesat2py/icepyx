@@ -1,5 +1,5 @@
 import copy
-import datetime
+import datetime as dt
 
 import earthaccess
 
@@ -99,12 +99,12 @@ class EarthdataAuthMixin:
         def set_s3_creds():
             """Store s3login creds from `auth`and reset the last updated timestamp"""
             self._s3login_credentials = self.auth.get_s3_credentials(daac="NSIDC")
-            self._s3_initial_ts = datetime.datetime.now()
+            self._s3_initial_ts = dt.datetime.now()
 
         # Only generate s3login_credentials the first time credentials are accessed, or if an hour
         # has passed since the last login
         if self._s3login_credentials is None or (
-            datetime.datetime.now() - self._s3_initial_ts
-        ) >= datetime.timedelta(hours=1):
+            dt.datetime.now() - self._s3_initial_ts
+        ) >= dt.timedelta(hours=1):
             set_s3_creds()
         return self._s3login_credentials

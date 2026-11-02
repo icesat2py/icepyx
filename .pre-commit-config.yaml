@@ -26,14 +26,14 @@ repos:
           - tomli
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.10
+    rev: v0.17.3
     hooks:
       - id: ruff
         args: ["--fix", "--show-fixes"]
       - id: ruff-format
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: '0.26'
+    rev: 'v0.27'
     hooks:
       - id: validate-pyproject
 

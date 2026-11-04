@@ -99,6 +99,9 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
+# VSCode project settings
+.vscode
+
 # mkdocs documentation
 /site
 
@@ -128,3 +131,5 @@ venv.bak/
 !views.csv
 !downloads_data.csv
 !sys_downloads_data.csv
+!pageview_data.csv
+!searches_data.csv

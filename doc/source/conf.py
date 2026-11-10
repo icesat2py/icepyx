@@ -143,8 +143,8 @@ html_context = {
             "https://github.com/icesat2py/icepyx",
         ),
         (
-            '<i class="fa fa-comments fa-fw"></i> Pangeo Discourse',
-            "https://discourse.pangeo.io/t/icepyx-python-tools-for-icesat-2-data/404/2",
+            '<i class="fa fa-comments fa-fw"></i> Github Discussions',
+            "https://github.com/icesat2py/icepyx/discussions",
         ),
     ],
 }

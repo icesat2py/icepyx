@@ -149,8 +149,7 @@ Contact
 Working with ICESat-2 data and have ideas you want to share?
 Have a great suggestion or recommendation of something you'd like to see
 implemented and want to find out if others would like that tool too?
-Come join the conversation at: https://discourse.pangeo.io/.
-Search for "icesat-2" under the "science" topic to find us.
+Come join the conversation in our `Github Discussions <https://github.com/icesat2py/icepyx/discussions>`_ .
 
 .. _`icepyx`: https://github.com/icesat2py/icepyx
 .. _`contribution guidelines`: ./doc/source/contributing/contribution_guidelines.rst
